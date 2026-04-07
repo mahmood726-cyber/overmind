@@ -1,18 +1,16 @@
 from __future__ import annotations
 
 import queue
-import re
 import subprocess
 import time
 from dataclasses import dataclass, field
 from datetime import UTC, datetime
 from pathlib import Path
 
+from overmind.runners.protocols import INTERACTIVE, RunnerProtocol
 from overmind.sessions.output_stream import OutputStreamReader
 from overmind.sessions.transcript_store import TranscriptStore
 from overmind.storage.models import SessionObservation, utc_now
-
-ONE_SHOT_STDIN_PATTERN = re.compile(r"\bexec\b.*\s-$", re.IGNORECASE)
 
 
 @dataclass(slots=True)
@@ -23,6 +21,7 @@ class TerminalSession:
     command: str
     cwd: Path
     transcript_store: TranscriptStore
+    protocol: RunnerProtocol = field(default_factory=lambda: INTERACTIVE)
     transcript_path: Path = field(init=False)
     buffer: queue.SimpleQueue[str] = field(default_factory=queue.SimpleQueue)
     process: subprocess.Popen[str] | None = None
@@ -55,11 +54,12 @@ class TerminalSession:
         self.started_at_epoch = time.time()
         self.last_output_epoch = self.started_at_epoch
         self.transcript_store.append_event(self.transcript_path, f"SESSION START {self.command}")
+        self.transcript_store.append_event(self.transcript_path, f"PROTOCOL {self.protocol.name}")
         if self.process.stdout is not None:
             OutputStreamReader(self.process.stdout, self._handle_output).start()
         if prompt:
-            self.send(prompt)
-            if self._should_close_stdin_after_prompt():
+            self.send(self.protocol.wrap_prompt(prompt))
+            if self.protocol.close_stdin_after_prompt:
                 self._close_stdin()
 
     def send(self, text: str) -> None:
@@ -76,9 +76,12 @@ class TerminalSession:
         lines: list[str] = []
         while True:
             try:
-                lines.append(self.buffer.get_nowait())
+                raw_line = self.buffer.get_nowait()
             except queue.Empty:
                 break
+            filtered = self.protocol.filter_output(raw_line)
+            if filtered is not None:
+                lines.append(filtered)
 
         exit_code = self.process.poll() if self.process else None
         return SessionObservation(
@@ -111,9 +114,6 @@ class TerminalSession:
         self.last_output_epoch = time.time()
         self.buffer.put(line)
         self.transcript_store.append_line(self.transcript_path, line)
-
-    def _should_close_stdin_after_prompt(self) -> bool:
-        return bool(ONE_SHOT_STDIN_PATTERN.search(self.command.strip()))
 
     def _close_stdin(self) -> None:
         if not self.process or self.process.stdin is None or self.process.stdin.closed:

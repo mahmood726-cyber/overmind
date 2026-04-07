@@ -14,6 +14,7 @@ from overmind.memory.extractor import MemoryExtractor
 from overmind.memory.insights import InsightEngine
 from overmind.memory.store import MemoryStore
 from overmind.parsing.terminal_parser import TerminalParser
+from overmind.runners.protocols import RunnerProtocol
 from overmind.runners.runner_registry import RunnerRegistry
 from overmind.sessions.session_manager import SessionManager
 from overmind.storage.db import StateDatabase
@@ -122,11 +123,18 @@ class Orchestrator:
                 assigned_runner_id=assignment.runner_id,
             )
 
+        runner_protocols: dict[str, RunnerProtocol] = {}
+        for runner in runners:
+            adapter = self.runner_registry.adapter_for(runner.runner_id)
+            if adapter:
+                runner_protocols[runner.runner_id] = adapter.protocol()
+
         started_task_ids = set(
             self.session_manager.dispatch(
                 assignments=assignments,
                 runners={runner.runner_id: runner for runner in runners},
                 projects=project_map,
+                protocols=runner_protocols,
             )
         )
         for assignment in assignments:

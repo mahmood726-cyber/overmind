@@ -8,6 +8,10 @@ RATE_LIMIT_HINTS = (
     "quota",
     "try again later",
     "usage limit",
+    "too many people",
+    "at capacity",
+    "overloaded",
+    "temporarily unavailable",
 )
 
 

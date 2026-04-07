@@ -3,6 +3,7 @@ from __future__ import annotations
 import re
 from pathlib import Path
 
+from overmind.runners.protocols import INTERACTIVE, RunnerProtocol
 from overmind.sessions.terminal_session import TerminalSession
 from overmind.sessions.transcript_store import TranscriptStore
 from overmind.storage.models import Assignment, ProjectRecord, RunnerRecord, SessionObservation
@@ -42,10 +43,12 @@ class SessionManager:
         assignments: list[Assignment],
         runners: dict[str, RunnerRecord],
         projects: dict[str, ProjectRecord],
+        protocols: dict[str, RunnerProtocol] | None = None,
     ) -> list[str]:
         started: list[str] = []
         if self.active_count() >= self.max_active_sessions:
             return started
+        protocols = protocols or {}
 
         for assignment in assignments:
             if self.active_count() >= self.max_active_sessions:
@@ -64,6 +67,7 @@ class SessionManager:
                 command=self._launch_command(runner),
                 cwd=Path(project.root_path),
                 transcript_store=self.transcript_store,
+                protocol=protocols.get(assignment.runner_id, INTERACTIVE),
             )
             session.start(assignment.prompt)
             self.sessions[session_id] = session
@@ -90,6 +94,8 @@ class SessionManager:
             if not session:
                 continue
             if action.get("action") == "send_message":
+                if not session.protocol.supports_intervention:
+                    continue
                 session.send(action.get("message", ""))
             elif action.get("action") == "pause":
                 session.stop()
