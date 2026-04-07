@@ -15,6 +15,7 @@ from overmind.memory.insights import InsightEngine
 from overmind.memory.store import MemoryStore
 from overmind.parsing.terminal_parser import TerminalParser
 from overmind.runners.protocols import RunnerProtocol
+from overmind.runners.q_router import QRouter
 from overmind.runners.runner_registry import RunnerRegistry
 from overmind.sessions.session_manager import SessionManager
 from overmind.storage.db import StateDatabase
@@ -36,7 +37,8 @@ class Orchestrator:
         self.task_queue = TaskQueue(self.db)
         self.health_manager = HealthManager()
         self.policy_engine = PolicyEngine(config.policies)
-        self.scheduler = Scheduler(config.policies)
+        self.q_router = QRouter(self.db)
+        self.scheduler = Scheduler(config.policies, q_router=self.q_router)
         self.task_generator = TaskGenerator()
         self.prioritizer = Prioritizer()
         self.session_manager = SessionManager(config.data_dir / "transcripts")
@@ -184,6 +186,9 @@ class Orchestrator:
                         latency_sec=runtime,
                         output_lines=output_lines,
                     )
+                    runner_record = self.db.get_runner(evidence.runner_id)
+                    if runner_record:
+                        self.q_router.record(runner_record.runner_type, task.task_type, False)
                 continue
 
             if evidence.exited and evidence.exit_code == 0:
@@ -216,6 +221,9 @@ class Orchestrator:
                     latency_sec=runtime,
                     output_lines=output_lines,
                 )
+                runner_record = self.db.get_runner(evidence.runner_id)
+                if runner_record:
+                    self.q_router.record(runner_record.runner_type, task.task_type, result.success)
 
         insights = self.insight_engine.extract(evidence_items, verification_results)
         self.memory_store.save_insights(insights)

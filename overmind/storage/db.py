@@ -9,7 +9,7 @@ from overmind.storage.models import InsightRecord, MemoryRecord, ProjectRecord, 
 
 T = TypeVar("T")
 
-VALID_TABLES = {"projects", "runners", "tasks", "insights", "checkpoints", "memories"}
+VALID_TABLES = {"projects", "runners", "tasks", "insights", "checkpoints", "memories", "routing_scores"}
 
 
 class StateDatabase:
@@ -121,6 +121,19 @@ class StateDatabase:
                 INSERT INTO memories_fts(rowid, title, content, tags)
                 VALUES (new.rowid, new.title, new.content, new.tags);
             END
+            """
+        )
+        cursor.execute(
+            """
+            CREATE TABLE IF NOT EXISTS routing_scores (
+                runner_type TEXT NOT NULL,
+                task_type TEXT NOT NULL,
+                wins INTEGER DEFAULT 0,
+                losses INTEGER DEFAULT 0,
+                q_value REAL DEFAULT 0.5,
+                updated_at TEXT NOT NULL,
+                PRIMARY KEY (runner_type, task_type)
+            )
             """
         )
         self.connection.commit()
@@ -327,6 +340,57 @@ class StateDatabase:
             updated_at=row["updated_at"],
             status=row["status"],
         )
+
+    def update_routing_score(self, runner_type: str, task_type: str, success: bool) -> None:
+        now = utc_now()
+        win_inc = 1 if success else 0
+        loss_inc = 0 if success else 1
+        # Initial q_value for a brand-new row: (wins + 1) / (wins + losses + 2)
+        initial_q = (win_inc + 1) / (win_inc + loss_inc + 2)
+        self.connection.execute(
+            """
+            INSERT INTO routing_scores (runner_type, task_type, wins, losses, q_value, updated_at)
+            VALUES (?, ?, ?, ?, ?, ?)
+            ON CONFLICT(runner_type, task_type) DO UPDATE SET
+                wins = routing_scores.wins + ?,
+                losses = routing_scores.losses + ?,
+                q_value = CAST(routing_scores.wins + ? + 1 AS REAL)
+                        / (routing_scores.wins + ? + routing_scores.losses + ? + 2),
+                updated_at = ?
+            """,
+            (
+                runner_type, task_type, win_inc, loss_inc, initial_q, now,
+                win_inc, loss_inc,
+                win_inc, win_inc, loss_inc,
+                now,
+            ),
+        )
+        self.connection.commit()
+
+    def get_routing_score(self, runner_type: str, task_type: str) -> float:
+        row = self.connection.execute(
+            "SELECT q_value FROM routing_scores WHERE runner_type = ? AND task_type = ?",
+            (runner_type, task_type),
+        ).fetchone()
+        if not row:
+            return 0.5
+        return row["q_value"]
+
+    def list_routing_scores(self) -> list[dict[str, Any]]:
+        rows = self.connection.execute(
+            "SELECT runner_type, task_type, wins, losses, q_value, updated_at FROM routing_scores ORDER BY q_value DESC"
+        ).fetchall()
+        return [
+            {
+                "runner_type": row["runner_type"],
+                "task_type": row["task_type"],
+                "wins": row["wins"],
+                "losses": row["losses"],
+                "q_value": row["q_value"],
+                "updated_at": row["updated_at"],
+            }
+            for row in rows
+        ]
 
     def latest_checkpoint(self, name: str | None = None) -> dict[str, Any] | None:
         if name:

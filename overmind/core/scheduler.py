@@ -1,12 +1,18 @@
 from __future__ import annotations
 
+from typing import TYPE_CHECKING
+
 from overmind.config import PoliciesConfig
 from overmind.storage.models import Assignment, ProjectRecord, RunnerRecord, TaskRecord
 
+if TYPE_CHECKING:
+    from overmind.runners.q_router import QRouter
+
 
 class Scheduler:
-    def __init__(self, policies: PoliciesConfig) -> None:
+    def __init__(self, policies: PoliciesConfig, q_router: QRouter | None = None) -> None:
         self.policies = policies
+        self.q_router = q_router
 
     def assign(
         self,
@@ -55,4 +61,6 @@ class Scheduler:
         if task.risk.startswith("high") and runner.runner_type == "claude":
             score += 0.2
         score -= min(runner.avg_latency_sec / 120.0, 0.3)
+        if self.q_router is not None:
+            score += self.q_router.score(runner.runner_type, task.task_type) * 0.5
         return score
