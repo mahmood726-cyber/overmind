@@ -49,6 +49,7 @@ class PoliciesConfig:
     limits: dict[str, int | float] = field(default_factory=dict)
     routing: dict[str, dict[str, list[str]]] = field(default_factory=dict)
     risk_policy: dict[str, list[str]] = field(default_factory=dict)
+    isolation: dict[str, str] = field(default_factory=lambda: {"mode": "none"})
 
     def strengths_for(self, runner_type: str) -> list[str]:
         return list(self.routing.get(runner_type, {}).get("strengths", []))
@@ -111,6 +112,7 @@ class AppConfig:
             limits=dict(policies_payload.get("limits", {})),
             routing=dict(policies_payload.get("routing", {})),
             risk_policy=dict(policies_payload.get("risk_policy", {})),
+            isolation=dict(policies_payload.get("isolation", {"mode": "none"})),
         )
 
         verification_profiles = {

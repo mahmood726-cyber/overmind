@@ -38,3 +38,6 @@ risk_policy:
     - relevant_tests
   low_risk_requires:
     - build_or_direct_evidence
+
+isolation:
+  mode: worktree
