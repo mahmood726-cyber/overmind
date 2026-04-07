@@ -92,7 +92,7 @@ class Orchestrator:
         self.task_queue.upsert([task])
         return task
 
-    def run_once(self, focus_project_id: str | None = None, settle_seconds: float = 0.75) -> dict[str, object]:
+    def run_once(self, focus_project_id: str | None = None, settle_seconds: float = 0.75, dry_run: bool = False) -> dict[str, object]:
         machine = self.health_manager.snapshot(self.session_manager.active_count())
         active_assignments = self.session_manager.active_assignments()
         runners = self.runner_registry.refresh(active_assignments)
@@ -116,6 +116,14 @@ class Orchestrator:
             capacity=capacity,
             prompt_builder=self._build_worker_prompt,
         )
+        if dry_run:
+            return {
+                "dry_run": True,
+                "projects_indexed": len(projects),
+                "generated_tasks": len(generated_tasks),
+                "would_dispatch": [assignment.to_dict() for assignment in assignments],
+                "desired_sessions": desired_sessions,
+            }
         for assignment in assignments:
             self.task_queue.transition(
                 assignment.task_id,

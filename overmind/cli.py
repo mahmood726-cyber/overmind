@@ -28,6 +28,7 @@ def build_parser() -> argparse.ArgumentParser:
     run_once = subparsers.add_parser("run-once")
     run_once.add_argument("--project-id", default=None)
     run_once.add_argument("--settle-seconds", type=float, default=0.75)
+    run_once.add_argument("--dry-run", action="store_true")
 
     run_loop = subparsers.add_parser("run-loop")
     run_loop.add_argument("--project-id", default=None)
@@ -69,6 +70,7 @@ def main(argv: list[str] | None = None) -> None:
             payload = orchestrator.run_once(
                 focus_project_id=args.project_id,
                 settle_seconds=args.settle_seconds,
+                dry_run=args.dry_run,
             )
         elif args.command == "run-loop":
             payload = orchestrator.run_loop(
