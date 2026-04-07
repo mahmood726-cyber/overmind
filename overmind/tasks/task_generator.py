@@ -1,7 +1,7 @@
 from __future__ import annotations
 
 from overmind.storage.models import ProjectRecord, TaskRecord
-from overmind.tasks.task_models import build_baseline_task
+from overmind.tasks.task_models import build_baseline_task, build_test_first_tasks
 
 
 OPEN_TASK_STATES = {
@@ -29,5 +29,8 @@ class TaskGenerator:
                 continue
             if project.project_type not in {"browser_app", "python_tool", "hybrid_browser_analytics_app"}:
                 continue
-            tasks.append(build_baseline_task(project))
+            if project.has_advanced_math and project.test_commands:
+                tasks.extend(build_test_first_tasks(project))
+            else:
+                tasks.append(build_baseline_task(project))
         return tasks
