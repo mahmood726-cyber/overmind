@@ -106,6 +106,7 @@ class TaskRecord(SerializableModel):
     attempt_count: int = 0
     last_error: str | None = None
     verification_summary: list[str] = field(default_factory=list)
+    blocked_by: list[str] = field(default_factory=list)
     created_at: str = field(default_factory=utc_now)
     updated_at: str = field(default_factory=utc_now)
 

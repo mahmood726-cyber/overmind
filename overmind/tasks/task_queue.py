@@ -24,7 +24,12 @@ class TaskQueue:
         return [task for task in self.db.list_tasks() if task.status in allowed]
 
     def queued(self) -> list[TaskRecord]:
-        return self.list_by_status("QUEUED", "DISCOVERED")
+        candidates = self.list_by_status("QUEUED", "DISCOVERED")
+        completed_ids = {task.task_id for task in self.db.list_tasks() if task.status in {"COMPLETED", "ARCHIVED"}}
+        return [
+            task for task in candidates
+            if not task.blocked_by or all(dep in completed_ids for dep in task.blocked_by)
+        ]
 
     def transition(
         self,
