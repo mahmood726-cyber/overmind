@@ -1,0 +1,77 @@
+$ node C:/Users/user/prognostic_r_validation.js
+
+STDOUT:
+Loading modules...
+Project root: C:\Projects\prognostic-meta
+Modules loaded successfully.
+
+======================================================================
+PROGNOSTIC-META vs R METAFOR VALIDATION
+======================================================================
+
+--- Dataset 1: Homogeneous (k=5) ---
+  [OK]   D1 Effect: JS = 0.529167, R = 0.529167 (diff: 0.000000)
+  [OK]   D1 SE: JS = 0.091287, R = 0.091287 (diff: 0.000000)
+  [OK]   D1 tau2: JS = 0.000000, R = 0.000000 (diff: 0.000000)
+  [OK]   D1 I2: JS = 0.000000, R = 0.000000 (diff: 0.000000)
+  [OK]   D1 Q: JS = 2.447917, R = 2.447917 (diff: 0.000000)
+  [OK]   D1 CI lower: JS = 0.350244, R = 0.350247 (diff: 0.000003)
+  [OK]   D1 CI upper: JS = 0.708089, R = 0.708086 (diff: 0.000003)
+
+--- Dataset 2: Heterogeneous DL (k=8) ---
+  [OK]   D2 DL Effect: JS = 0.572197, R = 0.572197 (diff: 0.000000)
+  [OK]   D2 DL SE: JS = 0.134188, R = 0.134188 (diff: 0.000000)
+  [OK]   D2 DL tau2: JS = 0.108963, R = 0.108963 (diff: 0.000000)
+  [OK]   D2 DL I2: JS = 77.175137, R = 77.175100 (diff: 0.000037)
+  [OK]   D2 DL Q: JS = 30.668311, R = 30.668311 (diff: 0.000000)
+  [OK]   D2 DL CI lower: JS = 0.309190, R = 0.309194 (diff: 0.000004)
+  [OK]   D2 DL CI upper: JS = 0.835205, R = 0.835200 (diff: 0.000005)
+
+--- All tau2 Estimators (Dataset 2) ---
+  [OK]   tau2 DL: JS = 0.108963, R = 0.108963 (diff: 0.000000)
+  [OK]   tau2 REML: JS = 0.111713, R = 0.111713 (diff: 0.000000)
+  [OK]   tau2 ML: JS = 0.093433, R = 0.093433 (diff: 0.000000)
+  [OK]   tau2 PM: JS = 0.110775, R = 0.110775 (diff: 0.000000)
+  [OK]   tau2 HS: JS = 0.089480, R = 0.089480 (diff: 0.000000)
+  [OK]   tau2 SJ: JS = 0.110775, R = 0.110775 (diff: 0.000000)
+  [OK]   tau2 HE: JS = 0.109464, R = 0.109464 (diff: 0.000000)
+  [OK]   tau2 EB: JS = 0.093439, R = 0.093439 (diff: 0.000000)
+
+--- HKSJ Adjustment (Dataset 2) ---
+  [OK]   HKSJ Effect: JS = 0.572197, R = 0.572197 (diff: 0.000000)
+  [OK]   HKSJ SE: JS = 0.135034, R = 0.135034 (diff: 0.000000)
+  [OK]   HKSJ CI lower: JS = 0.252893, R = 0.252893 (diff: 0.000000)
+  [OK]   HKSJ CI upper: JS = 0.891501, R = 0.891501 (diff: 0.000000)
+
+--- Heterogeneity Statistics ---
+  [OK]   Q-statistic: JS = 30.668311, R = 30.668311 (diff: 0.000000)
+  [OK]   I-squared: JS = 77.175137, R = 77.175100 (diff: 0.000037)
+
+--- Publication Bias Tests (Dataset 2) ---
+
+--- Trim and Fill (Dataset 2) ---
+  [OK]   Trim-fill k0: JS = 0.000000, R = 0.000000 (diff: 0.000000)
+  [OK]   Trim-fill effect: JS = 0.572197, R = 0.572197 (diff: 0.000000)
+
+--- Leave-One-Out Analysis ---
+  [OK]   LOO (excl study 5) effect: JS = 0.487245, R = 0.487245 (diff: 0.000000)
+  [OK]   LOO (excl study 5) tau2: JS = 0.068572, R = 0.068572 (diff: 0.000000)
+
+--- Selection Models ---
+  [INFO] PET-PEESE: PET = NaN, PEESE = NaN
+
+======================================================================
+VALIDATION SUMMARY
+======================================================================
+Passed: 33
+Failed: 0
+Total:  33
+Rate:   100.0%
+
+======================================================================
+*** ALL VALIDATIONS PASSED - JavaScript matches R metafor ***
+======================================================================
+
+
+
+STDERR:

@@ -1,0 +1,7 @@
+ignored_directories:
+  - node_modules
+  - .git
+  - dist
+  - build
+  - .venv
+ignored_file_suffixes: []

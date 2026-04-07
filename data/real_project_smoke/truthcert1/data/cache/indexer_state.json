@@ -1,0 +1,79 @@
+{
+  "cache_version": 2,
+  "projects": {
+    "C:\\Truthcert1": {
+      "record": {
+        "activity_files": [
+          "C:\\Truthcert1\\Supplement_S3_R_Validation.md",
+          "C:\\Truthcert1\\S3_R_TruthCert_Validation.R",
+          "C:\\Truthcert1\\S4_Validation_Test.py",
+          "C:\\Truthcert1\\S3_Validation_Results_Complete.txt",
+          "C:\\Truthcert1\\S3_R_Validation_Complete.R",
+          "C:\\Truthcert1\\PLOS_ONE_Submission\\S3_R_Validation.zip",
+          "C:\\Truthcert1\\PLOS_ONE_Submission\\S4_HTA_Validation.pdf",
+          "C:\\Truthcert1\\PLOS_ONE_Submission\\S3_R_Validation_Output.txt",
+          "C:\\Truthcert1\\PLOS_ONE_Submission\\S3_R_Validation_Code.R",
+          "C:\\Truthcert1\\PLOS_ONE_Submission\\S4_HTA_Validation.md",
+          "C:\\Truthcert1\\S4_HTA_Validation.md",
+          "C:\\Truthcert1\\S3_R_Validation_Code.R"
+        ],
+        "activity_summary": [
+          "stored validation evidence present: S3_Validation_Results_Complete.txt",
+          "warning-bearing activity log present: S4_HTA_Validation.md",
+          "repeatable validation logs detected"
+        ],
+        "browser_test_commands": [],
+        "build_commands": [
+          "node -c app.js",
+          "node -c C:/Truthcert1/app.js"
+        ],
+        "guidance_commands": [
+          "node -c C:/Truthcert1/app.js",
+          "Python scripts in `C:/Users/user/` for safe editing:"
+        ],
+        "guidance_files": [
+          "CLAUDE.md"
+        ],
+        "guidance_summary": [
+          "Claude Code Instructions for TruthCert-PairwisePro",
+          "Project Context",
+          "This is the **TruthCert-PairwisePro v1.0** meta-analysis application - a single-page web app for systematic review and health technology assessment.",
+          "Critical Files",
+          "Key Architecture Points",
+          "When Editing app.js",
+          "Common Issues",
+          "\"File unexpectedly modified\" errors** - Use Python scripts instead of Edit tool"
+        ],
+        "has_drift_history": false,
+        "has_numeric_logic": true,
+        "has_oracle_benchmarks": false,
+        "has_validation_history": true,
+        "is_git_repo": false,
+        "last_active_at": "2026-01-20T11:34:03+00:00",
+        "last_indexed_at": "2026-04-05T19:49:18+00:00",
+        "manifest_hash": "028e58c2d4941bb569e775619c67a08ab6d1cb00",
+        "name": "Truthcert1",
+        "package_manager": "npm",
+        "perf_commands": [],
+        "platform": "windows",
+        "project_id": "truthcert1-a1a5c8df",
+        "project_type": "browser_app",
+        "recommended_verification": [
+          "build",
+          "regression_checks"
+        ],
+        "risk_profile": "medium_high",
+        "root_path": "C:\\Truthcert1",
+        "stack": [
+          "html",
+          "javascript"
+        ],
+        "test_commands": [],
+        "verification_profiles": [
+          "truthcert_suite"
+        ]
+      },
+      "signature": "5be8a42e537ecf7793a40694f1417b0efd632ef8"
+    }
+  }
+}

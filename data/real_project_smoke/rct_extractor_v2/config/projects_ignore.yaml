@@ -1,0 +1,5 @@
+ignored_directories:
+  - ".git"
+  - "node_modules"
+  - "__pycache__"
+ignored_file_suffixes: []

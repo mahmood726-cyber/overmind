@@ -1,0 +1,81 @@
+$ node C:/Users/user/test_prognostic_v2.js
+
+STDOUT:
+======================================================================
+PrognosisMeta Node.js Module Test v2
+======================================================================
+
+--- Loading Modules ---
+  [INFO] Project root: C:\Projects\prognostic-meta
+  [OK] Loaded statistics.js
+  [OK] Loaded meta-analysis.js
+  [OK] Loaded bayesian.js
+  [OK] Loaded selection-models.js
+  [OK] Loaded advanced-methods.js
+  [OK] Loaded visualization.js
+  [OK] Loaded export.js
+
+--- Testing Statistics Module ---
+  [OK] mean([1,2,3,4,5]) = 3
+  [OK] sd([1,2,3,4,5]) = 1.5811
+  [OK] pnorm(0) = 0.5
+  [OK] qnorm(0.975) = 1.9604
+  [OK] hedgesG(d=0.5, n1=10, n2=10) = 0.4789
+
+--- Testing Meta-Analysis Module ---
+  [OK] DL estimate: 0.5292, tau2: 0.0000, I2: 0.0%
+  [OK] REML estimate: 0.5292, tau2: 0.0000
+  [OK] Q = 2.4479, df = 4, p = 0.6540
+  [OK] Egger intercept: -5.0184, p = 0.0010
+  [OK] Trim-and-fill k0: 0, adjusted: 0.5292
+  [OK] goshAnalysis function exists
+  [OK] bootstrapCI function exists
+
+--- Testing Heterogeneity Estimators ---
+  [OK] DL: tau2 = 0.0000
+  [OK] REML: tau2 = 0.0000
+  [OK] ML: tau2 = 0.0000
+  [OK] PM: tau2 = 0.0000
+  [OK] HS: tau2 = 0.0000
+  [OK] HE: tau2 = 0.0000
+
+--- Testing Bayesian Module ---
+  [OK] Posterior mu: 0.5488, tau: 0.1240
+  [OK] bayesFactorREvsRE function exists
+
+--- Testing Advanced Methods ---
+  [OK] robustVarianceEstimation exists
+  [OK] networkMetaAnalysis exists
+  [OK] doseResponseMA exists
+  [OK] componentNMA exists
+  [OK] nodeSplitting exists
+  [OK] twoStageIPD exists
+  [OK] oneStageIPD exists
+
+--- Testing Selection Models ---
+  [OK] copasSelectionModel exists
+  [OK] veveaHedgesModel exists
+  [OK] petPeese exists
+
+--- Testing Visualization ---
+  [OK] forestPlot exists
+  [OK] funnelPlot exists
+
+--- Numerical Accuracy Tests ---
+  [OK] Q-statistic: 1.3846
+  [OK] I2 = 0.0% (within valid range)
+  [OK] 95% CI: [0.3502, 0.7081]
+
+======================================================================
+TEST SUMMARY
+======================================================================
+
+Passed: 35/35 (100%)
+Failed: 0/35
+
+----------------------------------------------------------------------
+STATUS: *** ALL TESTS PASSED ***
+
+
+STDERR:
+D3.js not loaded - Visualization module will have limited functionality

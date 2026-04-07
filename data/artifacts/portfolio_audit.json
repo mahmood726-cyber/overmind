@@ -1,0 +1,396 @@
+{
+  "advanced_math_rigor": {
+    "extreme": 48,
+    "high": 32,
+    "light": 15,
+    "moderate": 68
+  },
+  "advanced_math_signals": {
+    "bayesian_modeling": 40,
+    "calibration_validation": 15,
+    "causal_inference": 13,
+    "diagnostic_accuracy": 46,
+    "hierarchical_modeling": 18,
+    "meta_analysis": 136,
+    "missing_data_imputation": 6,
+    "optimization_numerics": 6,
+    "resampling": 30,
+    "survival_analysis": 27
+  },
+  "generated_at": "2026-04-06T09:14:01+00:00",
+  "high_risk_projects": [
+    {
+      "activity_summary": [
+        "repeatable validation logs detected"
+      ],
+      "advanced_math_score": 11,
+      "advanced_math_signals": [
+        "meta_analysis",
+        "bayesian_modeling",
+        "diagnostic_accuracy"
+      ],
+      "name": "ubcma",
+      "project_id": "ubcma-42306ffe",
+      "risk_profile": "high",
+      "root_path": "C:\\ubcma"
+    },
+    {
+      "activity_summary": [
+        "stored validation evidence present: S3_Validation_Results_Complete.txt",
+        "warning-bearing activity log present: S4_HTA_Validation.md",
+        "repeatable validation logs detected"
+      ],
+      "advanced_math_score": 13,
+      "advanced_math_signals": [
+        "meta_analysis",
+        "causal_inference",
+        "hierarchical_modeling"
+      ],
+      "name": "Truthcert1",
+      "project_id": "truthcert1-a1a5c8df",
+      "risk_profile": "high",
+      "root_path": "C:\\Truthcert1"
+    },
+    {
+      "activity_summary": [
+        "warning-bearing activity log present: validation_summary.txt",
+        "warning-bearing activity log present: run_full_validation.py",
+        "repeatable validation logs detected"
+      ],
+      "advanced_math_score": 12,
+      "advanced_math_signals": [
+        "meta_analysis",
+        "survival_analysis",
+        "missing_data_imputation"
+      ],
+      "name": "TruthCert-Validation-Papers",
+      "project_id": "truthcert-validation-papers-03eae072",
+      "risk_profile": "high",
+      "root_path": "C:\\Projects\\TruthCert-Validation-Papers"
+    },
+    {
+      "activity_summary": [
+        "warning-bearing activity log present: unit_drift.py",
+        "drift history artifacts detected"
+      ],
+      "advanced_math_score": 2,
+      "advanced_math_signals": [],
+      "name": "truthcert-openclaw-supermemory-stack",
+      "project_id": "truthcert-openclaw-supermemory-stack-6fba3f9d",
+      "risk_profile": "high",
+      "root_path": "C:\\Projects\\truthcert-openclaw-supermemory-stack"
+    },
+    {
+      "activity_summary": [
+        "repeatable validation logs detected",
+        "oracle benchmark workflow detected",
+        "advanced analytical workflows detected: meta-analysis"
+      ],
+      "advanced_math_score": 8,
+      "advanced_math_signals": [
+        "meta_analysis",
+        "calibration_validation"
+      ],
+      "name": "truthcert-meta2-prototype",
+      "project_id": "truthcert-meta2-prototype-eec7d00d",
+      "risk_profile": "high",
+      "root_path": "C:\\Models\\truthcert-meta2-prototype"
+    },
+    {
+      "activity_summary": [
+        "repeatable validation logs detected",
+        "oracle benchmark workflow detected",
+        "advanced analytical workflows detected: meta-analysis"
+      ],
+      "advanced_math_score": 10,
+      "advanced_math_signals": [
+        "meta_analysis",
+        "bayesian_modeling"
+      ],
+      "name": "truthcert-denominator-phase1",
+      "project_id": "truthcert-denominator-phase1-9b039a8d",
+      "risk_profile": "high",
+      "root_path": "C:\\Models\\truthcert-denominator-phase1"
+    },
+    {
+      "activity_summary": [
+        "repeatable validation logs detected",
+        "drift history artifacts detected"
+      ],
+      "advanced_math_score": 3,
+      "advanced_math_signals": [],
+      "name": "tower",
+      "project_id": "tower-f2cd59fa",
+      "risk_profile": "high",
+      "root_path": "C:\\Projects\\tower"
+    },
+    {
+      "activity_summary": [
+        "warning-bearing activity log present: Run_Validation.R",
+        "repeatable validation logs detected",
+        "advanced analytical workflows detected: meta-analysis, resampling or simulation"
+      ],
+      "advanced_math_score": 6,
+      "advanced_math_signals": [
+        "meta_analysis",
+        "resampling"
+      ],
+      "name": "TGEP_Development",
+      "project_id": "tgep-development-378f9a98",
+      "risk_profile": "high",
+      "root_path": "C:\\Models\\TGEP_Development"
+    },
+    {
+      "activity_summary": [
+        "repeatable validation logs detected",
+        "advanced analytical workflows detected: meta-analysis, diagnostic accuracy, hierarchical modeling"
+      ],
+      "advanced_math_score": 14,
+      "advanced_math_signals": [
+        "meta_analysis",
+        "diagnostic_accuracy",
+        "hierarchical_modeling"
+      ],
+      "name": "superapp",
+      "project_id": "superapp-3b1c175f",
+      "risk_profile": "high",
+      "root_path": "C:\\Projects\\superapp"
+    },
+    {
+      "activity_summary": [
+        "repeatable validation logs detected",
+        "drift history artifacts detected"
+      ],
+      "advanced_math_score": 3,
+      "advanced_math_signals": [],
+      "name": "shahzaib-icu-landscape",
+      "project_id": "shahzaib-icu-landscape-325fc1b6",
+      "risk_profile": "high",
+      "root_path": "C:\\Models\\shahzaib-icu-landscape"
+    },
+    {
+      "activity_summary": [
+        "repeatable validation logs detected",
+        "advanced analytical workflows detected: survival analysis, meta-analysis, Bayesian modeling"
+      ],
+      "advanced_math_score": 20,
+      "advanced_math_signals": [
+        "meta_analysis",
+        "survival_analysis",
+        "bayesian_modeling"
+      ],
+      "name": "Scripts",
+      "project_id": "scripts-89337165",
+      "risk_profile": "high",
+      "root_path": "C:\\Projects\\Scripts"
+    },
+    {
+      "activity_summary": [
+        "repeatable validation logs detected",
+        "advanced analytical workflows detected: survival analysis"
+      ],
+      "advanced_math_score": 11,
+      "advanced_math_signals": [
+        "meta_analysis",
+        "survival_analysis",
+        "bayesian_modeling"
+      ],
+      "name": "rmstnma",
+      "project_id": "rmstnma-13acbe1e",
+      "risk_profile": "high",
+      "root_path": "C:\\Projects\\rmstnma"
+    },
+    {
+      "activity_summary": [
+        "repeatable validation logs detected",
+        "advanced analytical workflows detected: survival analysis"
+      ],
+      "advanced_math_score": 11,
+      "advanced_math_signals": [
+        "meta_analysis",
+        "survival_analysis",
+        "bayesian_modeling"
+      ],
+      "name": "rmstnma",
+      "project_id": "rmstnma-1810584a",
+      "risk_profile": "high",
+      "root_path": "C:\\Users\\user\\OneDrive - NHS\\Documents\\rmstnma"
+    },
+    {
+      "activity_summary": [
+        "warning-bearing activity log present: simulation_validation.Rmd",
+        "warning-bearing activity log present: real_data_validation.R",
+        "repeatable validation logs detected"
+      ],
+      "advanced_math_score": 10,
+      "advanced_math_signals": [
+        "meta_analysis",
+        "bayesian_modeling",
+        "resampling"
+      ],
+      "name": "repo300-ENMA-SNMA",
+      "project_id": "repo300-enma-snma-a0216745",
+      "risk_profile": "high",
+      "root_path": "C:\\Projects\\repo300-ENMA-SNMA"
+    },
+    {
+      "activity_summary": [
+        "warning-bearing activity log present: simulation_validation.Rmd",
+        "warning-bearing activity log present: simulation_validation.R",
+        "repeatable validation logs detected"
+      ],
+      "advanced_math_score": 10,
+      "advanced_math_signals": [
+        "meta_analysis",
+        "bayesian_modeling",
+        "resampling"
+      ],
+      "name": "repo300",
+      "project_id": "repo300-c9dc0181",
+      "risk_profile": "high",
+      "root_path": "C:\\Users\\user\\OneDrive - NHS\\Documents\\repo300"
+    },
+    {
+      "activity_summary": [
+        "warning-bearing activity log present: run_validation_live.log",
+        "warning-bearing activity log present: run_validation.log",
+        "repeatable validation logs detected"
+      ],
+      "advanced_math_score": 7,
+      "advanced_math_signals": [
+        "meta_analysis",
+        "diagnostic_accuracy"
+      ],
+      "name": "registry_first_rct_meta",
+      "project_id": "registry-first-rct-meta-ca273c4f",
+      "risk_profile": "high",
+      "root_path": "C:\\Projects\\registry_first_rct_meta"
+    },
+    {
+      "activity_summary": [
+        "warning-bearing activity log present: results_baseline_frozen_snapshot.jsonl",
+        "repeatable validation logs detected",
+        "advanced analytical workflows detected: meta-analysis, survival analysis, Bayesian modeling"
+      ],
+      "advanced_math_score": 11,
+      "advanced_math_signals": [
+        "meta_analysis",
+        "survival_analysis",
+        "bayesian_modeling"
+      ],
+      "name": "rct-extractor-v2",
+      "project_id": "rct-extractor-v2-6c290650",
+      "risk_profile": "high",
+      "root_path": "C:\\Projects\\rct-extractor-v2"
+    },
+    {
+      "activity_summary": [
+        "repeatable validation logs detected",
+        "advanced analytical workflows detected: meta-analysis, Bayesian modeling, diagnostic accuracy"
+      ],
+      "advanced_math_score": 11,
+      "advanced_math_signals": [
+        "meta_analysis",
+        "bayesian_modeling",
+        "diagnostic_accuracy"
+      ],
+      "name": "rayyanreplacement",
+      "project_id": "rayyanreplacement-1ed83fdc",
+      "risk_profile": "high",
+      "root_path": "C:\\Projects\\rayyanreplacement"
+    },
+    {
+      "activity_summary": [
+        "warning-bearing activity log present: validation_suite.html",
+        "repeatable validation logs detected",
+        "advanced analytical workflows detected: meta-analysis, Bayesian modeling, resampling or simulation"
+      ],
+      "advanced_math_score": 20,
+      "advanced_math_signals": [
+        "meta_analysis",
+        "bayesian_modeling",
+        "resampling"
+      ],
+      "name": "prognostic-meta",
+      "project_id": "prognostic-meta-5028c26a",
+      "risk_profile": "high",
+      "root_path": "C:\\Projects\\prognostic-meta"
+    },
+    {
+      "activity_summary": [
+        "repeatable validation logs detected"
+      ],
+      "advanced_math_score": 6,
+      "advanced_math_signals": [
+        "meta_analysis",
+        "resampling"
+      ],
+      "name": "Pairwise70_Results_v2",
+      "project_id": "pairwise70-results-v2-fa19e3ac",
+      "risk_profile": "high",
+      "root_path": "C:\\data\\Research-Archives\\Pairwise70_Results_v2"
+    }
+  ],
+  "project_count": 355,
+  "project_types": {
+    "browser_app": 198,
+    "hybrid_browser_analytics_app": 74,
+    "python_tool": 11,
+    "r_project": 57,
+    "unknown": 15
+  },
+  "projects_with_advanced_math": 163,
+  "projects_with_claude": 25,
+  "projects_with_drift_history": 7,
+  "projects_with_oracle_benchmarks": 7,
+  "projects_with_validation_logs": 98,
+  "risk_profiles": {
+    "high": 77,
+    "medium": 143,
+    "medium_high": 135
+  },
+  "stacks": {
+    "css": 255,
+    "html": 259,
+    "javascript": 258,
+    "playwright": 2,
+    "python": 58,
+    "r": 90,
+    "vite": 1
+  },
+  "user_history_findings": [
+    {
+      "has_secret_exposure": false,
+      "path": "C:\\Users\\user\\.aider.chat.history.md",
+      "secret_kinds": []
+    },
+    {
+      "has_secret_exposure": false,
+      "path": "C:\\Users\\user\\.aider.input.history",
+      "secret_kinds": []
+    },
+    {
+      "has_secret_exposure": false,
+      "path": "C:\\Users\\user\\training_pipeline.log",
+      "secret_kinds": []
+    },
+    {
+      "has_secret_exposure": false,
+      "path": "C:\\Users\\user\\out.log",
+      "secret_kinds": []
+    },
+    {
+      "has_secret_exposure": false,
+      "path": "C:\\Users\\user\\err.log",
+      "secret_kinds": []
+    }
+  ],
+  "workflow_signals": [
+    "numeric and analytical projects dominate the portfolio",
+    "advanced statistical or mathematical workflows need stricter fixture, edge-case, and output-comparison checks",
+    "projects keep repeatable validation logs and regression evidence",
+    "oracle or parity benchmark workflows are present and should raise verification burden",
+    "R-backed analytics projects need first-class detection and test routing",
+    "project-local CLAUDE guidance is common and should be treated as first-class routing input"
+  ]
+}

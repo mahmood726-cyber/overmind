@@ -1,0 +1,98 @@
+$ python C:/Users/user/mafi_functional_test.py
+
+STDOUT:
+======================================================================
+MAFI CALCULATOR - COMPREHENSIVE FUNCTIONAL TEST
+======================================================================
+
+[TEST 1] Page Structure...
+  Title: MAFI Calculator - Complete Edition with GRADE Integration
+  Tabs found: ['Calculator', 'Worked Case Studies', 'GRADE Integration', 'Documentation']
+  [PASS] All navigation tabs present
+
+[TEST 2] Load Example Data...
+  Study rows loaded: 8
+  [PASS] Example data loaded successfully
+
+[TEST 3] Run MAFI Analysis...
+  Classification: Low Fragility
+  [PASS] MAFI analysis completed
+
+[TEST 4] Case Studies...
+  Antidepressants: Analysis completed [PASS]
+  Statin/Mortality: Analysis completed [PASS]
+  Acupuncture/Pain: Analysis completed [PASS]
+  COVID Vaccine: Analysis completed [PASS]
+  Fibromyalgia (Fragile): Analysis completed [PASS]
+
+[TEST 5] GRADE Integration...
+  GRADE elements found: 6/6
+  [PASS] GRADE framework displayed
+
+[TEST 6] Documentation...
+  Documentation elements: 8/8
+  [PASS] Documentation complete
+
+[TEST 7] Forest Plot...
+  Forest plot rows: 10
+  Forest plot points: 9
+  [PASS] Forest plot rendered
+
+[TEST 8] MAFI Variants...
+  Variant terms found: ['Empirical']
+  Variant cards: 4
+  [PASS] MAFI variants available
+
+[TEST 9] Export Functions...
+  Export buttons: ['Import CSV', 'Export CSV', 'Export JSON']
+  [PASS] Export functionality present
+
+[TEST 10] Statistical Validation...
+  Statistical elements: ['Heterogeneity (I²)', 'Confidence Interval', 'P-value', 'Tau² (variance)']
+  [PASS] Statistical outputs present
+
+[TEST 11] Leave-One-Out Analysis...
+  LOO indicators: ['leave-one-out', 'removed', 'fragile']
+  LOO table present: False
+  [PASS] Leave-one-out analysis present
+
+[TEST 12] JavaScript Errors...
+  [PASS] No JavaScript errors
+
+======================================================================
+FINAL TEST RESULTS
+======================================================================
+
+PASSED: 16
+  [PASS] Navigation Tabs (4)
+  [PASS] Example Data (8 studies)
+  [PASS] MAFI Analysis - Low Fragility
+  [PASS] Case: Antidepressants
+  [PASS] Case: Statin/Mortality
+  [PASS] Case: Acupuncture/Pain
+  [PASS] Case: COVID Vaccine
+  [PASS] Case: Fibromyalgia (Fragile)
+  [PASS] GRADE Framework (6 elements)
+  [PASS] Documentation (8 elements)
+  [PASS] Forest Plot (10 rows)
+  [PASS] MAFI Variants (1)
+  [PASS] Export Buttons (3)
+  [PASS] Statistics (4 metrics)
+  [PASS] Leave-One-Out Analysis
+  [PASS] No JS Errors
+
+FAILED: 0
+
+DETAILS:
+  - Classification: Low Fragility
+
+======================================================================
+OVERALL: 100.0% pass rate (16/16) - EXCELLENT
+======================================================================
+
+Browser open for 15 seconds for visual inspection...
+
+Test complete. Browser closed.
+
+
+STDERR:

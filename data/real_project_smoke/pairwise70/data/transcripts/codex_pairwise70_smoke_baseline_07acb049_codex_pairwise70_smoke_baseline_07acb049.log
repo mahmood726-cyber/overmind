@@ -1,0 +1,68 @@
+[2026-04-06T09:29:15+00:00] SESSION START codex exec --dangerously-bypass-approvals-and-sandbox -m gpt-5.4-mini -
+[2026-04-06T09:29:15+00:00] INPUT PROJECT:
+[2026-04-06T09:29:15+00:00] STDIN CLOSED after initial prompt
+[2026-04-06T09:29:16+00:00] OpenAI Codex v0.117.0 (research preview)
+[2026-04-06T09:29:16+00:00] --------
+[2026-04-06T09:29:16+00:00] workdir: C:\Projects\Pairwise70
+[2026-04-06T09:29:16+00:00] model: gpt-5.4-mini
+[2026-04-06T09:29:16+00:00] provider: openai
+[2026-04-06T09:29:16+00:00] approval: never
+[2026-04-06T09:29:16+00:00] sandbox: danger-full-access
+[2026-04-06T09:29:16+00:00] reasoning effort: xhigh
+[2026-04-06T09:29:16+00:00] reasoning summaries: none
+[2026-04-06T09:29:16+00:00] session id: 019d621f-fa8c-7061-961c-06b22c83ede3
+[2026-04-06T09:29:16+00:00] --------
+[2026-04-06T09:29:16+00:00] user
+[2026-04-06T09:29:16+00:00] PROJECT:
+[2026-04-06T09:29:16+00:00] Pairwise70 (C:\Projects\Pairwise70)
+[2026-04-06T09:29:16+00:00] 
+[2026-04-06T09:29:16+00:00] TASK:
+[2026-04-06T09:29:16+00:00] Baseline verification for Pairwise70
+[2026-04-06T09:29:16+00:00] 
+[2026-04-06T09:29:16+00:00] MODE:
+[2026-04-06T09:29:16+00:00] - verification only
+[2026-04-06T09:29:16+00:00] - do not inspect CLAUDE.md, README.md, or source files unless the primary command fails
+[2026-04-06T09:29:16+00:00] - do not print file contents
+[2026-04-06T09:29:16+00:00] - run the primary command exactly as written, then stop
+[2026-04-06T09:29:16+00:00] 
+[2026-04-06T09:29:16+00:00] PRIMARY COMMAND:
+[2026-04-06T09:29:16+00:00] - python C:/Users/user/mafi_functional_test.py
+[2026-04-06T09:29:16+00:00] 
+[2026-04-06T09:29:16+00:00] FALLBACK COMMAND:
+[2026-04-06T09:29:16+00:00] - none
+[2026-04-06T09:29:16+00:00] 
+[2026-04-06T09:29:16+00:00] KNOWN COMMANDS:
+[2026-04-06T09:29:16+00:00] - python C:/Users/user/mafi_functional_test.py
+[2026-04-06T09:29:16+00:00] - Rscript -e "testthat::test_dir('tests/testthat')"
+[2026-04-06T09:29:16+00:00] 
+[2026-04-06T09:29:16+00:00] RECENT ACTIVITY SIGNALS:
+[2026-04-06T09:29:16+00:00] - warning-bearing activity log present: run_quick_validation_output.txt
+[2026-04-06T09:29:16+00:00] - stored validation evidence present: js_function_validation.py
+[2026-04-06T09:29:16+00:00] - repeatable validation logs detected
+[2026-04-06T09:29:16+00:00] - advanced analytical workflows detected: meta-analysis, diagnostic accuracy, survival analysis
+[2026-04-06T09:29:16+00:00] 
+[2026-04-06T09:29:16+00:00] STATISTICAL RIGOR:
+[2026-04-06T09:29:16+00:00] - rigor: extreme
+[2026-04-06T09:29:16+00:00] - score: 12
+[2026-04-06T09:29:16+00:00] - signals: meta_analysis, survival_analysis, diagnostic_accuracy, missing_data_imputation
+[2026-04-06T09:29:16+00:00] 
+[2026-04-06T09:29:16+00:00] OUTPUT:
+[2026-04-06T09:29:16+00:00] - print the command you ran
+[2026-04-06T09:29:16+00:00] - print pass/fail evidence only
+[2026-04-06T09:29:16+00:00] - if the primary command fails, print the failure and stop
+[2026-04-06T09:29:16+00:00] 
+[2026-04-06T09:29:16+00:00] REQUIRED VERIFICATION:
+[2026-04-06T09:29:16+00:00] - relevant_tests
+[2026-04-06T09:29:16+00:00] - numeric_regression
+[2026-04-06T09:29:16+00:00] - deterministic_fixture_tests
+[2026-04-06T09:29:16+00:00] - edge_case_tests
+[2026-04-06T09:29:16+00:00] - output_comparison
+[2026-04-06T09:29:16+00:00] - sensitivity_checks
+[2026-04-06T09:29:16+00:00] - stochastic_stability
+[2026-04-06T09:29:16+00:00] - calibration_checks
+[2026-04-06T09:29:16+00:00] - regression_checks
+[2026-04-06T09:29:16+00:00] 
+[2026-04-06T09:29:16+00:00] deprecated: `[features].enable_experimental_windows_sandbox` is deprecated. Use `[features].experimental_windows_sandbox` instead.
+[2026-04-06T09:29:16+00:00] Enable it with `--enable experimental_windows_sandbox` or `[features].experimental_windows_sandbox` in config.toml. See https://developers.openai.com/codex/config-basic#feature-flags for details.
+[2026-04-06T09:29:17+00:00] ERROR: You've hit your usage limit. To get more access now, send a request to your admin or try again at 2:30 PM.
+[2026-04-06T09:29:17+00:00] ERROR: You've hit your usage limit. To get more access now, send a request to your admin or try again at 2:30 PM.

@@ -1,0 +1,10 @@
+.venv/
+__pycache__/
+*.pyc
+
+data/state/*.db
+data/transcripts/*
+data/checkpoints/*.json
+data/artifacts/*.log
+data/logs/*
+data/cache/*.json

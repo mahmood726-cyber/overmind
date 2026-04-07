@@ -1,0 +1,6 @@
+Critique the current strategy using only terminal-visible evidence.
+Flag:
+- repeated retries
+- unsupported claims
+- wasted context
+- missing verification

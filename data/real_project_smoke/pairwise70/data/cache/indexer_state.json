@@ -1,0 +1,99 @@
+{
+  "cache_version": 4,
+  "projects": {
+    "C:\\Projects\\Pairwise70": {
+      "record": {
+        "activity_files": [
+          "C:\\Projects\\Pairwise70\\run_quick_validation_output.txt",
+          "C:\\Projects\\Pairwise70\\analysis\\ma4_metafor_validation.csv",
+          "C:\\Projects\\Pairwise70\\analysis\\Quick_Validation_V2.R",
+          "C:\\Projects\\Pairwise70\\analysis\\results\\v4_quick_validation_metrics.rds",
+          "C:\\Projects\\Pairwise70\\analysis\\results\\v4_quick_validation.rds",
+          "C:\\Projects\\Pairwise70\\analysis\\SESSION_SUMMARY.md",
+          "C:\\Projects\\Pairwise70\\tests\\js_function_validation.py",
+          "C:\\Projects\\Pairwise70\\truthcert\\tests\\test_validation.py",
+          "C:\\Projects\\Pairwise70\\truthcert\\tests\\__pycache__\\test_validation.cpython-313-pytest-7.4.3.pyc",
+          "C:\\Projects\\Pairwise70\\truthcert\\gates\\__pycache__\\validation_gates.cpython-313.pyc",
+          "C:\\Projects\\Pairwise70\\truthcert\\gates\\validation_gates.py",
+          "C:\\Projects\\Pairwise70\\truthcert\\validation\\run_validation.py"
+        ],
+        "activity_summary": [
+          "warning-bearing activity log present: run_quick_validation_output.txt",
+          "stored validation evidence present: js_function_validation.py",
+          "repeatable validation logs detected",
+          "advanced analytical workflows detected: meta-analysis, diagnostic accuracy, survival analysis"
+        ],
+        "advanced_math_rigor": "extreme",
+        "advanced_math_score": 12,
+        "advanced_math_signals": [
+          "meta_analysis",
+          "survival_analysis",
+          "diagnostic_accuracy",
+          "missing_data_imputation"
+        ],
+        "browser_test_commands": [],
+        "build_commands": [],
+        "guidance_commands": [
+          "python C:/Users/user/mafi_functional_test.py"
+        ],
+        "guidance_files": [
+          "CLAUDE.md",
+          "README.md"
+        ],
+        "guidance_summary": [
+          "MAFI Project - Claude Code Instructions",
+          "Project Context",
+          "This is the **MAFI (Meta-Analysis Fragility Index)** project - a novel methodology for assessing the robustness of meta-analysis conclusions. The manuscript has",
+          "Key Information",
+          "Data:** 4,424 Cochrane meta-analyses from 473 systematic reviews",
+          "R Package:** Pairwise70",
+          "Web App:** MAFI-Calculator-Complete.html (fully tested, 100% Selenium pass rate)",
+          "Status:** Publication-ready",
+          "Pairwise70: Comprehensive Cochrane Pairwise Meta-Analysis Dataset"
+        ],
+        "has_advanced_math": true,
+        "has_drift_history": false,
+        "has_numeric_logic": true,
+        "has_oracle_benchmarks": false,
+        "has_validation_history": true,
+        "is_git_repo": true,
+        "last_active_at": "2026-03-28T14:19:15+00:00",
+        "last_indexed_at": "2026-04-06T09:29:15+00:00",
+        "manifest_hash": "bc6b1bc4cda10a8615a965b6994c86f047b32fc0",
+        "name": "Pairwise70",
+        "package_manager": "npm",
+        "perf_commands": [],
+        "platform": "windows",
+        "project_id": "pairwise70-4020df78",
+        "project_type": "hybrid_browser_analytics_app",
+        "recommended_verification": [
+          "relevant_tests",
+          "numeric_regression",
+          "deterministic_fixture_tests",
+          "edge_case_tests",
+          "output_comparison",
+          "sensitivity_checks",
+          "stochastic_stability",
+          "calibration_checks",
+          "regression_checks"
+        ],
+        "risk_profile": "high",
+        "root_path": "C:\\Projects\\Pairwise70",
+        "stack": [
+          "css",
+          "html",
+          "javascript",
+          "r"
+        ],
+        "test_commands": [
+          "python C:/Users/user/mafi_functional_test.py",
+          "Rscript -e \"testthat::test_dir('tests/testthat')\""
+        ],
+        "verification_profiles": [
+          "truthcert_suite"
+        ]
+      },
+      "signature": "bc6b1bc4cda10a8615a965b6994c86f047b32fc0"
+    }
+  }
+}

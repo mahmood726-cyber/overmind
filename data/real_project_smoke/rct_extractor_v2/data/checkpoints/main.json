@@ -1,0 +1,191 @@
+{
+  "desired_sessions": 1,
+  "evidence": [
+    {
+      "events": [],
+      "exit_code": 0,
+      "exited": true,
+      "last_commands": [
+        "Command:",
+        "Command:"
+      ],
+      "loop_detected": true,
+      "next_action": "verify before marking complete",
+      "output_excerpt": [
+        "`100 passed in 0.99s`",
+        "tokens used",
+        "13,776",
+        "Command:",
+        "`python -m pytest C:\\Projects\\rct-extractor-v2\\tests\\test_proof_carrying_numbers.py`",
+        "",
+        "Evidence:",
+        "`100 passed in 0.99s`"
+      ],
+      "proof_gap": false,
+      "required_proof": [],
+      "risks": [
+        "repeated retry loop detected"
+      ],
+      "runner_id": "codex_exec_smoke",
+      "state": "VERIFYING",
+      "task_id": "baseline_c07c9736"
+    }
+  ],
+  "insights": [
+    {
+      "confidence": 0.75,
+      "created_at": "2026-04-05T18:18:21+00:00",
+      "insight_id": "ins_3d7204a3",
+      "pattern": "repeated terminal output loop detected",
+      "recommendation": "switch to isolate-first prompt after repeated retries",
+      "scope": "orchestration"
+    }
+  ],
+  "interventions": [
+    {
+      "action": "send_message",
+      "message": "Stop retrying. Summarize the current state in 8 lines and isolate the failing step.",
+      "task_id": "baseline_c07c9736"
+    }
+  ],
+  "machine": {
+    "active_sessions": 0,
+    "captured_at": "2026-04-05T18:17:56+00:00",
+    "cpu_percent": 16.3,
+    "load_state": "healthy",
+    "ram_percent": 75.5,
+    "swap_used_mb": 2569.36
+  },
+  "projects": [
+    {
+      "activity_files": [
+        "C:\\Projects\\rct-extractor-v2\\output\\cardiology_oa_full_v1_fast\\linkage_first_dashboard_baseline_frozen.md",
+        "C:\\Projects\\rct-extractor-v2\\output\\cardiology_oa_full_v1_fast\\linkage_first_backlog_baseline_frozen.jsonl",
+        "C:\\Projects\\rct-extractor-v2\\output\\cardiology_oa_full_v1_fast\\linkage_first_dashboard_baseline_frozen.json",
+        "C:\\Projects\\rct-extractor-v2\\output\\cardiology_oa_full_v1_fast\\meta_mapping_report_baseline_frozen.md",
+        "C:\\Projects\\rct-extractor-v2\\output\\cardiology_oa_full_v1_fast\\meta_mapping_summary_baseline_frozen.json",
+        "C:\\Projects\\rct-extractor-v2\\output\\cardiology_oa_full_v1_fast\\meta_mapping_trials_baseline_frozen.json",
+        "C:\\Projects\\rct-extractor-v2\\output\\cardiology_oa_full_v1_fast\\meta_mapping_edges_baseline_frozen.jsonl",
+        "C:\\Projects\\rct-extractor-v2\\output\\cardiology_oa_full_v1_fast\\quality_report_baseline_frozen.json",
+        "C:\\Projects\\rct-extractor-v2\\output\\cardiology_oa_full_v1_fast\\quality_report_baseline_frozen.md",
+        "C:\\Projects\\rct-extractor-v2\\output\\cardiology_oa_full_v1_fast\\results_baseline_frozen_snapshot.jsonl",
+        "C:\\Projects\\rct-extractor-v2\\data\\ground_truth\\stratified_external_validation_ground_truth.jsonl",
+        "C:\\Projects\\rct-extractor-v2\\data\\ground_truth\\stratified_external_validation_ground_truth_summary.json"
+      ],
+      "activity_summary": [
+        "warning-bearing activity log present: results_baseline_frozen_snapshot.jsonl",
+        "repeatable validation logs detected"
+      ],
+      "browser_test_commands": [],
+      "build_commands": [],
+      "guidance_commands": [
+        "python -m pytest C:\\Projects\\rct-extractor-v2 --tb=short -q",
+        "python -m pytest C:\\Projects\\rct-extractor-v2\\tests\\test_proof_carrying_numbers.py",
+        "python -m pytest C:\\Projects\\rct-extractor-v2\\tests\\test_team_of_rivals.py",
+        "python -m pytest tests/ --tb=short -q"
+      ],
+      "guidance_files": [
+        "CLAUDE.md",
+        "README.md"
+      ],
+      "guidance_summary": [
+        "CLAUDE.md \u2014 RCT Extractor v5.0",
+        "Project Overview",
+        "RCT effect estimate extraction from published PDFs. Extracts HR, OR, RR, MD, SMD, ARD, IRR, GMR and their confidence intervals using 180+ regex patterns, table ",
+        "Current Plan",
+        "Key Architecture",
+        "BaseExtractor + variants**: pattern-based extraction per effect type",
+        "Team of Rivals**: multiple extractors compete, consensus via tolerance-based clustering",
+        "Proof-Carrying Numbers (PCN)**: every extraction includes hash, provenance, validator outcomes",
+        "RCT Extractor v5.0"
+      ],
+      "has_drift_history": false,
+      "has_numeric_logic": true,
+      "has_oracle_benchmarks": false,
+      "has_validation_history": true,
+      "is_git_repo": true,
+      "last_active_at": "2026-03-28T14:19:16+00:00",
+      "last_indexed_at": "2026-04-05T18:17:56+00:00",
+      "manifest_hash": "c19b9a227f21b9c30153a9cca8a9567d1055de0d",
+      "name": "rct-extractor-v2",
+      "package_manager": "npm",
+      "perf_commands": [],
+      "platform": "windows",
+      "project_id": "rct-extractor-v2-6c290650",
+      "project_type": "hybrid_browser_analytics_app",
+      "recommended_verification": [
+        "relevant_tests",
+        "numeric_regression"
+      ],
+      "risk_profile": "medium_high",
+      "root_path": "C:\\Projects\\rct-extractor-v2",
+      "stack": [
+        "css",
+        "html",
+        "javascript",
+        "python"
+      ],
+      "test_commands": [
+        "python -m pytest C:\\Projects\\rct-extractor-v2\\tests\\test_proof_carrying_numbers.py",
+        "python -m pytest C:\\Projects\\rct-extractor-v2\\tests\\test_team_of_rivals.py",
+        "python -m pytest tests/ --tb=short -q",
+        "python -m pytest C:\\Projects\\rct-extractor-v2 --tb=short -q",
+        "python -m pytest -q"
+      ],
+      "verification_profiles": [
+        "browser_numeric_app"
+      ]
+    }
+  ],
+  "runners": [
+    {
+      "available": true,
+      "avg_latency_sec": 20.01,
+      "command": "codex exec --dangerously-bypass-approvals-and-sandbox -m gpt-5.4-mini -",
+      "current_task_id": null,
+      "environment": "windows",
+      "failure_rate_7d": 0.0,
+      "health": "good",
+      "last_seen_at": "2026-04-05T18:18:21+00:00",
+      "optional": false,
+      "preferred_tasks": [
+        "tests",
+        "focused_fix",
+        "benchmark_script"
+      ],
+      "quota_state": "normal",
+      "runner_id": "codex_exec_smoke",
+      "runner_type": "codex",
+      "status": "AVAILABLE",
+      "success_rate_7d": 0.6,
+      "unavailability_reason": null
+    }
+  ],
+  "tasks": [
+    {
+      "assigned_runner_id": "codex_exec_smoke",
+      "attempt_count": 1,
+      "created_at": "2026-04-05T18:17:56+00:00",
+      "expected_context_cost": "low",
+      "expected_runtime_min": 10,
+      "last_error": null,
+      "priority": 0.6,
+      "project_id": "rct-extractor-v2-6c290650",
+      "required_verification": [
+        "relevant_tests",
+        "numeric_regression"
+      ],
+      "risk": "medium_high",
+      "source": "project_index",
+      "status": "COMPLETED",
+      "task_id": "baseline_c07c9736",
+      "task_type": "verification",
+      "title": "Baseline verification for rct-extractor-v2",
+      "updated_at": "2026-04-05T18:18:21+00:00",
+      "verification_summary": [
+        "relevant_tests: exit=0 command=python -m pytest C:\\Projects\\rct-extractor-v2\\tests\\test_proof_carrying_numbers.py",
+        "numeric_regression: exit=0 command=python -m pytest C:\\Projects\\rct-extractor-v2\\tests\\test_proof_carrying_numbers.py"
+      ]
+    }
+  ]
+}

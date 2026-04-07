@@ -1,0 +1,29 @@
+PROJECT:
+{project_name} ({project_path})
+
+TASK:
+{task_title}
+
+KNOWN COMMANDS:
+{known_commands}
+
+GUIDANCE:
+{guidance}
+
+RECENT ACTIVITY SIGNALS:
+{activity_summary}
+
+STATISTICAL RIGOR:
+{math_rigor}
+
+PRIOR LEARNINGS:
+{prior_learnings}
+
+CONSTRAINTS:
+- keep output concise
+- print commands
+- do not claim success without terminal-visible evidence
+- checkpoint after meaningful progress
+
+REQUIRED VERIFICATION:
+{required_verification}

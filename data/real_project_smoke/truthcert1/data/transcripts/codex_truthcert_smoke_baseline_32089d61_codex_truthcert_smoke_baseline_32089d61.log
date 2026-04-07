@@ -1,0 +1,55 @@
+[2026-04-05T19:49:19+00:00] SESSION START codex exec --dangerously-bypass-approvals-and-sandbox -m gpt-5.4-mini -
+[2026-04-05T19:49:19+00:00] INPUT PROJECT:
+[2026-04-05T19:49:19+00:00] STDIN CLOSED after initial prompt
+[2026-04-05T19:49:19+00:00] OpenAI Codex v0.117.0 (research preview)
+[2026-04-05T19:49:19+00:00] --------
+[2026-04-05T19:49:19+00:00] workdir: C:\Truthcert1
+[2026-04-05T19:49:19+00:00] model: gpt-5.4-mini
+[2026-04-05T19:49:19+00:00] provider: openai
+[2026-04-05T19:49:19+00:00] approval: never
+[2026-04-05T19:49:19+00:00] sandbox: danger-full-access
+[2026-04-05T19:49:19+00:00] reasoning effort: xhigh
+[2026-04-05T19:49:19+00:00] reasoning summaries: none
+[2026-04-05T19:49:19+00:00] session id: 019d5f31-4b70-7a92-b5ce-80928411521c
+[2026-04-05T19:49:19+00:00] --------
+[2026-04-05T19:49:19+00:00] user
+[2026-04-05T19:49:19+00:00] PROJECT:
+[2026-04-05T19:49:19+00:00] Truthcert1 (C:\Truthcert1)
+[2026-04-05T19:49:19+00:00] 
+[2026-04-05T19:49:19+00:00] TASK:
+[2026-04-05T19:49:19+00:00] Baseline verification for Truthcert1
+[2026-04-05T19:49:19+00:00] 
+[2026-04-05T19:49:19+00:00] MODE:
+[2026-04-05T19:49:19+00:00] - verification only
+[2026-04-05T19:49:19+00:00] - do not inspect CLAUDE.md, README.md, or source files unless the primary command fails
+[2026-04-05T19:49:19+00:00] - do not print file contents
+[2026-04-05T19:49:19+00:00] - run the primary command exactly as written, then stop
+[2026-04-05T19:49:19+00:00] 
+[2026-04-05T19:49:19+00:00] PRIMARY COMMAND:
+[2026-04-05T19:49:19+00:00] - node -c app.js
+[2026-04-05T19:49:19+00:00] 
+[2026-04-05T19:49:19+00:00] FALLBACK COMMAND:
+[2026-04-05T19:49:19+00:00] - none
+[2026-04-05T19:49:19+00:00] 
+[2026-04-05T19:49:19+00:00] KNOWN COMMANDS:
+[2026-04-05T19:49:19+00:00] - node -c app.js
+[2026-04-05T19:49:19+00:00] - node -c C:/Truthcert1/app.js
+[2026-04-05T19:49:19+00:00] 
+[2026-04-05T19:49:19+00:00] RECENT ACTIVITY SIGNALS:
+[2026-04-05T19:49:19+00:00] - stored validation evidence present: S3_Validation_Results_Complete.txt
+[2026-04-05T19:49:19+00:00] - warning-bearing activity log present: S4_HTA_Validation.md
+[2026-04-05T19:49:19+00:00] - repeatable validation logs detected
+[2026-04-05T19:49:19+00:00] 
+[2026-04-05T19:49:19+00:00] OUTPUT:
+[2026-04-05T19:49:19+00:00] - print the command you ran
+[2026-04-05T19:49:19+00:00] - print pass/fail evidence only
+[2026-04-05T19:49:19+00:00] - if the primary command fails, print the failure and stop
+[2026-04-05T19:49:19+00:00] 
+[2026-04-05T19:49:19+00:00] REQUIRED VERIFICATION:
+[2026-04-05T19:49:19+00:00] - build
+[2026-04-05T19:49:19+00:00] - regression_checks
+[2026-04-05T19:49:19+00:00] 
+[2026-04-05T19:49:19+00:00] deprecated: `[features].enable_experimental_windows_sandbox` is deprecated. Use `[features].experimental_windows_sandbox` instead.
+[2026-04-05T19:49:19+00:00] Enable it with `--enable experimental_windows_sandbox` or `[features].experimental_windows_sandbox` in config.toml. See https://developers.openai.com/codex/config-basic#feature-flags for details.
+[2026-04-05T19:49:21+00:00] ERROR: You've hit your usage limit. To get more access now, send a request to your admin or try again at 11:52 PM.
+[2026-04-05T19:49:21+00:00] ERROR: You've hit your usage limit. To get more access now, send a request to your admin or try again at 11:52 PM.

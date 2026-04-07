@@ -1,0 +1,175 @@
+{
+  "desired_sessions": 1,
+  "evidence": [
+    {
+      "events": [
+        {
+          "created_at": "2026-04-05T19:49:34+00:00",
+          "kind": "rate_limited",
+          "line": "ERROR: You've hit your usage limit. To get more access now, send a request to your admin or try again at 11:52 PM.",
+          "severity": "warning"
+        },
+        {
+          "created_at": "2026-04-05T19:49:34+00:00",
+          "kind": "rate_limited",
+          "line": "ERROR: You've hit your usage limit. To get more access now, send a request to your admin or try again at 11:52 PM.",
+          "severity": "warning"
+        }
+      ],
+      "exit_code": 1,
+      "exited": true,
+      "last_commands": [],
+      "loop_detected": false,
+      "next_action": "pause runner until quota resets",
+      "output_excerpt": [
+        "REQUIRED VERIFICATION:",
+        "- build",
+        "- regression_checks",
+        "",
+        "deprecated: `[features].enable_experimental_windows_sandbox` is deprecated. Use `[features].experimental_windows_sandbox` instead.",
+        "Enable it with `--enable experimental_windows_sandbox` or `[features].experimental_windows_sandbox` in config.toml. See https://developers.openai.com/codex/config-basic#feature-flags for details.",
+        "ERROR: You've hit your usage limit. To get more access now, send a request to your admin or try again at 11:52 PM.",
+        "ERROR: You've hit your usage limit. To get more access now, send a request to your admin or try again at 11:52 PM."
+      ],
+      "proof_gap": false,
+      "required_proof": [],
+      "risks": [
+        "provider quota/rate limit detected"
+      ],
+      "runner_id": "codex_truthcert_smoke",
+      "state": "NEEDS_INTERVENTION",
+      "task_id": "baseline_32089d61"
+    }
+  ],
+  "insights": [],
+  "interventions": [],
+  "machine": {
+    "active_sessions": 0,
+    "captured_at": "2026-04-05T19:49:19+00:00",
+    "cpu_percent": 19.6,
+    "load_state": "healthy",
+    "ram_percent": 77.3,
+    "swap_used_mb": 2240.86
+  },
+  "projects": [
+    {
+      "activity_files": [
+        "C:\\Truthcert1\\Supplement_S3_R_Validation.md",
+        "C:\\Truthcert1\\S3_R_TruthCert_Validation.R",
+        "C:\\Truthcert1\\S4_Validation_Test.py",
+        "C:\\Truthcert1\\S3_Validation_Results_Complete.txt",
+        "C:\\Truthcert1\\S3_R_Validation_Complete.R",
+        "C:\\Truthcert1\\PLOS_ONE_Submission\\S3_R_Validation.zip",
+        "C:\\Truthcert1\\PLOS_ONE_Submission\\S4_HTA_Validation.pdf",
+        "C:\\Truthcert1\\PLOS_ONE_Submission\\S3_R_Validation_Output.txt",
+        "C:\\Truthcert1\\PLOS_ONE_Submission\\S3_R_Validation_Code.R",
+        "C:\\Truthcert1\\PLOS_ONE_Submission\\S4_HTA_Validation.md",
+        "C:\\Truthcert1\\S4_HTA_Validation.md",
+        "C:\\Truthcert1\\S3_R_Validation_Code.R"
+      ],
+      "activity_summary": [
+        "stored validation evidence present: S3_Validation_Results_Complete.txt",
+        "warning-bearing activity log present: S4_HTA_Validation.md",
+        "repeatable validation logs detected"
+      ],
+      "browser_test_commands": [],
+      "build_commands": [
+        "node -c app.js",
+        "node -c C:/Truthcert1/app.js"
+      ],
+      "guidance_commands": [
+        "node -c C:/Truthcert1/app.js",
+        "Python scripts in `C:/Users/user/` for safe editing:"
+      ],
+      "guidance_files": [
+        "CLAUDE.md"
+      ],
+      "guidance_summary": [
+        "Claude Code Instructions for TruthCert-PairwisePro",
+        "Project Context",
+        "This is the **TruthCert-PairwisePro v1.0** meta-analysis application - a single-page web app for systematic review and health technology assessment.",
+        "Critical Files",
+        "Key Architecture Points",
+        "When Editing app.js",
+        "Common Issues",
+        "\"File unexpectedly modified\" errors** - Use Python scripts instead of Edit tool"
+      ],
+      "has_drift_history": false,
+      "has_numeric_logic": true,
+      "has_oracle_benchmarks": false,
+      "has_validation_history": true,
+      "is_git_repo": false,
+      "last_active_at": "2026-01-20T11:34:03+00:00",
+      "last_indexed_at": "2026-04-05T19:49:18+00:00",
+      "manifest_hash": "028e58c2d4941bb569e775619c67a08ab6d1cb00",
+      "name": "Truthcert1",
+      "package_manager": "npm",
+      "perf_commands": [],
+      "platform": "windows",
+      "project_id": "truthcert1-a1a5c8df",
+      "project_type": "browser_app",
+      "recommended_verification": [
+        "build",
+        "regression_checks"
+      ],
+      "risk_profile": "medium_high",
+      "root_path": "C:\\Truthcert1",
+      "stack": [
+        "html",
+        "javascript"
+      ],
+      "test_commands": [],
+      "verification_profiles": [
+        "truthcert_suite"
+      ]
+    }
+  ],
+  "runners": [
+    {
+      "available": true,
+      "avg_latency_sec": 15.01,
+      "command": "codex exec --dangerously-bypass-approvals-and-sandbox -m gpt-5.4-mini -",
+      "current_task_id": null,
+      "environment": "windows",
+      "failure_rate_7d": 0.2,
+      "health": "degraded",
+      "last_seen_at": "2026-04-05T19:49:34+00:00",
+      "optional": false,
+      "preferred_tasks": [
+        "tests",
+        "focused_fix",
+        "benchmark_script"
+      ],
+      "quota_state": "limited",
+      "runner_id": "codex_truthcert_smoke",
+      "runner_type": "codex",
+      "status": "RATE_LIMITED",
+      "success_rate_7d": 0.4,
+      "unavailability_reason": null
+    }
+  ],
+  "tasks": [
+    {
+      "assigned_runner_id": "codex_truthcert_smoke",
+      "attempt_count": 1,
+      "created_at": "2026-04-05T19:49:19+00:00",
+      "expected_context_cost": "low",
+      "expected_runtime_min": 10,
+      "last_error": "provider quota/rate limit detected",
+      "priority": 0.6,
+      "project_id": "truthcert1-a1a5c8df",
+      "required_verification": [
+        "build",
+        "regression_checks"
+      ],
+      "risk": "medium_high",
+      "source": "project_index",
+      "status": "NEEDS_INTERVENTION",
+      "task_id": "baseline_32089d61",
+      "task_type": "verification",
+      "title": "Baseline verification for Truthcert1",
+      "updated_at": "2026-04-05T19:49:34+00:00",
+      "verification_summary": []
+    }
+  ]
+}

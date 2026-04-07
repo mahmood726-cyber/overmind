@@ -1,0 +1,6 @@
+runners:
+  - runner_id: local_pairwise70_runner
+    type: codex
+    mode: terminal
+    command: '"C:\Users\user\AppData\Local\Programs\Python\Python313\python.exe" "C:\overmind\data\real_project_smoke\pairwise70_localproof\prompt_runner.py" exec -'
+    environment: windows

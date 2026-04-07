@@ -1,0 +1,26 @@
+scan_roots:
+  - "C:\\Projects"
+  - "C:\\HTML apps"
+  - "C:\\Models"
+  - "C:\\Truthcert1"
+  - "C:\\MetaReproducer"
+  - "C:\\MetaFrontierLab"
+  - "C:\\ctgov_transparency_intelligence"
+  - "C:\\Integrity-Guard-Forensics"
+  - "C:\\Users\\user\\Downloads"
+  - "C:\\Users\\user\\Desktop"
+  - "C:\\Users\\user\\Documents"
+  - "C:\\Users\\user\\OneDrive - NHS\\Documents"
+  - "C:\\Users\\user\\OneDrive\\Documents"
+
+scan_rules:
+  include_git_repos: true
+  include_non_git_apps: true
+  incremental_scan: true
+  max_depth: 5
+
+guidance_filenames:
+  - "claude.md"
+  - "README.md"
+  - "CONTRIBUTING.md"
+  - "AGENTS.md"

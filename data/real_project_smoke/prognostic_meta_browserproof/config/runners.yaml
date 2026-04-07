@@ -1,0 +1,6 @@
+runners:
+  - runner_id: local_prognostic_runner
+    type: codex
+    mode: terminal
+    command: '"C:\Users\user\AppData\Local\Programs\Python\Python313\python.exe" "C:\overmind\data\real_project_smoke\prognostic_meta_browserproof\prompt_runner.py" exec -'
+    environment: windows

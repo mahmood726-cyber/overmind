@@ -1,0 +1,72 @@
+[2026-04-07T07:37:51+00:00] SESSION START codex --dangerously-bypass-approvals-and-sandbox exec --skip-git-repo-check -
+[2026-04-07T07:37:51+00:00] INPUT PROJECT:
+[2026-04-07T07:37:51+00:00] STDIN CLOSED after initial prompt
+[2026-04-07T07:37:52+00:00] OpenAI Codex v0.117.0 (research preview)
+[2026-04-07T07:37:52+00:00] --------
+[2026-04-07T07:37:52+00:00] workdir: C:\Projects\prognostic-meta
+[2026-04-07T07:37:52+00:00] model: gpt-5.4
+[2026-04-07T07:37:52+00:00] provider: openai
+[2026-04-07T07:37:52+00:00] approval: never
+[2026-04-07T07:37:52+00:00] sandbox: danger-full-access
+[2026-04-07T07:37:52+00:00] reasoning effort: xhigh
+[2026-04-07T07:37:52+00:00] reasoning summaries: none
+[2026-04-07T07:37:52+00:00] session id: 019d66e0-5867-78b2-9bab-d6ba923e8740
+[2026-04-07T07:37:52+00:00] --------
+[2026-04-07T07:37:52+00:00] user
+[2026-04-07T07:37:52+00:00] PROJECT:
+[2026-04-07T07:37:52+00:00] prognostic-meta (C:\Projects\prognostic-meta)
+[2026-04-07T07:37:52+00:00] 
+[2026-04-07T07:37:52+00:00] TASK:
+[2026-04-07T07:37:52+00:00] Baseline verification for prognostic-meta
+[2026-04-07T07:37:52+00:00] 
+[2026-04-07T07:37:52+00:00] MODE:
+[2026-04-07T07:37:52+00:00] - verification only
+[2026-04-07T07:37:52+00:00] - do not inspect CLAUDE.md, README.md, or source files unless the primary command fails
+[2026-04-07T07:37:52+00:00] - do not print file contents
+[2026-04-07T07:37:52+00:00] - run the primary command exactly as written, then stop
+[2026-04-07T07:37:52+00:00] 
+[2026-04-07T07:37:52+00:00] PRIMARY COMMAND:
+[2026-04-07T07:37:52+00:00] - python -m pytest tests/test_smoke.py -q
+[2026-04-07T07:37:52+00:00] 
+[2026-04-07T07:37:52+00:00] FALLBACK COMMAND:
+[2026-04-07T07:37:52+00:00] - "C:\Users\user\AppData\Local\Programs\Python\Python313\python.exe" "C:\overmind\overmind\verification\browser_checks.py" --project-root "C:\Projects\prognostic-meta" --page "tests/automated_test_suite.html" --summary-selector ".summary" --ready-text "Test Summary" --wait-seconds 20 --min-pass-rate 95 --ignore-console-pattern "favicon\.ico"
+[2026-04-07T07:37:52+00:00] 
+[2026-04-07T07:37:52+00:00] KNOWN COMMANDS:
+[2026-04-07T07:37:52+00:00] - python -m pytest tests/test_smoke.py -q
+[2026-04-07T07:37:52+00:00] - node C:/Users/user/test_prognostic_v2.js
+[2026-04-07T07:37:52+00:00] - node C:/Users/user/prognostic_r_validation.js
+[2026-04-07T07:37:52+00:00] - "C:\Users\user\AppData\Local\Programs\Python\Python313\python.exe" "C:\overmind\overmind\verification\browser_checks.py" --project-root "C:\Projects\prognostic-meta" --page "tests/automated_test_suite.html" --summary-selector ".summary" --ready-text "Test Summary" --wait-seconds 20 --min-pass-rate 95 --ignore-console-pattern "favicon\.ico"
+[2026-04-07T07:37:52+00:00] - "C:\Users\user\AppData\Local\Programs\Python\Python313\python.exe" "C:\overmind\overmind\verification\browser_checks.py" --project-root "C:\Projects\prognostic-meta" --page "tests/automated_visual_test.html" --summary-selector "#summary" --ready-text "Tests Complete:" --wait-seconds 20 --min-pass-rate 95 --ignore-console-pattern "favicon\.ico"
+[2026-04-07T07:37:52+00:00] - "C:\Users\user\AppData\Local\Programs\Python\Python313\python.exe" "C:\overmind\overmind\verification\browser_checks.py" --project-root "C:\Projects\prognostic-meta" --page "tests/validation_suite.html" --summary-selector ".summary" --ready-text "Validation Summary" --wait-seconds 20 --min-pass-rate 90 --ignore-console-pattern "favicon\.ico"
+[2026-04-07T07:37:52+00:00] 
+[2026-04-07T07:37:52+00:00] RECENT ACTIVITY SIGNALS:
+[2026-04-07T07:37:52+00:00] - warning-bearing activity log present: validation_suite.html
+[2026-04-07T07:37:52+00:00] - repeatable validation logs detected
+[2026-04-07T07:37:52+00:00] - advanced analytical workflows detected: meta-analysis, numerical optimization, Bayesian modeling
+[2026-04-07T07:37:52+00:00] 
+[2026-04-07T07:37:52+00:00] STATISTICAL RIGOR:
+[2026-04-07T07:37:52+00:00] - rigor: extreme
+[2026-04-07T07:37:52+00:00] - score: 20
+[2026-04-07T07:37:52+00:00] - signals: meta_analysis, bayesian_modeling, optimization_numerics, resampling, causal_inference, diagnostic_accuracy, hierarchical_modeling
+[2026-04-07T07:37:52+00:00] 
+[2026-04-07T07:37:52+00:00] OUTPUT:
+[2026-04-07T07:37:52+00:00] - print the command you ran
+[2026-04-07T07:37:52+00:00] - print pass/fail evidence only
+[2026-04-07T07:37:52+00:00] - if the primary command fails, print the failure and stop
+[2026-04-07T07:37:52+00:00] 
+[2026-04-07T07:37:52+00:00] REQUIRED VERIFICATION:
+[2026-04-07T07:37:52+00:00] - relevant_tests
+[2026-04-07T07:37:52+00:00] - targeted_browser_test
+[2026-04-07T07:37:52+00:00] - numeric_regression
+[2026-04-07T07:37:52+00:00] - deterministic_fixture_tests
+[2026-04-07T07:37:52+00:00] - edge_case_tests
+[2026-04-07T07:37:52+00:00] - output_comparison
+[2026-04-07T07:37:52+00:00] - sensitivity_checks
+[2026-04-07T07:37:52+00:00] - stochastic_stability
+[2026-04-07T07:37:52+00:00] - calibration_checks
+[2026-04-07T07:37:52+00:00] - regression_checks
+[2026-04-07T07:37:52+00:00] 
+[2026-04-07T07:37:52+00:00] deprecated: `[features].enable_experimental_windows_sandbox` is deprecated. Use `[features].experimental_windows_sandbox` instead.
+[2026-04-07T07:37:52+00:00] Enable it with `--enable experimental_windows_sandbox` or `[features].experimental_windows_sandbox` in config.toml. See https://developers.openai.com/codex/config-basic#feature-flags for details.
+[2026-04-07T07:37:53+00:00] ERROR: You've hit your usage limit. To get more access now, send a request to your admin or try again at 1:05 PM.
+[2026-04-07T07:37:53+00:00] ERROR: You've hit your usage limit. To get more access now, send a request to your admin or try again at 1:05 PM.

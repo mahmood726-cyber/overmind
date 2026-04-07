@@ -1,0 +1,8 @@
+Summarize the current terminal state in 8 lines:
+- current status
+- commands run
+- failures
+- risks
+- missing proof
+- next best action
+

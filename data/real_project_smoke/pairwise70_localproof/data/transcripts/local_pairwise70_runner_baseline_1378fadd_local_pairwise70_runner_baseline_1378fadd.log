@@ -1,0 +1,97 @@
+[2026-04-06T13:50:13+00:00] SESSION START "C:\Users\user\AppData\Local\Programs\Python\Python313\python.exe" "C:\overmind\data\real_project_smoke\pairwise70_localproof\prompt_runner.py" exec -
+[2026-04-06T13:50:13+00:00] INPUT PROJECT:
+[2026-04-06T13:50:13+00:00] STDIN CLOSED after initial prompt
+[2026-04-06T13:50:14+00:00] COMMAND: python C:/Users/user/mafi_functional_test.py
+[2026-04-06T13:51:05+00:00] ======================================================================
+[2026-04-06T13:51:05+00:00] MAFI CALCULATOR - COMPREHENSIVE FUNCTIONAL TEST
+[2026-04-06T13:51:05+00:00] ======================================================================
+[2026-04-06T13:51:05+00:00] 
+[2026-04-06T13:51:05+00:00] [TEST 1] Page Structure...
+[2026-04-06T13:51:05+00:00]   Title: MAFI Calculator - Complete Edition with GRADE Integration
+[2026-04-06T13:51:05+00:00]   Tabs found: ['Calculator', 'Worked Case Studies', 'GRADE Integration', 'Documentation']
+[2026-04-06T13:51:05+00:00]   [PASS] All navigation tabs present
+[2026-04-06T13:51:05+00:00] 
+[2026-04-06T13:51:05+00:00] [TEST 2] Load Example Data...
+[2026-04-06T13:51:05+00:00]   Study rows loaded: 8
+[2026-04-06T13:51:05+00:00]   [PASS] Example data loaded successfully
+[2026-04-06T13:51:05+00:00] 
+[2026-04-06T13:51:05+00:00] [TEST 3] Run MAFI Analysis...
+[2026-04-06T13:51:05+00:00]   Classification: Low Fragility
+[2026-04-06T13:51:05+00:00]   [PASS] MAFI analysis completed
+[2026-04-06T13:51:05+00:00] 
+[2026-04-06T13:51:05+00:00] [TEST 4] Case Studies...
+[2026-04-06T13:51:05+00:00]   Antidepressants: Analysis completed [PASS]
+[2026-04-06T13:51:05+00:00]   Statin/Mortality: Analysis completed [PASS]
+[2026-04-06T13:51:05+00:00]   Acupuncture/Pain: Analysis completed [PASS]
+[2026-04-06T13:51:05+00:00]   COVID Vaccine: Analysis completed [PASS]
+[2026-04-06T13:51:05+00:00]   Fibromyalgia (Fragile): Analysis completed [PASS]
+[2026-04-06T13:51:05+00:00] 
+[2026-04-06T13:51:05+00:00] [TEST 5] GRADE Integration...
+[2026-04-06T13:51:05+00:00]   GRADE elements found: 6/6
+[2026-04-06T13:51:05+00:00]   [PASS] GRADE framework displayed
+[2026-04-06T13:51:05+00:00] 
+[2026-04-06T13:51:05+00:00] [TEST 6] Documentation...
+[2026-04-06T13:51:05+00:00]   Documentation elements: 8/8
+[2026-04-06T13:51:05+00:00]   [PASS] Documentation complete
+[2026-04-06T13:51:05+00:00] 
+[2026-04-06T13:51:05+00:00] [TEST 7] Forest Plot...
+[2026-04-06T13:51:05+00:00]   Forest plot rows: 10
+[2026-04-06T13:51:05+00:00]   Forest plot points: 9
+[2026-04-06T13:51:05+00:00]   [PASS] Forest plot rendered
+[2026-04-06T13:51:05+00:00] 
+[2026-04-06T13:51:05+00:00] [TEST 8] MAFI Variants...
+[2026-04-06T13:51:05+00:00]   Variant terms found: ['Empirical']
+[2026-04-06T13:51:05+00:00]   Variant cards: 4
+[2026-04-06T13:51:05+00:00]   [PASS] MAFI variants available
+[2026-04-06T13:51:05+00:00] 
+[2026-04-06T13:51:05+00:00] [TEST 9] Export Functions...
+[2026-04-06T13:51:05+00:00]   Export buttons: ['Import CSV', 'Export CSV', 'Export JSON']
+[2026-04-06T13:51:05+00:00]   [PASS] Export functionality present
+[2026-04-06T13:51:05+00:00] 
+[2026-04-06T13:51:05+00:00] [TEST 10] Statistical Validation...
+[2026-04-06T13:51:05+00:00]   Statistical elements: ['Heterogeneity (I�)', 'Confidence Interval', 'P-value', 'Tau� (variance)']
+[2026-04-06T13:51:05+00:00]   [PASS] Statistical outputs present
+[2026-04-06T13:51:05+00:00] 
+[2026-04-06T13:51:05+00:00] [TEST 11] Leave-One-Out Analysis...
+[2026-04-06T13:51:05+00:00]   LOO indicators: ['leave-one-out', 'removed', 'fragile']
+[2026-04-06T13:51:05+00:00]   LOO table present: False
+[2026-04-06T13:51:05+00:00]   [PASS] Leave-one-out analysis present
+[2026-04-06T13:51:05+00:00] 
+[2026-04-06T13:51:05+00:00] [TEST 12] JavaScript Errors...
+[2026-04-06T13:51:05+00:00]   [PASS] No JavaScript errors
+[2026-04-06T13:51:05+00:00] 
+[2026-04-06T13:51:05+00:00] ======================================================================
+[2026-04-06T13:51:05+00:00] FINAL TEST RESULTS
+[2026-04-06T13:51:05+00:00] ======================================================================
+[2026-04-06T13:51:05+00:00] 
+[2026-04-06T13:51:05+00:00] PASSED: 16
+[2026-04-06T13:51:05+00:00]   [PASS] Navigation Tabs (4)
+[2026-04-06T13:51:05+00:00]   [PASS] Example Data (8 studies)
+[2026-04-06T13:51:05+00:00]   [PASS] MAFI Analysis - Low Fragility
+[2026-04-06T13:51:05+00:00]   [PASS] Case: Antidepressants
+[2026-04-06T13:51:05+00:00]   [PASS] Case: Statin/Mortality
+[2026-04-06T13:51:05+00:00]   [PASS] Case: Acupuncture/Pain
+[2026-04-06T13:51:05+00:00]   [PASS] Case: COVID Vaccine
+[2026-04-06T13:51:05+00:00]   [PASS] Case: Fibromyalgia (Fragile)
+[2026-04-06T13:51:05+00:00]   [PASS] GRADE Framework (6 elements)
+[2026-04-06T13:51:05+00:00]   [PASS] Documentation (8 elements)
+[2026-04-06T13:51:05+00:00]   [PASS] Forest Plot (10 rows)
+[2026-04-06T13:51:05+00:00]   [PASS] MAFI Variants (1)
+[2026-04-06T13:51:05+00:00]   [PASS] Export Buttons (3)
+[2026-04-06T13:51:05+00:00]   [PASS] Statistics (4 metrics)
+[2026-04-06T13:51:05+00:00]   [PASS] Leave-One-Out Analysis
+[2026-04-06T13:51:05+00:00]   [PASS] No JS Errors
+[2026-04-06T13:51:05+00:00] 
+[2026-04-06T13:51:05+00:00] FAILED: 0
+[2026-04-06T13:51:05+00:00] 
+[2026-04-06T13:51:05+00:00] DETAILS:
+[2026-04-06T13:51:05+00:00]   - Classification: Low Fragility
+[2026-04-06T13:51:05+00:00] 
+[2026-04-06T13:51:05+00:00] ======================================================================
+[2026-04-06T13:51:05+00:00] OVERALL: 100.0% pass rate (16/16) - EXCELLENT
+[2026-04-06T13:51:05+00:00] ======================================================================
+[2026-04-06T13:51:05+00:00] 
+[2026-04-06T13:51:05+00:00] Browser open for 15 seconds for visual inspection...
+[2026-04-06T13:51:05+00:00] 
+[2026-04-06T13:51:05+00:00] Test complete. Browser closed.
+[2026-04-06T13:51:05+00:00] tests passed

@@ -1,0 +1,187 @@
+[2026-04-05T18:17:56+00:00] SESSION START codex exec --dangerously-bypass-approvals-and-sandbox -m gpt-5.4-mini -
+[2026-04-05T18:17:56+00:00] INPUT PROJECT:
+[2026-04-05T18:17:56+00:00] STDIN CLOSED after initial prompt
+[2026-04-05T18:17:56+00:00] OpenAI Codex v0.117.0 (research preview)
+[2026-04-05T18:17:56+00:00] --------
+[2026-04-05T18:17:56+00:00] workdir: C:\Projects\rct-extractor-v2
+[2026-04-05T18:17:56+00:00] model: gpt-5.4-mini
+[2026-04-05T18:17:56+00:00] provider: openai
+[2026-04-05T18:17:56+00:00] approval: never
+[2026-04-05T18:17:56+00:00] sandbox: danger-full-access
+[2026-04-05T18:17:56+00:00] reasoning effort: xhigh
+[2026-04-05T18:17:56+00:00] reasoning summaries: none
+[2026-04-05T18:17:56+00:00] session id: 019d5edd-a368-7fa3-b9e4-47d15e45f8f5
+[2026-04-05T18:17:56+00:00] --------
+[2026-04-05T18:17:56+00:00] user
+[2026-04-05T18:17:56+00:00] PROJECT:
+[2026-04-05T18:17:56+00:00] rct-extractor-v2 (C:\Projects\rct-extractor-v2)
+[2026-04-05T18:17:56+00:00] 
+[2026-04-05T18:17:56+00:00] TASK:
+[2026-04-05T18:17:56+00:00] Baseline verification for rct-extractor-v2
+[2026-04-05T18:17:56+00:00] 
+[2026-04-05T18:17:56+00:00] MODE:
+[2026-04-05T18:17:56+00:00] - verification only
+[2026-04-05T18:17:56+00:00] - do not inspect CLAUDE.md, README.md, or source files unless the primary command fails
+[2026-04-05T18:17:56+00:00] - do not print file contents
+[2026-04-05T18:17:56+00:00] - run the primary command exactly as written, then stop
+[2026-04-05T18:17:56+00:00] 
+[2026-04-05T18:17:56+00:00] PRIMARY COMMAND:
+[2026-04-05T18:17:56+00:00] - python -m pytest C:\Projects\rct-extractor-v2\tests\test_proof_carrying_numbers.py
+[2026-04-05T18:17:56+00:00] 
+[2026-04-05T18:17:56+00:00] FALLBACK COMMAND:
+[2026-04-05T18:17:56+00:00] - none
+[2026-04-05T18:17:56+00:00] 
+[2026-04-05T18:17:56+00:00] KNOWN COMMANDS:
+[2026-04-05T18:17:56+00:00] - python -m pytest C:\Projects\rct-extractor-v2\tests\test_proof_carrying_numbers.py
+[2026-04-05T18:17:56+00:00] - python -m pytest C:\Projects\rct-extractor-v2\tests\test_team_of_rivals.py
+[2026-04-05T18:17:56+00:00] - python -m pytest tests/ --tb=short -q
+[2026-04-05T18:17:56+00:00] - python -m pytest C:\Projects\rct-extractor-v2 --tb=short -q
+[2026-04-05T18:17:56+00:00] - python -m pytest -q
+[2026-04-05T18:17:56+00:00] 
+[2026-04-05T18:17:56+00:00] RECENT ACTIVITY SIGNALS:
+[2026-04-05T18:17:56+00:00] - warning-bearing activity log present: results_baseline_frozen_snapshot.jsonl
+[2026-04-05T18:17:56+00:00] - repeatable validation logs detected
+[2026-04-05T18:17:56+00:00] 
+[2026-04-05T18:17:56+00:00] OUTPUT:
+[2026-04-05T18:17:56+00:00] - print the command you ran
+[2026-04-05T18:17:56+00:00] - print pass/fail evidence only
+[2026-04-05T18:17:56+00:00] - if the primary command fails, print the failure and stop
+[2026-04-05T18:17:56+00:00] 
+[2026-04-05T18:17:56+00:00] REQUIRED VERIFICATION:
+[2026-04-05T18:17:56+00:00] - relevant_tests
+[2026-04-05T18:17:56+00:00] - numeric_regression
+[2026-04-05T18:17:56+00:00] 
+[2026-04-05T18:17:56+00:00] deprecated: `[features].enable_experimental_windows_sandbox` is deprecated. Use `[features].experimental_windows_sandbox` instead.
+[2026-04-05T18:17:56+00:00] Enable it with `--enable experimental_windows_sandbox` or `[features].experimental_windows_sandbox` in config.toml. See https://developers.openai.com/codex/config-basic#feature-flags for details.
+[2026-04-05T18:18:00+00:00] codex
+[2026-04-05T18:18:00+00:00] Running the exact baseline pytest command now and will report only the pass/fail evidence from that run.
+[2026-04-05T18:18:01+00:00] exec
+[2026-04-05T18:18:01+00:00] "C:\\WINDOWS\\System32\\WindowsPowerShell\\v1.0\\powershell.exe" -Command "python -m pytest C:\\Projects\\rct-extractor-v2\\tests\\test_proof_carrying_numbers.py" in C:\Projects\rct-extractor-v2
+[2026-04-05T18:18:04+00:00] codex
+[2026-04-05T18:18:04+00:00] The targeted pytest invocation is still running; I’m waiting for the final result so I can report only the outcome.
+[2026-04-05T18:18:04+00:00]  succeeded in 2620ms:
+[2026-04-05T18:18:04+00:00] ============================= test session starts =============================
+[2026-04-05T18:18:04+00:00] platform win32 -- Python 3.13.7, pytest-9.0.2, pluggy-1.6.0 -- C:\Users\user\AppData\Local\Programs\Python\Python313\python.exe
+[2026-04-05T18:18:04+00:00] cachedir: .pytest_cache
+[2026-04-05T18:18:04+00:00] rootdir: C:\Projects\rct-extractor-v2
+[2026-04-05T18:18:04+00:00] configfile: pyproject.toml
+[2026-04-05T18:18:04+00:00] plugins: anyio-3.7.1, asyncio-1.3.0, cov-4.1.0, timeout-2.4.0, respx-0.22.0
+[2026-04-05T18:18:04+00:00] asyncio: mode=Mode.STRICT, debug=False, asyncio_default_fixture_loop_scope=None, asyncio_default_test_loop_scope=function
+[2026-04-05T18:18:04+00:00] collecting ... collected 100 items
+[2026-04-05T18:18:04+00:00] 
+[2026-04-05T18:18:04+00:00] tests/test_proof_carrying_numbers.py::TestVerificationCheck::test_passed_result PASSED [  1%]
+[2026-04-05T18:18:04+00:00] tests/test_proof_carrying_numbers.py::TestVerificationCheck::test_failed_result PASSED [  2%]
+[2026-04-05T18:18:04+00:00] tests/test_proof_carrying_numbers.py::TestVerificationCheck::test_skipped_result PASSED [  3%]
+[2026-04-05T18:18:04+00:00] tests/test_proof_carrying_numbers.py::TestVerificationCheck::test_warning_result PASSED [  4%]
+[2026-04-05T18:18:04+00:00] tests/test_proof_carrying_numbers.py::TestVerificationCheck::test_default_is_critical PASSED [  5%]
+[2026-04-05T18:18:04+00:00] tests/test_proof_carrying_numbers.py::TestProofCertificate::test_checks_passed_names PASSED [  6%]
+[2026-04-05T18:18:04+00:00] tests/test_proof_carrying_numbers.py::TestProofCertificate::test_checks_failed_names PASSED [  7%]
+[2026-04-05T18:18:04+00:00] tests/test_proof_carrying_numbers.py::TestProofCertificate::test_critical_checks_passed_all_pass PASSED [  8%]
+[2026-04-05T18:18:04+00:00] tests/test_proof_carrying_numbers.py::TestProofCertificate::test_critical_checks_passed_one_fails PASSED [  9%]
+[2026-04-05T18:18:04+00:00] tests/test_proof_carrying_numbers.py::TestProofCertificate::test_critical_checks_passed_no_critical PASSED [ 10%]
+[2026-04-05T18:18:04+00:00] tests/test_proof_carrying_numbers.py::TestProofCertificate::test_is_verified_delegates_to_critical PASSED [ 11%]
+[2026-04-05T18:18:04+00:00] tests/test_proof_carrying_numbers.py::TestProofCertificate::test_has_consensus_zero_extractors_is_false PASSED [ 12%]
+[2026-04-05T18:18:04+00:00] tests/test_proof_carrying_numbers.py::TestProofCertificate::test_has_consensus_single_extractor_agreeing PASSED [ 13%]
+[2026-04-05T18:18:04+00:00] tests/test_proof_carrying_numbers.py::TestProofCertificate::test_has_consensus_majority PASSED [ 14%]
+[2026-04-05T18:18:04+00:00] tests/test_proof_carrying_numbers.py::TestProofCertificate::test_has_consensus_no_majority PASSED [ 15%]
+[2026-04-05T18:18:04+00:00] tests/test_proof_carrying_numbers.py::TestProofCertificate::test_has_consensus_exact_half PASSED [ 16%]
+[2026-04-05T18:18:04+00:00] tests/test_proof_carrying_numbers.py::TestProofCertificate::test_to_dict_keys PASSED [ 17%]
+[2026-04-05T18:18:04+00:00] tests/test_proof_carrying_numbers.py::TestProofCertificate::test_to_dict_values PASSED [ 18%]
+[2026-04-05T18:18:04+00:00] tests/test_proof_carrying_numbers.py::TestProofCarryingNumber::test_integrity_hash_computed_on_init PASSED [ 19%]
+[2026-04-05T18:18:04+00:00] tests/test_proof_carrying_numbers.py::TestProofCarryingNumber::test_integrity_hash_includes_extraction_method PASSED [ 20%]
+[2026-04-05T18:18:04+00:00] tests/test_proof_carrying_numbers.py::TestProofCarryingNumber::test_integrity_hash_deterministic PASSED [ 21%]
+[2026-04-05T18:18:04+00:00] tests/test_proof_carrying_numbers.py::TestProofCarryingNumber::test_integrity_hash_manual_check PASSED [ 22%]
+[2026-04-05T18:18:04+00:00] tests/test_proof_carrying_numbers.py::TestProofCarryingNumber::test_render_verified PASSED [ 23%]
+[2026-04-05T18:18:04+00:00] tests/test_proof_carrying_numbers.py::TestProofCarryingNumber::test_render_unverified_raises PASSED [ 24%]
+[2026-04-05T18:18:04+00:00] tests/test_proof_carrying_numbers.py::TestProofCarryingNumber::test_render_unverified_allowed PASSED [ 25%]
+[2026-04-05T18:18:04+00:00] tests/test_proof_carrying_numbers.py::TestProofCarryingNumber::test_str_requires_verification PASSED [ 26%]
+[2026-04-05T18:18:04+00:00] tests/test_proof_carrying_numbers.py::TestProofCarryingNumber::test_repr_shows_status PASSED [ 27%]
+[2026-04-05T18:18:04+00:00] tests/test_proof_carrying_numbers.py::TestProofCarryingNumber::test_is_verified_property PASSED [ 28%]
+[2026-04-05T18:18:04+00:00] tests/test_proof_carrying_numbers.py::TestProofCarryingNumber::test_pre_existing_hash_always_recomputed PASSED [ 29%]
+[2026-04-05T18:18:04+00:00] tests/test_proof_carrying_numbers.py::TestCheckCIContainsPoint::test_point_inside PASSED [ 30%]
+[2026-04-05T18:18:04+00:00] tests/test_proof_carrying_numbers.py::TestCheckCIContainsPoint::test_point_at_lower_bound PASSED [ 31%]
+[2026-04-05T18:18:04+00:00] tests/test_proof_carrying_numbers.py::TestCheckCIContainsPoint::test_point_at_upper_bound PASSED [ 32%]
+[2026-04-05T18:18:04+00:00] tests/test_proof_carrying_numbers.py::TestCheckCIContainsPoint::test_point_below_ci PASSED [ 33%]
+[2026-04-05T18:18:04+00:00] tests/test_proof_carrying_numbers.py::TestCheckCIContainsPoint::test_point_above_ci PASSED [ 34%]
+[2026-04-05T18:18:04+00:00] tests/test_proof_carrying_numbers.py::TestCheckCIContainsPoint::test_is_critical PASSED [ 35%]
+[2026-04-05T18:18:04+00:00] tests/test_proof_carrying_numbers.py::TestCheckCIOrdered::test_correct_order PASSED [ 36%]
+[2026-04-05T18:18:04+00:00] tests/test_proof_carrying_numbers.py::TestCheckCIOrdered::test_reversed_order PASSED [ 37%]
+[2026-04-05T18:18:04+00:00] tests/test_proof_carrying_numbers.py::TestCheckCIOrdered::test_equal_bounds PASSED [ 38%]
+[2026-04-05T18:18:04+00:00] tests/test_proof_carrying_numbers.py::TestCheckCIOrdered::test_is_critical PASSED [ 39%]
+[2026-04-05T18:18:04+00:00] tests/test_proof_carrying_numbers.py::TestCheckRangePlausible::test_parametrized_ranges[HR-0.74-CheckResult.PASSED] PASSED [ 40%]
+[2026-04-05T18:18:04+00:00] tests/test_proof_carrying_numbers.py::TestCheckRangePlausible::test_parametrized_ranges[HR-0.001-CheckResult.FAILED] PASSED [ 41%]
+[2026-04-05T18:18:04+00:00] tests/test_proof_carrying_numbers.py::TestCheckRangePlausible::test_parametrized_ranges[HR-55.0-CheckResult.FAILED] PASSED [ 42%]
+[2026-04-05T18:18:04+00:00] tests/test_proof_carrying_numbers.py::TestCheckRangePlausible::test_parametrized_ranges[OR-1.5-CheckResult.PASSED] PASSED [ 43%]
+[2026-04-05T18:18:04+00:00] tests/test_proof_carrying_numbers.py::TestCheckRangePlausible::test_parametrized_ranges[OR-0.005-CheckResult.FAILED] PASSED [ 44%]
+[2026-04-05T18:18:04+00:00] tests/test_proof_carrying_numbers.py::TestCheckRangePlausible::test_parametrized_ranges[RR-1.0-CheckResult.PASSED] PASSED [ 45%]
+[2026-04-05T18:18:04+00:00] tests/test_proof_carrying_numbers.py::TestCheckRangePlausible::test_parametrized_ranges[MD--5.2-CheckResult.PASSED] PASSED [ 46%]
+[2026-04-05T18:18:04+00:00] tests/test_proof_carrying_numbers.py::TestCheckRangePlausible::test_parametrized_ranges[MD--1500.0-CheckResult.FAILED] PASSED [ 47%]
+[2026-04-05T18:18:04+00:00] tests/test_proof_carrying_numbers.py::TestCheckRangePlausible::test_parametrized_ranges[SMD-0.5-CheckResult.PASSED] PASSED [ 48%]
+[2026-04-05T18:18:04+00:00] tests/test_proof_carrying_numbers.py::TestCheckRangePlausible::test_parametrized_ranges[SMD--12.0-CheckResult.FAILED] PASSED [ 49%]
+[2026-04-05T18:18:04+00:00] tests/test_proof_carrying_numbers.py::TestCheckRangePlausible::test_unknown_effect_type_skipped PASSED [ 50%]
+[2026-04-05T18:18:04+00:00] tests/test_proof_carrying_numbers.py::TestCheckRangePlausible::test_boundary_values_hr PASSED [ 51%]
+[2026-04-05T18:18:04+00:00] tests/test_proof_carrying_numbers.py::TestCheckSEConsistency::test_se_calculated_no_reported PASSED [ 52%]
+[2026-04-05T18:18:04+00:00] tests/test_proof_carrying_numbers.py::TestCheckSEConsistency::test_se_matching_reported PASSED [ 53%]
+[2026-04-05T18:18:04+00:00] tests/test_proof_carrying_numbers.py::TestCheckSEConsistency::test_se_mismatching_reported PASSED [ 54%]
+[2026-04-05T18:18:04+00:00] tests/test_proof_carrying_numbers.py::TestCheckSEConsistency::test_se_linear_scale_md PASSED [ 55%]
+[2026-04-05T18:18:04+00:00] tests/test_proof_carrying_numbers.py::TestCheckSEConsistency::test_non_positive_ci_bounds_skipped PASSED [ 56%]
+[2026-04-05T18:18:04+00:00] tests/test_proof_carrying_numbers.py::TestCheckSEConsistency::test_se_not_critical PASSED [ 57%]
+[2026-04-05T18:18:04+00:00] tests/test_proof_carrying_numbers.py::TestCheckPValueConsistency::test_significant_p_ci_excludes_null_hr PASSED [ 58%]
+[2026-04-05T18:18:04+00:00] tests/test_proof_carrying_numbers.py::TestCheckPValueConsistency::test_non_significant_p_ci_contains_null_hr PASSED [ 59%]
+[2026-04-05T18:18:04+00:00] tests/test_proof_carrying_numbers.py::TestCheckPValueConsistency::test_inconsistent_p_and_ci PASSED [ 60%]
+[2026-04-05T18:18:04+00:00] tests/test_proof_carrying_numbers.py::TestCheckPValueConsistency::test_borderline_p_value_tolerance PASSED [ 61%]
+[2026-04-05T18:18:04+00:00] tests/test_proof_carrying_numbers.py::TestCheckPValueConsistency::test_borderline_ci_near_null PASSED [ 62%]
+[2026-04-05T18:18:04+00:00] tests/test_proof_carrying_numbers.py::TestCheckPValueConsistency::test_md_null_is_zero PASSED [ 63%]
+[2026-04-05T18:18:04+00:00] tests/test_proof_carrying_numbers.py::TestCheckPValueConsistency::test_p_value_zero_not_dropped PASSED [ 64%]
+[2026-04-05T18:18:04+00:00] tests/test_proof_carrying_numbers.py::TestCheckPValueConsistency::test_not_critical PASSED [ 65%]
+[2026-04-05T18:18:04+00:00] tests/test_proof_carrying_numbers.py::TestCheckLogSymmetry::test_symmetric_ci PASSED [ 66%]
+[2026-04-05T18:18:04+00:00] tests/test_proof_carrying_numbers.py::TestCheckLogSymmetry::test_asymmetric_ci PASSED [ 67%]
+[2026-04-05T18:18:04+00:00] tests/test_proof_carrying_numbers.py::TestCheckLogSymmetry::test_non_positive_values_skipped PASSED [ 68%]
+[2026-04-05T18:18:04+00:00] tests/test_proof_carrying_numbers.py::TestCheckLogSymmetry::test_negative_value_skipped PASSED [ 69%]
+[2026-04-05T18:18:04+00:00] tests/test_proof_carrying_numbers.py::TestCheckLogSymmetry::test_not_critical PASSED [ 70%]
+[2026-04-05T18:18:04+00:00] tests/test_proof_carrying_numbers.py::TestCheckCIWidthReasonable::test_normal_ratio_width PASSED [ 71%]
+[2026-04-05T18:18:04+00:00] tests/test_proof_carrying_numbers.py::TestCheckCIWidthReasonable::test_extreme_narrow_width PASSED [ 72%]
+[2026-04-05T18:18:04+00:00] tests/test_proof_carrying_numbers.py::TestCheckCIWidthReasonable::test_extreme_wide_width PASSED [ 73%]
+[2026-04-05T18:18:04+00:00] tests/test_proof_carrying_numbers.py::TestCheckCIWidthReasonable::test_difference_type_skipped PASSED [ 74%]
+[2026-04-05T18:18:04+00:00] tests/test_proof_carrying_numbers.py::TestCheckCIWidthReasonable::test_smd_skipped PASSED [ 75%]
+[2026-04-05T18:18:04+00:00] tests/test_proof_carrying_numbers.py::TestCheckCIWidthReasonable::test_not_critical PASSED [ 76%]
+[2026-04-05T18:18:04+00:00] tests/test_proof_carrying_numbers.py::TestRunAllChecks::test_basic_hr_returns_checks PASSED [ 77%]
+[2026-04-05T18:18:04+00:00] tests/test_proof_carrying_numbers.py::TestRunAllChecks::test_hr_without_p_value PASSED [ 78%]
+[2026-04-05T18:18:04+00:00] tests/test_proof_carrying_numbers.py::TestRunAllChecks::test_hr_with_p_value PASSED [ 79%]
+[2026-04-05T18:18:04+00:00] tests/test_proof_carrying_numbers.py::TestRunAllChecks::test_md_no_log_symmetry PASSED [ 80%]
+[2026-04-05T18:18:04+00:00] tests/test_proof_carrying_numbers.py::TestRunAllChecks::test_p_value_zero_included PASSED [ 81%]
+[2026-04-05T18:18:04+00:00] tests/test_proof_carrying_numbers.py::TestRunAllChecks::test_valid_hr_all_critical_pass PASSED [ 82%]
+[2026-04-05T18:18:04+00:00] tests/test_proof_carrying_numbers.py::TestRunAllChecks::test_invalid_point_outside_ci PASSED [ 83%]
+[2026-04-05T18:18:04+00:00] tests/test_proof_carrying_numbers.py::TestRunAllChecks::test_reported_se PASSED [ 84%]
+[2026-04-05T18:18:04+00:00] tests/test_proof_carrying_numbers.py::TestCreateVerifiedExtraction::test_returns_proof_carrying_extraction PASSED [ 85%]
+[2026-04-05T18:18:04+00:00] tests/test_proof_carrying_numbers.py::TestCreateVerifiedExtraction::test_valid_hr_is_verified PASSED [ 86%]
+[2026-04-05T18:18:04+00:00] tests/test_proof_carrying_numbers.py::TestCreateVerifiedExtraction::test_invalid_extraction_not_verified PASSED [ 87%]
+[2026-04-05T18:18:04+00:00] tests/test_proof_carrying_numbers.py::TestCreateVerifiedExtraction::test_master_certificate_present PASSED [ 88%]
+[2026-04-05T18:18:04+00:00] tests/test_proof_carrying_numbers.py::TestCreateVerifiedExtraction::test_se_calculated PASSED [ 89%]
+[2026-04-05T18:18:04+00:00] tests/test_proof_carrying_numbers.py::TestCreateVerifiedExtraction::test_se_calculated_md PASSED [ 90%]
+[2026-04-05T18:18:04+00:00] tests/test_proof_carrying_numbers.py::TestCreateVerifiedExtraction::test_p_value_zero_preserved PASSED [ 91%]
+[2026-04-05T18:18:04+00:00] tests/test_proof_carrying_numbers.py::TestCreateVerifiedExtraction::test_p_value_zero_in_to_dict PASSED [ 92%]
+[2026-04-05T18:18:04+00:00] tests/test_proof_carrying_numbers.py::TestCreateVerifiedExtraction::test_p_value_none_excluded_from_dict PASSED [ 93%]
+[2026-04-05T18:18:04+00:00] tests/test_proof_carrying_numbers.py::TestCreateVerifiedExtraction::test_warnings_populated_on_issues PASSED [ 94%]
+[2026-04-05T18:18:04+00:00] tests/test_proof_carrying_numbers.py::TestCreateVerifiedExtraction::test_extraction_method_in_cert PASSED [ 95%]
+[2026-04-05T18:18:04+00:00] tests/test_proof_carrying_numbers.py::TestCreateVerifiedExtraction::test_to_dict_structure PASSED [ 96%]
+[2026-04-05T18:18:04+00:00] tests/test_proof_carrying_numbers.py::TestCreateVerifiedExtraction::test_needs_review_when_not_verified PASSED [ 97%]
+[2026-04-05T18:18:04+00:00] tests/test_proof_carrying_numbers.py::TestProofCarryingExtraction::test_is_fully_verified_all_components PASSED [ 98%]
+[2026-04-05T18:18:04+00:00] tests/test_proof_carrying_numbers.py::TestProofCarryingExtraction::test_verification_status_verified PASSED [ 99%]
+[2026-04-05T18:18:04+00:00] tests/test_proof_carrying_numbers.py::TestProofCarryingExtraction::test_verification_status_failed PASSED [100%]
+[2026-04-05T18:18:04+00:00] 
+[2026-04-05T18:18:04+00:00] ============================= 100 passed in 0.99s =============================
+[2026-04-05T18:18:04+00:00] 
+[2026-04-05T18:18:06+00:00] codex
+[2026-04-05T18:18:06+00:00] Command:
+[2026-04-05T18:18:06+00:00] `python -m pytest C:\Projects\rct-extractor-v2\tests\test_proof_carrying_numbers.py`
+[2026-04-05T18:18:06+00:00] 
+[2026-04-05T18:18:06+00:00] Evidence:
+[2026-04-05T18:18:06+00:00] `100 passed in 0.99s`
+[2026-04-05T18:18:06+00:00] tokens used
+[2026-04-05T18:18:06+00:00] 13,776
+[2026-04-05T18:18:06+00:00] Command:
+[2026-04-05T18:18:06+00:00] `python -m pytest C:\Projects\rct-extractor-v2\tests\test_proof_carrying_numbers.py`
+[2026-04-05T18:18:06+00:00] 
+[2026-04-05T18:18:06+00:00] Evidence:
+[2026-04-05T18:18:06+00:00] `100 passed in 0.99s`

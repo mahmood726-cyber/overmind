@@ -1,0 +1,6 @@
+runners:
+  - runner_id: codex_truthcert_smoke
+    type: codex
+    mode: terminal
+    command: 'codex exec --dangerously-bypass-approvals-and-sandbox -m gpt-5.4-mini -'
+    environment: windows

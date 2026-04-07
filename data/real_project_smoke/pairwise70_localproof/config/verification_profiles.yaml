@@ -1,0 +1,13 @@
+profiles:
+  truthcert_suite:
+    required:
+      - build
+      - relevant_tests
+      - targeted_browser_test
+      - numeric_regression
+      - regression_checks
+      - before_after_benchmark
+project_rules:
+  - profile: truthcert_suite
+    match_path_contains:
+      - 'pairwise70'

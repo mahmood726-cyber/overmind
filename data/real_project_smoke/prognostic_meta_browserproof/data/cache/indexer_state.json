@@ -1,0 +1,97 @@
+{
+  "cache_version": 6,
+  "projects": {
+    "C:\\Projects\\prognostic-meta": {
+      "record": {
+        "activity_files": [
+          "C:\\Projects\\prognostic-meta\\SESSION_SUMMARY.md",
+          "C:\\Projects\\prognostic-meta\\SESSION_JANUARY_4_2026.md",
+          "C:\\Projects\\prognostic-meta\\docs\\R_VALIDATION_RESULTS.md",
+          "C:\\Projects\\prognostic-meta\\docs\\VALIDATION_VS_R.md",
+          "C:\\Projects\\prognostic-meta\\tests\\validation_suite.html"
+        ],
+        "activity_summary": [
+          "warning-bearing activity log present: validation_suite.html",
+          "repeatable validation logs detected",
+          "advanced analytical workflows detected: meta-analysis, Bayesian modeling, resampling or simulation"
+        ],
+        "advanced_math_rigor": "extreme",
+        "advanced_math_score": 20,
+        "advanced_math_signals": [
+          "meta_analysis",
+          "bayesian_modeling",
+          "resampling",
+          "causal_inference",
+          "diagnostic_accuracy",
+          "hierarchical_modeling",
+          "optimization_numerics"
+        ],
+        "browser_test_commands": [
+          "\"C:\\Users\\user\\AppData\\Local\\Programs\\Python\\Python313\\python.exe\" \"C:\\overmind\\overmind\\verification\\browser_checks.py\" --project-root \"C:\\Projects\\prognostic-meta\" --page \"tests/automated_visual_test.html\" --summary-selector \"#summary\" --ready-text \"Tests Complete:\" --wait-seconds 20 --min-pass-rate 95 --ignore-console-pattern \"favicon\\.ico\"",
+          "\"C:\\Users\\user\\AppData\\Local\\Programs\\Python\\Python313\\python.exe\" \"C:\\overmind\\overmind\\verification\\browser_checks.py\" --project-root \"C:\\Projects\\prognostic-meta\" --page \"tests/automated_test_suite.html\" --summary-selector \".summary\" --ready-text \"Test Summary\" --wait-seconds 20 --min-pass-rate 95 --ignore-console-pattern \"favicon\\.ico\"",
+          "\"C:\\Users\\user\\AppData\\Local\\Programs\\Python\\Python313\\python.exe\" \"C:\\overmind\\overmind\\verification\\browser_checks.py\" --project-root \"C:\\Projects\\prognostic-meta\" --page \"tests/validation_suite.html\" --summary-selector \".summary\" --ready-text \"Validation Summary\" --wait-seconds 20 --min-pass-rate 90 --ignore-console-pattern \"favicon\\.ico\""
+        ],
+        "build_commands": [],
+        "guidance_commands": [
+          "cmd /c start \"\" C:\\Projects\\prognostic-meta\\index.html",
+          "node C:/Users/user/test_prognostic_v2.js",
+          "node C:/Users/user/prognostic_r_validation.js"
+        ],
+        "guidance_files": [
+          "CLAUDE.md"
+        ],
+        "guidance_summary": [
+          "PrognosisMeta - Claude Code Reference",
+          "Application Overview",
+          "PrognosisMeta** is a publication-quality browser-based meta-analysis application.",
+          "Status:** 10/10 Editorial Quality, R VALIDATED",
+          "Tests:** 35/35 passing",
+          "R Validation:** 93.3% exact match with metafor",
+          "Total Code:** 29,770 lines JavaScript",
+          "Quick Commands"
+        ],
+        "has_advanced_math": true,
+        "has_drift_history": false,
+        "has_numeric_logic": true,
+        "has_oracle_benchmarks": false,
+        "has_validation_history": true,
+        "is_git_repo": true,
+        "last_active_at": "2026-03-14T16:30:36+00:00",
+        "last_indexed_at": "2026-04-06T19:15:58+00:00",
+        "manifest_hash": "07c6c73fd12c0b3c3a440b49cc817bad9e9603bb",
+        "name": "prognostic-meta",
+        "package_manager": "npm",
+        "perf_commands": [],
+        "platform": "windows",
+        "project_id": "prognostic-meta-5028c26a",
+        "project_type": "browser_app",
+        "recommended_verification": [
+          "relevant_tests",
+          "targeted_browser_test",
+          "numeric_regression",
+          "deterministic_fixture_tests",
+          "edge_case_tests",
+          "output_comparison",
+          "sensitivity_checks",
+          "stochastic_stability",
+          "calibration_checks",
+          "regression_checks"
+        ],
+        "risk_profile": "high",
+        "root_path": "C:\\Projects\\prognostic-meta",
+        "stack": [
+          "css",
+          "html",
+          "javascript"
+        ],
+        "test_commands": [
+          "python -m pytest tests/test_smoke.py -q",
+          "node C:/Users/user/test_prognostic_v2.js",
+          "node C:/Users/user/prognostic_r_validation.js"
+        ],
+        "verification_profiles": []
+      },
+      "signature": "07c6c73fd12c0b3c3a440b49cc817bad9e9603bb"
+    }
+  }
+}

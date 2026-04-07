@@ -1,0 +1,14 @@
+$ "C:\Users\user\AppData\Local\Programs\Python\Python313\python.exe" "C:\overmind\overmind\verification\browser_checks.py" --project-root "C:\Projects\prognostic-meta" --page "tests/automated_visual_test.html" --summary-selector "#summary" --ready-text "Tests Complete:" --wait-seconds 20 --min-pass-rate 95 --ignore-console-pattern "favicon\.ico"
+
+STDOUT:
+PAGE: tests/automated_visual_test.html
+SUMMARY:
+- Tests Complete: 37/39 passed (95%)
+PASS_RATE: 95.0%
+BROWSER_WARNINGS: 1
+- warning: http://127.0.0.1:59455/js/visualization.js 11:16 "D3.js not loaded - Visualization module will have limited functionality"
+browser validation passed
+browser passed
+
+
+STDERR:

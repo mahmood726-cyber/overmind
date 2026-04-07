@@ -1,0 +1,10 @@
+scan_roots:
+  - "C:/Projects/rct-extractor-v2"
+scan_rules:
+  include_git_repos: true
+  include_non_git_apps: true
+  incremental_scan: true
+  max_depth: 2
+guidance_filenames:
+  - "CLAUDE.md"
+  - "README.md"

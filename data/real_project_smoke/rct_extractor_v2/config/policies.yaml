@@ -1,0 +1,18 @@
+concurrency:
+  default_active_sessions: 1
+  max_active_sessions: 1
+  degraded_sessions: 1
+  scale_up_cpu_below: 100
+  scale_down_cpu_above: 100
+  scale_down_ram_above: 100
+  scale_down_swap_above_mb: 999999
+limits:
+  retry_same_strategy_max: 2
+  repeated_failure_threshold: 3
+  idle_timeout_min: 10
+  summary_trigger_output_lines: 400
+  checkpoint_every_min: 20
+routing:
+  codex:
+    strengths: ["tests", "focused_fix", "benchmark_script"]
+risk_policy: {}

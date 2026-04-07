@@ -1,0 +1,71 @@
+profiles:
+  ui_change:
+    required:
+      - build
+      - targeted_browser_test
+      - accessibility_check
+  performance_change:
+    required:
+      - before_after_benchmark
+      - lighthouse
+      - no_correctness_regression
+  numerical_change:
+    required:
+      - deterministic_fixture_tests
+      - edge_case_tests
+      - output_comparison
+  browser_numeric_app:
+    required:
+      - build
+      - relevant_tests
+      - targeted_browser_test
+      - numeric_regression
+      - regression_checks
+  truthcert_suite:
+    required:
+      - build
+      - relevant_tests
+      - targeted_browser_test
+      - numeric_regression
+      - regression_checks
+      - before_after_benchmark
+  extractor_pipeline:
+    required:
+      - relevant_tests
+      - numeric_regression
+      - regression_checks
+  living_monitor:
+    required:
+      - build
+      - relevant_tests
+      - no_correctness_regression
+      - regression_checks
+  refactor:
+    required:
+      - build
+      - existing_tests
+      - smoke_flow
+
+project_rules:
+  - profile: truthcert_suite
+    match_path_contains:
+      - "\\Truthcert1"
+      - "\\Truthcert1_work"
+      - "\\prognostic-meta"
+      - "\\CardioOracle"
+      - "\\Pairwise70"
+
+  - profile: extractor_pipeline
+    match_path_contains:
+      - "\\rct-extractor-v2"
+      - "\\MetaReproducer"
+      - "\\CochraneDataExtractor"
+
+  - profile: living_monitor
+    match_path_contains:
+      - "\\ctgov_transparency_intelligence"
+      - "\\metasprint-cardio-universe"
+
+  - profile: refactor
+    match_name_equals:
+      - "overmind"

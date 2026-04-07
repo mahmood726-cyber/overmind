@@ -1,0 +1,6 @@
+runners:
+  - runner_id: codex_local_a
+    type: codex
+    mode: terminal
+    command: "codex"
+    environment: windows

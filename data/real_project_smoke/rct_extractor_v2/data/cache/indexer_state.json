@@ -1,0 +1,87 @@
+{
+  "cache_version": 2,
+  "projects": {
+    "C:\\Projects\\rct-extractor-v2": {
+      "record": {
+        "activity_files": [
+          "C:\\Projects\\rct-extractor-v2\\output\\cardiology_oa_full_v1_fast\\linkage_first_dashboard_baseline_frozen.md",
+          "C:\\Projects\\rct-extractor-v2\\output\\cardiology_oa_full_v1_fast\\linkage_first_backlog_baseline_frozen.jsonl",
+          "C:\\Projects\\rct-extractor-v2\\output\\cardiology_oa_full_v1_fast\\linkage_first_dashboard_baseline_frozen.json",
+          "C:\\Projects\\rct-extractor-v2\\output\\cardiology_oa_full_v1_fast\\meta_mapping_report_baseline_frozen.md",
+          "C:\\Projects\\rct-extractor-v2\\output\\cardiology_oa_full_v1_fast\\meta_mapping_summary_baseline_frozen.json",
+          "C:\\Projects\\rct-extractor-v2\\output\\cardiology_oa_full_v1_fast\\meta_mapping_trials_baseline_frozen.json",
+          "C:\\Projects\\rct-extractor-v2\\output\\cardiology_oa_full_v1_fast\\meta_mapping_edges_baseline_frozen.jsonl",
+          "C:\\Projects\\rct-extractor-v2\\output\\cardiology_oa_full_v1_fast\\quality_report_baseline_frozen.json",
+          "C:\\Projects\\rct-extractor-v2\\output\\cardiology_oa_full_v1_fast\\quality_report_baseline_frozen.md",
+          "C:\\Projects\\rct-extractor-v2\\output\\cardiology_oa_full_v1_fast\\results_baseline_frozen_snapshot.jsonl",
+          "C:\\Projects\\rct-extractor-v2\\data\\ground_truth\\stratified_external_validation_ground_truth.jsonl",
+          "C:\\Projects\\rct-extractor-v2\\data\\ground_truth\\stratified_external_validation_ground_truth_summary.json"
+        ],
+        "activity_summary": [
+          "warning-bearing activity log present: results_baseline_frozen_snapshot.jsonl",
+          "repeatable validation logs detected"
+        ],
+        "browser_test_commands": [],
+        "build_commands": [],
+        "guidance_commands": [
+          "python -m pytest C:\\Projects\\rct-extractor-v2 --tb=short -q",
+          "python -m pytest C:\\Projects\\rct-extractor-v2\\tests\\test_proof_carrying_numbers.py",
+          "python -m pytest C:\\Projects\\rct-extractor-v2\\tests\\test_team_of_rivals.py",
+          "python -m pytest tests/ --tb=short -q"
+        ],
+        "guidance_files": [
+          "CLAUDE.md",
+          "README.md"
+        ],
+        "guidance_summary": [
+          "CLAUDE.md \u2014 RCT Extractor v5.0",
+          "Project Overview",
+          "RCT effect estimate extraction from published PDFs. Extracts HR, OR, RR, MD, SMD, ARD, IRR, GMR and their confidence intervals using 180+ regex patterns, table ",
+          "Current Plan",
+          "Key Architecture",
+          "BaseExtractor + variants**: pattern-based extraction per effect type",
+          "Team of Rivals**: multiple extractors compete, consensus via tolerance-based clustering",
+          "Proof-Carrying Numbers (PCN)**: every extraction includes hash, provenance, validator outcomes",
+          "RCT Extractor v5.0"
+        ],
+        "has_drift_history": false,
+        "has_numeric_logic": true,
+        "has_oracle_benchmarks": false,
+        "has_validation_history": true,
+        "is_git_repo": true,
+        "last_active_at": "2026-03-28T14:19:16+00:00",
+        "last_indexed_at": "2026-04-05T18:17:56+00:00",
+        "manifest_hash": "c19b9a227f21b9c30153a9cca8a9567d1055de0d",
+        "name": "rct-extractor-v2",
+        "package_manager": "npm",
+        "perf_commands": [],
+        "platform": "windows",
+        "project_id": "rct-extractor-v2-6c290650",
+        "project_type": "hybrid_browser_analytics_app",
+        "recommended_verification": [
+          "relevant_tests",
+          "numeric_regression"
+        ],
+        "risk_profile": "medium_high",
+        "root_path": "C:\\Projects\\rct-extractor-v2",
+        "stack": [
+          "css",
+          "html",
+          "javascript",
+          "python"
+        ],
+        "test_commands": [
+          "python -m pytest C:\\Projects\\rct-extractor-v2\\tests\\test_proof_carrying_numbers.py",
+          "python -m pytest C:\\Projects\\rct-extractor-v2\\tests\\test_team_of_rivals.py",
+          "python -m pytest tests/ --tb=short -q",
+          "python -m pytest C:\\Projects\\rct-extractor-v2 --tb=short -q",
+          "python -m pytest -q"
+        ],
+        "verification_profiles": [
+          "browser_numeric_app"
+        ]
+      },
+      "signature": "c19b9a227f21b9c30153a9cca8a9567d1055de0d"
+    }
+  }
+}

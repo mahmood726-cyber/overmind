@@ -1,0 +1,165 @@
+{
+  "desired_sessions": 1,
+  "evidence": [],
+  "insights": [],
+  "interventions": [],
+  "machine": {
+    "active_sessions": 0,
+    "captured_at": "2026-04-07T07:37:58+00:00",
+    "cpu_percent": 17.9,
+    "load_state": "steady",
+    "ram_percent": 84.4,
+    "swap_used_mb": 5261.04
+  },
+  "memories_extracted": 0,
+  "projects": [
+    {
+      "activity_files": [
+        "C:\\Projects\\prognostic-meta\\tests\\validation_suite.html",
+        "C:\\Projects\\prognostic-meta\\SESSION_SUMMARY.md",
+        "C:\\Projects\\prognostic-meta\\SESSION_JANUARY_4_2026.md",
+        "C:\\Projects\\prognostic-meta\\docs\\R_VALIDATION_RESULTS.md",
+        "C:\\Projects\\prognostic-meta\\docs\\VALIDATION_VS_R.md"
+      ],
+      "activity_summary": [
+        "warning-bearing activity log present: validation_suite.html",
+        "repeatable validation logs detected",
+        "advanced analytical workflows detected: meta-analysis, numerical optimization, Bayesian modeling"
+      ],
+      "advanced_math_rigor": "extreme",
+      "advanced_math_score": 20,
+      "advanced_math_signals": [
+        "meta_analysis",
+        "bayesian_modeling",
+        "optimization_numerics",
+        "resampling",
+        "causal_inference",
+        "diagnostic_accuracy",
+        "hierarchical_modeling"
+      ],
+      "browser_test_commands": [
+        "\"C:\\Users\\user\\AppData\\Local\\Programs\\Python\\Python313\\python.exe\" \"C:\\overmind\\overmind\\verification\\browser_checks.py\" --project-root \"C:\\Projects\\prognostic-meta\" --page \"tests/automated_test_suite.html\" --summary-selector \".summary\" --ready-text \"Test Summary\" --wait-seconds 20 --min-pass-rate 95 --ignore-console-pattern \"favicon\\.ico\"",
+        "\"C:\\Users\\user\\AppData\\Local\\Programs\\Python\\Python313\\python.exe\" \"C:\\overmind\\overmind\\verification\\browser_checks.py\" --project-root \"C:\\Projects\\prognostic-meta\" --page \"tests/automated_visual_test.html\" --summary-selector \"#summary\" --ready-text \"Tests Complete:\" --wait-seconds 20 --min-pass-rate 95 --ignore-console-pattern \"favicon\\.ico\"",
+        "\"C:\\Users\\user\\AppData\\Local\\Programs\\Python\\Python313\\python.exe\" \"C:\\overmind\\overmind\\verification\\browser_checks.py\" --project-root \"C:\\Projects\\prognostic-meta\" --page \"tests/validation_suite.html\" --summary-selector \".summary\" --ready-text \"Validation Summary\" --wait-seconds 20 --min-pass-rate 90 --ignore-console-pattern \"favicon\\.ico\""
+      ],
+      "build_commands": [],
+      "guidance_commands": [
+        "cmd /c start \"\" C:\\Projects\\prognostic-meta\\index.html",
+        "node C:/Users/user/test_prognostic_v2.js",
+        "node C:/Users/user/prognostic_r_validation.js"
+      ],
+      "guidance_files": [
+        "CLAUDE.md",
+        "claude.md"
+      ],
+      "guidance_summary": [
+        "PrognosisMeta - Claude Code Reference",
+        "Application Overview",
+        "PrognosisMeta** is a publication-quality browser-based meta-analysis application.",
+        "Status:** 10/10 Editorial Quality, R VALIDATED",
+        "Tests:** 35/35 passing",
+        "R Validation:** 93.3% exact match with metafor",
+        "Total Code:** 29,770 lines JavaScript",
+        "Quick Commands"
+      ],
+      "has_advanced_math": true,
+      "has_drift_history": false,
+      "has_numeric_logic": true,
+      "has_oracle_benchmarks": false,
+      "has_validation_history": true,
+      "is_git_repo": true,
+      "last_active_at": "2026-04-07T02:08:24+00:00",
+      "last_indexed_at": "2026-04-07T07:37:51+00:00",
+      "manifest_hash": "113ed7f15001442cfc745d8f037c47e9af75f8bf",
+      "name": "prognostic-meta",
+      "package_manager": "npm",
+      "perf_commands": [],
+      "platform": "windows",
+      "project_id": "prognostic-meta-5028c26a",
+      "project_type": "browser_app",
+      "recommended_verification": [
+        "relevant_tests",
+        "targeted_browser_test",
+        "numeric_regression",
+        "deterministic_fixture_tests",
+        "edge_case_tests",
+        "output_comparison",
+        "sensitivity_checks",
+        "stochastic_stability",
+        "calibration_checks",
+        "regression_checks"
+      ],
+      "risk_profile": "high",
+      "root_path": "C:\\Projects\\prognostic-meta",
+      "stack": [
+        "css",
+        "html",
+        "javascript"
+      ],
+      "test_commands": [
+        "python -m pytest tests/test_smoke.py -q",
+        "node C:/Users/user/test_prognostic_v2.js",
+        "node C:/Users/user/prognostic_r_validation.js"
+      ],
+      "verification_profiles": [
+        "truthcert_suite"
+      ]
+    }
+  ],
+  "runners": [
+    {
+      "available": true,
+      "avg_latency_sec": 3.97,
+      "command": "codex",
+      "current_task_id": null,
+      "environment": "windows",
+      "failure_rate_7d": 0.2,
+      "health": "degraded",
+      "last_seen_at": "2026-04-07T07:37:58+00:00",
+      "optional": false,
+      "preferred_tasks": [
+        "tests",
+        "focused_fix",
+        "benchmark_script"
+      ],
+      "quota_state": "limited",
+      "runner_id": "codex_local_a",
+      "runner_type": "codex",
+      "status": "RATE_LIMITED",
+      "success_rate_7d": 0.4,
+      "unavailability_reason": null
+    }
+  ],
+  "tasks": [
+    {
+      "assigned_runner_id": "codex_local_a",
+      "attempt_count": 1,
+      "created_at": "2026-04-07T07:37:51+00:00",
+      "expected_context_cost": "medium",
+      "expected_runtime_min": 20,
+      "last_error": "provider quota/rate limit detected",
+      "priority": 0.6,
+      "project_id": "prognostic-meta-5028c26a",
+      "required_verification": [
+        "relevant_tests",
+        "targeted_browser_test",
+        "numeric_regression",
+        "deterministic_fixture_tests",
+        "edge_case_tests",
+        "output_comparison",
+        "sensitivity_checks",
+        "stochastic_stability",
+        "calibration_checks",
+        "regression_checks"
+      ],
+      "risk": "high",
+      "source": "project_index",
+      "status": "NEEDS_INTERVENTION",
+      "task_id": "baseline_e0f3652f",
+      "task_type": "verification",
+      "title": "Baseline verification for prognostic-meta",
+      "updated_at": "2026-04-07T07:37:55+00:00",
+      "verification_summary": []
+    }
+  ]
+}
