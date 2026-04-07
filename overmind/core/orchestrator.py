@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+import subprocess
 import time
 from pathlib import Path
 
@@ -9,6 +10,7 @@ from overmind.core.policy_engine import PolicyEngine
 from overmind.core.scheduler import Scheduler
 from overmind.discovery.indexer import ProjectIndexer
 from overmind.discovery.portfolio_audit import PortfolioAuditor
+from overmind.memory.audit_loop import AuditLoop
 from overmind.memory.dream_engine import DreamEngine
 from overmind.memory.extractor import MemoryExtractor
 from overmind.memory.insights import InsightEngine
@@ -55,6 +57,7 @@ class Orchestrator:
         self.insight_engine = InsightEngine()
         self.memory_extractor = MemoryExtractor(self.db)
         self.dream_engine = DreamEngine(self.db)
+        self.audit_loop = AuditLoop(self.db)
         self.tick_count = 0
         self.worker_prompt_template = (Path(__file__).resolve().parents[1] / "prompts" / "worker_prompt.txt").read_text(
             encoding="utf-8"
@@ -204,6 +207,29 @@ class Orchestrator:
                 result = self.verifier.run(task, project)
                 verification_results.append(result)
                 if result.success:
+                    # Run task-level verify_command if present
+                    if task.verify_command:
+                        verify_passed = self._run_verify_command(task, project)
+                        if not verify_passed:
+                            self.task_queue.transition(
+                                evidence.task_id, "FAILED",
+                                last_error="verify_command failed",
+                            )
+                            self.runner_registry.update_outcome(
+                                evidence.runner_id,
+                                success=False,
+                                latency_sec=runtime,
+                                output_lines=output_lines,
+                            )
+                            runner_record = self.db.get_runner(evidence.runner_id)
+                            if runner_record:
+                                self.q_router.record(runner_record.runner_type, task.task_type, False)
+                            self.audit_loop.evaluate(
+                                project_id=task.project_id,
+                                result=result,
+                                tick=self.tick_count,
+                            )
+                            continue
                     self.task_queue.transition(
                         evidence.task_id,
                         "COMPLETED",
@@ -224,6 +250,11 @@ class Orchestrator:
                 runner_record = self.db.get_runner(evidence.runner_id)
                 if runner_record:
                     self.q_router.record(runner_record.runner_type, task.task_type, result.success)
+                self.audit_loop.evaluate(
+                    project_id=task.project_id,
+                    result=result,
+                    tick=self.tick_count,
+                )
 
         insights = self.insight_engine.extract(evidence_items, verification_results)
         self.memory_store.save_insights(insights)
@@ -386,6 +417,29 @@ class Orchestrator:
                     }
                 )
         return actions
+
+    def _run_verify_command(self, task: TaskRecord, project: ProjectRecord) -> bool:
+        """Run the task's verify_command. Returns True if passed."""
+        if not task.verify_command:
+            return True
+        try:
+            proc = subprocess.Popen(
+                task.verify_command,
+                cwd=project.root_path,
+                shell=True,
+                stdout=subprocess.PIPE,
+                stderr=subprocess.PIPE,
+                text=True,
+            )
+            try:
+                stdout, stderr = proc.communicate(timeout=300)
+                return proc.returncode == 0
+            except subprocess.TimeoutExpired:
+                proc.kill()
+                proc.communicate(timeout=5)
+                return False
+        except OSError:
+            return False
 
     def dream(self, dry_run: bool = False) -> dict[str, object]:
         if dry_run:

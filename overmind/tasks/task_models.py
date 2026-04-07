@@ -30,6 +30,8 @@ def build_baseline_task(project: ProjectRecord) -> TaskRecord:
         if project.perf_commands and (project.has_oracle_benchmarks or project.has_drift_history):
             required_verification.append("before_after_benchmark")
 
+    verify_cmd = project.test_commands[0] if project.test_commands else None
+
     return TaskRecord(
         task_id=f"baseline_{uuid.uuid4().hex[:8]}",
         project_id=project.project_id,
@@ -41,6 +43,7 @@ def build_baseline_task(project: ProjectRecord) -> TaskRecord:
         expected_runtime_min=10 + min(project.advanced_math_score, 10),
         expected_context_cost="medium" if project.advanced_math_score >= 6 else "low",
         required_verification=list(dict.fromkeys(required_verification)),
+        verify_command=verify_cmd,
     )
 
 
@@ -62,6 +65,8 @@ def build_test_first_tasks(project: ProjectRecord) -> list[TaskRecord]:
         required_verification=["relevant_tests"],
     )
 
+    verify_cmd = project.test_commands[0] if project.test_commands else None
+
     impl_task = TaskRecord(
         task_id=impl_task_id,
         project_id=project.project_id,
@@ -74,6 +79,7 @@ def build_test_first_tasks(project: ProjectRecord) -> list[TaskRecord]:
         expected_context_cost="medium" if project.advanced_math_score >= 6 else "low",
         required_verification=list(project.recommended_verification) or ["relevant_tests"],
         blocked_by=[test_task_id],
+        verify_command=verify_cmd,
     )
 
     return [test_task, impl_task]

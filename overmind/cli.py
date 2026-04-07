@@ -47,6 +47,9 @@ def build_parser() -> argparse.ArgumentParser:
     dream_parser = subparsers.add_parser("dream")
     dream_parser.add_argument("--dry-run", action="store_true")
 
+    audit_parser = subparsers.add_parser("audit-history")
+    audit_parser.add_argument("--project-id", required=True)
+
     return parser
 
 
@@ -91,6 +94,8 @@ def main(argv: list[str] | None = None) -> None:
                 )
         elif args.command == "dream":
             payload = orchestrator.dream(dry_run=args.dry_run)
+        elif args.command == "audit-history":
+            payload = orchestrator.audit_loop.project_history(args.project_id)
         else:
             payload = orchestrator.show_state()
         print(json.dumps(payload, indent=2, sort_keys=True))
