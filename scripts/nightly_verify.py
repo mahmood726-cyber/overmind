@@ -49,7 +49,13 @@ from overmind.memory.audit_loop import AuditLoop
 DATA_DIR = Path(__file__).resolve().parents[1] / "data"
 DB_PATH = DATA_DIR / "state" / "overmind.db"
 REPORT_DIR = DATA_DIR / "nightly_reports"
-SKIP_PROJECTS = set()  # Add project_ids that always hang
+SKIP_PROJECTS = {
+    "metasprint-autopilot-747b492b",                          # smoke import hangs (scipy deadlock)
+    "superapp-3b1c175f",                                      # smoke import hangs
+    "metasprint-dta-5dffce53",                                # smoke import hangs (30K-line app)
+    "lec-phase0-bundle-a2c59fad",                             # test suite hangs
+    "hta-evidence-integrity-suite-dc1fe6c7",                  # test suite hangs (7946s last run)
+}  # Projects that consistently hang during verification
 
 
 def parse_args() -> argparse.Namespace:
