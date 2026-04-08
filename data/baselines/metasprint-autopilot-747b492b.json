@@ -1,0 +1,15 @@
+{
+  "command": "C:\\Users\\user\\AppData\\Local\\Programs\\Python\\Python313\\python.exe C:\\overmind\\data\\baseline_probes\\probe_metasprint-autopilot.py",
+  "values": {
+    "theta": 0.541368,
+    "se": 0.108288,
+    "ci_lo": 0.329127,
+    "ci_hi": 0.75361,
+    "tau2": 0.0,
+    "I2": 0.0,
+    "Q": 2.123507
+  },
+  "tolerance": 0.0001,
+  "project_path": "C:\\Projects\\metasprint-autopilot",
+  "created_by": "create_baselines.py"
+}

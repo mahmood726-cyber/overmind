@@ -1,0 +1,21 @@
+{
+  "command": "C:\\Users\\user\\AppData\\Local\\Programs\\Python\\Python313\\python.exe C:\\overmind\\data\\baseline_probes\\probe_metamethods.py",
+  "values": {
+    "evalue_point": 3.414,
+    "lfk_index": 0.0333,
+    "failsafe_n": {
+      "failsafe_n": 73,
+      "tolerance": 25,
+      "robust": true,
+      "interpretation": "73 null studies needed; exceeds tolerance of 25"
+    },
+    "qem_theta": 0.740741,
+    "qem_se": 0.077336,
+    "proportion_pooled": 0.099559,
+    "permutation_p": 0.342,
+    "q_observed": 15.2295
+  },
+  "tolerance": 0.0001,
+  "project_path": "C:\\Models\\MetaMethods",
+  "created_by": "create_baselines.py"
+}
