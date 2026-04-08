@@ -243,6 +243,21 @@ def main() -> None:
                 print(f"  Diagnosis: {r['project'].name} -> {diag.failure_type} ({diag.confidence:.0%}): {diag.recommended_action[:80]}")
     if diagnoses:
         print(f"Diagnosed {len(diagnoses)} failures")
+
+    # Evolution manager
+    from overmind.evolution.manager import EvolutionManager
+    evo_mgr = EvolutionManager(Path("C:/overmind/wiki"))
+    # Determine which projects resolved (were FAIL/REJECT last night, now CERTIFIED/PASS)
+    resolved_ids = set()
+    for r in results:
+        if r["bundle"].verdict in ("CERTIFIED", "PASS"):
+            resolved_ids.add(r["project"].project_id)
+    evo_stats = evo_mgr.evolve(
+        diagnoses=diagnoses,
+        resolved_project_ids=resolved_ids,
+    )
+    if evo_stats["new_recipes"] or evo_stats["resolutions"]:
+        print(f"Evolution: {evo_stats['new_recipes']} new recipes, {evo_stats['resolutions']} resolutions, {evo_stats['proven_recipes']} proven")
     print()
 
     # Generate report
