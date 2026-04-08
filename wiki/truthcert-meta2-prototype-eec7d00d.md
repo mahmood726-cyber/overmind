@@ -1,15 +1,15 @@
 # truthcert-meta2-prototype
 
-**Last verified:** 2026-04-08 20:23 UTC | **Verdict:** CERTIFIED (2/2 witnesses agree PASS)
-**Bundle hash:** ecfd42d6073b0aae | **Risk:** high | **Math:** 8
+**Last verified:** 2026-04-08 22:10 UTC | **Verdict:** CERTIFIED (2/2 witnesses agree PASS)
+**Bundle hash:** 784989dcfcd832f6 | **Risk:** high | **Math:** 8
 
 ## Health
 
 | Witness | Verdict | Time | Detail |
 |---------|---------|------|--------|
-| test_suite | PASS | 11.5s | .                                                                        [100%]
+| test_suite | PASS | 7.5s | .                                                                        [100%]
  |
-| smoke | PASS | 29.6s | 20 modules imported OK |
+| smoke | PASS | 27.5s | 20 modules imported OK |
 
 ## Project
 
@@ -23,3 +23,4 @@
 | Date | Verdict | Witnesses | Time | Hash |
 |------|---------|-----------|------|------|
 | 2026-04-08 | CERTIFIED | 2/2 | 41.1s | ecfd42d6073b0aae |
+| 2026-04-08 | CERTIFIED | 2/2 | 35.0s | 784989dcfcd832f6 |

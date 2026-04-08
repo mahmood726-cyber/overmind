@@ -1,13 +1,16 @@
 # BayesianMA
 
-**Last verified:** 2026-04-08 20:23 UTC | **Verdict:** FAIL (Hard timeout (300s) — process killed)
-**Bundle hash:** 4a73dd63f980b3a6 | **Risk:** high | **Math:** 13
+**Last verified:** 2026-04-08 22:10 UTC | **Verdict:** PASS (2/2 witnesses PASS (numerical skipped — no baseline))
+**Bundle hash:** 3839e9bf0eca1fda | **Risk:** high | **Math:** 13
 
 ## Health
 
 | Witness | Verdict | Time | Detail |
 |---------|---------|------|--------|
-| test_suite | FAIL | 300.0s | Project hung — killed after 300s |
+| test_suite | PASS | 21.6s | ...................................                                      [100%]
+ |
+| smoke | PASS | 0.6s | 1 modules imported OK |
+| numerical | SKIP | 0.0s | skipped |
 
 ## Project
 
@@ -21,9 +24,4 @@
 | Date | Verdict | Witnesses | Time | Hash |
 |------|---------|-----------|------|------|
 | 2026-04-08 | FAIL | 1/1 | 300.0s | 4a73dd63f980b3a6 |
-
-## Notes
-
-Hard timeout (300s) — process killed
-
-**test_suite:** Project hung — killed after 300s
+| 2026-04-08 | PASS | 2/3 | 22.1s | 3839e9bf0eca1fda |

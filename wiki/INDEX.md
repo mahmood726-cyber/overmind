@@ -1,6 +1,6 @@
 # Overmind Wiki Index
 
-**Last compiled:** 2026-04-08 20:23 UTC | **Projects:** 50 | **Certified:** 5 | **Rejected:** 14 | **Failed:** 18
+**Last compiled:** 2026-04-08 22:10 UTC | **Projects:** 50 | **Certified:** 5 | **Rejected:** 14 | **Failed:** 17
 
 | Project | Verdict | Risk | Math | Last Verified |
 |---------|---------|------|------|---------------|
@@ -27,7 +27,6 @@
 | [Dataextractor_backup_20260114_110706](dataextractor-backup-20260114-110706-e7f.md) | FAIL | high | 15 | 2026-04-08 |
 | [Pairwise70](pairwise70-5049aa49.md) | FAIL | high | 15 | 2026-04-08 |
 | [rmstnma](rmstnma-1810584a.md) | FAIL | high | 15 | 2026-04-08 |
-| [BayesianMA](bayesianma-240f4a74.md) | FAIL | high | 13 | 2026-04-08 |
 | [FATIHA_Project](fatiha-project-a8ec1065.md) | FAIL | high | 11 | 2026-04-08 |
 | [new-app](new-app-a051eaea.md) | FAIL | high | 11 | 2026-04-08 |
 | [NMA](nma-a6e8ac00.md) | FAIL | high | 11 | 2026-04-08 |
@@ -47,6 +46,7 @@
 | [lec_phase0_project](lec-phase0-project-b7f5a7f7.md) | PASS | high | 16 | 2026-04-08 |
 | [rct-extractor-v2](rct-extractor-v2-6c290650.md) | PASS | high | 15 | 2026-04-08 |
 | [hfpef_registry_synth](hfpef-registry-synth-65970c56.md) | PASS | high | 14 | 2026-04-08 |
+| [BayesianMA](bayesianma-240f4a74.md) | PASS | high | 13 | 2026-04-08 |
 | [metasprint-dose-response](metasprint-dose-response-1819ced5.md) | PASS | high | 12 | 2026-04-08 |
 | [experimental-meta-analysis](experimental-meta-analysis-37d6e8a1.md) | PASS | high | 11 | 2026-04-08 |
 | [cardio-ctgov-living-meta-portfolio](cardio-ctgov-living-meta-portfolio-10874.md) | PASS | high | 10 | 2026-04-08 |

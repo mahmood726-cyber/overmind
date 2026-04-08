@@ -1,14 +1,14 @@
 # Dataextractor
 
-**Last verified:** 2026-04-08 20:23 UTC | **Verdict:** FAIL (All witnesses FAIL: test_suite, smoke)
-**Bundle hash:** 28350d0d20b588c4 | **Risk:** high | **Math:** 18
+**Last verified:** 2026-04-08 22:10 UTC | **Verdict:** FAIL (All witnesses FAIL: test_suite, smoke)
+**Bundle hash:** ae0d99bacd435cee | **Risk:** high | **Math:** 18
 
 ## Health
 
 | Witness | Verdict | Time | Detail |
 |---------|---------|------|--------|
 | test_suite | FAIL | 0.0s | Failed to start: [WinError 2] The system cannot find the file specified |
-| smoke | FAIL | 30.8s | expand_validation: ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ |
+| smoke | FAIL | 25.4s | expand_validation: ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ |
 | numerical | SKIP | 0.0s | skipped |
 
 ## Project
@@ -23,6 +23,7 @@
 | Date | Verdict | Witnesses | Time | Hash |
 |------|---------|-----------|------|------|
 | 2026-04-08 | FAIL | 2/3 | 30.8s | 28350d0d20b588c4 |
+| 2026-04-08 | FAIL | 2/3 | 25.4s | ae0d99bacd435cee |
 
 ## Notes
 

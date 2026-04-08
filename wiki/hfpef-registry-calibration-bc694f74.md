@@ -1,15 +1,15 @@
 # hfpef_registry_calibration
 
-**Last verified:** 2026-04-08 20:23 UTC | **Verdict:** REJECT (Witnesses disagree: test_suite PASS vs smoke FAIL)
-**Bundle hash:** 8f92530f8b5a9ffc | **Risk:** high | **Math:** 6
+**Last verified:** 2026-04-08 22:10 UTC | **Verdict:** REJECT (Witnesses disagree: test_suite PASS vs smoke FAIL)
+**Bundle hash:** 0d4c593a914f472f | **Risk:** high | **Math:** 6
 
 ## Health
 
 | Witness | Verdict | Time | Detail |
 |---------|---------|------|--------|
-| test_suite | PASS | 3.4s | .                                                                        [100%]
+| test_suite | PASS | 3.3s | .                                                                        [100%]
  |
-| smoke | FAIL | 2.6s | scripts.learn_gate:   File "C:\Projects\hfpef_registry_calibration\scripts\learn |
+| smoke | FAIL | 3.5s | scripts.learn_gate:   File "C:\Projects\hfpef_registry_calibration\scripts\learn |
 
 ## Project
 
@@ -23,6 +23,7 @@
 | Date | Verdict | Witnesses | Time | Hash |
 |------|---------|-----------|------|------|
 | 2026-04-08 | REJECT | 2/2 | 6.0s | 8f92530f8b5a9ffc |
+| 2026-04-08 | REJECT | 2/2 | 6.7s | 0d4c593a914f472f |
 
 ## Notes
 

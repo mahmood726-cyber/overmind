@@ -1,14 +1,14 @@
 # Pairwise70
 
-**Last verified:** 2026-04-08 20:23 UTC | **Verdict:** FAIL (All witnesses FAIL: test_suite, smoke)
-**Bundle hash:** 6dba2b874dbfe913 | **Risk:** high | **Math:** 15
+**Last verified:** 2026-04-08 22:10 UTC | **Verdict:** FAIL (All witnesses FAIL: test_suite, smoke)
+**Bundle hash:** 8fb12b4c5515efbe | **Risk:** high | **Math:** 15
 
 ## Health
 
 | Witness | Verdict | Time | Detail |
 |---------|---------|------|--------|
-| test_suite | FAIL | 3.3s |  |
-| smoke | FAIL | 3.0s | truthcert.setup: usage: -c [global_opts] cmd1 [cmd1_opts] [cmd2 [cmd2_opts] ...] |
+| test_suite | FAIL | 2.0s |  |
+| smoke | FAIL | 1.5s | truthcert.setup: usage: -c [global_opts] cmd1 [cmd1_opts] [cmd2 [cmd2_opts] ...] |
 | numerical | SKIP | 0.0s | skipped |
 
 ## Project
@@ -23,6 +23,7 @@
 | Date | Verdict | Witnesses | Time | Hash |
 |------|---------|-----------|------|------|
 | 2026-04-08 | FAIL | 2/3 | 6.3s | 6dba2b874dbfe913 |
+| 2026-04-08 | FAIL | 2/3 | 3.5s | 8fb12b4c5515efbe |
 
 ## Notes
 

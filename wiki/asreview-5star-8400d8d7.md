@@ -1,14 +1,14 @@
 # asreview_5star
 
-**Last verified:** 2026-04-08 20:23 UTC | **Verdict:** REJECT (Witnesses disagree: smoke PASS vs test_suite FAIL)
-**Bundle hash:** 2099e2ad8461185c | **Risk:** high | **Math:** 12
+**Last verified:** 2026-04-08 22:10 UTC | **Verdict:** REJECT (Witnesses disagree: smoke PASS vs test_suite FAIL)
+**Bundle hash:** 366d7868d76d0971 | **Risk:** high | **Math:** 12
 
 ## Health
 
 | Witness | Verdict | Time | Detail |
 |---------|---------|------|--------|
-| test_suite | FAIL | 19.2s |  |
-| smoke | PASS | 21.6s | 5 modules imported OK |
+| test_suite | FAIL | 4.8s |  |
+| smoke | PASS | 9.7s | 5 modules imported OK |
 | numerical | SKIP | 0.0s | skipped |
 
 ## Project
@@ -23,6 +23,7 @@
 | Date | Verdict | Witnesses | Time | Hash |
 |------|---------|-----------|------|------|
 | 2026-04-08 | REJECT | 2/3 | 40.8s | 2099e2ad8461185c |
+| 2026-04-08 | REJECT | 2/3 | 14.5s | 366d7868d76d0971 |
 
 ## Notes
 

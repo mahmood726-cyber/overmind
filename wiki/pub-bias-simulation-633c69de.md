@@ -1,13 +1,13 @@
 # pub-bias-simulation
 
-**Last verified:** 2026-04-08 20:23 UTC | **Verdict:** PASS (Single witness: test_suite PASS)
-**Bundle hash:** 8d247f4e4251c734 | **Risk:** medium_high | **Math:** 8
+**Last verified:** 2026-04-08 22:10 UTC | **Verdict:** PASS (Single witness: test_suite PASS)
+**Bundle hash:** b4b25fe8d56b789f | **Risk:** medium_high | **Math:** 8
 
 ## Health
 
 | Witness | Verdict | Time | Detail |
 |---------|---------|------|--------|
-| test_suite | PASS | 1.8s | .                                                                        [100%]
+| test_suite | PASS | 2.4s | .                                                                        [100%]
  |
 | smoke | SKIP | 0.0s | skipped |
 
@@ -23,3 +23,4 @@
 | Date | Verdict | Witnesses | Time | Hash |
 |------|---------|-----------|------|------|
 | 2026-04-08 | PASS | 1/2 | 1.8s | 8d247f4e4251c734 |
+| 2026-04-08 | PASS | 1/2 | 2.4s | b4b25fe8d56b789f |

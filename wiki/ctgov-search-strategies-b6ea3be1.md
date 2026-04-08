@@ -1,14 +1,14 @@
 # ctgov-search-strategies
 
-**Last verified:** 2026-04-08 20:23 UTC | **Verdict:** REJECT (Witnesses disagree: smoke PASS vs test_suite FAIL)
-**Bundle hash:** b10da6704b62307a | **Risk:** high | **Math:** 7
+**Last verified:** 2026-04-08 22:10 UTC | **Verdict:** REJECT (Witnesses disagree: smoke PASS vs test_suite FAIL)
+**Bundle hash:** c8a3562791de4445 | **Risk:** high | **Math:** 7
 
 ## Health
 
 | Witness | Verdict | Time | Detail |
 |---------|---------|------|--------|
-| test_suite | FAIL | 11.2s |  |
-| smoke | PASS | 9.7s | 20 modules imported OK |
+| test_suite | FAIL | 6.6s |  |
+| smoke | PASS | 7.5s | 20 modules imported OK |
 
 ## Project
 
@@ -22,6 +22,7 @@
 | Date | Verdict | Witnesses | Time | Hash |
 |------|---------|-----------|------|------|
 | 2026-04-08 | REJECT | 2/2 | 20.9s | b10da6704b62307a |
+| 2026-04-08 | REJECT | 2/2 | 14.2s | c8a3562791de4445 |
 
 ## Notes
 

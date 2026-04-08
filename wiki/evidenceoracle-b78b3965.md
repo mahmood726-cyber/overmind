@@ -1,14 +1,14 @@
 # EvidenceOracle
 
-**Last verified:** 2026-04-08 20:23 UTC | **Verdict:** REJECT (Witnesses disagree: smoke PASS vs test_suite FAIL)
-**Bundle hash:** c8971f1475e4fb4e | **Risk:** high | **Math:** 14
+**Last verified:** 2026-04-08 22:10 UTC | **Verdict:** REJECT (Witnesses disagree: smoke PASS vs test_suite FAIL)
+**Bundle hash:** c1ecae7c507baea4 | **Risk:** high | **Math:** 14
 
 ## Health
 
 | Witness | Verdict | Time | Detail |
 |---------|---------|------|--------|
-| test_suite | FAIL | 4.1s | s\user\AppData\Local\Programs\Python\Python313\Lib\site-packages\_pytest\main.py |
-| smoke | PASS | 6.0s | 2 modules imported OK |
+| test_suite | FAIL | 3.0s | s\user\AppData\Local\Programs\Python\Python313\Lib\site-packages\_pytest\main.py |
+| smoke | PASS | 3.5s | 2 modules imported OK |
 | numerical | SKIP | 0.0s | skipped |
 
 ## Project
@@ -23,6 +23,7 @@
 | Date | Verdict | Witnesses | Time | Hash |
 |------|---------|-----------|------|------|
 | 2026-04-08 | REJECT | 2/3 | 10.2s | c8971f1475e4fb4e |
+| 2026-04-08 | REJECT | 2/3 | 6.5s | c1ecae7c507baea4 |
 
 ## Notes
 

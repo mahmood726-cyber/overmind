@@ -1,15 +1,15 @@
 # truthcert-denominator-phase1
 
-**Last verified:** 2026-04-08 20:23 UTC | **Verdict:** REJECT (Witnesses disagree: test_suite, smoke PASS vs numerical FAIL)
-**Bundle hash:** f1306a481e9bc540 | **Risk:** high | **Math:** 10
+**Last verified:** 2026-04-08 22:10 UTC | **Verdict:** REJECT (Witnesses disagree: test_suite, smoke PASS vs numerical FAIL)
+**Bundle hash:** 5b92d181ddea281e | **Risk:** high | **Math:** 10
 
 ## Health
 
 | Witness | Verdict | Time | Detail |
 |---------|---------|------|--------|
-| test_suite | PASS | 7.2s | .                                                                        [100%]
+| test_suite | PASS | 7.6s | .                                                                        [100%]
  |
-| smoke | PASS | 31.5s | 14 modules imported OK |
+| smoke | PASS | 22.5s | 14 modules imported OK |
 | numerical | FAIL | 0.0s | Blocked: command prefix not allowlisted: C:\Users\user\AppData\Local\Programs\Py |
 
 ## Project
@@ -24,6 +24,7 @@
 | Date | Verdict | Witnesses | Time | Hash |
 |------|---------|-----------|------|------|
 | 2026-04-08 | REJECT | 3/3 | 38.8s | f1306a481e9bc540 |
+| 2026-04-08 | REJECT | 3/3 | 30.1s | 5b92d181ddea281e |
 
 ## Notes
 

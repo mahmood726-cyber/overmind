@@ -1,15 +1,15 @@
 # lec_phase0_project
 
-**Last verified:** 2026-04-08 20:23 UTC | **Verdict:** PASS (2/2 witnesses PASS (numerical skipped — no baseline))
-**Bundle hash:** 8c87dc272319b27c | **Risk:** high | **Math:** 16
+**Last verified:** 2026-04-08 22:10 UTC | **Verdict:** PASS (2/2 witnesses PASS (numerical skipped — no baseline))
+**Bundle hash:** 02c5b26fccb16620 | **Risk:** high | **Math:** 16
 
 ## Health
 
 | Witness | Verdict | Time | Detail |
 |---------|---------|------|--------|
-| test_suite | PASS | 6.4s | ...                                                                      [100%]
+| test_suite | PASS | 5.0s | ...                                                                      [100%]
  |
-| smoke | PASS | 18.4s | 8 modules imported OK |
+| smoke | PASS | 12.3s | 8 modules imported OK |
 | numerical | SKIP | 0.0s | skipped |
 
 ## Project
@@ -24,3 +24,4 @@
 | Date | Verdict | Witnesses | Time | Hash |
 |------|---------|-----------|------|------|
 | 2026-04-08 | PASS | 2/3 | 24.9s | 8c87dc272319b27c |
+| 2026-04-08 | PASS | 2/3 | 17.3s | 02c5b26fccb16620 |

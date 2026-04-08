@@ -2,6 +2,14 @@
 
 ## 2026-04-08
 
+**Verified:** 50 | **Certified:** 5 | **Rejected:** 14 | **Failed:** 17
+
+### Changes from last night
+- BayesianMA: FAIL -> PASS
+
+
+## 2026-04-08
+
 **Verified:** 50 | **Certified:** 5 | **Rejected:** 14 | **Failed:** 18
 
 ### Changes from last night
