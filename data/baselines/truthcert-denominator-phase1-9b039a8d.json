@@ -1,0 +1,13 @@
+{
+  "command": "C:\\Users\\user\\AppData\\Local\\Programs\\Python\\Python313\\python.exe C:\\overmind\\data\\baseline_probes\\probe_truthcert-denominator.py",
+  "values": {
+    "fe_mu": 0.53483,
+    "fe_se": 0.062636,
+    "re_mu": 0.514567,
+    "re_tau2": 0.021265,
+    "re_i2": 49.6553
+  },
+  "tolerance": 0.0001,
+  "project_path": "C:\\Models\\truthcert-denominator-phase1",
+  "created_by": "create_baselines.py"
+}

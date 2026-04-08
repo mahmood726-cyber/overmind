@@ -1,0 +1,11 @@
+{
+  "command": "C:\\Users\\user\\AppData\\Local\\Programs\\Python\\Python313\\python.exe C:\\overmind\\data\\baseline_probes\\probe_africaforecast.py",
+  "values": {
+    "rmse": 0.148324,
+    "mae": 0.14,
+    "coverage": 1.0
+  },
+  "tolerance": 0.0001,
+  "project_path": "C:\\Models\\AfricaForecast",
+  "created_by": "create_baselines.py"
+}

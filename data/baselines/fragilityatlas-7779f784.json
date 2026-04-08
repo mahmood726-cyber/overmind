@@ -1,0 +1,14 @@
+{
+  "command": "C:\\Users\\user\\AppData\\Local\\Programs\\Python\\Python313\\python.exe C:\\overmind\\data\\baseline_probes\\probe_fragilityatlas.py",
+  "values": {
+    "dl_theta": 0.514567,
+    "dl_tau2": 0.021265,
+    "dl_i2": 49.6553,
+    "reml_hksj_theta": 0.515401,
+    "reml_hksj_ci_lo": 0.225761,
+    "reml_hksj_ci_hi": 0.805041
+  },
+  "tolerance": 0.0001,
+  "project_path": "C:\\FragilityAtlas",
+  "created_by": "create_baselines.py"
+}

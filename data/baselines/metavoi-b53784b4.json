@@ -1,0 +1,12 @@
+{
+  "command": "C:\\Users\\user\\AppData\\Local\\Programs\\Python\\Python313\\python.exe C:\\overmind\\data\\baseline_probes\\probe_metavoi.py",
+  "values": {
+    "evpi_mcid02": 0.032,
+    "evpi_mcid01": 0.005,
+    "draws_mean": 0.22,
+    "draws_std": 0.103344
+  },
+  "tolerance": 0.0001,
+  "project_path": "C:\\Models\\MetaVoI",
+  "created_by": "create_baselines.py"
+}

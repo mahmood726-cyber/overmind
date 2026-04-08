@@ -1,0 +1,12 @@
+{
+  "command": "C:\\Users\\user\\AppData\\Local\\Programs\\Python\\Python313\\python.exe C:\\overmind\\data\\baseline_probes\\probe_gwam.py",
+  "values": {
+    "cdf_1.96": 0.975002,
+    "cdf_0.0": 0.5,
+    "ppf_0.975": 1.959964,
+    "ppf_0.5": 0.0
+  },
+  "tolerance": 0.0001,
+  "project_path": "C:\\Models\\GWAM",
+  "created_by": "create_baselines.py"
+}

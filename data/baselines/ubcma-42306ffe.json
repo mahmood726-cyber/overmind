@@ -1,0 +1,10 @@
+{
+  "command": "C:\\Users\\user\\AppData\\Local\\Programs\\Python\\Python313\\python.exe C:\\overmind\\data\\baseline_probes\\probe_ubcma.py",
+  "values": {
+    "dl_mu": 0.514567,
+    "dl_tau": 0.145824
+  },
+  "tolerance": 0.0001,
+  "project_path": "C:\\ubcma",
+  "created_by": "create_baselines.py"
+}

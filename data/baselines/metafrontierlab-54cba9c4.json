@@ -1,0 +1,11 @@
+{
+  "command": "C:\\Users\\user\\AppData\\Local\\Programs\\Python\\Python313\\python.exe C:\\overmind\\data\\baseline_probes\\probe_metafrontierlab.py",
+  "values": {
+    "estimate": 0.516897,
+    "std_error": 0.075677,
+    "tau": 0.000339
+  },
+  "tolerance": 0.001,
+  "project_path": "C:\\MetaFrontierLab",
+  "created_by": "create_baselines.py"
+}

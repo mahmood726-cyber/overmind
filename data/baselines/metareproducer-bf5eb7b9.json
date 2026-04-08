@@ -1,0 +1,12 @@
+{
+  "command": "C:\\Users\\user\\AppData\\Local\\Programs\\Python\\Python313\\python.exe C:\\overmind\\data\\baseline_probes\\probe_metareproducer.py",
+  "values": {
+    "dl_pooled": 0.514567,
+    "dl_tau2": 0.021265,
+    "reml_pooled": 0.53483,
+    "reml_tau2": 0.0
+  },
+  "tolerance": 0.0001,
+  "project_path": "C:\\MetaReproducer",
+  "created_by": "create_baselines.py"
+}

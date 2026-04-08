@@ -1,0 +1,13 @@
+{
+  "command": "C:\\Users\\user\\AppData\\Local\\Programs\\Python\\Python313\\python.exe C:\\overmind\\data\\baseline_probes\\probe_priorlab.py",
+  "values": {
+    "nn_posterior_mean": 0.480769,
+    "nn_posterior_sd": 0.196116,
+    "bb_a_posterior": 8.0,
+    "bb_b_posterior": 4.0,
+    "bb_posterior_mean": 0.666667
+  },
+  "tolerance": 0.0001,
+  "project_path": "C:\\Models\\PriorLab",
+  "created_by": "create_baselines.py"
+}
