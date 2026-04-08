@@ -23,7 +23,7 @@ from pathlib import Path
 if sys.platform == "win32":
     try:
         import faulthandler
-        faulthandler.dump_traceback_later(7200, exit=True)  # safety net: kill if hung >2hrs
+        faulthandler.dump_traceback_later(1800, exit=True)  # safety net: kill if hung >30min
     except Exception:
         pass
     try:
@@ -254,7 +254,32 @@ def _run_verification(db: StateDatabase, args: argparse.Namespace, run_start: da
 
         print(f"[{i}/{len(projects)}] {proj.name}...", end=" ", flush=True)
         start = time.time()
-        bundle = engine.verify(proj)
+        # Per-project wall-clock timeout to prevent one hung project from killing the run
+        try:
+            from concurrent.futures import ThreadPoolExecutor, TimeoutError as FuturesTimeout
+            with ThreadPoolExecutor(max_workers=1) as executor:
+                future = executor.submit(engine.verify, proj)
+                bundle = future.result(timeout=300)  # 5-minute hard cap per project
+        except FuturesTimeout:
+            from overmind.verification.scope_lock import WitnessResult
+            from overmind.verification.cert_bundle import CertBundle
+            elapsed = time.time() - start
+            bundle = CertBundle(
+                project_id=proj.project_id,
+                scope_lock=engine.build_scope_lock(proj),
+                witness_results=[WitnessResult(
+                    witness_type="test_suite", verdict="FAIL", exit_code=-1,
+                    stdout="", stderr=f"Project verification timed out after 300s",
+                    elapsed=round(elapsed, 2),
+                )],
+                verdict="FAIL",
+                arbitration_reason="Hard timeout (300s) — project hung during verification",
+                timestamp=utc_now(),
+            )
+        except Exception as exc:
+            elapsed = time.time() - start
+            print(f"ERROR ({elapsed:.1f}s) [{exc}]")
+            continue
         elapsed = time.time() - start
 
         results.append({"project": proj, "bundle": bundle, "elapsed": elapsed})
