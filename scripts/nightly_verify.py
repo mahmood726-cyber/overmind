@@ -494,6 +494,59 @@ def _run_verification(db: StateDatabase, args: argparse.Namespace, run_start: da
     if diagnoses:
         print(f"Diagnosed {len(diagnoses)} failures ({len(diagnoses)} decisions dropped)")
 
+    # Auto-fix phase: attempt safe remediation for diagnosed failures
+    from overmind.remediation.auto_fixer import AutoFixer
+    auto_fixer = AutoFixer(
+        baselines_dir=DATA_DIR / "baselines",
+        probes_dir=DATA_DIR / "baseline_probes",
+    )
+    fixes_attempted = 0
+    fixes_succeeded = 0
+    fixes_committed = 0
+    project_map = {r["project"].project_id: r["project"] for r in results}
+    print()
+    print("Auto-remediation...")
+    for diag in diagnoses:
+        proj = project_map.get(diag.project_id)
+        if not proj:
+            continue
+
+        # Simple re-verify: run test command and check exit code
+        def make_verify_fn(test_cmd, cwd):
+            def verify(project_path):
+                try:
+                    from overmind.subprocess_utils import split_command
+                    proc = subprocess.run(
+                        split_command(test_cmd), cwd=cwd,
+                        capture_output=True, text=True, timeout=120,
+                    )
+                    return proc.returncode == 0
+                except Exception:
+                    return False
+            return verify
+
+        verify_fn = make_verify_fn(proj.test_commands[0], proj.root_path) if proj.test_commands else None
+        result = auto_fixer.attempt_fix(diag, proj.root_path, verify_fn=verify_fn)
+
+        if result.fix_attempted:
+            fixes_attempted += 1
+            if result.fix_result and result.fix_result.success:
+                fixes_succeeded += 1
+                if result.committed:
+                    fixes_committed += 1
+            status = "FIXED" if result.fix_result and result.fix_result.success else "FAILED"
+            print(f"  [{status}] {proj.name}: {result.detail}")
+        elif "blocked" in result.detail.lower() or "no auto-fix" in result.detail.lower():
+            pass  # Silent skip for unfixable types
+        else:
+            print(f"  [SKIP] {proj.name}: {result.detail}")
+
+    if fixes_attempted:
+        print(f"Auto-fix: {fixes_succeeded}/{fixes_attempted} succeeded, {fixes_committed} committed")
+    else:
+        print("Auto-fix: no fixable failures found")
+    print()
+
     # Evolution manager
     from overmind.evolution.manager import EvolutionManager
     evo_mgr = EvolutionManager(Path("C:/overmind/wiki"))
