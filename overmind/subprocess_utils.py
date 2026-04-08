@@ -30,10 +30,17 @@ def split_command(command: str) -> list[str]:
 
 def validate_command_prefix(command: str) -> bool:
     """Check that a command starts with an allowlisted executable."""
-    parts = split_command(command)
+    # Use posix=False for validation so Windows backslash paths are preserved
+    try:
+        parts = shlex.split(command, posix=False)
+    except ValueError:
+        parts = command.split()
     if not parts:
         return False
     executable = parts[0].replace("\\", "/").rsplit("/", 1)[-1].lower()
+    # Strip quotes that posix=False preserves
+    executable = executable.strip("'\"")
+
     # Strip .exe suffix for comparison
     if executable.endswith(".exe"):
         executable = executable[:-4]
