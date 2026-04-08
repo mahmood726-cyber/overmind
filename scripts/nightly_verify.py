@@ -23,7 +23,7 @@ from pathlib import Path
 if sys.platform == "win32":
     try:
         import faulthandler
-        faulthandler.dump_traceback_later(1800, exit=True)  # safety net: kill if hung >30min
+        faulthandler.dump_traceback_later(3600, exit=True)  # safety net: kill if hung >60min
     except Exception:
         pass
     try:
@@ -120,11 +120,18 @@ def _verify_with_timeout(engine, proj, timeout=300):
               proj.to_dict(), result_queue),
     )
     worker.start()
-    worker.join(timeout=timeout)
+    # Poll is_alive() instead of join(timeout) — join hangs on Windows
+    # when child subprocesses hold inherited pipe handles
+    deadline = time.time() + timeout
+    while worker.is_alive() and time.time() < deadline:
+        time.sleep(2)
 
     if worker.is_alive():
-        worker.kill()
-        worker.join(5)
+        worker.terminate()
+        time.sleep(3)
+        if worker.is_alive():
+            worker.kill()
+            time.sleep(1)
         return CertBundle(
             project_id=proj.project_id,
             scope_lock=engine.build_scope_lock(proj),
