@@ -156,10 +156,34 @@ def main() -> None:
         except Exception:
             pass
 
+    # Hash-skip: load last night's bundles to compare source_hash
+    yesterday_bundles: dict[str, dict] = {}
+    for bundle_file in sorted((REPORT_DIR / "bundles").glob("*/*.json")):
+        try:
+            b = json.loads(bundle_file.read_text(encoding="utf-8"))
+            pid = b.get("project_id", "")
+            if pid and b.get("verdict") == "CERTIFIED":
+                yesterday_bundles[pid] = b
+        except Exception:
+            pass
+    skipped_cached = 0
+
     for i, proj in enumerate(projects, 1):
         if proj.project_id in completed_ids:
             print(f"[{i}/{len(projects)}] {proj.name}... SKIPPED (already verified)")
             continue
+
+        # Hash-skip: if source_hash unchanged since last CERTIFIED, skip
+        last_bundle = yesterday_bundles.get(proj.project_id)
+        if last_bundle:
+            current_hash = engine.build_scope_lock(proj).source_hash
+            last_hash = last_bundle.get("scope_lock", {}).get("source_hash", "")
+            if current_hash == last_hash and current_hash:
+                print(f"[{i}/{len(projects)}] {proj.name}... CACHED (unchanged since last CERTIFIED)")
+                skipped_cached += 1
+                certified += 1
+                continue
+
         print(f"[{i}/{len(projects)}] {proj.name}...", end=" ", flush=True)
         start = time.time()
         bundle = engine.verify(proj)
@@ -266,8 +290,23 @@ def main() -> None:
             if diag:
                 diagnoses.append(diag)
                 print(f"  Diagnosis: {r['project'].name} -> {diag.failure_type} ({diag.confidence:.0%}): {diag.recommended_action[:80]}")
+    # Drop diagnoses into project repos as DECISIONS.md entries
+    for diag in diagnoses:
+        proj_match = next((r["project"] for r in results if r["project"].project_id == diag.project_id), None)
+        if proj_match:
+            decisions_path = Path(proj_match.root_path) / "DECISIONS.md"
+            try:
+                entry = f"- **{date_str}** [{diag.failure_type}] {diag.summary[:100]} — Action: {diag.recommended_action[:100]}\n"
+                if decisions_path.exists():
+                    existing = decisions_path.read_text(encoding="utf-8")
+                    if entry.strip() not in existing:
+                        decisions_path.write_text(existing + entry, encoding="utf-8")
+                else:
+                    decisions_path.write_text(f"# Overmind Decisions\n\n{entry}", encoding="utf-8")
+            except OSError:
+                pass  # Read-only or permission issue — skip silently
     if diagnoses:
-        print(f"Diagnosed {len(diagnoses)} failures")
+        print(f"Diagnosed {len(diagnoses)} failures ({len(diagnoses)} decisions dropped)")
 
     # Evolution manager
     from overmind.evolution.manager import EvolutionManager
@@ -330,7 +369,7 @@ def main() -> None:
     md_lines = [
         f"# Nightly Verification Report - {date_str}",
         "",
-        f"**{certified}/{n} CERTIFIED** | {failed} FAIL | {rejected} REJECT | {single_pass} single-witness (PASS)",
+        f"**{certified}/{n + skipped_cached} CERTIFIED** ({skipped_cached} cached) | {failed} FAIL | {rejected} REJECT | {single_pass} single-witness (PASS)",
         "",
         "```mermaid",
         "pie title Nightly Verdicts",
@@ -344,6 +383,24 @@ def main() -> None:
     if failed:
         md_lines.append(f'    "FAIL" : {failed}')
     md_lines.extend(["```", ""])
+
+    # Top proven recipes (from Evolution Manager)
+    procedures_path = Path("C:/overmind/wiki/PROCEDURES.md")
+    if procedures_path.exists():
+        import re as _re
+        proc_content = procedures_path.read_text(encoding="utf-8")
+        proven_rows = _re.findall(
+            r"^\| ([^|]+)\| ([^|]+)\| ([^|]+)\| (\d+)\s*\| (\d+)\s*\| (\d+)%",
+            proc_content, _re.MULTILINE,
+        )
+        proven = [(r[0].strip(), r[2].strip(), int(r[5])) for r in proven_rows
+                  if not r[0].strip().startswith("Recipe") and int(r[5]) > 0]
+        if proven:
+            proven.sort(key=lambda x: -x[2])
+            md_lines.extend(["**Top proven fixes:**"])
+            for recipe_id, fix, conf in proven[:3]:
+                md_lines.append(f"- `{recipe_id}`: {fix} ({conf}% confidence)")
+            md_lines.append("")
 
     # CERTIFIED table
     certified_rows = [r for r in results if r["bundle"].verdict == "CERTIFIED"]
