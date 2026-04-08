@@ -23,7 +23,7 @@ from pathlib import Path
 if sys.platform == "win32":
     try:
         import faulthandler
-        faulthandler.dump_traceback_later(300, exit=True)  # safety net: kill if hung >5min
+        faulthandler.dump_traceback_later(7200, exit=True)  # safety net: kill if hung >2hrs
     except Exception:
         pass
     try:

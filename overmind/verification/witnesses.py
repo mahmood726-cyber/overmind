@@ -11,7 +11,7 @@ from overmind.verification.scope_lock import WitnessResult
 PYTHON_EXE = sys.executable
 
 
-class TestSuiteWitness:
+class SuiteWitness:
     def __init__(self, timeout: int = 120) -> None:
         self.timeout = timeout
 
@@ -146,8 +146,10 @@ class NumericalWitness:
             if actual_val is None:
                 drifts.append(f"{key}: missing in output")
             elif isinstance(expected_val, (int, float)) and isinstance(actual_val, (int, float)):
-                if abs(actual_val - expected_val) > tolerance:
-                    drifts.append(f"{key}: {expected_val} -> {actual_val} (delta={abs(actual_val - expected_val):.2e}, tol={tolerance:.0e})")
+                # Relative tolerance for large values, absolute for near-zero
+                effective_tol = max(tolerance, tolerance * abs(expected_val))
+                if abs(actual_val - expected_val) > effective_tol:
+                    drifts.append(f"{key}: {expected_val} -> {actual_val} (delta={abs(actual_val - expected_val):.2e}, tol={effective_tol:.2e})")
             elif actual_val != expected_val:
                 drifts.append(f"{key}: {expected_val!r} -> {actual_val!r}")
 

@@ -78,8 +78,8 @@ ONE_SHOT = RunnerProtocol(
 
 PIPE = RunnerProtocol(
     name="pipe",
-    close_stdin_after_prompt=True,
-    supports_intervention=False,
+    close_stdin_after_prompt=False,
+    supports_intervention=True,
     prompt_wrapper=_gemini_prompt_wrapper,
     output_filter=_gemini_output_filter,
     capacity_error_patterns=_GEMINI_CAPACITY_PATTERNS,

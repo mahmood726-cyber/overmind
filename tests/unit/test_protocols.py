@@ -32,8 +32,8 @@ def test_one_shot_protocol_properties():
 
 def test_pipe_protocol_properties():
     assert PIPE.name == "pipe"
-    assert PIPE.close_stdin_after_prompt is True
-    assert PIPE.supports_intervention is False
+    assert PIPE.close_stdin_after_prompt is False
+    assert PIPE.supports_intervention is True
     assert len(PIPE.capacity_error_patterns) == 5
 
 

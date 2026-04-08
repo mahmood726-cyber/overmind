@@ -10,7 +10,7 @@ from overmind.verification.scope_lock import ScopeLock, WitnessResult, compute_t
 from overmind.verification.witnesses import (
     NumericalWitness,
     SmokeWitness,
-    TestSuiteWitness,
+    SuiteWitness,
 )
 
 
@@ -24,7 +24,7 @@ class TruthCertEngine:
     ) -> None:
         self.baselines_dir = baselines_dir
         self.baselines_dir.mkdir(parents=True, exist_ok=True)
-        self.test_suite_witness = TestSuiteWitness(timeout=test_timeout)
+        self.test_suite_witness = SuiteWitness(timeout=test_timeout)
         self.smoke_witness = SmokeWitness(timeout=smoke_timeout)
         self.numerical_witness = NumericalWitness(timeout=numerical_timeout)
         self.arbitrator = Arbitrator()

@@ -16,6 +16,8 @@ class Prioritizer:
                 score += 0.2
             if project.has_advanced_math:
                 score += min(project.advanced_math_score / 40.0, 0.2)
+            if project.analysis_risk_factors:
+                score += min(len(project.analysis_risk_factors) / 40.0, 0.08)
             if task.task_type == "performance_optimization":
                 score += 0.1
             task.priority = round(min(score, 0.99), 2)

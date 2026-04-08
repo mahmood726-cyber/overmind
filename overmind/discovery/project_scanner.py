@@ -10,7 +10,14 @@ from pathlib import Path
 
 from overmind.config import AppConfig
 from overmind.discovery.activity_analyzer import ActivityLogAnalyzer
-from overmind.discovery.analysis_signals import analysis_rigor_level, compute_analysis_score, detect_analysis_signals
+from overmind.discovery.analysis_signals import (
+    analysis_rigor_level,
+    compute_analysis_score,
+    describe_analysis_focus_areas,
+    describe_analysis_risk_factors,
+    detect_analysis_signals,
+    recommended_analysis_checks,
+)
 from overmind.discovery.git_probe import GitProbe
 from overmind.discovery.guidance_parser import GuidanceParser
 from overmind.discovery.manifest_parser import ManifestParser
@@ -148,6 +155,8 @@ class ProjectScanner:
         )
 
         advanced_math_signals = self._advanced_math_signals(root, guidance.summary, normalized_guidance_commands, activity)
+        analysis_focus_areas = describe_analysis_focus_areas(advanced_math_signals)
+        analysis_risk_factors = describe_analysis_risk_factors(advanced_math_signals)
         advanced_math_score = compute_analysis_score(
             advanced_math_signals,
             has_validation_history=activity.has_validation_history,
@@ -202,6 +211,8 @@ class ProjectScanner:
             advanced_math_signals=advanced_math_signals,
             advanced_math_score=advanced_math_score,
             advanced_math_rigor=advanced_math_rigor,
+            analysis_focus_areas=analysis_focus_areas,
+            analysis_risk_factors=analysis_risk_factors,
             guidance_files=guidance.found,
             guidance_summary=guidance.summary,
             guidance_commands=normalized_guidance_commands,
@@ -489,10 +500,16 @@ class ProjectScanner:
             checks.extend(["deterministic_fixture_tests", "edge_case_tests", "output_comparison"])
         if test_commands and advanced_math_score >= 6:
             checks.extend(["sensitivity_checks", "stochastic_stability"])
-        if test_commands and any(
-            signal in {"diagnostic_accuracy", "calibration_validation"} for signal in advanced_math_signals
-        ):
-            checks.append("calibration_checks")
+        if test_commands:
+            checks.extend(
+                recommended_analysis_checks(
+                    advanced_math_signals,
+                    score=advanced_math_score,
+                    has_validation_history=activity.has_validation_history,
+                    has_oracle_benchmarks=activity.has_oracle_benchmarks,
+                    has_drift_history=activity.has_drift_history,
+                )
+            )
         if (build_commands or test_commands) and (has_advanced_math or activity.has_oracle_benchmarks or activity.has_drift_history):
             checks.append("regression_checks")
         if perf_commands and (activity.has_oracle_benchmarks or activity.has_drift_history):
@@ -659,13 +676,33 @@ class ProjectScanner:
                 "sensitivity_checks",
                 "stochastic_stability",
                 "calibration_checks",
+                "heterogeneity_checks",
+                "publication_bias_checks",
+                "consistency_checks",
+                "ranking_stability",
+                "censoring_checks",
+                "competing_risks_checks",
+                "convergence_checks",
+                "posterior_sanity_checks",
+                "missing_data_checks",
+                "correlation_structure_checks",
+                "shape_constraint_checks",
+                "temporal_backtest_checks",
+                "measurement_error_checks",
+                "decision_curve_checks",
+                "threshold_stability_checks",
+                "identification_checks",
+                "variance_component_checks",
+                "matrix_stability_checks",
+                "distribution_robustness_checks",
+                "model_assumption_checks",
             } and test_commands:
                 supported.append(check)
             elif check in {"playwright", "targeted_browser_test", "smoke_flow", "accessibility_check"} and browser_test_commands:
                 supported.append(check)
             elif check in {"lighthouse", "before_after_benchmark", "no_correctness_regression"} and perf_commands:
                 supported.append(check)
-            elif check == "regression_checks" and (build_commands or test_commands):
+            elif check in {"regression_checks", "cross_implementation_parity"} and (build_commands or test_commands):
                 supported.append(check)
             elif check == "build_or_direct_evidence" and build_commands:
                 supported.append(check)

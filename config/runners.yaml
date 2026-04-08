@@ -2,7 +2,7 @@ runners:
   - runner_id: claude_main
     type: claude
     mode: terminal
-    command: "claude-code"
+    command: "claude"
     environment: windows
 
   - runner_id: codex_local_a

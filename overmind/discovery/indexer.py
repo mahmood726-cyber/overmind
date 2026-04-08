@@ -7,7 +7,7 @@ from overmind.discovery.project_scanner import ProjectScanner
 from overmind.storage.db import StateDatabase
 from overmind.storage.models import ProjectRecord
 
-CACHE_VERSION = 7
+CACHE_VERSION = 8
 
 
 class ProjectIndexer:

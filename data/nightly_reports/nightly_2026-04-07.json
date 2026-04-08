@@ -1,0 +1,73 @@
+{
+  "timestamp": "2026-04-07T23:45:59.319977+00:00",
+  "total_projects": 5,
+  "passed": 3,
+  "failed": 2,
+  "timed_out": 2,
+  "total_time_seconds": 137.5,
+  "dream": {
+    "merges": 3,
+    "archives": 0,
+    "memories_before": 55,
+    "memories_after": 52
+  },
+  "projects": [
+    {
+      "name": "advanced-nma-pooling",
+      "path": "C:\\Models\\advanced-nma-pooling",
+      "risk": "high",
+      "math_score": 20,
+      "passed": true,
+      "elapsed": 2.0,
+      "details": [
+        "relevant_tests: exit=0 command=python -m pytest tests/simulation/test_smoke_simulation.py -q"
+      ]
+    },
+    {
+      "name": "CardioOracle",
+      "path": "C:\\Models\\CardioOracle",
+      "risk": "high",
+      "math_score": 20,
+      "passed": true,
+      "elapsed": 4.0,
+      "details": [
+        "relevant_tests: exit=0 command=python -m pytest tests/test_curation.py -q"
+      ]
+    },
+    {
+      "name": "esc-acs-living-meta",
+      "path": "C:\\Projects\\esc-acs-living-meta",
+      "risk": "high",
+      "math_score": 20,
+      "passed": true,
+      "elapsed": 1.4,
+      "details": [
+        "relevant_tests: exit=0 command=python -m pytest tests/test_smoke.py -q"
+      ]
+    },
+    {
+      "name": "idea12",
+      "path": "C:\\Projects\\idea12",
+      "risk": "high",
+      "math_score": 20,
+      "passed": false,
+      "elapsed": 65.0,
+      "details": [
+        "relevant_tests: exit=-1 command=python -m pytest tests/test_basic.py -q",
+        "relevant_tests: timed out after 60s"
+      ]
+    },
+    {
+      "name": "ipd-meta-pro-link",
+      "path": "C:\\Projects\\ipd-meta-pro-link",
+      "risk": "high",
+      "math_score": 20,
+      "passed": false,
+      "elapsed": 65.0,
+      "details": [
+        "relevant_tests: exit=-1 command=python dev/build-scripts/user_flow_smoke_test.py",
+        "relevant_tests: timed out after 60s"
+      ]
+    }
+  ]
+}

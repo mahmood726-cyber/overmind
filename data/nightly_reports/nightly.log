@@ -1,0 +1,28 @@
+Overmind Nightly Verifier - 2026-04-08 02:01:02 UTC
+Config: limit=50, timeout=120s, min_risk=medium, dry_run=False
+
+Selected 50 projects for verification
+
+[1/50] advanced-nma-pooling... FAIL (253.1s) [All witnesses FAIL: test_suite, smoke]
+[2/50] CardioOracle... Timeout (0:05:00)!
+Thread 0x0000c330 (most recent call first):
+  File "C:\Users\user\AppData\Local\Programs\Python\Python313\Lib\subprocess.py", line 1615 in _readerthread
+  File "C:\Users\user\AppData\Local\Programs\Python\Python313\Lib\threading.py", line 994 in run
+  File "C:\Users\user\AppData\Local\Programs\Python\Python313\Lib\threading.py", line 1043 in _bootstrap_inner
+  File "C:\Users\user\AppData\Local\Programs\Python\Python313\Lib\threading.py", line 1014 in _bootstrap
+
+Thread 0x0000f74c (most recent call first):
+  File "C:\Users\user\AppData\Local\Programs\Python\Python313\Lib\subprocess.py", line 1615 in _readerthread
+  File "C:\Users\user\AppData\Local\Programs\Python\Python313\Lib\threading.py", line 994 in run
+  File "C:\Users\user\AppData\Local\Programs\Python\Python313\Lib\threading.py", line 1043 in _bootstrap_inner
+  File "C:\Users\user\AppData\Local\Programs\Python\Python313\Lib\threading.py", line 1014 in _bootstrap
+
+Thread 0x000079fc (most recent call first):
+  File "C:\Users\user\AppData\Local\Programs\Python\Python313\Lib\threading.py", line 1094 in join
+  File "C:\Users\user\AppData\Local\Programs\Python\Python313\Lib\subprocess.py", line 1644 in _communicate
+  File "C:\Users\user\AppData\Local\Programs\Python\Python313\Lib\subprocess.py", line 1222 in communicate
+  File "C:\Users\user\AppData\Local\Programs\Python\Python313\Lib\subprocess.py", line 556 in run
+  File "C:\overmind\overmind\verification\witnesses.py", line 21 in run
+  File "C:\overmind\overmind\verification\truthcert_engine.py", line 58 in verify
+  File "C:\overmind\scripts\nightly_verify.py", line 152 in main
+  File "C:\overmind\scripts\nightly_verify.py", line 385 in <module>

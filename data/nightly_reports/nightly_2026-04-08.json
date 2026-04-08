@@ -1,0 +1,28 @@
+{
+  "timestamp": "2026-04-08T01:23:51.741729+00:00",
+  "total_projects": 1,
+  "certified": 1,
+  "rejected": 0,
+  "failed": 0,
+  "single_pass": 0,
+  "total_time_seconds": 13.3,
+  "dream": {
+    "merges": 4,
+    "archives": 0,
+    "memories_before": 25,
+    "memories_after": 22
+  },
+  "projects": [
+    {
+      "name": "advanced-nma-pooling",
+      "path": "C:\\Models\\advanced-nma-pooling",
+      "risk": "high",
+      "math_score": 20,
+      "verdict": "CERTIFIED",
+      "bundle_hash": "41a24fefa7938612",
+      "witness_count": 2,
+      "elapsed": 13.3,
+      "arbitration_reason": "2/2 witnesses agree PASS"
+    }
+  ]
+}

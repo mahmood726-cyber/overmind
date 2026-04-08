@@ -2,6 +2,7 @@ from __future__ import annotations
 
 import uuid
 
+from overmind.discovery.analysis_signals import recommended_analysis_checks
 from overmind.storage.models import ProjectRecord, TaskRecord
 
 
@@ -19,12 +20,16 @@ def build_baseline_task(project: ProjectRecord) -> TaskRecord:
             required_verification.extend(["deterministic_fixture_tests", "edge_case_tests", "output_comparison"])
         if project.has_advanced_math and project.advanced_math_score >= 6 and project.test_commands:
             required_verification.extend(["sensitivity_checks", "stochastic_stability"])
-        if (
-            project.has_advanced_math
-            and project.test_commands
-            and any(signal in {"diagnostic_accuracy", "calibration_validation"} for signal in project.advanced_math_signals)
-        ):
-            required_verification.append("calibration_checks")
+        if project.has_advanced_math and project.test_commands:
+            required_verification.extend(
+                recommended_analysis_checks(
+                    project.advanced_math_signals,
+                    score=project.advanced_math_score,
+                    has_validation_history=project.has_validation_history,
+                    has_oracle_benchmarks=project.has_oracle_benchmarks,
+                    has_drift_history=project.has_drift_history,
+                )
+            )
         if project.has_advanced_math or project.has_oracle_benchmarks or project.has_drift_history:
             required_verification.append("regression_checks")
         if project.perf_commands and (project.has_oracle_benchmarks or project.has_drift_history):

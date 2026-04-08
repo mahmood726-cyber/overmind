@@ -2,6 +2,7 @@ from __future__ import annotations
 
 import argparse
 import json
+import sys
 from pathlib import Path
 
 from overmind.config import AppConfig
@@ -50,12 +51,65 @@ def build_parser() -> argparse.ArgumentParser:
     audit_parser = subparsers.add_parser("audit-history")
     audit_parser.add_argument("--project-id", required=True)
 
+    # Wrap command: overmind wrap <claude|codex|gemini> [args...]
+    wrap_parser = subparsers.add_parser("wrap")
+    wrap_parser.add_argument("runner", choices=["claude", "codex", "gemini"])
+    wrap_parser.add_argument("extra", nargs="*", default=[])
+
+    # Watch command: overmind watch [--interval 30] [--iterations N]
+    watch_parser = subparsers.add_parser("watch")
+    watch_parser.add_argument("--interval", type=int, default=30)
+    watch_parser.add_argument("--iterations", type=int, default=None)
+
+    # Sessions command: overmind sessions
+    subparsers.add_parser("sessions")
+
+    # Daily report
+    subparsers.add_parser("daily-report")
+
+    # Batch verify
+    batch_parser = subparsers.add_parser("batch-verify")
+    batch_parser.add_argument("--count", type=int, default=10)
+    batch_parser.add_argument("--risk", default=None, choices=["high", "medium_high", "medium"])
+
+    # Mine sessions
+    mine_parser = subparsers.add_parser("mine-sessions")
+    mine_parser.add_argument("--count", type=int, default=30)
+
     return parser
 
 
 def main(argv: list[str] | None = None) -> None:
     parser = build_parser()
     args = parser.parse_args(argv)
+
+    # Commands that don't need full orchestrator
+    if args.command == "wrap":
+        from overmind.activation.wrap import wrap
+        db_path = args.db_path or Path("C:\\overmind\\data\\state\\overmind.db")
+        sys.exit(wrap(args.runner, args.extra, db_path=db_path))
+        return
+
+    if args.command == "watch":
+        from overmind.activation.watchdog import watch
+        db_path = args.db_path or Path("C:\\overmind\\data\\state\\overmind.db")
+        watch(db_path, interval=args.interval, iterations=args.iterations)
+        return
+
+    if args.command == "sessions":
+        from overmind.activation.session_tracker import SessionTracker
+        from overmind.storage.db import StateDatabase
+        db_path = args.db_path or Path("C:\\overmind\\data\\state\\overmind.db")
+        db = StateDatabase(db_path)
+        try:
+            tracker = SessionTracker(db)
+            tracker.cleanup_stale()
+            sessions = tracker.active_sessions()
+            print(json.dumps(sessions, indent=2, sort_keys=True, default=str))
+        finally:
+            db.close()
+        return
+
     config = AppConfig.from_directory(
         config_dir=args.config_dir,
         data_dir=args.data_dir,
@@ -96,6 +150,19 @@ def main(argv: list[str] | None = None) -> None:
             payload = orchestrator.dream(dry_run=args.dry_run)
         elif args.command == "audit-history":
             payload = orchestrator.audit_loop.project_history(args.project_id)
+        elif args.command == "daily-report":
+            from overmind.intelligence.daily_report import DailyReport
+            reporter = DailyReport(orchestrator.db, config.data_dir / "artifacts")
+            report = reporter.generate()
+            paths = reporter.write(report)
+            payload = {"report": report, "artifacts": paths}
+        elif args.command == "batch-verify":
+            from overmind.intelligence.batch_verify import batch_verify
+            payload = batch_verify(orchestrator, count=args.count, risk_filter=args.risk)
+        elif args.command == "mine-sessions":
+            from overmind.intelligence.session_miner import SessionMiner
+            miner = SessionMiner(orchestrator.db)
+            payload = miner.mine_and_store(max_sessions=args.count)
         else:
             payload = orchestrator.show_state()
         print(json.dumps(payload, indent=2, sort_keys=True))

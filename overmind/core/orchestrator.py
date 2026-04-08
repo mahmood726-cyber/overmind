@@ -59,9 +59,9 @@ class Orchestrator:
         self.dream_engine = DreamEngine(self.db)
         self.audit_loop = AuditLoop(self.db)
         self.tick_count = 0
-        self.worker_prompt_template = (Path(__file__).resolve().parents[1] / "prompts" / "worker_prompt.txt").read_text(
-            encoding="utf-8"
-        )
+        prompts_dir = Path(__file__).resolve().parents[1] / "prompts"
+        self.worker_prompt_template = (prompts_dir / "worker_prompt.txt").read_text(encoding="utf-8")
+        self.critique_prompt = (prompts_dir / "critique_prompt.txt").read_text(encoding="utf-8")
         self._recover_abandoned_tasks()
         self.memory_store.decay_all(0.95)
         self.memory_store.archive_stale(0.1)
@@ -340,6 +340,12 @@ class Orchestrator:
             f"- score: {project.advanced_math_score}\n"
             f"- signals: {math_signals}"
         )
+        analysis_focus = ", ".join(project.analysis_focus_areas) if project.analysis_focus_areas else "none"
+        analysis_risks = ", ".join(project.analysis_risk_factors[:4]) if project.analysis_risk_factors else "none"
+        analysis_profile = (
+            f"- focus: {analysis_focus}\n"
+            f"- risk factors: {analysis_risks}"
+        )
         verification = "\n".join(f"- {item}" for item in task.required_verification)
         if task.task_type == "verification":
             verification_plan = self.verifier.planner.plan(task, project)
@@ -354,18 +360,27 @@ class Orchestrator:
                 f"TASK:\n{task.title}\n\n"
                 "MODE:\n"
                 "- verification only\n"
-                "- do not inspect CLAUDE.md, README.md, or source files unless the primary command fails\n"
-                "- do not print file contents\n"
-                "- run the primary command exactly as written, then stop\n\n"
-                f"PRIMARY COMMAND:\n- {primary_command}\n\n"
-                f"FALLBACK COMMAND:\n- {fallback_command}\n\n"
+                "- follow the phases below strictly\n\n"
+                "PHASE 1 — QUICK RESEARCH:\n"
+                "- check if the primary command exists and is runnable\n"
+                "- if the project has CLAUDE.md or README.md, scan for test instructions\n"
+                "- note any version or environment concerns\n\n"
+                "PHASE 2 — EXECUTE:\n"
+                f"- run the primary command exactly: {primary_command}\n"
+                f"- if it fails, try fallback: {fallback_command}\n"
+                "- print the full command output\n\n"
+                "PHASE 3 — REFLECT:\n"
+                "- print: RESULT: PASS or FAIL\n"
+                "- print: EVIDENCE: the key output line proving pass/fail\n"
+                "- print: UNCERTAIN: anything not fully confirmed\n\n"
                 f"KNOWN COMMANDS:\n{chr(10).join(f'- {command}' for command in known_commands) or '- none discovered'}\n\n"
                 f"RECENT ACTIVITY SIGNALS:\n{activity_summary}\n\n"
                 f"STATISTICAL RIGOR:\n{math_rigor}\n\n"
-                "OUTPUT:\n"
-                "- print the command you ran\n"
-                "- print pass/fail evidence only\n"
-                "- if the primary command fails, print the failure and stop\n\n"
+                f"ANALYSIS PROFILE:\n{analysis_profile}\n\n"
+                "CONSTRAINTS:\n"
+                "- do not skip the research phase\n"
+                "- do not claim success without terminal-visible evidence\n"
+                "- if uncertain, say exactly what is uncertain\n\n"
                 f"REQUIRED VERIFICATION:\n{verification}\n"
             )
         project_memories = self.memory_store.recall_for_project(project.project_id, limit=3)
@@ -385,6 +400,7 @@ class Orchestrator:
             guidance=guidance,
             activity_summary=activity_summary,
             math_rigor=math_rigor,
+            analysis_profile=analysis_profile,
             prior_learnings=prior_learnings,
             required_verification=verification,
         )
@@ -405,7 +421,7 @@ class Orchestrator:
                     {
                         "task_id": evidence.task_id,
                         "action": "send_message",
-                        "message": "Run minimum meaningful verification and print terminal-visible proof.",
+                        "message": self.critique_prompt,
                     }
                 )
             elif "session idle beyond limit" in evidence.risks:

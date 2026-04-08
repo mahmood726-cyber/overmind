@@ -1,50 +1,93 @@
 {
   "advanced_math_rigor": {
-    "extreme": 48,
+    "extreme": 52,
     "high": 32,
-    "light": 15,
-    "moderate": 68
+    "light": 9,
+    "moderate": 54
   },
   "advanced_math_signals": {
-    "bayesian_modeling": 40,
-    "calibration_validation": 15,
-    "causal_inference": 13,
-    "diagnostic_accuracy": 46,
-    "hierarchical_modeling": 18,
-    "meta_analysis": 136,
-    "missing_data_imputation": 6,
+    "bayesian_modeling": 37,
+    "calibration_validation": 14,
+    "causal_inference": 3,
+    "competing_risks_multistate": 2,
+    "decision_curve_analysis": 6,
+    "diagnostic_accuracy": 41,
+    "dose_response_modeling": 4,
+    "hierarchical_modeling": 16,
+    "longitudinal_repeated_measures": 1,
+    "measurement_error_reliability": 11,
+    "meta_analysis": 122,
+    "missing_data_imputation": 5,
+    "network_meta_analysis": 27,
     "optimization_numerics": 6,
-    "resampling": 30,
-    "survival_analysis": 27
+    "publication_bias_small_study": 33,
+    "resampling": 29,
+    "survival_analysis": 25,
+    "time_series_forecasting": 3
   },
-  "generated_at": "2026-04-06T09:14:01+00:00",
+  "analysis_focus_areas": {
+    "bias diagnostics": 33,
+    "causal estimation": 3,
+    "clinical utility and decision analysis": 6,
+    "correlated and longitudinal outcomes": 1,
+    "diagnostic performance": 41,
+    "evidence synthesis": 126,
+    "measurement reliability": 11,
+    "missing-data handling": 5,
+    "multilevel partial pooling": 16,
+    "multistate event modeling": 2,
+    "nonlinear exposure-response modeling": 4,
+    "numerical optimization and matrix algebra": 6,
+    "prediction validation": 14,
+    "probabilistic inference": 37,
+    "ranking and indirect comparison": 27,
+    "simulation and uncertainty quantification": 29,
+    "survival and censored outcomes": 25,
+    "temporal modeling and forecasting": 3
+  },
+  "analysis_risk_factors": {
+    "calibration drift and transportability": 14,
+    "censoring and proportional-hazards assumptions": 25,
+    "competing-risk coding and transition consistency": 2,
+    "heterogeneity and effect-size specification": 122,
+    "identification assumptions and covariate balance": 3,
+    "indirect-comparison consistency and ranking stability": 27,
+    "measurement error and agreement drift": 11,
+    "missingness mechanism sensitivity": 5,
+    "net-benefit threshold sensitivity": 6,
+    "nonlinear functional-form sensitivity": 4,
+    "optimizer convergence and matrix conditioning": 6,
+    "sampler convergence and prior sensitivity": 37,
+    "small-study effects and publication bias": 33,
+    "stochastic reproducibility and Monte Carlo error": 29,
+    "temporal leakage and non-stationarity": 3,
+    "threshold instability and class-imbalance drift": 41,
+    "variance-component shrinkage assumptions": 16,
+    "within-subject correlation structure": 1
+  },
+  "generated_at": "2026-04-07T19:26:07+00:00",
   "high_risk_projects": [
-    {
-      "activity_summary": [
-        "repeatable validation logs detected"
-      ],
-      "advanced_math_score": 11,
-      "advanced_math_signals": [
-        "meta_analysis",
-        "bayesian_modeling",
-        "diagnostic_accuracy"
-      ],
-      "name": "ubcma",
-      "project_id": "ubcma-42306ffe",
-      "risk_profile": "high",
-      "root_path": "C:\\ubcma"
-    },
     {
       "activity_summary": [
         "stored validation evidence present: S3_Validation_Results_Complete.txt",
         "warning-bearing activity log present: S4_HTA_Validation.md",
         "repeatable validation logs detected"
       ],
-      "advanced_math_score": 13,
+      "advanced_math_score": 15,
       "advanced_math_signals": [
         "meta_analysis",
-        "causal_inference",
-        "hierarchical_modeling"
+        "hierarchical_modeling",
+        "publication_bias_small_study"
+      ],
+      "analysis_focus_areas": [
+        "evidence synthesis",
+        "multilevel partial pooling",
+        "bias diagnostics"
+      ],
+      "analysis_risk_factors": [
+        "heterogeneity and effect-size specification",
+        "variance-component shrinkage assumptions",
+        "small-study effects and publication bias"
       ],
       "name": "Truthcert1",
       "project_id": "truthcert1-a1a5c8df",
@@ -63,6 +106,16 @@
         "survival_analysis",
         "missing_data_imputation"
       ],
+      "analysis_focus_areas": [
+        "evidence synthesis",
+        "survival and censored outcomes",
+        "missing-data handling"
+      ],
+      "analysis_risk_factors": [
+        "heterogeneity and effect-size specification",
+        "censoring and proportional-hazards assumptions",
+        "missingness mechanism sensitivity"
+      ],
       "name": "TruthCert-Validation-Papers",
       "project_id": "truthcert-validation-papers-03eae072",
       "risk_profile": "high",
@@ -75,6 +128,8 @@
       ],
       "advanced_math_score": 2,
       "advanced_math_signals": [],
+      "analysis_focus_areas": [],
+      "analysis_risk_factors": [],
       "name": "truthcert-openclaw-supermemory-stack",
       "project_id": "truthcert-openclaw-supermemory-stack-6fba3f9d",
       "risk_profile": "high",
@@ -90,6 +145,14 @@
       "advanced_math_signals": [
         "meta_analysis",
         "calibration_validation"
+      ],
+      "analysis_focus_areas": [
+        "evidence synthesis",
+        "prediction validation"
+      ],
+      "analysis_risk_factors": [
+        "heterogeneity and effect-size specification",
+        "calibration drift and transportability"
       ],
       "name": "truthcert-meta2-prototype",
       "project_id": "truthcert-meta2-prototype-eec7d00d",
@@ -107,6 +170,14 @@
         "meta_analysis",
         "bayesian_modeling"
       ],
+      "analysis_focus_areas": [
+        "evidence synthesis",
+        "probabilistic inference"
+      ],
+      "analysis_risk_factors": [
+        "heterogeneity and effect-size specification",
+        "sampler convergence and prior sensitivity"
+      ],
       "name": "truthcert-denominator-phase1",
       "project_id": "truthcert-denominator-phase1-9b039a8d",
       "risk_profile": "high",
@@ -119,6 +190,8 @@
       ],
       "advanced_math_score": 3,
       "advanced_math_signals": [],
+      "analysis_focus_areas": [],
+      "analysis_risk_factors": [],
       "name": "tower",
       "project_id": "tower-f2cd59fa",
       "risk_profile": "high",
@@ -135,6 +208,14 @@
         "meta_analysis",
         "resampling"
       ],
+      "analysis_focus_areas": [
+        "evidence synthesis",
+        "simulation and uncertainty quantification"
+      ],
+      "analysis_risk_factors": [
+        "heterogeneity and effect-size specification",
+        "stochastic reproducibility and Monte Carlo error"
+      ],
       "name": "TGEP_Development",
       "project_id": "tgep-development-378f9a98",
       "risk_profile": "high",
@@ -143,13 +224,23 @@
     {
       "activity_summary": [
         "repeatable validation logs detected",
-        "advanced analytical workflows detected: meta-analysis, diagnostic accuracy, hierarchical modeling"
+        "advanced analytical workflows detected: meta-analysis, publication-bias diagnostics, diagnostic accuracy"
       ],
-      "advanced_math_score": 14,
+      "advanced_math_score": 20,
       "advanced_math_signals": [
         "meta_analysis",
         "diagnostic_accuracy",
-        "hierarchical_modeling"
+        "publication_bias_small_study"
+      ],
+      "analysis_focus_areas": [
+        "evidence synthesis",
+        "diagnostic performance",
+        "bias diagnostics"
+      ],
+      "analysis_risk_factors": [
+        "heterogeneity and effect-size specification",
+        "threshold instability and class-imbalance drift",
+        "small-study effects and publication bias"
       ],
       "name": "superapp",
       "project_id": "superapp-3b1c175f",
@@ -159,10 +250,19 @@
     {
       "activity_summary": [
         "repeatable validation logs detected",
-        "drift history artifacts detected"
+        "drift history artifacts detected",
+        "advanced analytical workflows detected: longitudinal or repeated-measures analysis"
       ],
-      "advanced_math_score": 3,
-      "advanced_math_signals": [],
+      "advanced_math_score": 6,
+      "advanced_math_signals": [
+        "longitudinal_repeated_measures"
+      ],
+      "analysis_focus_areas": [
+        "correlated and longitudinal outcomes"
+      ],
+      "analysis_risk_factors": [
+        "within-subject correlation structure"
+      ],
       "name": "shahzaib-icu-landscape",
       "project_id": "shahzaib-icu-landscape-325fc1b6",
       "risk_profile": "high",
@@ -171,13 +271,23 @@
     {
       "activity_summary": [
         "repeatable validation logs detected",
-        "advanced analytical workflows detected: survival analysis, meta-analysis, Bayesian modeling"
+        "advanced analytical workflows detected: survival analysis, meta-analysis, network meta-analysis"
       ],
       "advanced_math_score": 20,
       "advanced_math_signals": [
         "meta_analysis",
-        "survival_analysis",
-        "bayesian_modeling"
+        "network_meta_analysis",
+        "survival_analysis"
+      ],
+      "analysis_focus_areas": [
+        "evidence synthesis",
+        "ranking and indirect comparison",
+        "survival and censored outcomes"
+      ],
+      "analysis_risk_factors": [
+        "heterogeneity and effect-size specification",
+        "indirect-comparison consistency and ranking stability",
+        "censoring and proportional-hazards assumptions"
       ],
       "name": "Scripts",
       "project_id": "scripts-89337165",
@@ -189,11 +299,21 @@
         "repeatable validation logs detected",
         "advanced analytical workflows detected: survival analysis"
       ],
-      "advanced_math_score": 11,
+      "advanced_math_score": 15,
       "advanced_math_signals": [
         "meta_analysis",
-        "survival_analysis",
-        "bayesian_modeling"
+        "network_meta_analysis",
+        "survival_analysis"
+      ],
+      "analysis_focus_areas": [
+        "evidence synthesis",
+        "ranking and indirect comparison",
+        "survival and censored outcomes"
+      ],
+      "analysis_risk_factors": [
+        "heterogeneity and effect-size specification",
+        "indirect-comparison consistency and ranking stability",
+        "censoring and proportional-hazards assumptions"
       ],
       "name": "rmstnma",
       "project_id": "rmstnma-13acbe1e",
@@ -205,11 +325,21 @@
         "repeatable validation logs detected",
         "advanced analytical workflows detected: survival analysis"
       ],
-      "advanced_math_score": 11,
+      "advanced_math_score": 15,
       "advanced_math_signals": [
         "meta_analysis",
-        "survival_analysis",
-        "bayesian_modeling"
+        "network_meta_analysis",
+        "survival_analysis"
+      ],
+      "analysis_focus_areas": [
+        "evidence synthesis",
+        "ranking and indirect comparison",
+        "survival and censored outcomes"
+      ],
+      "analysis_risk_factors": [
+        "heterogeneity and effect-size specification",
+        "indirect-comparison consistency and ranking stability",
+        "censoring and proportional-hazards assumptions"
       ],
       "name": "rmstnma",
       "project_id": "rmstnma-1810584a",
@@ -222,11 +352,21 @@
         "warning-bearing activity log present: real_data_validation.R",
         "repeatable validation logs detected"
       ],
-      "advanced_math_score": 10,
+      "advanced_math_score": 14,
       "advanced_math_signals": [
         "meta_analysis",
-        "bayesian_modeling",
+        "network_meta_analysis",
         "resampling"
+      ],
+      "analysis_focus_areas": [
+        "evidence synthesis",
+        "ranking and indirect comparison",
+        "simulation and uncertainty quantification"
+      ],
+      "analysis_risk_factors": [
+        "heterogeneity and effect-size specification",
+        "indirect-comparison consistency and ranking stability",
+        "stochastic reproducibility and Monte Carlo error"
       ],
       "name": "repo300-ENMA-SNMA",
       "project_id": "repo300-enma-snma-a0216745",
@@ -239,11 +379,21 @@
         "warning-bearing activity log present: simulation_validation.R",
         "repeatable validation logs detected"
       ],
-      "advanced_math_score": 10,
+      "advanced_math_score": 14,
       "advanced_math_signals": [
         "meta_analysis",
-        "bayesian_modeling",
+        "network_meta_analysis",
         "resampling"
+      ],
+      "analysis_focus_areas": [
+        "evidence synthesis",
+        "ranking and indirect comparison",
+        "simulation and uncertainty quantification"
+      ],
+      "analysis_risk_factors": [
+        "heterogeneity and effect-size specification",
+        "indirect-comparison consistency and ranking stability",
+        "stochastic reproducibility and Monte Carlo error"
       ],
       "name": "repo300",
       "project_id": "repo300-c9dc0181",
@@ -256,10 +406,21 @@
         "warning-bearing activity log present: run_validation.log",
         "repeatable validation logs detected"
       ],
-      "advanced_math_score": 7,
+      "advanced_math_score": 10,
       "advanced_math_signals": [
         "meta_analysis",
+        "publication_bias_small_study",
         "diagnostic_accuracy"
+      ],
+      "analysis_focus_areas": [
+        "evidence synthesis",
+        "bias diagnostics",
+        "diagnostic performance"
+      ],
+      "analysis_risk_factors": [
+        "heterogeneity and effect-size specification",
+        "small-study effects and publication bias",
+        "threshold instability and class-imbalance drift"
       ],
       "name": "registry_first_rct_meta",
       "project_id": "registry-first-rct-meta-ca273c4f",
@@ -270,13 +431,23 @@
       "activity_summary": [
         "warning-bearing activity log present: results_baseline_frozen_snapshot.jsonl",
         "repeatable validation logs detected",
-        "advanced analytical workflows detected: meta-analysis, survival analysis, Bayesian modeling"
+        "advanced analytical workflows detected: meta-analysis, network meta-analysis, survival analysis"
       ],
-      "advanced_math_score": 11,
+      "advanced_math_score": 15,
       "advanced_math_signals": [
         "meta_analysis",
-        "survival_analysis",
-        "bayesian_modeling"
+        "network_meta_analysis",
+        "survival_analysis"
+      ],
+      "analysis_focus_areas": [
+        "evidence synthesis",
+        "ranking and indirect comparison",
+        "survival and censored outcomes"
+      ],
+      "analysis_risk_factors": [
+        "heterogeneity and effect-size specification",
+        "indirect-comparison consistency and ranking stability",
+        "censoring and proportional-hazards assumptions"
       ],
       "name": "rct-extractor-v2",
       "project_id": "rct-extractor-v2-6c290650",
@@ -286,13 +457,23 @@
     {
       "activity_summary": [
         "repeatable validation logs detected",
-        "advanced analytical workflows detected: meta-analysis, Bayesian modeling, diagnostic accuracy"
+        "advanced analytical workflows detected: meta-analysis, network meta-analysis, publication-bias diagnostics"
       ],
-      "advanced_math_score": 11,
+      "advanced_math_score": 18,
       "advanced_math_signals": [
         "meta_analysis",
-        "bayesian_modeling",
-        "diagnostic_accuracy"
+        "network_meta_analysis",
+        "publication_bias_small_study"
+      ],
+      "analysis_focus_areas": [
+        "evidence synthesis",
+        "ranking and indirect comparison",
+        "bias diagnostics"
+      ],
+      "analysis_risk_factors": [
+        "heterogeneity and effect-size specification",
+        "indirect-comparison consistency and ranking stability",
+        "small-study effects and publication bias"
       ],
       "name": "rayyanreplacement",
       "project_id": "rayyanreplacement-1ed83fdc",
@@ -303,13 +484,23 @@
       "activity_summary": [
         "warning-bearing activity log present: validation_suite.html",
         "repeatable validation logs detected",
-        "advanced analytical workflows detected: meta-analysis, Bayesian modeling, resampling or simulation"
+        "advanced analytical workflows detected: meta-analysis, publication-bias diagnostics, numerical optimization"
       ],
       "advanced_math_score": 20,
       "advanced_math_signals": [
         "meta_analysis",
-        "bayesian_modeling",
-        "resampling"
+        "optimization_numerics",
+        "publication_bias_small_study"
+      ],
+      "analysis_focus_areas": [
+        "evidence synthesis",
+        "numerical optimization and matrix algebra",
+        "bias diagnostics"
+      ],
+      "analysis_risk_factors": [
+        "heterogeneity and effect-size specification",
+        "optimizer convergence and matrix conditioning",
+        "small-study effects and publication bias"
       ],
       "name": "prognostic-meta",
       "project_id": "prognostic-meta-5028c26a",
@@ -325,37 +516,72 @@
         "meta_analysis",
         "resampling"
       ],
+      "analysis_focus_areas": [
+        "evidence synthesis",
+        "simulation and uncertainty quantification"
+      ],
+      "analysis_risk_factors": [
+        "heterogeneity and effect-size specification",
+        "stochastic reproducibility and Monte Carlo error"
+      ],
       "name": "Pairwise70_Results_v2",
-      "project_id": "pairwise70-results-v2-fa19e3ac",
+      "project_id": "pairwise70-results-v2-23d13a6c",
       "risk_profile": "high",
-      "root_path": "C:\\data\\Research-Archives\\Pairwise70_Results_v2"
+      "root_path": "C:\\Users\\user\\OneDrive - NHS\\Documents\\Pairwise70_Results_v2"
+    },
+    {
+      "activity_summary": [
+        "warning-bearing activity log present: run_quick_validation_output.txt",
+        "stored validation evidence present: js_function_validation.py",
+        "repeatable validation logs detected"
+      ],
+      "advanced_math_score": 15,
+      "advanced_math_signals": [
+        "meta_analysis",
+        "diagnostic_accuracy",
+        "publication_bias_small_study"
+      ],
+      "analysis_focus_areas": [
+        "evidence synthesis",
+        "diagnostic performance",
+        "bias diagnostics"
+      ],
+      "analysis_risk_factors": [
+        "heterogeneity and effect-size specification",
+        "threshold instability and class-imbalance drift",
+        "small-study effects and publication bias"
+      ],
+      "name": "Pairwise70",
+      "project_id": "pairwise70-4020df78",
+      "risk_profile": "high",
+      "root_path": "C:\\Projects\\Pairwise70"
     }
   ],
-  "project_count": 355,
+  "project_count": 329,
   "project_types": {
-    "browser_app": 198,
-    "hybrid_browser_analytics_app": 74,
-    "python_tool": 11,
-    "r_project": 57,
-    "unknown": 15
+    "browser_app": 193,
+    "hybrid_browser_analytics_app": 81,
+    "python_tool": 5,
+    "r_project": 41,
+    "unknown": 9
   },
-  "projects_with_advanced_math": 163,
-  "projects_with_claude": 25,
+  "projects_with_advanced_math": 147,
+  "projects_with_claude": 23,
   "projects_with_drift_history": 7,
   "projects_with_oracle_benchmarks": 7,
-  "projects_with_validation_logs": 98,
+  "projects_with_validation_logs": 83,
   "risk_profiles": {
-    "high": 77,
-    "medium": 143,
-    "medium_high": 135
+    "high": 73,
+    "medium": 142,
+    "medium_high": 114
   },
   "stacks": {
-    "css": 255,
-    "html": 259,
-    "javascript": 258,
+    "css": 264,
+    "html": 263,
+    "javascript": 266,
     "playwright": 2,
-    "python": 58,
-    "r": 90,
+    "python": 54,
+    "r": 79,
     "vite": 1
   },
   "user_history_findings": [
@@ -368,26 +594,46 @@
       "has_secret_exposure": false,
       "path": "C:\\Users\\user\\.aider.input.history",
       "secret_kinds": []
-    },
-    {
-      "has_secret_exposure": false,
-      "path": "C:\\Users\\user\\training_pipeline.log",
-      "secret_kinds": []
-    },
-    {
-      "has_secret_exposure": false,
-      "path": "C:\\Users\\user\\out.log",
-      "secret_kinds": []
-    },
-    {
-      "has_secret_exposure": false,
-      "path": "C:\\Users\\user\\err.log",
-      "secret_kinds": []
     }
   ],
+  "verification_pressure": {
+    "before_after_benchmark": 1,
+    "build": 19,
+    "calibration_checks": 10,
+    "censoring_checks": 17,
+    "competing_risks_checks": 1,
+    "consistency_checks": 23,
+    "convergence_checks": 29,
+    "cross_implementation_parity": 34,
+    "decision_curve_checks": 4,
+    "deterministic_fixture_tests": 107,
+    "edge_case_tests": 107,
+    "heterogeneity_checks": 94,
+    "matrix_stability_checks": 4,
+    "measurement_error_checks": 9,
+    "missing_data_checks": 4,
+    "model_assumption_checks": 45,
+    "no_correctness_regression": 1,
+    "numeric_regression": 140,
+    "output_comparison": 107,
+    "posterior_sanity_checks": 28,
+    "publication_bias_checks": 23,
+    "ranking_stability": 23,
+    "regression_checks": 127,
+    "relevant_tests": 260,
+    "sensitivity_checks": 63,
+    "shape_constraint_checks": 3,
+    "stochastic_stability": 65,
+    "targeted_browser_test": 4,
+    "temporal_backtest_checks": 2,
+    "threshold_stability_checks": 31,
+    "variance_component_checks": 11
+  },
   "workflow_signals": [
     "numeric and analytical projects dominate the portfolio",
     "advanced statistical or mathematical workflows need stricter fixture, edge-case, and output-comparison checks",
+    "analysis focus areas can be clustered into evidence synthesis, prediction validation, survival, causal, and numerical stability domains",
+    "analysis-specific risk factors should drive assumption checks such as censoring, convergence, ranking stability, and missingness sensitivity",
     "projects keep repeatable validation logs and regression evidence",
     "oracle or parity benchmark workflows are present and should raise verification burden",
     "R-backed analytics projects need first-class detection and test routing",

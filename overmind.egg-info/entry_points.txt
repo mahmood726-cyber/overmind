@@ -1,0 +1,2 @@
+[console_scripts]
+overmind = overmind.cli:main

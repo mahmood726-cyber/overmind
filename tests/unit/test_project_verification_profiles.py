@@ -204,6 +204,70 @@ def test_project_scanner_detects_advanced_math_and_strengthens_verification(tmp_
     assert project.risk_profile == "high"
 
 
+def test_project_scanner_derives_analysis_focus_and_method_specific_checks(tmp_path):
+    config_dir = tmp_path / "config"
+    data_dir = tmp_path / "data"
+    project_root = tmp_path / "Projects" / "advanced-evidence-lab"
+    tests_dir = project_root / "tests"
+    config_dir.mkdir()
+    data_dir.mkdir()
+    tests_dir.mkdir(parents=True)
+
+    (project_root / "pyproject.toml").write_text("[project]\nname='advanced-evidence-lab'\n", encoding="utf-8")
+    (tests_dir / "test_network_meta.py").write_text("def test_placeholder():\n    assert True\n", encoding="utf-8")
+    (project_root / "CLAUDE.md").write_text(
+        "# Advanced evidence synthesis\n"
+        "Network meta-analysis with SUCRA treatment ranking and Egger funnel plot diagnostics.\n"
+        "Fine-Gray competing risks, hazard ratio modeling, multiple imputation, decision curve analysis, and Bayesian posterior checks.\n"
+        "python -m pytest tests/test_network_meta.py -q\n",
+        encoding="utf-8",
+    )
+    (project_root / "oracle_validation.log").write_text(
+        "Validation baseline complete for network meta-analysis.\n"
+        "R parity confirmed for competing risks and imputation outputs.\n",
+        encoding="utf-8",
+    )
+
+    (config_dir / "roots.yaml").write_text(
+        f'scan_roots:\n  - "{(tmp_path / "Projects").as_posix()}"\nscan_rules:\n  include_git_repos: true\n  include_non_git_apps: true\n  incremental_scan: true\n  max_depth: 4\nguidance_filenames:\n  - "CLAUDE.md"\n  - "README.md"\n',
+        encoding="utf-8",
+    )
+    (config_dir / "runners.yaml").write_text("runners: []\n", encoding="utf-8")
+    (config_dir / "policies.yaml").write_text(
+        "concurrency:\n  default_active_sessions: 1\n  max_active_sessions: 1\n  degraded_sessions: 1\n"
+        "limits:\n  idle_timeout_min: 10\n  summary_trigger_output_lines: 400\n"
+        "routing: {}\n"
+        "risk_policy: {}\n",
+        encoding="utf-8",
+    )
+    (config_dir / "projects_ignore.yaml").write_text("ignored_directories: []\nignored_file_suffixes: []\n", encoding="utf-8")
+    (config_dir / "verification_profiles.yaml").write_text("profiles: {}\nproject_rules: []\n", encoding="utf-8")
+
+    config = AppConfig.from_directory(config_dir=config_dir, data_dir=data_dir, db_path=data_dir / "state.db")
+    project = ProjectScanner(config).scan_project(project_root)
+
+    assert "network_meta_analysis" in project.advanced_math_signals
+    assert "publication_bias_small_study" in project.advanced_math_signals
+    assert "competing_risks_multistate" in project.advanced_math_signals
+    assert "missing_data_imputation" in project.advanced_math_signals
+    assert "evidence synthesis" in project.analysis_focus_areas
+    assert "survival and censored outcomes" in project.analysis_focus_areas
+    assert "missing-data handling" in project.analysis_focus_areas
+    assert "indirect-comparison consistency and ranking stability" in project.analysis_risk_factors
+    assert "censoring and proportional-hazards assumptions" in project.analysis_risk_factors
+    assert "missingness mechanism sensitivity" in project.analysis_risk_factors
+    assert "consistency_checks" in project.recommended_verification
+    assert "ranking_stability" in project.recommended_verification
+    assert "publication_bias_checks" in project.recommended_verification
+    assert "censoring_checks" in project.recommended_verification
+    assert "competing_risks_checks" in project.recommended_verification
+    assert "missing_data_checks" in project.recommended_verification
+    assert "posterior_sanity_checks" in project.recommended_verification
+    assert "decision_curve_checks" in project.recommended_verification
+    assert "model_assumption_checks" in project.recommended_verification
+    assert "cross_implementation_parity" in project.recommended_verification
+
+
 def test_project_scanner_derives_repo_pytest_for_browser_app_with_python_smoke_tests(tmp_path):
     config_dir = tmp_path / "config"
     data_dir = tmp_path / "data"

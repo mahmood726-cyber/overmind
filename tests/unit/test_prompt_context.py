@@ -37,6 +37,8 @@ def test_orchestrator_prompt_includes_statistical_rigor(tmp_path):
             advanced_math_signals=["meta_analysis", "bayesian_modeling"],
             advanced_math_score=8,
             advanced_math_rigor="high",
+            analysis_focus_areas=["evidence synthesis", "probabilistic inference"],
+            analysis_risk_factors=["heterogeneity and effect-size specification", "sampler convergence and prior sensitivity"],
             test_commands=["python -m pytest tests/test_math.py -q"],
         )
         task = TaskRecord(
@@ -58,5 +60,8 @@ def test_orchestrator_prompt_includes_statistical_rigor(tmp_path):
         assert "- rigor: high" in prompt
         assert "- score: 8" in prompt
         assert "meta_analysis, bayesian_modeling" in prompt
+        assert "ANALYSIS PROFILE" in prompt
+        assert "evidence synthesis, probabilistic inference" in prompt
+        assert "heterogeneity and effect-size specification" in prompt
     finally:
         orchestrator.close()

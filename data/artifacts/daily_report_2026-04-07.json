@@ -1,0 +1,395 @@
+{
+  "benchmark": {
+    "active_regressions": 8,
+    "coverage_percent": 6.5,
+    "heuristics_learned": 4,
+    "overall_pass_rate": 69.4,
+    "projects_testable": 275,
+    "projects_verified": 18,
+    "q_router_entries": 4,
+    "total_memories": 41,
+    "total_verifications": 72
+  },
+  "daily_targets": {
+    "actions": [
+      "FIX 8 active regression(s) first",
+      "Verify 10 high-priority projects (coverage: 6% -> ~10%)",
+      "Next project: EvidenceOracle (priority=25)"
+    ],
+    "coverage_target": 11.5,
+    "verify_count": 10
+  },
+  "day_number": 1,
+  "generated_at": "2026-04-07T22:09:44+00:00",
+  "memory_health": {
+    "avg_relevance": 0.301,
+    "by_status": {
+      "active": 41
+    },
+    "by_type": {
+      "audit_snapshot": 18,
+      "heuristic": 4,
+      "project_learning": 11,
+      "regression": 8
+    },
+    "heuristics_count": 4,
+    "total": 41
+  },
+  "portfolio": {
+    "by_risk": {
+      "high": 86,
+      "medium": 263,
+      "medium_high": 146
+    },
+    "by_type": {
+      "browser_app": 328,
+      "hybrid_browser_analytics_app": 87,
+      "python_tool": 10,
+      "r_project": 58,
+      "unknown": 12
+    },
+    "git_repos": 370,
+    "total_projects": 495,
+    "with_advanced_math": 173,
+    "with_browser_tests": 4,
+    "with_test_commands": 275
+  },
+  "priority_queue": [
+    {
+      "math_score": 14,
+      "name": "EvidenceOracle",
+      "priority_score": 25,
+      "project_id": "evidenceoracle-b78b3965",
+      "risk": "high",
+      "test_cmd": "python -m pytest tests/test_oracle.py -q"
+    },
+    {
+      "math_score": 20,
+      "name": "metasprint-autopilot",
+      "priority_score": 25,
+      "project_id": "metasprint-autopilot-747b492b",
+      "risk": "high",
+      "test_cmd": "python C:/Users/user/Downloads/metasprint/test_metasprint.py"
+    },
+    {
+      "math_score": 8,
+      "name": "truthcert-meta2-prototype",
+      "priority_score": 23,
+      "project_id": "truthcert-meta2-prototype-eec7d00d",
+      "risk": "high",
+      "test_cmd": "python -m pytest tests/test_arbitration_conservative.py -q"
+    },
+    {
+      "math_score": 11,
+      "name": "FATIHA_Project",
+      "priority_score": 22,
+      "project_id": "fatiha-project-a8ec1065",
+      "risk": "high",
+      "test_cmd": "Rscript -e \"testthat::test_dir('tests/testthat')\""
+    },
+    {
+      "math_score": 10,
+      "name": "HTA_Evidence_Integrity_Suite",
+      "priority_score": 22,
+      "project_id": "hta-evidence-integrity-suite-dc1fe6c7",
+      "risk": "high",
+      "test_cmd": "python -m pytest -q"
+    },
+    {
+      "math_score": 10,
+      "name": "registry_first_rct_meta",
+      "priority_score": 22,
+      "project_id": "registry-first-rct-meta-ca273c4f",
+      "risk": "high",
+      "test_cmd": "python -m pytest tests/test_meta.py -q"
+    },
+    {
+      "math_score": 20,
+      "name": "superapp",
+      "priority_score": 22,
+      "project_id": "superapp-3b1c175f",
+      "risk": "high",
+      "test_cmd": "npm run test"
+    },
+    {
+      "math_score": 15,
+      "name": "rct-extractor-v2",
+      "priority_score": 22,
+      "project_id": "rct-extractor-v2-6c290650",
+      "risk": "high",
+      "test_cmd": "python -m pytest tests/test_ctg_validation.py -q"
+    },
+    {
+      "math_score": 15,
+      "name": "Pairwise70",
+      "priority_score": 22,
+      "project_id": "pairwise70-4020df78",
+      "risk": "high",
+      "test_cmd": "python -m pytest tests/selenium_comprehensive_test.py -q"
+    },
+    {
+      "math_score": 10,
+      "name": "lec_phase0_bundle",
+      "priority_score": 22,
+      "project_id": "lec-phase0-bundle-a2c59fad",
+      "risk": "high",
+      "test_cmd": "python -m pytest tests/test_metafor_validation.py -q"
+    },
+    {
+      "math_score": 16,
+      "name": "lec_phase0_project",
+      "priority_score": 22,
+      "project_id": "lec-phase0-project-b7f5a7f7",
+      "risk": "high",
+      "test_cmd": "python -m pytest tests/test_discovery_epmc.py -q"
+    },
+    {
+      "math_score": 10,
+      "name": "llm-meta-analysis",
+      "priority_score": 22,
+      "project_id": "llm-meta-analysis-8e261d9f",
+      "risk": "high",
+      "test_cmd": "python -m pytest tests/test_smoke.py -q"
+    },
+    {
+      "math_score": 12,
+      "name": "metasprint-dose-response",
+      "priority_score": 22,
+      "project_id": "metasprint-dose-response-1819ced5",
+      "risk": "high",
+      "test_cmd": "python -m pytest test_dose_response_models.py -v"
+    },
+    {
+      "math_score": 17,
+      "name": "metasprintnma",
+      "priority_score": 22,
+      "project_id": "metasprintnma-e8770e5e",
+      "risk": "high",
+      "test_cmd": "python test_expanded_suite.py"
+    },
+    {
+      "math_score": 14,
+      "name": "hfpef_registry_synth",
+      "priority_score": 22,
+      "project_id": "hfpef-registry-synth-65970c56",
+      "risk": "high",
+      "test_cmd": "python -m pytest tests/test_smoke_pipeline.py -q"
+    },
+    {
+      "math_score": 20,
+      "name": "idea12",
+      "priority_score": 22,
+      "project_id": "idea12-59249342",
+      "risk": "high",
+      "test_cmd": "python -m pytest tests/test_basic.py -q"
+    },
+    {
+      "math_score": 20,
+      "name": "ipd-meta-pro-link",
+      "priority_score": 22,
+      "project_id": "ipd-meta-pro-link-40520491",
+      "risk": "high",
+      "test_cmd": "python dev/build-scripts/user_flow_smoke_test.py"
+    },
+    {
+      "math_score": 18,
+      "name": "evidence-inference",
+      "priority_score": 22,
+      "project_id": "evidence-inference-4c874004",
+      "risk": "high",
+      "test_cmd": "python -m pytest tests/test_imports.py -q"
+    },
+    {
+      "math_score": 11,
+      "name": "experimental-meta-analysis",
+      "priority_score": 22,
+      "project_id": "experimental-meta-analysis-37d6e8a1",
+      "risk": "high",
+      "test_cmd": "python quick_test.py"
+    },
+    {
+      "math_score": 18,
+      "name": "Dataextractor",
+      "priority_score": 22,
+      "project_id": "dataextractor-9c5488b5",
+      "risk": "high",
+      "test_cmd": "npm run test"
+    }
+  ],
+  "regressions": {
+    "active_regressions": 8,
+    "details": [
+      {
+        "created": "2026-04-07T19:25:52+00:00",
+        "scope": "openpalp-evidence-be0f7939",
+        "title": "Verification failed"
+      },
+      {
+        "created": "2026-04-07T19:13:08+00:00",
+        "scope": "pairwise70-5049aa49",
+        "title": "Verification failed"
+      },
+      {
+        "created": "2026-04-07T19:13:08+00:00",
+        "scope": "rmstnma-1810584a",
+        "title": "Verification failed"
+      },
+      {
+        "created": "2026-04-07T19:13:08+00:00",
+        "scope": "dta70-4b170dbc",
+        "title": "Verification failed"
+      },
+      {
+        "created": "2026-04-07T19:13:08+00:00",
+        "scope": "cbamm-0820ec88",
+        "title": "Verification failed"
+      },
+      {
+        "created": "2026-04-07T19:13:12+00:00",
+        "scope": "meta-ecosystem-model-3d6353ab",
+        "title": "Verification failed"
+      },
+      {
+        "created": "2026-04-07T19:13:15+00:00",
+        "scope": "pairwise70-900619fe",
+        "title": "Verification failed"
+      },
+      {
+        "created": "2026-04-07T17:00:56+00:00",
+        "scope": "bayesianma-240f4a74",
+        "title": "Pass rate degraded: 100% -> 50%"
+      }
+    ]
+  },
+  "runner_performance": {
+    "by_runner": {
+      "claude": {
+        "avg_q_value": 0.714,
+        "task_types": 1,
+        "total_losses": 1,
+        "total_wins": 4
+      },
+      "codex": {
+        "avg_q_value": 0.8,
+        "task_types": 1,
+        "total_losses": 0,
+        "total_wins": 3
+      },
+      "gemini": {
+        "avg_q_value": 0.667,
+        "task_types": 1,
+        "total_losses": 0,
+        "total_wins": 1
+      },
+      "test_runner": {
+        "avg_q_value": 0.662,
+        "task_types": 1,
+        "total_losses": 21,
+        "total_wins": 42
+      }
+    },
+    "entries": 4,
+    "status": "active"
+  },
+  "session_mining": {
+    "failure_lines": 3188,
+    "insights_generated": 3,
+    "sessions_analyzed": 30,
+    "success_lines": 1568,
+    "top_errors": {
+      "AssertionError": 36,
+      "ImportError": 46,
+      "KeyError": 61,
+      "ModuleNotFoundError": 35,
+      "SyntaxError": 42,
+      "TypeError": 44,
+      "ValueError": 183
+    },
+    "top_projects": {
+      "": 42,
+      "HTML": 13,
+      "OneDrive": 4,
+      "dashboard": 2,
+      "glaas": 2,
+      "manuscript": 6,
+      "manuscript_jce": 2,
+      "priorlab": 2,
+      "qualsynth": 2,
+      "rewrite-workbook": 2,
+      "stats_engine": 10,
+      "test_stats": 10,
+      "umbrella": 2,
+      "user": 4,
+      "xmart": 2
+    },
+    "total_messages": 15794
+  },
+  "verification_coverage": {
+    "coverage_percent": 6.5,
+    "high_risk_unverified_count": 134,
+    "high_risk_unverified_top10": [
+      {
+        "id": "superapp-3b1c175f",
+        "math_score": 20,
+        "name": "superapp",
+        "risk": "high"
+      },
+      {
+        "id": "metasprint-autopilot-747b492b",
+        "math_score": 20,
+        "name": "metasprint-autopilot",
+        "risk": "high"
+      },
+      {
+        "id": "idea12-59249342",
+        "math_score": 20,
+        "name": "idea12",
+        "risk": "high"
+      },
+      {
+        "id": "ipd-meta-pro-link-40520491",
+        "math_score": 20,
+        "name": "ipd-meta-pro-link",
+        "risk": "high"
+      },
+      {
+        "id": "advanced-nma-pooling-be850427",
+        "math_score": 20,
+        "name": "advanced-nma-pooling",
+        "risk": "high"
+      },
+      {
+        "id": "evidence-inference-4c874004",
+        "math_score": 18,
+        "name": "evidence-inference",
+        "risk": "high"
+      },
+      {
+        "id": "dataextractor-9c5488b5",
+        "math_score": 18,
+        "name": "Dataextractor",
+        "risk": "high"
+      },
+      {
+        "id": "metasprintnma-e8770e5e",
+        "math_score": 17,
+        "name": "metasprintnma",
+        "risk": "high"
+      },
+      {
+        "id": "lec-phase0-project-b7f5a7f7",
+        "math_score": 16,
+        "name": "lec_phase0_project",
+        "risk": "high"
+      },
+      {
+        "id": "rct-extractor-v2-6c290650",
+        "math_score": 15,
+        "name": "rct-extractor-v2",
+        "risk": "high"
+      }
+    ],
+    "total_testable": 275,
+    "verified_count": 18
+  }
+}

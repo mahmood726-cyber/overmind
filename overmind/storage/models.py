@@ -48,6 +48,8 @@ class ProjectRecord(SerializableModel):
     advanced_math_signals: list[str] = field(default_factory=list)
     advanced_math_score: int = 0
     advanced_math_rigor: str = "none"
+    analysis_focus_areas: list[str] = field(default_factory=list)
+    analysis_risk_factors: list[str] = field(default_factory=list)
     guidance_files: list[str] = field(default_factory=list)
     guidance_summary: list[str] = field(default_factory=list)
     guidance_commands: list[str] = field(default_factory=list)
