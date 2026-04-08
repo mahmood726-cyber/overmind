@@ -1,7 +1,7 @@
 # Cbamm
 
-**Last verified:** 2026-04-08 22:10 UTC | **Verdict:** FAIL (Single witness: test_suite FAIL)
-**Bundle hash:** ef10cbc27bfbd49b | **Risk:** high | **Math:** 17
+**Last verified:** 2026-04-08 23:40 UTC | **Verdict:** FAIL (Single witness: test_suite FAIL)
+**Bundle hash:** 1f74f9b9c654330c | **Risk:** high | **Math:** 17
 
 ## Health
 
@@ -24,6 +24,7 @@
 |------|---------|-----------|------|------|
 | 2026-04-08 | FAIL | 1/3 | 0.0s | e58bcabab87a8d01 |
 | 2026-04-08 | FAIL | 1/3 | 0.0s | ef10cbc27bfbd49b |
+| 2026-04-08 | FAIL | 1/3 | 0.0s | 1f74f9b9c654330c |
 
 ## Notes
 

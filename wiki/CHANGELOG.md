@@ -2,6 +2,19 @@
 
 ## 2026-04-08
 
+**Verified:** 50 | **Certified:** 4 | **Rejected:** 16 | **Failed:** 16
+
+### Changes from last night
+- metasprintnma: PASS -> FAIL
+- ubcma: FAIL -> REJECT
+- truthcert-meta2-prototype: CERTIFIED -> REJECT
+
+### New projects verified
+- overmind
+
+
+## 2026-04-08
+
 **Verified:** 50 | **Certified:** 5 | **Rejected:** 14 | **Failed:** 17
 
 ### Changes from last night

@@ -1,15 +1,15 @@
 # ipd_qma_project
 
-**Last verified:** 2026-04-08 22:10 UTC | **Verdict:** REJECT (Witnesses disagree: test_suite PASS vs smoke FAIL)
-**Bundle hash:** eb25bbf0a9bb54b2 | **Risk:** high | **Math:** 15
+**Last verified:** 2026-04-08 23:40 UTC | **Verdict:** REJECT (Witnesses disagree: test_suite PASS vs smoke FAIL)
+**Bundle hash:** d2908cfa3d0f0027 | **Risk:** high | **Math:** 15
 
 ## Health
 
 | Witness | Verdict | Time | Detail |
 |---------|---------|------|--------|
-| test_suite | PASS | 5.0s | ..........................................s.................             [100%]
+| test_suite | PASS | 8.3s | ..........................................s.................             [100%]
  |
-| smoke | FAIL | 27.4s | ipd_qma_bayesian: , in <module> |
+| smoke | FAIL | 44.0s | ipd_qma_bayesian: , in <module> |
 | numerical | SKIP | 0.0s | skipped |
 
 ## Project
@@ -25,6 +25,7 @@
 |------|---------|-----------|------|------|
 | 2026-04-08 | REJECT | 2/3 | 72.0s | c560c98377c7e3f8 |
 | 2026-04-08 | REJECT | 2/3 | 32.4s | eb25bbf0a9bb54b2 |
+| 2026-04-08 | REJECT | 2/3 | 52.3s | d2908cfa3d0f0027 |
 
 ## Notes
 

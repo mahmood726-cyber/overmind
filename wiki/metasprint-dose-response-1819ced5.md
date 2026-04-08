@@ -1,15 +1,15 @@
 # metasprint-dose-response
 
-**Last verified:** 2026-04-08 22:10 UTC | **Verdict:** PASS (2/2 witnesses PASS (numerical skipped — no baseline))
-**Bundle hash:** d7cac4a25f3d9050 | **Risk:** high | **Math:** 12
+**Last verified:** 2026-04-08 23:40 UTC | **Verdict:** PASS (2/2 witnesses PASS (numerical skipped — no baseline))
+**Bundle hash:** 7df581417a2f9986 | **Risk:** high | **Math:** 12
 
 ## Health
 
 | Witness | Verdict | Time | Detail |
 |---------|---------|------|--------|
-| test_suite | PASS | 11.2s | ixed_effects_se_matches_r PASSED [ 81%]
+| test_suite | PASS | 15.5s | ixed_effects_se_matches_r PASSED [ 81%]
 test_dose_response_models.py::TestRValid |
-| smoke | PASS | 1.0s | 1 modules imported OK |
+| smoke | PASS | 2.1s | 1 modules imported OK |
 | numerical | SKIP | 0.0s | skipped |
 
 ## Project
@@ -25,3 +25,4 @@ test_dose_response_models.py::TestRValid |
 |------|---------|-----------|------|------|
 | 2026-04-08 | PASS | 2/3 | 21.1s | d77ace5e9a167ae3 |
 | 2026-04-08 | PASS | 2/3 | 12.2s | d7cac4a25f3d9050 |
+| 2026-04-08 | PASS | 2/3 | 17.7s | 7df581417a2f9986 |

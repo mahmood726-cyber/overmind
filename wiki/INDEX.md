@@ -1,6 +1,6 @@
 # Overmind Wiki Index
 
-**Last compiled:** 2026-04-08 22:10 UTC | **Projects:** 50 | **Certified:** 5 | **Rejected:** 14 | **Failed:** 17
+**Last compiled:** 2026-04-08 23:40 UTC | **Projects:** 50 | **Certified:** 4 | **Rejected:** 16 | **Failed:** 16
 
 | Project | Verdict | Risk | Math | Last Verified |
 |---------|---------|------|------|---------------|
@@ -10,9 +10,11 @@
 | [EvidenceOracle](evidenceoracle-b78b3965.md) | REJECT | high | 14 | 2026-04-08 |
 | [repo300-ENMA-SNMA](repo300-enma-snma-a0216745.md) | REJECT | high | 14 | 2026-04-08 |
 | [asreview_5star](asreview-5star-8400d8d7.md) | REJECT | high | 12 | 2026-04-08 |
+| [ubcma](ubcma-42306ffe.md) | REJECT | high | 11 | 2026-04-08 |
 | [llm-meta-analysis](llm-meta-analysis-8e261d9f.md) | REJECT | high | 10 | 2026-04-08 |
 | [registry_first_rct_meta](registry-first-rct-meta-ca273c4f.md) | REJECT | high | 10 | 2026-04-08 |
 | [truthcert-denominator-phase1](truthcert-denominator-phase1-9b039a8d.md) | REJECT | high | 10 | 2026-04-08 |
+| [truthcert-meta2-prototype](truthcert-meta2-prototype-eec7d00d.md) | REJECT | high | 8 | 2026-04-08 |
 | [ctgov-search-strategies](ctgov-search-strategies-b6ea3be1.md) | REJECT | high | 7 | 2026-04-08 |
 | [GWAM](gwam-8ecf48c6.md) | REJECT | high | 7 | 2026-04-08 |
 | [MetaAudit](metaaudit-b111c205.md) | REJECT | high | 7 | 2026-04-08 |
@@ -24,25 +26,23 @@
 | [evidence-inference](evidence-inference-4c874004.md) | FAIL | high | 18 | 2026-04-08 |
 | [Cbamm](cbamm-0820ec88.md) | FAIL | high | 17 | 2026-04-08 |
 | [DTA70](dta70-4b170dbc.md) | FAIL | high | 17 | 2026-04-08 |
+| [metasprintnma](metasprintnma-e8770e5e.md) | FAIL | high | 17 | 2026-04-08 |
 | [Dataextractor_backup_20260114_110706](dataextractor-backup-20260114-110706-e7f.md) | FAIL | high | 15 | 2026-04-08 |
 | [Pairwise70](pairwise70-5049aa49.md) | FAIL | high | 15 | 2026-04-08 |
 | [rmstnma](rmstnma-1810584a.md) | FAIL | high | 15 | 2026-04-08 |
 | [FATIHA_Project](fatiha-project-a8ec1065.md) | FAIL | high | 11 | 2026-04-08 |
 | [new-app](new-app-a051eaea.md) | FAIL | high | 11 | 2026-04-08 |
 | [NMA](nma-a6e8ac00.md) | FAIL | high | 11 | 2026-04-08 |
-| [ubcma](ubcma-42306ffe.md) | FAIL | high | 11 | 2026-04-08 |
 | [GRMA_paper](grma-paper-c4737385.md) | FAIL | high | 7 | 2026-04-08 |
 | [metaoverfit](metaoverfit-5f64eb8f.md) | FAIL | high | 6 | 2026-04-08 |
 | [MLMResearch](mlmresearch-603c45f0.md) | FAIL | high | 6 | 2026-04-08 |
-| [HFN786](hfn786-58381c44.md) | FAIL | medium_high | 7 | 2026-04-08 |
-| [truthcert-meta2-prototype](truthcert-meta2-prototype-eec7d00d.md) | CERTIFIED | high | 8 | 2026-04-08 |
 | [Meta_Ecosystem_Model](meta-ecosystem-model-3d6353ab.md) | CERTIFIED | high | 7 | 2026-04-08 |
 | [truthcert-openclaw-supermemory-stack](truthcert-openclaw-supermemory-stack-6fb.md) | CERTIFIED | high | 2 | 2026-04-08 |
 | [ComponentNMA](componentnma-5d7f067c.md) | CERTIFIED | medium_high | 7 | 2026-04-08 |
 | [ctgov-registry-survival](ctgov-registry-survival-92f80fb3.md) | CERTIFIED | medium_high | 7 | 2026-04-08 |
 | [esc-acs-living-meta](esc-acs-living-meta-dab41ea9.md) | PASS | high | 20 | 2026-04-08 |
+| [overmind](overmind-b3047661.md) | PASS | high | 20 | 2026-04-08 |
 | [prognostic-meta](prognostic-meta-5028c26a.md) | PASS | high | 20 | 2026-04-08 |
-| [metasprintnma](metasprintnma-e8770e5e.md) | PASS | high | 17 | 2026-04-08 |
 | [lec_phase0_project](lec-phase0-project-b7f5a7f7.md) | PASS | high | 16 | 2026-04-08 |
 | [rct-extractor-v2](rct-extractor-v2-6c290650.md) | PASS | high | 15 | 2026-04-08 |
 | [hfpef_registry_synth](hfpef-registry-synth-65970c56.md) | PASS | high | 14 | 2026-04-08 |
