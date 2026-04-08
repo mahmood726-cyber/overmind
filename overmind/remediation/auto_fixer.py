@@ -4,14 +4,11 @@ Safety rules:
 1. NEVER modify source code (.py, .html, .js)
 2. Only environmental fixes: pip install, baseline regen, git restore
 3. Re-verify after every fix
-4. Only commit if re-verification passes
-5. Roll back if fix makes things worse
+4. NEVER auto-commit — fixes are logged, human reviews before pushing
 """
 from __future__ import annotations
 
-import subprocess
-import sys
-from dataclasses import dataclass, field
+from dataclasses import dataclass
 from pathlib import Path
 
 from overmind.diagnosis.judge import Diagnosis
@@ -122,11 +119,6 @@ class AutoFixer:
                 reverified = True
                 reverify_passed = verify_fn(project_path)
 
-            # Commit if re-verification passed (or no verify_fn)
-            committed = False
-            if fix_result.success and (reverify_passed or not verify_fn):
-                committed = self._commit_fix(project_path, diagnosis, fix_result)
-
             return RemediationResult(
                 project_id=diagnosis.project_id,
                 diagnosis_type=diagnosis.failure_type,
@@ -134,10 +126,10 @@ class AutoFixer:
                 fix_result=fix_result,
                 reverified=reverified,
                 reverify_passed=reverify_passed,
-                committed=committed,
+                committed=False,  # Never auto-commit — human reviews
                 detail=f"Fixed: {fix_result.action_taken}" + (
                     f" | reverify={'PASS' if reverify_passed else 'FAIL'}" if reverified else ""
-                ) + (f" | committed" if committed else ""),
+                ),
             )
 
         # No strategy matched
@@ -152,26 +144,3 @@ class AutoFixer:
             detail=f"No auto-fix strategy for {diagnosis.failure_type}",
         )
 
-    def _commit_fix(self, project_path: str, diagnosis: Diagnosis, fix_result: FixResult) -> bool:
-        """Commit the fix with an audit trail."""
-        try:
-            # Stage all changes
-            subprocess.run(
-                ["git", "add", "-A"],
-                cwd=project_path, capture_output=True, timeout=10,
-            )
-            # Commit with Overmind attribution
-            msg = (
-                f"fix(overmind): auto-remediate {diagnosis.failure_type}\n\n"
-                f"Action: {fix_result.action_taken}\n"
-                f"Detail: {fix_result.detail[:200]}\n"
-                f"Diagnosed by: Overmind Judge\n"
-                f"Auto-fixed by: Overmind AutoFixer"
-            )
-            proc = subprocess.run(
-                ["git", "commit", "-m", msg, "--allow-empty"],
-                cwd=project_path, capture_output=True, text=True, timeout=10,
-            )
-            return proc.returncode == 0
-        except (subprocess.TimeoutExpired, OSError):
-            return False

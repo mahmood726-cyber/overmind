@@ -151,9 +151,17 @@ def _verify_with_timeout(engine, proj, timeout=300):
             timestamp=utc_now(),
         )
 
+    def _cleanup_queue():
+        try:
+            result_queue.close()
+            result_queue.join_thread()
+        except Exception:
+            pass
+
     try:
         status, data = result_queue.get_nowait()
     except Exception:
+        _cleanup_queue()
         return CertBundle(
             project_id=proj.project_id,
             scope_lock=engine.build_scope_lock(proj),
@@ -166,6 +174,8 @@ def _verify_with_timeout(engine, proj, timeout=300):
             arbitration_reason="Worker process returned no result",
             timestamp=utc_now(),
         )
+
+    _cleanup_queue()
 
     if status == "error":
         return CertBundle(

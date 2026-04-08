@@ -47,6 +47,10 @@ class DependencyRotFix:
         if not module:
             return FixResult(False, "skip", "Could not extract module name from evidence")
 
+        # Strict validation: only alphanumeric + hyphen + underscore
+        if not re.fullmatch(r'[a-zA-Z][a-zA-Z0-9_-]*', module):
+            return FixResult(False, "skip", f"Module name '{module}' failed validation")
+
         # Don't try to pip install local project modules
         if self.LOCAL_MODULE_PATTERNS.match(module):
             return FixResult(False, "skip", f"'{module}' is a local module, not pip-installable")
@@ -89,6 +93,13 @@ class BaselineDriftFix:
         if not baseline_path:
             return FixResult(False, "skip", "No baseline file found")
 
+        # Load existing baseline
+        try:
+            baseline = json.loads(baseline_path.read_text(encoding="utf-8"))
+            old_values = baseline.get("values", {})
+        except (json.JSONDecodeError, OSError) as exc:
+            return FixResult(False, "regenerate baseline", f"Corrupt baseline file: {exc}")
+
         # Run the probe to get current values
         try:
             proc = subprocess.run(
@@ -107,9 +118,24 @@ class BaselineDriftFix:
         except (json.JSONDecodeError, ValueError):
             return FixResult(False, "regenerate baseline", "Probe output not valid JSON")
 
+        # Delta bounds-checking: reject if any numeric value changes by >50%
+        # (likely a real bug, not a minor drift from code refactoring)
+        large_deltas = []
+        for key in old_values:
+            old_val = old_values.get(key)
+            new_val = new_values.get(key)
+            if isinstance(old_val, (int, float)) and isinstance(new_val, (int, float)):
+                if old_val != 0:
+                    pct_change = abs(new_val - old_val) / abs(old_val)
+                    if pct_change > 0.5:
+                        large_deltas.append(f"{key}: {old_val}->{new_val} ({pct_change:.0%})")
+        if large_deltas:
+            return FixResult(
+                False, "regenerate baseline",
+                f"Blocked: {len(large_deltas)} values changed >50% — likely a real bug: {'; '.join(large_deltas[:3])}"
+            )
+
         # Update the baseline
-        baseline = json.loads(baseline_path.read_text(encoding="utf-8"))
-        old_values = baseline.get("values", {})
         baseline["values"] = new_values
         baseline_path.write_text(json.dumps(baseline, indent=2), encoding="utf-8")
 
@@ -154,6 +180,11 @@ class MissingFixtureFix:
 
         if not path:
             return FixResult(False, "skip", "Could not extract file path from evidence")
+
+        # Path traversal protection: resolve and verify within project root
+        resolved = (Path(project_path) / path).resolve()
+        if not str(resolved).startswith(str(Path(project_path).resolve())):
+            return FixResult(False, "skip", f"Path traversal blocked: {path}")
 
         # Try git checkout
         try:
