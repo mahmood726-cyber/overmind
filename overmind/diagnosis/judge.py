@@ -36,7 +36,8 @@ class PatternMatcher:
     def match(self, witness: WitnessResult) -> tuple[str, float, list[str]]:
         """Returns (failure_type, confidence, evidence_excerpts)."""
         # Priority order: check each type
-        for ftype in ["DEPENDENCY_ROT", "NUMERICAL_DRIFT", "TIMEOUT",
+        for ftype in ["DEPENDENCY_ROT", "NUMERICAL_DRIFT", "FLOAT_PRECISION",
+                       "FORMULA_ERROR", "PLATFORM_COMPAT", "TIMEOUT",
                        "SYNTAX_ERROR", "MISSING_FIXTURE", "TEST_FAILURE"]:
             patterns = self._compiled[ftype]
             # Check stderr patterns

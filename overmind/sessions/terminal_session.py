@@ -8,6 +8,7 @@ from datetime import UTC, datetime
 from pathlib import Path
 
 from overmind.runners.protocols import INTERACTIVE, RunnerProtocol
+from overmind.subprocess_utils import split_command
 from overmind.sessions.output_stream import OutputStreamReader
 from overmind.sessions.transcript_store import TranscriptStore
 from overmind.storage.models import SessionObservation, utc_now
@@ -38,9 +39,9 @@ class TerminalSession:
 
     def start(self, prompt: str) -> None:
         self.process = subprocess.Popen(
-            self.command,
+            split_command(self.command) if isinstance(self.command, str) else self.command,
             cwd=self.cwd,
-            shell=True,
+            shell=False,
             stdin=subprocess.PIPE,
             stdout=subprocess.PIPE,
             stderr=subprocess.STDOUT,

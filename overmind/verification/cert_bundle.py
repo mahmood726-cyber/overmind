@@ -11,6 +11,7 @@ from overmind.verification.scope_lock import ScopeLock, WitnessResult
 class Arbitrator:
     def arbitrate(self, results: list[WitnessResult]) -> tuple[str, str]:
         non_skip = [r for r in results if r.verdict != "SKIP"]
+        skipped = [r for r in results if r.verdict == "SKIP"]
 
         if len(non_skip) == 0:
             return "SKIP", "All witnesses skipped"
@@ -22,6 +23,10 @@ class Arbitrator:
         verdicts = {r.verdict for r in non_skip}
 
         if verdicts == {"PASS"}:
+            # Downgrade to PASS if numerical witness was expected but skipped (no baseline)
+            numerical_skipped = any(r.witness_type == "numerical" for r in skipped)
+            if numerical_skipped:
+                return "PASS", f"{len(non_skip)}/{len(non_skip)} witnesses PASS (numerical skipped — no baseline)"
             return "CERTIFIED", f"{len(non_skip)}/{len(non_skip)} witnesses agree PASS"
 
         if verdicts == {"FAIL"}:

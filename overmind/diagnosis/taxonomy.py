@@ -32,6 +32,27 @@ FAILURE_TYPES = {
         "patterns_stdout": [r"\d+ failed", r"FAILED"],
         "action_template": "Read test output and fix failing tests",
     },
+    "FLOAT_PRECISION": {
+        "description": "Floating-point precision or zero-as-falsy bug",
+        "patterns_stderr": [r"NaN", r"Infinity", r"-Infinity"],
+        "patterns_stdout": [r"\bNaN\b", r"\bInfinity\b", r"null where .+ expected"],
+        "action_template": "Check for || vs ?? (drops zero), float === comparison, or parseFloat||null pattern",
+    },
+    "FORMULA_ERROR": {
+        "description": "Incorrect formula or sign error in computation",
+        "patterns_stderr": [r"AssertionError.*expected", r"assert.*!="],
+        "patterns_stdout": [r"expected .+ but got", r"sign.*flip", r"direction.*wrong"],
+        "action_template": "Verify formula against reference (R package or spec). Check for sign flips, wrong constants.",
+    },
+    "PLATFORM_COMPAT": {
+        "description": "Platform-specific failure (Windows, Python version, encoding)",
+        "patterns_stderr": [
+            r"UnicodeEncodeError", r"UnicodeDecodeError", r"cp1252",
+            r"WMI", r"platform\._wmi_query", r"python3.*not found",
+            r"\\r\\n",
+        ],
+        "action_template": "Apply platform fix: use UTF-8 encoding, python not python3, check WMI deadlock patch",
+    },
     "UNKNOWN": {
         "description": "No recognized pattern",
         "patterns_stderr": [],

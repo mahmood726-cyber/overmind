@@ -56,7 +56,7 @@ def wrap(runner_type: str, extra_args: list[str], db_path: Path | None = None) -
 
     # Run the agent
     try:
-        result = subprocess.run(cmd, shell=True)
+        result = subprocess.run(cmd, shell=False)
         exit_code = result.returncode
     except KeyboardInterrupt:
         exit_code = 130

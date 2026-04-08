@@ -1,6 +1,7 @@
 """Evolution Manager: tracks diagnosis->fix outcomes, promotes proven recipes."""
 from __future__ import annotations
 
+import os
 import re
 from datetime import datetime, UTC
 from pathlib import Path
@@ -210,7 +211,11 @@ class EvolutionManager:
                 )
 
         lines.append("")
-        self.procedures_path.write_text("\n".join(lines), encoding="utf-8")
+        # Atomic write: temp file + os.replace to prevent data loss on crash
+        content = "\n".join(lines)
+        tmp_path = self.procedures_path.with_suffix(".tmp")
+        tmp_path.write_text(content, encoding="utf-8")
+        os.replace(str(tmp_path), str(self.procedures_path))
 
 
 def _extract_key(diag: Diagnosis) -> str:

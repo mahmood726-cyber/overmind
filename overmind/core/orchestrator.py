@@ -4,6 +4,8 @@ import subprocess
 import time
 from pathlib import Path
 
+from overmind.subprocess_utils import split_command
+
 from overmind.config import AppConfig
 from overmind.core.health_manager import HealthManager
 from overmind.core.policy_engine import PolicyEngine
@@ -440,9 +442,9 @@ class Orchestrator:
             return True
         try:
             proc = subprocess.Popen(
-                task.verify_command,
+                split_command(task.verify_command),
                 cwd=project.root_path,
-                shell=True,
+                shell=False,
                 stdout=subprocess.PIPE,
                 stderr=subprocess.PIPE,
                 text=True,

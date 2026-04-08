@@ -3,6 +3,8 @@ from __future__ import annotations
 import subprocess
 from pathlib import Path
 
+from overmind.subprocess_utils import split_command
+
 from overmind.storage.models import ProjectRecord, TaskRecord, VerificationResult
 from overmind.verification.profiles import VerificationPlanner
 
@@ -69,9 +71,9 @@ class VerificationEngine:
     def _run_command(self, command: str, cwd: str) -> tuple[int, str, str]:
         try:
             proc = subprocess.Popen(
-                command,
+                split_command(command),
                 cwd=cwd,
-                shell=True,
+                shell=False,
                 stdout=subprocess.PIPE,
                 stderr=subprocess.PIPE,
                 text=True,

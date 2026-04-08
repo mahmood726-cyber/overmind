@@ -34,7 +34,7 @@ class TruthCertEngine:
         test_command = project.test_commands[0] if project.test_commands else ""
         smoke_modules = self._discover_modules(project.root_path) if tier >= 2 else ()
         baseline_path = self._find_baseline(project.project_id) if tier >= 3 else None
-        source_hash = self._hash_test_files(project.root_path)
+        source_hash = self._hash_source_files(project.root_path)
 
         return ScopeLock(
             project_id=project.project_id,
@@ -132,15 +132,23 @@ class TruthCertEngine:
         path = self.baselines_dir / f"{project_id}.json"
         return str(path) if path.exists() else None
 
-    def _hash_test_files(self, root_path: str) -> str:
+    def _hash_source_files(self, root_path: str) -> str:
+        """Hash source, test, and HTML files to detect any code change."""
         hasher = hashlib.sha256()
         root = Path(root_path)
+        source_files = sorted(root.glob("*.py"))
+        source_files += sorted(root.glob("*/*.py"))
+        # Include HTML dashboards — formula changes in 50K-line HTML files must invalidate cache
+        html_files = sorted(root.glob("*.html"))
         test_files = sorted(
             list(root.glob("**/test_*.py")) + list(root.glob("**/*_test.py"))
         )
-        for tf in test_files[:50]:
+        all_files = sorted(set(source_files + test_files + html_files), key=lambda p: str(p))
+        for f in all_files[:100]:
+            if any(part.startswith((".", "node_modules", "__pycache__", ".git")) for part in f.parts):
+                continue
             try:
-                hasher.update(tf.read_bytes())
+                hasher.update(f.read_bytes())
             except OSError:
                 continue
         return hasher.hexdigest()[:16]

@@ -270,7 +270,10 @@ class StateDatabase:
     def search_memories(
         self, query: str, scope: str | None = None, memory_type: str | None = None, limit: int = 10
     ) -> list[MemoryRecord]:
-        fts_query = " ".join(f'"{token}"' for token in query.split() if token)
+        # Escape double quotes and strip FTS5 operator keywords to prevent query injection
+        fts_operators = {"AND", "OR", "NOT", "NEAR"}
+        tokens = [t for t in query.split() if t and t.upper() not in fts_operators]
+        fts_query = " ".join(f'"{token.replace(chr(34), chr(34)+chr(34))}"' for token in tokens)
         if not fts_query:
             return []
         sql = """
@@ -391,6 +394,16 @@ class StateDatabase:
             }
             for row in rows
         ]
+
+    def prune_checkpoints(self, keep: int = 100) -> int:
+        """Delete old checkpoints, keeping only the most recent `keep` rows."""
+        cursor = self.connection.execute(
+            "DELETE FROM checkpoints WHERE id NOT IN "
+            "(SELECT id FROM checkpoints ORDER BY id DESC LIMIT ?)",
+            (keep,),
+        )
+        self.connection.commit()
+        return cursor.rowcount
 
     def latest_checkpoint(self, name: str | None = None) -> dict[str, Any] | None:
         if name:

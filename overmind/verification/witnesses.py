@@ -6,6 +6,7 @@ import subprocess
 import sys
 import time
 
+from overmind.subprocess_utils import split_command, validate_command_prefix
 from overmind.verification.scope_lock import WitnessResult
 
 PYTHON_EXE = sys.executable
@@ -19,7 +20,7 @@ class SuiteWitness:
         start = time.time()
         try:
             proc = subprocess.run(
-                command, cwd=cwd, shell=True,
+                split_command(command), cwd=cwd, shell=False,
                 capture_output=True, text=True, timeout=self.timeout,
             )
             elapsed = time.time() - start
@@ -103,9 +104,16 @@ class NumericalWitness:
         expected = baseline["values"]
         tolerance = baseline.get("tolerance", 1e-6)
 
+        if not validate_command_prefix(command):
+            return WitnessResult(
+                witness_type="numerical", verdict="FAIL", exit_code=-1,
+                stdout="", stderr=f"Blocked: command prefix not allowlisted: {command[:80]}",
+                elapsed=round(time.time() - start, 2),
+            )
+
         try:
             proc = subprocess.run(
-                command, cwd=cwd, shell=True,
+                split_command(command), cwd=cwd, shell=False,
                 capture_output=True, text=True, timeout=self.timeout,
             )
         except subprocess.TimeoutExpired:

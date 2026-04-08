@@ -90,14 +90,62 @@ def select_projects(db: StateDatabase, min_risk: str, limit: int) -> list:
     return [p for _, _, _, p in candidates[:limit]]
 
 
-def _verdict_symbol(verdict: str) -> str:
-    return {
-        "CERTIFIED": "CERTIFIED",
-        "REJECT": "REJECT",
-        "FAIL": "FAIL",
-        "PASS": "PASS",
-        "SKIP": "SKIP",
-    }.get(verdict, verdict)
+def _load_last_night_diagnoses(today_str: str, judge) -> list:
+    """Load diagnoses from the most recent prior nightly report's bundles.
+
+    Re-diagnoses REJECT/FAIL bundles from yesterday so Evolution Manager
+    can track which failures resolved overnight.
+    """
+    from overmind.verification.cert_bundle import CertBundle
+    from overmind.verification.scope_lock import ScopeLock, WitnessResult
+
+    bundle_dirs = sorted((REPORT_DIR / "bundles").glob("*/"), reverse=True)
+    last_dir = None
+    for d in bundle_dirs:
+        if d.name != today_str:
+            last_dir = d
+            break
+    if not last_dir:
+        return []
+
+    diagnoses = []
+    for bundle_file in last_dir.glob("*.json"):
+        try:
+            raw = json.loads(bundle_file.read_text(encoding="utf-8"))
+            if raw.get("verdict") not in ("REJECT", "FAIL"):
+                continue
+            # Reconstruct CertBundle for Judge.diagnose()
+            scope_raw = raw.get("scope_lock", {})
+            scope_lock = ScopeLock(
+                project_id=scope_raw.get("project_id", ""),
+                project_path=scope_raw.get("project_path", ""),
+                risk_profile=scope_raw.get("risk_profile", "medium"),
+                witness_count=scope_raw.get("witness_count", 1),
+                test_command=scope_raw.get("test_command", ""),
+                smoke_modules=tuple(scope_raw.get("smoke_modules", [])),
+                baseline_path=scope_raw.get("baseline_path"),
+                expected_outcome=scope_raw.get("expected_outcome", "pass"),
+                source_hash=scope_raw.get("source_hash", ""),
+                created_at=scope_raw.get("created_at", ""),
+            )
+            witness_results = [
+                WitnessResult(**w) for w in raw.get("witness_results", [])
+            ]
+            bundle = CertBundle(
+                project_id=raw["project_id"],
+                scope_lock=scope_lock,
+                witness_results=witness_results,
+                verdict=raw["verdict"],
+                arbitration_reason=raw.get("arbitration_reason", ""),
+                timestamp=raw.get("timestamp", ""),
+                bundle_hash=raw.get("bundle_hash", ""),
+            )
+            diag = judge.diagnose(bundle)
+            if diag:
+                diagnoses.append(diag)
+        except Exception:
+            continue
+    return diagnoses
 
 
 def main() -> None:
@@ -112,6 +160,24 @@ def main() -> None:
         print()
 
     db = StateDatabase(DB_PATH)
+    try:
+        _run_verification(db, args, run_start)
+    except Exception as exc:
+        print(f"\nFATAL ERROR: {exc}", file=sys.stderr)
+        import traceback
+        traceback.print_exc()
+        # Write crash log to file so failures are visible the next morning
+        crash_path = REPORT_DIR / f"crash_{run_start.strftime('%Y-%m-%d')}.log"
+        REPORT_DIR.mkdir(parents=True, exist_ok=True)
+        crash_path.write_text(
+            f"Nightly crash at {datetime.now(UTC).isoformat()}\n\n{traceback.format_exc()}",
+            encoding="utf-8",
+        )
+    finally:
+        db.close()
+
+
+def _run_verification(db: StateDatabase, args: argparse.Namespace, run_start: datetime) -> None:
     engine = TruthCertEngine(
         baselines_dir=DATA_DIR / "baselines",
         test_timeout=args.timeout,
@@ -129,7 +195,6 @@ def main() -> None:
         print("DRY RUN - would verify:")
         for p in projects:
             print(f"  {p.name} ({p.risk_profile}, math={p.advanced_math_score}) - {p.test_commands[0][:70]}")
-        db.close()
         return
 
     # Run verification
@@ -156,16 +221,19 @@ def main() -> None:
         except Exception:
             pass
 
-    # Hash-skip: load last night's bundles to compare source_hash
+    # Hash-skip: load only the most recent date's bundles (not all historical)
     yesterday_bundles: dict[str, dict] = {}
-    for bundle_file in sorted((REPORT_DIR / "bundles").glob("*/*.json")):
-        try:
-            b = json.loads(bundle_file.read_text(encoding="utf-8"))
-            pid = b.get("project_id", "")
-            if pid and b.get("verdict") == "CERTIFIED":
-                yesterday_bundles[pid] = b
-        except Exception:
-            pass
+    bundle_dirs = sorted((REPORT_DIR / "bundles").glob("*/"), reverse=True)
+    latest_bundle_dir = bundle_dirs[0] if bundle_dirs else None
+    if latest_bundle_dir and latest_bundle_dir.name != date_str:
+        for bundle_file in latest_bundle_dir.glob("*.json"):
+            try:
+                b = json.loads(bundle_file.read_text(encoding="utf-8"))
+                pid = b.get("project_id", "")
+                if pid and b.get("verdict") == "CERTIFIED":
+                    yesterday_bundles[pid] = b
+            except Exception:
+                pass
     skipped_cached = 0
 
     for i, proj in enumerate(projects, 1):
@@ -173,7 +241,7 @@ def main() -> None:
             print(f"[{i}/{len(projects)}] {proj.name}... SKIPPED (already verified)")
             continue
 
-        # Hash-skip: if source_hash unchanged since last CERTIFIED, skip
+        # Hash-skip: if source+test+HTML files unchanged since last CERTIFIED, skip re-verification.
         last_bundle = yesterday_bundles.get(proj.project_id)
         if last_bundle:
             current_hash = engine.build_scope_lock(proj).source_hash
@@ -316,13 +384,21 @@ def main() -> None:
     for r in results:
         if r["bundle"].verdict in ("CERTIFIED", "PASS"):
             resolved_ids.add(r["project"].project_id)
+    # Load last night's diagnoses so Evolution Manager can track resolutions
+    last_night_diagnoses = _load_last_night_diagnoses(date_str, judge)
     evo_stats = evo_mgr.evolve(
         diagnoses=diagnoses,
+        last_night_diagnoses=last_night_diagnoses,
         resolved_project_ids=resolved_ids,
     )
     if evo_stats["new_recipes"] or evo_stats["resolutions"]:
         print(f"Evolution: {evo_stats['new_recipes']} new recipes, {evo_stats['resolutions']} resolutions, {evo_stats['proven_recipes']} proven")
     print()
+
+    # Prune old checkpoints to prevent unbounded SQLite growth
+    pruned = db.prune_checkpoints(keep=100)
+    if pruned:
+        print(f"Pruned {pruned} old checkpoints")
 
     # Generate report
     total_time = sum(r["elapsed"] for r in results)
@@ -485,8 +561,6 @@ def main() -> None:
     print(f"  Report: {md_path}")
     print(f"  Bundles: {bundles_dir}")
     print("=" * 60)
-
-    db.close()
 
 
 if __name__ == "__main__":
