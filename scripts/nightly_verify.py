@@ -230,6 +230,21 @@ def main() -> None:
     )
     print(f"done ({wiki_stats['articles_written']} articles, {wiki_stats['changes']} changes)")
 
+    # Judge diagnoses for failures
+    from overmind.diagnosis.judge import Judge
+    judge = Judge()
+    diagnoses = []
+    for r in results:
+        bundle = r["bundle"]
+        if bundle.verdict in ("REJECT", "FAIL"):
+            diag = judge.diagnose(bundle)
+            if diag:
+                diagnoses.append(diag)
+                print(f"  Diagnosis: {r['project'].name} -> {diag.failure_type} ({diag.confidence:.0%}): {diag.recommended_action[:80]}")
+    if diagnoses:
+        print(f"Diagnosed {len(diagnoses)} failures")
+    print()
+
     # Generate report
     total_time = sum(r["elapsed"] for r in results)
     n = len(results)
