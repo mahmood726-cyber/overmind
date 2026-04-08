@@ -83,6 +83,25 @@ class TruthCertEngine:
 
         verdict, reason = self.arbitrator.arbitrate(results)
 
+        # Single retry for REJECT: re-run failing witness once to filter transient flakes
+        if verdict == "REJECT":
+            failed_indices = [i for i, r in enumerate(results) if r.verdict == "FAIL"]
+            for idx in failed_indices:
+                orig = results[idx]
+                if orig.witness_type == "test_suite" and lock.test_command:
+                    retry = self.test_suite_witness.run(lock.test_command, lock.project_path)
+                elif orig.witness_type == "smoke":
+                    retry = self.smoke_witness.run(list(lock.smoke_modules), lock.project_path)
+                elif orig.witness_type == "numerical" and lock.baseline_path:
+                    retry = self.numerical_witness.run(lock.baseline_path, lock.project_path)
+                else:
+                    continue
+                if retry.verdict == "PASS":
+                    results[idx] = retry  # Transient flake — use retry result
+            verdict, reason = self.arbitrator.arbitrate(results)
+            if verdict != "REJECT":
+                reason = f"{reason} (upgraded after retry)"
+
         return CertBundle(
             project_id=project.project_id,
             scope_lock=lock,

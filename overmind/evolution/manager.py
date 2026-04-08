@@ -9,8 +9,14 @@ from overmind.diagnosis.judge import Diagnosis
 from overmind.evolution.recipe import Recipe
 
 
-TABLE_ROW_RE = re.compile(
+# Matches proven recipe rows (7 cols: recipe, pattern, fix, seen, resolved, confidence%, last_seen)
+PROVEN_ROW_RE = re.compile(
     r"^\| ([^|]+)\| ([^|]+)\| ([^|]+)\| (\d+)\s*\| (\d+)\s*\| (\d+)%\s*\| ([^|]+)\|",
+    re.MULTILINE,
+)
+# Matches candidate rows (6 cols: recipe, pattern, fix, seen, resolved, last_seen)
+CANDIDATE_ROW_RE = re.compile(
+    r"^\| ([^|]+)\| ([^|]+)\| ([^|]+)\| (\d+)\s*\| (\d+)\s*\| (\d{4}-[^|]+)\|",
     re.MULTILINE,
 )
 
@@ -101,52 +107,108 @@ class EvolutionManager:
         return None
 
     def _load_recipes(self) -> list[Recipe]:
-        """Parse recipes from PROCEDURES.md."""
+        """Parse recipes from PROCEDURES.md (proven + candidate + anti sections)."""
         if not self.procedures_path.exists():
             return []
         content = self.procedures_path.read_text(encoding="utf-8")
         recipes = []
-        for match in TABLE_ROW_RE.finditer(content):
+        seen_ids: set[str] = set()
+
+        # Parse proven rows (7 columns with confidence%)
+        for match in PROVEN_ROW_RE.finditer(content):
             recipe_id = match.group(1).strip()
-            pattern = match.group(2).strip()
-            fix = match.group(3).strip()
-            seen = int(match.group(4).strip())
-            resolved = int(match.group(5).strip())
-            confidence_pct = int(match.group(6).strip())
-            last_seen = match.group(7).strip()
-
-            # Extract failure_type from recipe_id (e.g., "DEPENDENCY_ROT:scipy" -> "DEPENDENCY_ROT")
+            if recipe_id in seen_ids or recipe_id.startswith("Recipe"):
+                continue
+            seen_ids.add(recipe_id)
             failure_type = recipe_id.split(":")[0] if ":" in recipe_id else recipe_id
-
             recipes.append(Recipe(
                 recipe_id=recipe_id,
                 failure_type=failure_type,
-                pattern=pattern,
-                fix_description=fix,
+                pattern=match.group(2).strip(),
+                fix_description=match.group(3).strip(),
+                times_seen=int(match.group(4).strip()),
+                times_resolved=int(match.group(5).strip()),
+                confidence=int(match.group(6).strip()) / 100.0,
+                last_seen=match.group(7).strip(),
+                first_seen=match.group(7).strip(),
+            ))
+
+        # Parse candidate/anti rows (6 columns without confidence%)
+        for match in CANDIDATE_ROW_RE.finditer(content):
+            recipe_id = match.group(1).strip()
+            if recipe_id in seen_ids or recipe_id.startswith("Recipe"):
+                continue
+            seen_ids.add(recipe_id)
+            failure_type = recipe_id.split(":")[0] if ":" in recipe_id else recipe_id
+            seen = int(match.group(4).strip())
+            resolved = int(match.group(5).strip())
+            recipes.append(Recipe(
+                recipe_id=recipe_id,
+                failure_type=failure_type,
+                pattern=match.group(2).strip(),
+                fix_description=match.group(3).strip(),
                 times_seen=seen,
                 times_resolved=resolved,
-                confidence=confidence_pct / 100.0,
-                last_seen=last_seen,
-                first_seen=last_seen,  # Not tracked in table — use last_seen
+                confidence=resolved / seen if seen > 0 else 0.0,
+                last_seen=match.group(6).strip(),
+                first_seen=match.group(6).strip(),
             ))
+
         return recipes
 
     def _write_procedures(self, recipes: list[Recipe]) -> None:
         """Write recipes to PROCEDURES.md, sorted by confidence descending."""
-        recipes.sort(key=lambda r: (-r.confidence, -r.times_seen, r.recipe_id))
+        # Separate proven, candidates, and anti-recipes
+        proven = [r for r in recipes if r.is_proven()]
+        candidates = [r for r in recipes if not r.is_proven() and not (r.times_seen >= 3 and r.times_resolved == 0)]
+        anti = [r for r in recipes if r.times_seen >= 3 and r.times_resolved == 0]
+
+        proven.sort(key=lambda r: (-r.confidence, -r.times_seen, r.recipe_id))
+        candidates.sort(key=lambda r: (-r.times_seen, r.recipe_id))
+        anti.sort(key=lambda r: (-r.times_seen, r.recipe_id))
+
         lines = [
             "# Overmind Procedures",
             "",
             "Automatically discovered fix recipes from nightly verification outcomes.",
             "",
+            "## Proven Recipes",
+            "",
             "| Recipe | Pattern | Fix | Seen | Resolved | Confidence | Last Seen |",
             "|--------|---------|-----|------|----------|------------|-----------|",
         ]
-        for r in recipes:
+        for r in proven:
             conf_pct = int(r.confidence * 100)
             lines.append(
                 f"| {r.recipe_id} | {r.pattern} | {r.fix_description[:60]} | {r.times_seen} | {r.times_resolved} | {conf_pct}% | {r.last_seen} |"
             )
+
+        if candidates:
+            lines.extend([
+                "",
+                "## Candidates (unproven)",
+                "",
+                "| Recipe | Pattern | Fix | Seen | Resolved | Last Seen |",
+                "|--------|---------|-----|------|----------|-----------|",
+            ])
+            for r in candidates:
+                lines.append(
+                    f"| {r.recipe_id} | {r.pattern} | {r.fix_description[:60]} | {r.times_seen} | {r.times_resolved} | {r.last_seen} |"
+                )
+
+        if anti:
+            lines.extend([
+                "",
+                "## Anti-Recipes (never worked — do NOT retry)",
+                "",
+                "| Recipe | Pattern | Seen | Resolved | Last Seen |",
+                "|--------|---------|------|----------|-----------|",
+            ])
+            for r in anti:
+                lines.append(
+                    f"| {r.recipe_id} | {r.pattern} | {r.times_seen} | {r.times_resolved} | {r.last_seen} |"
+                )
+
         lines.append("")
         self.procedures_path.write_text("\n".join(lines), encoding="utf-8")
 

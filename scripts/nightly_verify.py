@@ -146,7 +146,20 @@ def main() -> None:
     bundles_dir = REPORT_DIR / "bundles" / date_str
     bundles_dir.mkdir(parents=True, exist_ok=True)
 
+    # Crash-resume: load progress from any interrupted run tonight
+    progress_path = REPORT_DIR / f".progress_{date_str}.json"
+    completed_ids: set[str] = set()
+    if progress_path.exists():
+        try:
+            completed_ids = set(json.loads(progress_path.read_text(encoding="utf-8")).keys())
+            print(f"Resuming: {len(completed_ids)} projects already verified tonight")
+        except Exception:
+            pass
+
     for i, proj in enumerate(projects, 1):
+        if proj.project_id in completed_ids:
+            print(f"[{i}/{len(projects)}] {proj.name}... SKIPPED (already verified)")
+            continue
         print(f"[{i}/{len(projects)}] {proj.name}...", end=" ", flush=True)
         start = time.time()
         bundle = engine.verify(proj)
@@ -213,6 +226,18 @@ def main() -> None:
         # Save per-project bundle JSON
         bundle_path = bundles_dir / f"{proj.project_id[:16]}.json"
         bundle_path.write_text(json.dumps(bundle.to_dict(), indent=2), encoding="utf-8")
+
+        # Crash-resume: save progress after each project
+        try:
+            progress = json.loads(progress_path.read_text(encoding="utf-8")) if progress_path.exists() else {}
+        except Exception:
+            progress = {}
+        progress[proj.project_id] = verdict
+        progress_path.write_text(json.dumps(progress), encoding="utf-8")
+
+    # Clean up progress file on successful completion
+    if progress_path.exists():
+        progress_path.unlink()
 
     # Dream cycle
     print()
@@ -307,7 +332,18 @@ def main() -> None:
         "",
         f"**{certified}/{n} CERTIFIED** | {failed} FAIL | {rejected} REJECT | {single_pass} single-witness (PASS)",
         "",
+        "```mermaid",
+        "pie title Nightly Verdicts",
     ]
+    if certified:
+        md_lines.append(f'    "CERTIFIED" : {certified}')
+    if single_pass:
+        md_lines.append(f'    "PASS" : {single_pass}')
+    if rejected:
+        md_lines.append(f'    "REJECT" : {rejected}')
+    if failed:
+        md_lines.append(f'    "FAIL" : {failed}')
+    md_lines.extend(["```", ""])
 
     # CERTIFIED table
     certified_rows = [r for r in results if r["bundle"].verdict == "CERTIFIED"]
