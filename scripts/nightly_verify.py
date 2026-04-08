@@ -260,8 +260,7 @@ def _run_verification(db: StateDatabase, args: argparse.Namespace, run_start: da
         results.append({"project": proj, "bundle": bundle, "elapsed": elapsed})
 
         verdict = bundle.verdict
-        symbol = _verdict_symbol(verdict)
-        print(f"{symbol} ({elapsed:.1f}s) [{bundle.arbitration_reason}]")
+        print(f"{verdict} ({elapsed:.1f}s) [{bundle.arbitration_reason}]")
 
         # Tally
         if verdict == "CERTIFIED":
