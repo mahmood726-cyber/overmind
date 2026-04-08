@@ -220,6 +220,16 @@ def main() -> None:
     dream = dream_engine.dream()
     print(f"done ({dream['merges']} merges, {dream['archives']} archives)")
 
+    # Wiki compilation
+    print("Compiling wiki...", end=" ", flush=True)
+    from overmind.wiki.compiler import WikiCompiler
+    wiki_compiler = WikiCompiler(Path("C:/overmind/wiki"))
+    wiki_stats = wiki_compiler.compile(
+        bundles=[r["bundle"] for r in results],
+        projects=[r["project"] for r in results],
+    )
+    print(f"done ({wiki_stats['articles_written']} articles, {wiki_stats['changes']} changes)")
+
     # Generate report
     total_time = sum(r["elapsed"] for r in results)
     n = len(results)
