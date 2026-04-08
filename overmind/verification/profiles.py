@@ -25,13 +25,33 @@ class VerificationPlanner:
             "sensitivity_checks",
             "stochastic_stability",
             "calibration_checks",
+            "heterogeneity_checks",
+            "publication_bias_checks",
+            "consistency_checks",
+            "ranking_stability",
+            "censoring_checks",
+            "competing_risks_checks",
+            "convergence_checks",
+            "posterior_sanity_checks",
+            "missing_data_checks",
+            "correlation_structure_checks",
+            "shape_constraint_checks",
+            "temporal_backtest_checks",
+            "measurement_error_checks",
+            "decision_curve_checks",
+            "threshold_stability_checks",
+            "identification_checks",
+            "variance_component_checks",
+            "matrix_stability_checks",
+            "distribution_robustness_checks",
+            "model_assumption_checks",
         }:
             return self._numeric_test_commands(project)
         if check in {"playwright", "targeted_browser_test", "smoke_flow", "accessibility_check"}:
             return project.browser_test_commands[:1]
         if check in {"lighthouse", "before_after_benchmark", "no_correctness_regression"}:
             return project.perf_commands[:1]
-        if check == "regression_checks":
+        if check in {"regression_checks", "cross_implementation_parity"}:
             return self._regression_commands(project)
         if check == "build_or_direct_evidence":
             return project.build_commands[:1]
