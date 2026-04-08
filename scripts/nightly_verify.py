@@ -90,6 +90,111 @@ def select_projects(db: StateDatabase, min_risk: str, limit: int) -> list:
     return [p for _, _, _, p in candidates[:limit]]
 
 
+def _verify_worker(baselines_dir, test_timeout, project_dict, result_queue):
+    """Worker function for multiprocessing-based verification."""
+    try:
+        from overmind.storage.models import ProjectRecord
+        from overmind.verification.truthcert_engine import TruthCertEngine
+        proj = ProjectRecord(**project_dict)
+        engine = TruthCertEngine(baselines_dir=baselines_dir, test_timeout=test_timeout)
+        bundle = engine.verify(proj)
+        result_queue.put(("ok", bundle.to_dict()))
+    except Exception as exc:
+        result_queue.put(("error", str(exc)))
+
+
+def _verify_with_timeout(engine, proj, timeout=300):
+    """Run engine.verify in a separate process with a hard timeout.
+
+    If the process hangs, it gets killed after `timeout` seconds.
+    Returns a CertBundle (real or synthetic FAIL).
+    """
+    import multiprocessing
+    from overmind.verification.scope_lock import WitnessResult
+    from overmind.verification.cert_bundle import CertBundle
+
+    result_queue = multiprocessing.Queue()
+    worker = multiprocessing.Process(
+        target=_verify_worker,
+        args=(engine.baselines_dir, engine.test_suite_witness.timeout,
+              proj.to_dict(), result_queue),
+    )
+    worker.start()
+    worker.join(timeout=timeout)
+
+    if worker.is_alive():
+        worker.kill()
+        worker.join(5)
+        return CertBundle(
+            project_id=proj.project_id,
+            scope_lock=engine.build_scope_lock(proj),
+            witness_results=[WitnessResult(
+                witness_type="test_suite", verdict="FAIL", exit_code=-1,
+                stdout="", stderr=f"Project hung — killed after {timeout}s",
+                elapsed=float(timeout),
+            )],
+            verdict="FAIL",
+            arbitration_reason=f"Hard timeout ({timeout}s) — process killed",
+            timestamp=utc_now(),
+        )
+
+    try:
+        status, data = result_queue.get_nowait()
+    except Exception:
+        return CertBundle(
+            project_id=proj.project_id,
+            scope_lock=engine.build_scope_lock(proj),
+            witness_results=[WitnessResult(
+                witness_type="test_suite", verdict="FAIL", exit_code=-1,
+                stdout="", stderr="Worker returned no result",
+                elapsed=0.0,
+            )],
+            verdict="FAIL",
+            arbitration_reason="Worker process returned no result",
+            timestamp=utc_now(),
+        )
+
+    if status == "error":
+        return CertBundle(
+            project_id=proj.project_id,
+            scope_lock=engine.build_scope_lock(proj),
+            witness_results=[WitnessResult(
+                witness_type="test_suite", verdict="FAIL", exit_code=-1,
+                stdout="", stderr=f"Worker error: {data}",
+                elapsed=0.0,
+            )],
+            verdict="FAIL",
+            arbitration_reason=f"Worker error: {data[:100]}",
+            timestamp=utc_now(),
+        )
+
+    # Reconstruct CertBundle from dict
+    from overmind.verification.scope_lock import ScopeLock
+    scope_raw = data["scope_lock"]
+    scope_lock = ScopeLock(
+        project_id=scope_raw["project_id"],
+        project_path=scope_raw["project_path"],
+        risk_profile=scope_raw["risk_profile"],
+        witness_count=scope_raw["witness_count"],
+        test_command=scope_raw["test_command"],
+        smoke_modules=tuple(scope_raw["smoke_modules"]),
+        baseline_path=scope_raw.get("baseline_path"),
+        expected_outcome=scope_raw["expected_outcome"],
+        source_hash=scope_raw["source_hash"],
+        created_at=scope_raw["created_at"],
+    )
+    witness_results = [WitnessResult(**w) for w in data["witness_results"]]
+    return CertBundle(
+        project_id=data["project_id"],
+        scope_lock=scope_lock,
+        witness_results=witness_results,
+        verdict=data["verdict"],
+        arbitration_reason=data["arbitration_reason"],
+        timestamp=data["timestamp"],
+        bundle_hash=data["bundle_hash"],
+    )
+
+
 def _load_last_night_diagnoses(today_str: str, judge) -> list:
     """Load diagnoses from the most recent prior nightly report's bundles.
 
@@ -254,32 +359,8 @@ def _run_verification(db: StateDatabase, args: argparse.Namespace, run_start: da
 
         print(f"[{i}/{len(projects)}] {proj.name}...", end=" ", flush=True)
         start = time.time()
-        # Per-project wall-clock timeout to prevent one hung project from killing the run
-        try:
-            from concurrent.futures import ThreadPoolExecutor, TimeoutError as FuturesTimeout
-            with ThreadPoolExecutor(max_workers=1) as executor:
-                future = executor.submit(engine.verify, proj)
-                bundle = future.result(timeout=300)  # 5-minute hard cap per project
-        except FuturesTimeout:
-            from overmind.verification.scope_lock import WitnessResult
-            from overmind.verification.cert_bundle import CertBundle
-            elapsed = time.time() - start
-            bundle = CertBundle(
-                project_id=proj.project_id,
-                scope_lock=engine.build_scope_lock(proj),
-                witness_results=[WitnessResult(
-                    witness_type="test_suite", verdict="FAIL", exit_code=-1,
-                    stdout="", stderr=f"Project verification timed out after 300s",
-                    elapsed=round(elapsed, 2),
-                )],
-                verdict="FAIL",
-                arbitration_reason="Hard timeout (300s) — project hung during verification",
-                timestamp=utc_now(),
-            )
-        except Exception as exc:
-            elapsed = time.time() - start
-            print(f"ERROR ({elapsed:.1f}s) [{exc}]")
-            continue
+        # Per-project wall-clock timeout using multiprocessing (can kill hung subprocesses)
+        bundle = _verify_with_timeout(engine, proj, timeout=300)
         elapsed = time.time() - start
 
         results.append({"project": proj, "bundle": bundle, "elapsed": elapsed})
