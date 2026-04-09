@@ -56,6 +56,27 @@ def load_cusum_warnings() -> list[str]:
     return warnings
 
 
+def load_stability_alerts() -> list[dict]:
+    path = DATA_DIR / "stability_state.json"
+    if not path.exists():
+        return []
+    try:
+        states = json.loads(path.read_text(encoding="utf-8"))
+        alerts = []
+        for pid, state in states.items():
+            if state.get("streak", 0) == 0 and state.get("max_streak", 0) >= 5:
+                recent = state.get("history", [])[-1:]
+                if recent and recent[0] not in ("CERTIFIED", "PASS"):
+                    alerts.append({
+                        "project": pid[:25],
+                        "max_streak": state["max_streak"],
+                        "last_verdict": state["last_verdict"],
+                    })
+        return alerts
+    except (json.JSONDecodeError, OSError):
+        return []
+
+
 def load_skills() -> list[dict]:
     path = Path("C:/overmind/wiki/SKILLS.json")
     if not path.exists():
@@ -67,7 +88,7 @@ def load_skills() -> list[dict]:
         return []
 
 
-def generate_html(report: dict, history: list[dict], cusum_warnings: list[str], skills: list[dict]) -> str:
+def generate_html(report: dict, history: list[dict], cusum_warnings: list[str], skills: list[dict], stability_alerts: list[dict] | None = None) -> str:
     timestamp = report.get("timestamp", "unknown")
     total = report.get("total_projects", 0)
     certified = report.get("certified", 0)
@@ -151,6 +172,8 @@ td {{ padding: 8px; border-bottom: 1px solid #0d1117; }}
 </div>
 
 {"".join(f'<div class="warn">CUSUM drift warning: {w}</div>' for w in cusum_warnings)}
+{"".join(f\'<div class="warn">STABILITY BREAK: {a["project"]} was stable for {a["max_streak"]} runs, now {a["last_verdict"]}</div>\' for a in (stability_alerts or []))}
+
 
 {f'<div class="section"><h2>Certified ({len(certified_projects)})</h2><table><tr><th>Project</th><th>Risk</th><th>Math</th><th>Witnesses</th><th>Time</th></tr>' + "".join(f'<tr><td>{p["name"]}</td><td>{p["risk"]}</td><td>{p["math_score"]}</td><td>{p["witness_count"]}</td><td>{p["elapsed"]:.1f}s</td></tr>' for p in certified_projects) + '</table></div>' if certified_projects else ''}
 
@@ -190,9 +213,10 @@ def main():
     history = load_report_history(7)
     cusum_warnings = load_cusum_warnings()
     skills = load_skills()
+    stability_alerts = load_stability_alerts()
 
     DASHBOARD_DIR.mkdir(parents=True, exist_ok=True)
-    html = generate_html(report, history, cusum_warnings, skills)
+    html = generate_html(report, history, cusum_warnings, skills, stability_alerts)
     out_path = DASHBOARD_DIR / "index.html"
     out_path.write_text(html, encoding="utf-8")
     print(f"Dashboard written to {out_path}")

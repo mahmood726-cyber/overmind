@@ -459,6 +459,58 @@ def _run_verification(db: StateDatabase, args: argparse.Namespace, run_start: da
     if progress_path.exists():
         progress_path.unlink()
 
+    # ─── Resilience checks (cross-domain patterns) ───────────────────────
+    from overmind.verification.resilience import (
+        SystemicAlertDetector, CommonCauseDetector,
+        StabilityTracker, CanaryDetector, PreFixRiskChecker,
+    )
+
+    # 1. Systemic alert (immunology: fever response)
+    systemic = SystemicAlertDetector()
+    verdict_list = [{"project_id": r["project"].project_id, "verdict": r["bundle"].verdict,
+                     "reason": r["bundle"].arbitration_reason} for r in results]
+    alert = systemic.check(verdict_list)
+    if alert.triggered:
+        print(f"\n  *** SYSTEMIC ALERT: {alert.failure_rate:.0%} failure rate ***")
+        print(f"  Dominant pattern: {alert.dominant_pattern} ({alert.affected_count}/{alert.total_count})")
+        print(f"  Recommendation: {alert.recommendation}")
+
+    # 3. Common-cause failure detection (nuclear: shared-mode analysis)
+    common_cause = CommonCauseDetector()
+    failure_data = []
+    for r in results:
+        if r["bundle"].verdict in ("FAIL", "REJECT"):
+            evidence = " ".join(w.stderr + " " + w.stdout for w in r["bundle"].witness_results)
+            failure_data.append({"project": r["project"].name, "evidence": evidence})
+    cc_results = common_cause.detect(failure_data)
+    for cc in cc_results:
+        print(f"  Common-cause: {cc.shared_root} affects {len(cc.affected_projects)} projects")
+
+    # 4. Stability tracking (pharma: batch stability)
+    stability = StabilityTracker(DATA_DIR / "stability_state.json")
+    stability_alerts = 0
+    for r in results:
+        ps = stability.update(r["project"].project_id, r["bundle"].verdict)
+        if ps.alert:
+            stability_alerts += 1
+            print(f"  STABILITY BREAK: {r['project'].name} was stable for {ps.total_runs} runs, now {ps.last_verdict}")
+    if stability_alerts:
+        print(f"  {stability_alerts} stable projects just broke")
+
+    # 5. Canary detection (ecology: ecosystem canaries)
+    canary = CanaryDetector()
+    current_verdicts = {r["project"].project_id: r["bundle"].verdict for r in results}
+    project_names = {r["project"].project_id: r["project"].name for r in results}
+    # Simple canary identification: low-risk projects that passed last time
+    canary_ids = [pid for pid, state in stability.states.items()
+                  if state.get("max_streak", 0) >= 3 and state.get("streak", 0) == 0]
+    canary_alerts = canary.check_canaries(canary_ids, current_verdicts, project_names)
+    for ca in canary_alerts:
+        print(f"  CANARY: {ca.project_name} — {ca.reason}")
+
+    # Store pre-fix risk checker for use in auto-fix phase
+    risk_checker = PreFixRiskChecker(recent_hours=24)
+
     # CUSUM drift monitoring: track cumulative numerical drift over time
     from overmind.verification.cusum import CUSUMMonitor
     cusum = CUSUMMonitor(state_dir=DATA_DIR / "cusum_state")
@@ -586,6 +638,12 @@ def _run_verification(db: StateDatabase, args: argparse.Namespace, run_start: da
                     return False
             return verify
 
+        # Pre-fix risk check (finance: pre-trade controls)
+        risk = risk_checker.check(proj.root_path)
+        if not risk.safe:
+            print(f"  [SKIP] {proj.name}: {risk.reason}")
+            continue
+
         verify_fn = make_verify_fn(proj.test_commands[0], proj.root_path) if proj.test_commands else None
         result = auto_fixer.attempt_fix(diag, proj.root_path, verify_fn=verify_fn)
 
@@ -614,6 +672,9 @@ def _run_verification(db: StateDatabase, args: argparse.Namespace, run_start: da
             for diag in unfixed_diags[:5]:  # Cap at 5 LLM calls per run
                 proj = project_map.get(diag.project_id)
                 if not proj or not llm_repairer.can_fix(diag):
+                    continue
+                risk = risk_checker.check(proj.root_path)
+                if not risk.safe:
                     continue
                 verify_fn = make_verify_fn(proj.test_commands[0], proj.root_path) if proj.test_commands else None
                 llm_result = llm_repairer.attempt_repair(diag, proj.root_path, verify_fn=verify_fn)
