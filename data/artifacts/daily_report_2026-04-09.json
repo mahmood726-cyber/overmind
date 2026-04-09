@@ -1,58 +1,58 @@
 {
   "benchmark": {
     "active_regressions": 53,
-    "coverage_percent": 24.0,
+    "coverage_percent": 27.2,
     "heuristics_learned": 26,
-    "overall_pass_rate": 46.5,
-    "projects_testable": 346,
+    "overall_pass_rate": 47.0,
+    "projects_testable": 305,
     "projects_verified": 83,
     "q_router_entries": 4,
-    "total_memories": 179,
-    "total_verifications": 462
+    "total_memories": 177,
+    "total_verifications": 474
   },
   "daily_targets": {
     "actions": [
-      "FIX 69 active regression(s) first",
-      "Verify 5 projects from priority queue (coverage: 24%)",
+      "FIX 67 active regression(s) first",
+      "Verify 5 projects from priority queue (coverage: 27%)",
       "Next project: DTA70 (priority=25)"
     ],
-    "coverage_target": 29.0,
+    "coverage_target": 32.2,
     "verify_count": 5
   },
   "day_number": 1,
-  "generated_at": "2026-04-09T10:00:03+00:00",
+  "generated_at": "2026-04-09T18:48:55+00:00",
   "memory_health": {
-    "avg_relevance": 0.851,
+    "avg_relevance": 0.705,
     "by_status": {
-      "active": 179
+      "active": 177
     },
     "by_type": {
       "audit_snapshot": 83,
       "heuristic": 26,
       "project_learning": 1,
-      "regression": 69
+      "regression": 67
     },
     "heuristics_count": 26,
-    "total": 179
+    "total": 177
   },
   "portfolio": {
     "by_risk": {
-      "high": 136,
-      "medium": 310,
-      "medium_high": 197
+      "high": 96,
+      "medium": 317,
+      "medium_high": 179
     },
     "by_type": {
-      "browser_app": 408,
-      "hybrid_browser_analytics_app": 111,
-      "python_tool": 28,
-      "r_project": 67,
-      "unknown": 29
+      "browser_app": 395,
+      "hybrid_browser_analytics_app": 91,
+      "python_tool": 18,
+      "r_project": 62,
+      "unknown": 26
     },
-    "git_repos": 423,
-    "total_projects": 643,
-    "with_advanced_math": 259,
-    "with_browser_tests": 6,
-    "with_test_commands": 346
+    "git_repos": 434,
+    "total_projects": 592,
+    "with_advanced_math": 205,
+    "with_browser_tests": 4,
+    "with_test_commands": 305
   },
   "priority_queue": [
     {
@@ -94,14 +94,6 @@
       "project_id": "advanced-nma-pooling-be850427",
       "risk": "high",
       "test_cmd": "python -m pytest tests/simulation/test_smoke_simulation.py -q"
-    },
-    {
-      "math_score": 15,
-      "name": "Pairwise70",
-      "priority_score": 22,
-      "project_id": "pairwise70-692f9c26",
-      "risk": "high",
-      "test_cmd": "python -m pytest tests/selenium_comprehensive_test.py -q"
     },
     {
       "math_score": 10,
@@ -208,66 +200,74 @@
       "test_cmd": "python -m pytest tests/test_core.py -q"
     },
     {
-      "math_score": 2,
-      "name": "truthcert-openclaw-supermemory-stack",
+      "math_score": 7,
+      "name": "Pair786",
       "priority_score": 12,
-      "project_id": "truthcert-openclaw-supermemory-stack-15878aa2",
-      "risk": "high",
-      "test_cmd": "pytest tests/test_validators.py -v"
+      "project_id": "pair786-9bf5205d",
+      "risk": "medium_high",
+      "test_cmd": "\"C:\\Program Files\\R\\R-4.5.2\\bin\\Rscript.exe\" -e \"testthat::test_dir('tests/testt"
+    },
+    {
+      "math_score": 4,
+      "name": "FragilityAtlas",
+      "priority_score": 11,
+      "project_id": "fragilityatlas-7779f784",
+      "risk": "medium_high",
+      "test_cmd": "python -m pytest tests/test_estimators.py -q"
     }
   ],
   "regressions": {
-    "active_regressions": 69,
+    "active_regressions": 67,
     "details": [
+      {
+        "created": "2026-04-09T00:13:53+00:00",
+        "scope": "bayesianma-240f4a74",
+        "title": "Verification failed"
+      },
+      {
+        "created": "2026-04-09T00:13:53+00:00",
+        "scope": "bayesianma-240f4a74",
+        "title": "Pass rate degraded: 54% -> 0%"
+      },
+      {
+        "created": "2026-04-09T00:51:51+00:00",
+        "scope": "cardiooracle-6cb36757",
+        "title": "Pass rate degraded: 16% -> 0%"
+      },
+      {
+        "created": "2026-04-09T00:51:51+00:00",
+        "scope": "cardiooracle-6cb36757",
+        "title": "Nightly: CardioOracle FAIL"
+      },
+      {
+        "created": "2026-04-09T00:52:19+00:00",
+        "scope": "dataextractor-backup-20260114-110706-2be04ee7",
+        "title": "Nightly: Dataextractor FAIL"
+      },
+      {
+        "created": "2026-04-09T00:53:35+00:00",
+        "scope": "idea12-59249342",
+        "title": "Nightly: idea12 FAIL"
+      },
+      {
+        "created": "2026-04-09T00:59:10+00:00",
+        "scope": "metasprint-autopilot-0016fbe9",
+        "title": "Nightly: metasprint-dta FAIL"
+      },
+      {
+        "created": "2026-04-09T01:04:39+00:00",
+        "scope": "superapp-39dd1793",
+        "title": "Nightly: superapp FAIL"
+      },
+      {
+        "created": "2026-04-09T01:05:42+00:00",
+        "scope": "evidence-inference-4c874004",
+        "title": "Nightly: EvidenceOracle REJECT"
+      },
       {
         "created": "2026-04-09T01:05:44+00:00",
         "scope": "cbamm-0820ec88",
         "title": "Nightly: Cbamm FAIL"
-      },
-      {
-        "created": "2026-04-09T01:05:46+00:00",
-        "scope": "dta70-4b170dbc",
-        "title": "Nightly: DTA70 FAIL"
-      },
-      {
-        "created": "2026-04-09T01:11:01+00:00",
-        "scope": "ipd-qma-project-b5694da4",
-        "title": "Nightly: ipd_qma_project REJECT"
-      },
-      {
-        "created": "2026-04-09T01:11:13+00:00",
-        "scope": "pairwise70-5049aa49",
-        "title": "Nightly: Pairwise70 FAIL"
-      },
-      {
-        "created": "2026-04-09T01:11:38+00:00",
-        "scope": "rmstnma-1810584a",
-        "title": "Nightly: rmstnma FAIL"
-      },
-      {
-        "created": "2026-04-09T01:12:14+00:00",
-        "scope": "globalst-5d1477cf",
-        "title": "Nightly: globalst FAIL"
-      },
-      {
-        "created": "2026-04-09T01:12:24+00:00",
-        "scope": "hfpef-registry-synth-65970c56",
-        "title": "Pass rate degraded: 67% -> 33%"
-      },
-      {
-        "created": "2026-04-09T01:12:32+00:00",
-        "scope": "repo300-enma-snma-a0216745",
-        "title": "Nightly: repo300-ENMA-SNMA REJECT"
-      },
-      {
-        "created": "2026-04-09T01:13:29+00:00",
-        "scope": "asreview-5star-e9fe8316",
-        "title": "Nightly: asreview_5star REJECT"
-      },
-      {
-        "created": "2026-04-09T01:14:58+00:00",
-        "scope": "fatiha-project-930cf9dd",
-        "title": "Nightly: FATIHA_Project FAIL"
       }
     ]
   },
@@ -294,49 +294,49 @@
       "test_runner": {
         "avg_q_value": 0.664,
         "task_types": 1,
-        "total_losses": 41,
-        "total_wins": 82
+        "total_losses": 45,
+        "total_wins": 90
       }
     },
     "entries": 4,
     "status": "active"
   },
   "session_mining": {
-    "failure_lines": 2205,
+    "failure_lines": 2564,
     "insights_generated": 3,
     "sessions_analyzed": 30,
-    "success_lines": 744,
+    "success_lines": 825,
     "top_errors": {
-      "AssertionError": 9,
+      "AssertionError": 10,
       "ImportError": 46,
-      "KeyError": 13,
-      "ModuleNotFoundError": 14,
+      "KeyError": 14,
+      "ModuleNotFoundError": 18,
       "SyntaxError": 54,
-      "TypeError": 21,
-      "ValueError": 53
+      "TypeError": 24,
+      "ValueError": 51
     },
     "top_projects": {
       "": 58,
       "PLAN": 2,
       "afghanistan-conflict-zone-trials": 2,
-      "b03m16618": 1,
-      "b2uz7bc32": 1,
-      "b5qi645ev": 1,
-      "b9cp7g9d6": 1,
-      "b9h0wnvqz": 1,
+      "b5rqns9i5": 1,
       "benford-law-enrollment-audit": 2,
-      "bip9zbprn": 1,
-      "buxkyry0v": 1,
+      "bmyob9lob": 1,
+      "boyx8dyr6": 1,
+      "bu0ozt21p": 1,
+      "bvqig3odb": 1,
+      "bwpnbxbp3": 1,
+      "byosbmrgj": 1,
       "code_generator": 4,
       "index": 19,
       "nightly_verify": 6,
-      "user": 30
+      "user": 31
     },
-    "total_messages": 8222
+    "total_messages": 8969
   },
   "verification_coverage": {
-    "coverage_percent": 24.0,
-    "high_risk_unverified_count": 126,
+    "coverage_percent": 27.2,
+    "high_risk_unverified_count": 115,
     "high_risk_unverified_top10": [
       {
         "id": "advanced-nma-pooling-be850427",
@@ -369,12 +369,6 @@
         "risk": "high"
       },
       {
-        "id": "pairwise70-692f9c26",
-        "math_score": 15,
-        "name": "Pairwise70",
-        "risk": "high"
-      },
-      {
         "id": "cbamm-c5df0bd2",
         "math_score": 10,
         "name": "Cbamm",
@@ -397,9 +391,15 @@
         "math_score": 8,
         "name": "Denominator_Calibrated_Living_NMA",
         "risk": "high"
+      },
+      {
+        "id": "pair786-75c04b41",
+        "math_score": 7,
+        "name": "Pair786",
+        "risk": "medium_high"
       }
     ],
-    "total_testable": 346,
+    "total_testable": 305,
     "verified_count": 83
   }
 }
