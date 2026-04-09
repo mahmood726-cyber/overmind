@@ -459,6 +459,39 @@ def _run_verification(db: StateDatabase, args: argparse.Namespace, run_start: da
     if progress_path.exists():
         progress_path.unlink()
 
+    # CUSUM drift monitoring: track cumulative numerical drift over time
+    from overmind.verification.cusum import CUSUMMonitor
+    cusum = CUSUMMonitor(state_dir=DATA_DIR / "cusum_state")
+    cusum_warnings = 0
+    for r in results:
+        bundle = r["bundle"]
+        for w in bundle.witness_results:
+            if w.witness_type == "numerical" and w.verdict == "PASS":
+                # Load baseline to compare
+                baseline_path = DATA_DIR / "baselines" / f"{r['project'].project_id[:20]}.json"
+                if not baseline_path.exists():
+                    # Try longer prefix
+                    matches = list((DATA_DIR / "baselines").glob(f"{r['project'].project_id[:16]}*.json"))
+                    if matches:
+                        baseline_path = matches[0]
+                if baseline_path.exists():
+                    try:
+                        baseline = json.loads(baseline_path.read_text(encoding="utf-8"))
+                        # Parse actual values from witness stdout (probe output)
+                        actual = json.loads(w.stdout) if w.stdout.strip().startswith("{") else {}
+                        if actual and baseline.get("values"):
+                            cr = cusum.check(r["project"].project_id, baseline["values"], actual, baseline.get("tolerance", 1e-6))
+                            if cr.has_warning:
+                                cusum_warnings += 1
+                                for warn in cr.warnings:
+                                    print(f"  CUSUM WARNING: {r['project'].name} — {warn}")
+                            if cr.has_drift:
+                                print(f"  CUSUM DRIFT: {r['project'].name} — {'; '.join(cr.drifts)}")
+                    except (json.JSONDecodeError, OSError):
+                        pass
+    if cusum_warnings:
+        print(f"CUSUM: {cusum_warnings} projects showing gradual drift")
+
     # Dream cycle
     print()
     print("Dreaming...", end=" ", flush=True)
@@ -503,6 +536,24 @@ def _run_verification(db: StateDatabase, args: argparse.Namespace, run_start: da
                 pass  # Read-only or permission issue — skip silently
     if diagnoses:
         print(f"Diagnosed {len(diagnoses)} failures ({len(diagnoses)} decisions dropped)")
+
+    # LLM-as-Judge: upgrade UNKNOWN diagnoses using Claude CLI
+    unknown_count = sum(1 for d in diagnoses if d.failure_type == "UNKNOWN")
+    if unknown_count > 0:
+        print(f"\nLLM Judge: upgrading {unknown_count} UNKNOWN diagnoses...", end=" ", flush=True)
+        try:
+            from overmind.diagnosis.llm_judge import upgrade_unknown_diagnosis
+            upgraded = 0
+            for i, diag in enumerate(diagnoses):
+                if diag.failure_type == "UNKNOWN":
+                    new_diag = upgrade_unknown_diagnosis(diag, timeout=30)
+                    if new_diag.failure_type != "UNKNOWN":
+                        diagnoses[i] = new_diag
+                        upgraded += 1
+                        print(f"\n  {diag.project_id[:20]} -> {new_diag.failure_type} ({new_diag.confidence:.0%}): {new_diag.summary[:60]}", end="", flush=True)
+            print(f"\n  Upgraded {upgraded}/{unknown_count}")
+        except Exception as exc:
+            print(f"failed ({exc})")
 
     # Auto-fix phase: attempt safe remediation for diagnosed failures
     from overmind.remediation.auto_fixer import AutoFixer
@@ -551,8 +602,34 @@ def _run_verification(db: StateDatabase, args: argparse.Namespace, run_start: da
         else:
             print(f"  [SKIP] {proj.name}: {result.detail}")
 
+    # LLM repair: attempt Claude-powered fixes for remaining failures
+    unfixed_diags = [d for d in diagnoses if d.failure_type not in ("FORMULA_ERROR", "FLOAT_PRECISION", "NUMERICAL_DRIFT", "UNKNOWN")]
+    unfixed_diags = [d for d in unfixed_diags if d.project_id in project_map]
+    if unfixed_diags:
+        try:
+            from overmind.remediation.llm_repair import LLMRepairer
+            llm_repairer = LLMRepairer(timeout=60)
+            llm_attempted = 0
+            llm_succeeded = 0
+            for diag in unfixed_diags[:5]:  # Cap at 5 LLM calls per run
+                proj = project_map.get(diag.project_id)
+                if not proj or not llm_repairer.can_fix(diag):
+                    continue
+                verify_fn = make_verify_fn(proj.test_commands[0], proj.root_path) if proj.test_commands else None
+                llm_result = llm_repairer.attempt_repair(diag, proj.root_path, verify_fn=verify_fn)
+                if llm_result.success:
+                    llm_succeeded += 1
+                    print(f"  [LLM-FIXED] {proj.name}: {llm_result.detail}")
+                elif llm_result.action_taken != "skip":
+                    print(f"  [LLM-FAIL] {proj.name}: {llm_result.detail}")
+                llm_attempted += 1
+            if llm_attempted:
+                print(f"LLM repair: {llm_succeeded}/{llm_attempted} succeeded")
+        except Exception as exc:
+            print(f"LLM repair: skipped ({exc})")
+
     if fixes_attempted:
-        print(f"Auto-fix: {fixes_succeeded}/{fixes_attempted} succeeded, {fixes_committed} committed")
+        print(f"Auto-fix: {fixes_succeeded}/{fixes_attempted} succeeded")
     else:
         print("Auto-fix: no fixable failures found")
     print()
@@ -574,6 +651,21 @@ def _run_verification(db: StateDatabase, args: argparse.Namespace, run_start: da
     )
     if evo_stats["new_recipes"] or evo_stats["resolutions"]:
         print(f"Evolution: {evo_stats['new_recipes']} new recipes, {evo_stats['resolutions']} resolutions, {evo_stats['proven_recipes']} proven")
+
+    # Skill library: promote proven recipes to reusable skills
+    from overmind.evolution.skill_library import SkillLibrary
+    skill_lib = SkillLibrary(Path("C:/overmind/wiki/SKILLS.json"))
+    promoted = 0
+    recipes = evo_mgr._load_recipes()
+    for recipe in recipes:
+        if recipe.is_proven():
+            skill = skill_lib.promote_recipe(recipe)
+            if skill:
+                promoted += 1
+    demoted = skill_lib.demote_stale()
+    stats = skill_lib.stats()
+    if promoted or demoted or stats["total_skills"]:
+        print(f"Skills: {stats['total_skills']} total, {promoted} promoted, {demoted} demoted")
     print()
 
     # Prune old checkpoints to prevent unbounded SQLite growth
