@@ -1,0 +1,41 @@
+{
+  "project_id": "meta-ecosystem-model-e0cb59db",
+  "scope_lock": {
+    "project_id": "meta-ecosystem-model-e0cb59db",
+    "project_path": "C:\\Users\\user\\OneDrive\\Backups\\Models\\Meta_Ecosystem_Model",
+    "risk_profile": "high",
+    "witness_count": 2,
+    "test_command": "python tests/verify_manuscript_numbers.py",
+    "smoke_modules": [
+      "compute_all_statistics",
+      "run_mem_full_analysis",
+      "paper.generate_figures"
+    ],
+    "baseline_path": null,
+    "expected_outcome": "pass",
+    "source_hash": "b253d380a67d43f3",
+    "created_at": "2026-04-09T01:34:08+00:00"
+  },
+  "witness_results": [
+    {
+      "witness_type": "test_suite",
+      "verdict": "PASS",
+      "exit_code": 0,
+      "stdout": "==============\n  [PASS] Table2 Robust-Stable: actual=728, claimed=728\n  [PASS] Table2 Robust-Moderate: actual=553, claimed=553\n  [PASS] Table2 Robust-Volatile: actual=91, claimed=91\n  [PASS] Table2 Robust-High Risk: actual=1, claimed=1\n  [PASS] Table2 Low Fragility-Stable: actual=231, claimed=231\n  [PASS] Table2 Low Fragility-Moderate: actual=607, claimed=607\n  [PASS] Table2 Low Fragility-Volatile: actual=226, claimed=226\n  [PASS] Table2 Low Fragility-High Risk: actual=15, claimed=15\n  [PASS] Table2 Moderate Fragility-Stable: actual=8, claimed=8\n  [PASS] Table2 Moderate Fragility-Moderate: actual=221, claimed=221\n  [PASS] Table2 Moderate Fragility-Volatile: actual=125, claimed=125\n  [PASS] Table2 Moderate Fragility-High Risk: actual=15, claimed=15\n  [PASS] Table2 High Fragility-Stable: actual=0, claimed=0\n  [PASS] Table2 High Fragility-Moderate: actual=28, claimed=28\n  [PASS] Table2 High Fragility-Volatile: actual=24, claimed=24\n  [PASS] Table2 High Fragility-High Risk: actual=1, claimed=1\n  [PASS] Table2 Unmatched-Stable: actual=31, claimed=31\n  [PASS] Table2 Unmatched-Moderate: actual=91, claimed=91\n  [PASS] Table2 Unmatched-Volatile: actual=58, claimed=58\n  [PASS] Table2 Unmatched-High Risk: actual=8, claimed=8\n\n======================================================================\nSECTION 12: Sensitivity analysis\n======================================================================\n  [PASS] Equal weights Stable %: actual=36.1, claimed=36.1\n  [PASS] Equal weights Volatile %: actual=16.0, claimed=16.0\n  [PASS] Stability-dominant Stable %: actual=41.9, claimed=41.9\n  [PASS] Stability-dominant Volatile %: actual=19.6, claimed=19.6\n  [PASS] Bias-dominant Stable %: actual=45.2, claimed=45.2\n  [PASS] Bias-dominant Volatile %: actual=9.7, claimed=9.7\n\n======================================================================\nSUMMARY: 109/109 PASS, 0/109 FAIL\nALL MANUSCRIPT NUMBERS VERIFIED SUCCESSFULLY\n======================================================================\n",
+      "stderr": "",
+      "elapsed": 0.74
+    },
+    {
+      "witness_type": "smoke",
+      "verdict": "PASS",
+      "exit_code": 0,
+      "stdout": "3 modules imported OK",
+      "stderr": "",
+      "elapsed": 15.07
+    }
+  ],
+  "verdict": "CERTIFIED",
+  "arbitration_reason": "2/2 witnesses agree PASS",
+  "timestamp": "2026-04-09T01:34:24+00:00",
+  "bundle_hash": "4b6be47026c08f00"
+}

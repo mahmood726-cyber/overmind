@@ -1,0 +1,50 @@
+{
+  "project_id": "metasprint-autopilot-747b492b",
+  "scope_lock": {
+    "project_id": "metasprint-autopilot-747b492b",
+    "project_path": "C:\\Projects\\metasprint-autopilot",
+    "risk_profile": "high",
+    "witness_count": 3,
+    "test_command": "python C:/Users/user/Downloads/metasprint/test_metasprint.py",
+    "smoke_modules": [
+      "aact_proxy",
+      "run_all_tests",
+      "test_advanced_stats",
+      "test_agent_a",
+      "test_agent_b",
+      "test_agent_b_deep",
+      "test_agent_b_svg",
+      "test_cochrane_validation",
+      "test_data_structure",
+      "test_drilldown",
+      "test_e2e_real_metas",
+      "test_full_meta_analysis",
+      "test_network_debug",
+      "test_real_data_browser",
+      "pipeline.auto_cluster",
+      "pipeline.drug_normalize",
+      "pipeline.export_for_browser",
+      "pipeline.harvest_ctgov_results",
+      "pipeline.outcome_normalize",
+      "pipeline.pool_dl"
+    ],
+    "baseline_path": "C:\\overmind\\data\\baselines\\metasprint-autopilot-747b492b.json",
+    "expected_outcome": "pass",
+    "source_hash": "47bf99a884a6ce37",
+    "created_at": "2026-04-08T15:59:17+00:00"
+  },
+  "witness_results": [
+    {
+      "witness_type": "test_suite",
+      "verdict": "FAIL",
+      "exit_code": -1,
+      "stdout": "",
+      "stderr": "Project hung \u2014 killed after 300s",
+      "elapsed": 300.0
+    }
+  ],
+  "verdict": "FAIL",
+  "arbitration_reason": "Hard timeout (300s) \u2014 process killed",
+  "timestamp": "2026-04-08T15:59:17+00:00",
+  "bundle_hash": "adad037434f913d0"
+}

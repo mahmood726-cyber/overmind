@@ -1,0 +1,55 @@
+{
+  "project_id": "repo300-enma-snma-a0216745",
+  "scope_lock": {
+    "project_id": "repo300-enma-snma-a0216745",
+    "project_path": "C:\\Projects\\repo300-ENMA-SNMA",
+    "risk_profile": "high",
+    "witness_count": 3,
+    "test_command": "python -m pytest tests/test_smoke.py -q",
+    "smoke_modules": [
+      "R.01_data_audit_and_fix",
+      "R.03_simulation_engine",
+      "R.04_method_evaluator",
+      "R.05_create_visualizations",
+      "R.06_expanded_simulation_engine",
+      "R.07_enma_engine",
+      "R.08_snma_engine",
+      "R.09_run_comparison",
+      "R.10_empirical_analysis"
+    ],
+    "baseline_path": null,
+    "expected_outcome": "pass",
+    "source_hash": "e793142530586253",
+    "created_at": "2026-04-08T23:20:57+00:00"
+  },
+  "witness_results": [
+    {
+      "witness_type": "test_suite",
+      "verdict": "PASS",
+      "exit_code": 0,
+      "stdout": ".                                                                        [100%]\n1 passed in 0.20s\n",
+      "stderr": "",
+      "elapsed": 3.5
+    },
+    {
+      "witness_type": "smoke",
+      "verdict": "FAIL",
+      "exit_code": 1,
+      "stdout": "",
+      "stderr": "R.01_data_audit_and_fix: File \"<string>\", line 1\n    import R.01_data_audit_and_fix\n               ^\nSyntaxError: invalid decimal literal\nR.03_simulation_engine: File \"<string>\", line 1\n    import R.03_simulation_engine\n               ^\nSyntaxError: invalid decimal literal\nR.04_method_evaluator: File \"<string>\", line 1\n    import R.04_method_evaluator\n               ^\nSyntaxError: invalid decimal literal\nR.05_create_visualizations: File \"<string>\", line 1\n    import R.05_create_visualizations\n               ^\nSyntaxError: invalid decimal literal\nR.06_expanded_simulation_engine: File \"<string>\", line 1\n    import R.06_expanded_simulation_engine\n               ^\nSyntaxError: invalid decimal literal\nR.07_enma_engine: File \"<string>\", line 1\n    import R.07_enma_engine\n               ^\nSyntaxError: invalid decimal literal\nR.08_snma_engine: File \"<string>\", line 1\n    import R.08_snma_engine\n               ^\nSyntaxError: invalid decimal literal\nR.09_run_comparison: File \"<string>\", line 1\n    import R.09_run_comparison\n               ^\nSyntaxError: invalid decimal literal\nR.10_empirical_analysis: File \"<string>\", line 1\n    import R.10_empirical_analysis\n               ^\nSyntaxError: invalid decimal literal",
+      "elapsed": 2.58
+    },
+    {
+      "witness_type": "numerical",
+      "verdict": "SKIP",
+      "exit_code": null,
+      "stdout": "",
+      "stderr": "No baseline file",
+      "elapsed": 0.0
+    }
+  ],
+  "verdict": "REJECT",
+  "arbitration_reason": "Witnesses disagree: test_suite PASS vs smoke FAIL",
+  "timestamp": "2026-04-08T23:21:06+00:00",
+  "bundle_hash": "fdd92540adc3644c"
+}

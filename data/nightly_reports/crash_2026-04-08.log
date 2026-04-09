@@ -1,0 +1,10 @@
+Nightly crash at 2026-04-08T12:43:16.417524+00:00
+
+Traceback (most recent call last):
+  File "C:\overmind\scripts\nightly_verify.py", line 164, in main
+    _run_verification(db, args, run_start)
+    ~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^
+  File "C:\overmind\scripts\nightly_verify.py", line 263, in _run_verification
+    symbol = _verdict_symbol(verdict)
+             ^^^^^^^^^^^^^^^
+NameError: name '_verdict_symbol' is not defined

@@ -1,8 +1,8 @@
 {
-  "project_id": "advanced-nma-pooling-6e3c8bdb",
+  "project_id": "advanced-nma-pooling-090cb3c6",
   "scope_lock": {
-    "project_id": "advanced-nma-pooling-6e3c8bdb",
-    "project_path": "C:\\Models\\advanced-nma-pooling",
+    "project_id": "advanced-nma-pooling-090cb3c6",
+    "project_path": "C:\\Users\\user\\OneDrive\\Backups\\Models\\advanced-nma-pooling",
     "risk_profile": "high",
     "witness_count": 3,
     "test_command": "python -m pytest tests/simulation/test_smoke_simulation.py -q",
@@ -16,13 +16,12 @@
       "pipelines.run_mlnmr_bayesian",
       "pipelines.run_paper1_bundle",
       "pipelines.run_publication_suite",
-      "pipelines.run_survival_nph",
-      "scripts.release_manifest"
+      "pipelines.run_survival_nph"
     ],
-    "baseline_path": "C:\\overmind\\data\\baselines\\advanced-nma-pooling-6e3c8bdb.json",
+    "baseline_path": null,
     "expected_outcome": "pass",
-    "source_hash": "2a32bde6a79897aa",
-    "created_at": "2026-04-08T23:01:25+00:00"
+    "source_hash": "223f259d133376b1",
+    "created_at": "2026-04-09T02:00:08+00:00"
   },
   "witness_results": [
     {
@@ -31,27 +30,27 @@
       "exit_code": 0,
       "stdout": ".                                                                        [100%]\n",
       "stderr": "",
-      "elapsed": 2.43
+      "elapsed": 6.77
     },
     {
       "witness_type": "smoke",
       "verdict": "PASS",
       "exit_code": 0,
-      "stdout": "11 modules imported OK",
+      "stdout": "10 modules imported OK",
       "stderr": "",
-      "elapsed": 4.39
+      "elapsed": 6.73
     },
     {
       "witness_type": "numerical",
-      "verdict": "FAIL",
-      "exit_code": -1,
+      "verdict": "SKIP",
+      "exit_code": null,
       "stdout": "",
-      "stderr": "Failed to start: [WinError 2] The system cannot find the file specified",
-      "elapsed": 0.01
+      "stderr": "No baseline file",
+      "elapsed": 0.0
     }
   ],
-  "verdict": "REJECT",
-  "arbitration_reason": "Witnesses disagree: test_suite, smoke PASS vs numerical FAIL",
-  "timestamp": "2026-04-08T23:01:32+00:00",
-  "bundle_hash": "f37ae72b6e5a4c62"
+  "verdict": "PASS",
+  "arbitration_reason": "2/2 witnesses PASS (numerical skipped \u2014 no baseline)",
+  "timestamp": "2026-04-09T02:00:21+00:00",
+  "bundle_hash": "a3ad68e6e9a97c5b"
 }

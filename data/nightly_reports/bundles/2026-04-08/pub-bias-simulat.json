@@ -1,0 +1,37 @@
+{
+  "project_id": "pub-bias-simulation-633c69de",
+  "scope_lock": {
+    "project_id": "pub-bias-simulation-633c69de",
+    "project_path": "C:\\Projects\\pub-bias-simulation",
+    "risk_profile": "medium_high",
+    "witness_count": 2,
+    "test_command": "python -m pytest tests/test_smoke.py -q",
+    "smoke_modules": [],
+    "baseline_path": null,
+    "expected_outcome": "pass",
+    "source_hash": "b3d4dad896f28939",
+    "created_at": "2026-04-08T23:39:24+00:00"
+  },
+  "witness_results": [
+    {
+      "witness_type": "test_suite",
+      "verdict": "PASS",
+      "exit_code": 0,
+      "stdout": ".                                                                        [100%]\n1 passed in 0.04s\n",
+      "stderr": "",
+      "elapsed": 2.12
+    },
+    {
+      "witness_type": "smoke",
+      "verdict": "SKIP",
+      "exit_code": null,
+      "stdout": "",
+      "stderr": "No modules to check",
+      "elapsed": 0.0
+    }
+  ],
+  "verdict": "PASS",
+  "arbitration_reason": "Single witness: test_suite PASS",
+  "timestamp": "2026-04-08T23:39:26+00:00",
+  "bundle_hash": "df31b5175e50f542"
+}

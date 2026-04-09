@@ -1,0 +1,50 @@
+{
+  "project_id": "experimental-meta-analysis-37d6e8a1",
+  "scope_lock": {
+    "project_id": "experimental-meta-analysis-37d6e8a1",
+    "project_path": "C:\\Projects\\experimental-meta-analysis",
+    "risk_profile": "high",
+    "witness_count": 3,
+    "test_command": "python quick_test.py",
+    "smoke_modules": [
+      "benchmark_datasets",
+      "cochrane_datasets",
+      "comparison_report",
+      "core_framework",
+      "datasets",
+      "efficiency_benchmarks",
+      "improved_metrics",
+      "method_recommender",
+      "multiple_testing",
+      "parallel_runner",
+      "quick_test",
+      "reproducibility",
+      "run_experimental_simulations",
+      "small_sample_analysis",
+      "tests",
+      "validation",
+      "validation_table",
+      "visualization",
+      "methods.experimental_methods_part1",
+      "methods.experimental_methods_part2"
+    ],
+    "baseline_path": null,
+    "expected_outcome": "pass",
+    "source_hash": "e4b1eb2b76626bb4",
+    "created_at": "2026-04-09T02:59:28+00:00"
+  },
+  "witness_results": [
+    {
+      "witness_type": "test_suite",
+      "verdict": "FAIL",
+      "exit_code": -1,
+      "stdout": "",
+      "stderr": "Project hung \u2014 killed after 300s",
+      "elapsed": 300.0
+    }
+  ],
+  "verdict": "FAIL",
+  "arbitration_reason": "Hard timeout (300s) \u2014 process killed",
+  "timestamp": "2026-04-09T02:59:28+00:00",
+  "bundle_hash": "ec8c88bd27fb37a5"
+}

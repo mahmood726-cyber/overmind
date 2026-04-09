@@ -1,0 +1,48 @@
+{
+  "project_id": "registry-first-rct-meta-ca273c4f",
+  "scope_lock": {
+    "project_id": "registry-first-rct-meta-ca273c4f",
+    "project_path": "C:\\Projects\\registry_first_rct_meta",
+    "risk_profile": "high",
+    "witness_count": 3,
+    "test_command": "python -m pytest tests/test_meta.py -q",
+    "smoke_modules": [
+      "scripts.run_topic_engine",
+      "scripts.run_validation"
+    ],
+    "baseline_path": null,
+    "expected_outcome": "pass",
+    "source_hash": "043f4c2bbec9f4af",
+    "created_at": "2026-04-08T23:30:42+00:00"
+  },
+  "witness_results": [
+    {
+      "witness_type": "test_suite",
+      "verdict": "FAIL",
+      "exit_code": 2,
+      "stdout": "\n=================================== ERRORS ====================================\n_____________________ ERROR collecting tests/test_meta.py _____________________\nImportError while importing test module 'C:\\Projects\\registry_first_rct_meta\\tests\\test_meta.py'.\nHint: make sure your test modules/packages have valid Python names.\nTraceback:\nC:\\Users\\user\\AppData\\Local\\Programs\\Python\\Python313\\Lib\\importlib\\__init__.py:88: in import_module\n    return _bootstrap._gcd_import(name[level:], package, level)\n           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\ntests\\test_meta.py:3: in <module>\n    from registry_first_ma.meta import meta_analyze_binary\nE   ModuleNotFoundError: No module named 'registry_first_ma'\n=========================== short test summary info ===========================\nERROR tests/test_meta.py\n!!!!!!!!!!!!!!!!!!! Interrupted: 1 error during collection !!!!!!!!!!!!!!!!!!!!\n1 error in 2.53s\n",
+      "stderr": "",
+      "elapsed": 5.94
+    },
+    {
+      "witness_type": "smoke",
+      "verdict": "PASS",
+      "exit_code": 0,
+      "stdout": "2 modules imported OK",
+      "stderr": "",
+      "elapsed": 5.21
+    },
+    {
+      "witness_type": "numerical",
+      "verdict": "SKIP",
+      "exit_code": null,
+      "stdout": "",
+      "stderr": "No baseline file",
+      "elapsed": 0.0
+    }
+  ],
+  "verdict": "REJECT",
+  "arbitration_reason": "Witnesses disagree: smoke PASS vs test_suite FAIL",
+  "timestamp": "2026-04-08T23:30:58+00:00",
+  "bundle_hash": "ab7b152c34af7d98"
+}

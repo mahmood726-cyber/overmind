@@ -1,0 +1,48 @@
+{
+  "project_id": "ipd-meta-pro-link-40520491",
+  "scope_lock": {
+    "project_id": "ipd-meta-pro-link-40520491",
+    "project_path": "C:\\Projects\\ipd-meta-pro-link",
+    "risk_profile": "high",
+    "witness_count": 3,
+    "test_command": "python dev/build-scripts/user_flow_smoke_test.py",
+    "smoke_modules": [
+      "dev.build",
+      "dev.dedup_functions"
+    ],
+    "baseline_path": null,
+    "expected_outcome": "pass",
+    "source_hash": "66473d1a31f9ea64",
+    "created_at": "2026-04-08T23:07:50+00:00"
+  },
+  "witness_results": [
+    {
+      "witness_type": "test_suite",
+      "verdict": "PASS",
+      "exit_code": 0,
+      "stdout": "======================================================================\nIPD Meta-Analysis Pro - Comprehensive Selenium Test Suite\n======================================================================\n\n[OK] Browser initialized successfully\n  [PASS] App loaded successfully\n\n[TEST] Loading Example Data: binary\n  [PASS] Example data 'binary' loaded successfully\n       Patients: 9,905, Studies: 8\n  [PASS] Smoke flow produced pooled analysis output (k=8, effect=-0.4074760010196142)\n  [PASS] Smoke flow switched to 'results' panel\n  [PASS] Smoke flow switched to 'guardian' panel\n\n[TEST] Help Modal & Validation Report\n  [PASS] Help modal opens via Quick Start\n  [PASS] Quick Start content visible\n\n[TEST] Export Functionality\n  [PASS] Export modal opens\n  [PASS] Export options found: HTML, PDF, CSV, R Code, Stata\n  [PASS] Smoke flow captured CSV export download\n\n======================================================================\nTEST SUMMARY\n======================================================================\n\nTotal Tests: 10\n  Passed:   10\n  Failed:   0\n  Warnings: 0\n\nSuccess Rate: 100.0%\n",
+      "stderr": "",
+      "elapsed": 36.56
+    },
+    {
+      "witness_type": "smoke",
+      "verdict": "FAIL",
+      "exit_code": 1,
+      "stdout": "",
+      "stderr": "dev.dedup_functions: This script is retired. dev/modules/ is the authoritative source. Edit the relevant module and run `python dev/build.py build` instead of mutating ipd-meta-pro.html directly.",
+      "elapsed": 0.27
+    },
+    {
+      "witness_type": "numerical",
+      "verdict": "SKIP",
+      "exit_code": null,
+      "stdout": "",
+      "stderr": "No baseline file",
+      "elapsed": 0.0
+    }
+  ],
+  "verdict": "REJECT",
+  "arbitration_reason": "Witnesses disagree: test_suite PASS vs smoke FAIL",
+  "timestamp": "2026-04-08T23:08:28+00:00",
+  "bundle_hash": "3f55b321992e0539"
+}

@@ -1,0 +1,45 @@
+{
+  "project_id": "grma-paper-c4737385",
+  "scope_lock": {
+    "project_id": "grma-paper-c4737385",
+    "project_path": "C:\\Models\\GRMA_paper",
+    "risk_profile": "high",
+    "witness_count": 2,
+    "test_command": "Rscript test_edge_cases.R",
+    "smoke_modules": [
+      "cross_validate",
+      "dev_analyze_rmse_coverage",
+      "generate_figures",
+      "grey_meta_v8",
+      "reproduce_all_v8",
+      "run_pairwise70_benchmark",
+      "verify_manuscript_numbers"
+    ],
+    "baseline_path": null,
+    "expected_outcome": "pass",
+    "source_hash": "dc031e8d8a89461f",
+    "created_at": "2026-04-08T23:35:44+00:00"
+  },
+  "witness_results": [
+    {
+      "witness_type": "test_suite",
+      "verdict": "FAIL",
+      "exit_code": -1,
+      "stdout": "",
+      "stderr": "Failed to start: [WinError 2] The system cannot find the file specified",
+      "elapsed": 0.0
+    },
+    {
+      "witness_type": "smoke",
+      "verdict": "FAIL",
+      "exit_code": 1,
+      "stdout": "",
+      "stderr": "dev_analyze_rmse_coverage:  encoding='utf-8') as f:\n         ~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\nFileNotFoundError: [Errno 2] No such file or directory: 'C:\\\\Users\\\\user\\\\Downloads\\\\GRMA_paper\\\\Table_bias_rmse_v8.csv'\nrun_pairwise70_benchmark: n_pairwise70_benchmark.py\", line 27, in <module>\n    from gwam_utils import build_environment_metadata, normal_quantile, safe_float, sanitize_csv_cell\nModuleNotFoundError: No module named 'gwam_utils'",
+      "elapsed": 16.42
+    }
+  ],
+  "verdict": "FAIL",
+  "arbitration_reason": "All witnesses FAIL: test_suite, smoke",
+  "timestamp": "2026-04-08T23:36:01+00:00",
+  "bundle_hash": "1b9927272c6f0f55"
+}

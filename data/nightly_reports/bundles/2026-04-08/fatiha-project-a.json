@@ -1,0 +1,45 @@
+{
+  "project_id": "fatiha-project-a8ec1065",
+  "scope_lock": {
+    "project_id": "fatiha-project-a8ec1065",
+    "project_path": "C:\\Models\\FATIHA_Project",
+    "risk_profile": "high",
+    "witness_count": 3,
+    "test_command": "Rscript -e \"testthat::test_dir('tests/testthat')\"",
+    "smoke_modules": [],
+    "baseline_path": null,
+    "expected_outcome": "pass",
+    "source_hash": "cca4682cc17848b4",
+    "created_at": "2026-04-08T23:23:46+00:00"
+  },
+  "witness_results": [
+    {
+      "witness_type": "test_suite",
+      "verdict": "FAIL",
+      "exit_code": -1,
+      "stdout": "",
+      "stderr": "Failed to start: [WinError 2] The system cannot find the file specified",
+      "elapsed": 0.01
+    },
+    {
+      "witness_type": "smoke",
+      "verdict": "SKIP",
+      "exit_code": null,
+      "stdout": "",
+      "stderr": "No modules to check",
+      "elapsed": 0.0
+    },
+    {
+      "witness_type": "numerical",
+      "verdict": "SKIP",
+      "exit_code": null,
+      "stdout": "",
+      "stderr": "No baseline file",
+      "elapsed": 0.0
+    }
+  ],
+  "verdict": "FAIL",
+  "arbitration_reason": "Single witness: test_suite FAIL",
+  "timestamp": "2026-04-08T23:23:46+00:00",
+  "bundle_hash": "d529cd4e021f2fb8"
+}

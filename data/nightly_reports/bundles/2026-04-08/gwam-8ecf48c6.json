@@ -1,0 +1,51 @@
+{
+  "project_id": "gwam-8ecf48c6",
+  "scope_lock": {
+    "project_id": "gwam-8ecf48c6",
+    "project_path": "C:\\Models\\GWAM",
+    "risk_profile": "high",
+    "witness_count": 2,
+    "test_command": "python -m pytest tests/test_bayesian_gwam.py -q",
+    "smoke_modules": [
+      "scripts.build_pairwise70_ctgov_linkage_summary",
+      "scripts.compare_pairwise70_sensitivity",
+      "scripts.enrich_pubmed_links",
+      "scripts.extract_ctgov_results",
+      "scripts.fetch_ctgov_registry",
+      "scripts.grey_meta_v8",
+      "scripts.gwam_utils",
+      "scripts.model_gwam",
+      "scripts.model_gwam_bayesian",
+      "scripts.run_candidate_scan",
+      "scripts.run_full_workflow",
+      "scripts.run_pairwise70_benchmark",
+      "scripts.simulate_gwam_vs_re"
+    ],
+    "baseline_path": null,
+    "expected_outcome": "pass",
+    "source_hash": "e2a8a7e21d9f4530",
+    "created_at": "2026-04-08T23:36:03+00:00"
+  },
+  "witness_results": [
+    {
+      "witness_type": "test_suite",
+      "verdict": "PASS",
+      "exit_code": 0,
+      "stdout": "...........                                                              [100%]\n11 passed in 10.35s\n",
+      "stderr": "",
+      "elapsed": 12.46
+    },
+    {
+      "witness_type": "smoke",
+      "verdict": "FAIL",
+      "exit_code": 1,
+      "stdout": "",
+      "stderr": "scripts.build_pairwise70_ctgov_linkage_summary: els\\GWAM\\scripts\\build_pairwise70_ctgov_linkage_summary.py\", line 34, in <module>\n    from gwam_utils import parse_bool, safe_float, sanitize_csv_cell\nModuleNotFoundError: No module named 'gwam_utils'\nscripts.enrich_pubmed_links:  scripts.enrich_pubmed_links\n  File \"C:\\Models\\GWAM\\scripts\\enrich_pubmed_links.py\", line 17, in <module>\n    from gwam_utils import sanitize_csv_cell\nModuleNotFoundError: No module named 'gwam_utils'\nscripts.extract_ctgov_results: \\extract_ctgov_results.py\", line 25, in <module>\n    from gwam_utils import normal_quantile, parse_bool, phrase_in_text, safe_float, sanitize_csv_cell\nModuleNotFoundError: No module named 'gwam_utils'\nscripts.fetch_ctgov_registry: ch_ctgov_registry\n  File \"C:\\Models\\GWAM\\scripts\\fetch_ctgov_registry.py\", line 17, in <module>\n    from gwam_utils import (\n    ...<8 lines>...\n    )\nModuleNotFoundError: No module named 'gwam_utils'\nscripts.model_gwam: ripts.model_gwam\n  File \"C:\\Models\\GWAM\\scripts\\model_gwam.py\", line 26, in <module>\n    from gwam_utils import build_environment_metadata, parse_bool\nModuleNotFoundError: No module named 'gwam_utils'\nscripts.model_gwam_bayesian: M\\scripts\\model_gwam_bayesian.py\", line 39, in <module>\n    from gwam_utils import build_environment_metadata, normal_cdf, normal_quantile, parse_bool\nModuleNotFoundError: No module named 'gwam_utils'\nscripts.run_candidate_scan: .run_candidate_scan\n  File \"C:\\Models\\GWAM\\scripts\\run_candidate_scan.py\", line 21, in <module>\n    from gwam_utils import (\n    ...<6 lines>...\n    )\nModuleNotFoundError: No module named 'gwam_utils'\nscripts.run_full_workflow: cripts.run_full_workflow\n  File \"C:\\Models\\GWAM\\scripts\\run_full_workflow.py\", line 13, in <module>\n    from gwam_utils import sanitize_path_component\nModuleNotFoundError: No module named 'gwam_utils'\nscripts.run_pairwise70_benchmark: n_pairwise70_benchmark.py\", line 27, in <module>\n    from gwam_utils import build_environment_metadata, normal_quantile, safe_float, sanitize_csv_cell\nModuleNotFoundError: No module named 'gwam_utils'\nscripts.simulate_gwam_vs_re: :\\Models\\GWAM\\scripts\\simulate_gwam_vs_re.py\", line 24, in <module>\n    from gwam_utils import build_environment_metadata, normal_quantile, parse_bool\nModuleNotFoundError: No module named 'gwam_utils'",
+      "elapsed": 15.76
+    }
+  ],
+  "verdict": "REJECT",
+  "arbitration_reason": "Witnesses disagree: test_suite PASS vs smoke FAIL",
+  "timestamp": "2026-04-08T23:36:45+00:00",
+  "bundle_hash": "c1535062fa90d6d7"
+}

@@ -1,0 +1,45 @@
+{
+  "project_id": "hta-evidence-integrity-suite-259fa371",
+  "scope_lock": {
+    "project_id": "hta-evidence-integrity-suite-259fa371",
+    "project_path": "C:\\Users\\user\\OneDrive\\Backups\\Models\\HTA_Evidence_Integrity_Suite",
+    "risk_profile": "high",
+    "witness_count": 3,
+    "test_command": "python -m pytest -q",
+    "smoke_modules": [],
+    "baseline_path": null,
+    "expected_outcome": "pass",
+    "source_hash": "8a97737c873f0e4d",
+    "created_at": "2026-04-09T01:18:36+00:00"
+  },
+  "witness_results": [
+    {
+      "witness_type": "test_suite",
+      "verdict": "FAIL",
+      "exit_code": 5,
+      "stdout": "\nno tests ran in 2.35s\n",
+      "stderr": "",
+      "elapsed": 5.64
+    },
+    {
+      "witness_type": "smoke",
+      "verdict": "SKIP",
+      "exit_code": null,
+      "stdout": "",
+      "stderr": "No modules to check",
+      "elapsed": 0.0
+    },
+    {
+      "witness_type": "numerical",
+      "verdict": "SKIP",
+      "exit_code": null,
+      "stdout": "",
+      "stderr": "No baseline file",
+      "elapsed": 0.0
+    }
+  ],
+  "verdict": "FAIL",
+  "arbitration_reason": "Single witness: test_suite FAIL",
+  "timestamp": "2026-04-09T01:18:42+00:00",
+  "bundle_hash": "ba7e8d4e84151439"
+}

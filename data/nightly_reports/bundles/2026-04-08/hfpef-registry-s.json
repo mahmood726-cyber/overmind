@@ -1,0 +1,48 @@
+{
+  "project_id": "hfpef-registry-synth-65970c56",
+  "scope_lock": {
+    "project_id": "hfpef-registry-synth-65970c56",
+    "project_path": "C:\\Projects\\hfpef_registry_synth",
+    "risk_profile": "high",
+    "witness_count": 3,
+    "test_command": "python -m pytest tests/test_smoke_pipeline.py -q",
+    "smoke_modules": [
+      "scripts.export_graph",
+      "scripts.run_hfpef"
+    ],
+    "baseline_path": null,
+    "expected_outcome": "pass",
+    "source_hash": "3db2589cb5096bf4",
+    "created_at": "2026-04-08T23:20:44+00:00"
+  },
+  "witness_results": [
+    {
+      "witness_type": "test_suite",
+      "verdict": "PASS",
+      "exit_code": 0,
+      "stdout": ".                                                                        [100%]\n1 passed in 3.99s\n",
+      "stderr": "",
+      "elapsed": 7.28
+    },
+    {
+      "witness_type": "smoke",
+      "verdict": "PASS",
+      "exit_code": 0,
+      "stdout": "2 modules imported OK",
+      "stderr": "",
+      "elapsed": 4.28
+    },
+    {
+      "witness_type": "numerical",
+      "verdict": "SKIP",
+      "exit_code": null,
+      "stdout": "",
+      "stderr": "No baseline file",
+      "elapsed": 0.0
+    }
+  ],
+  "verdict": "PASS",
+  "arbitration_reason": "2/2 witnesses PASS (numerical skipped \u2014 no baseline)",
+  "timestamp": "2026-04-08T23:20:56+00:00",
+  "bundle_hash": "c3e6dfb03975b1fd"
+}

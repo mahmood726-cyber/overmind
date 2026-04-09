@@ -1,0 +1,37 @@
+{
+  "project_id": "denominator-calibrated-living-nma-bfb71bdf",
+  "scope_lock": {
+    "project_id": "denominator-calibrated-living-nma-bfb71bdf",
+    "project_path": "C:\\Users\\user\\OneDrive\\Backups\\Models\\Denominator_Calibrated_Living_NMA",
+    "risk_profile": "high",
+    "witness_count": 2,
+    "test_command": "python -m pytest tests/test_smoke.py -q",
+    "smoke_modules": [],
+    "baseline_path": null,
+    "expected_outcome": "pass",
+    "source_hash": "74240005722522b2",
+    "created_at": "2026-04-09T01:31:42+00:00"
+  },
+  "witness_results": [
+    {
+      "witness_type": "test_suite",
+      "verdict": "PASS",
+      "exit_code": 0,
+      "stdout": "........                                                           [100%]\n8 passed, 6 subtests passed in 1.14s\n",
+      "stderr": "",
+      "elapsed": 6.91
+    },
+    {
+      "witness_type": "smoke",
+      "verdict": "SKIP",
+      "exit_code": null,
+      "stdout": "",
+      "stderr": "No modules to check",
+      "elapsed": 0.0
+    }
+  ],
+  "verdict": "PASS",
+  "arbitration_reason": "Single witness: test_suite PASS",
+  "timestamp": "2026-04-09T01:31:49+00:00",
+  "bundle_hash": "8959f6ccf5268c0d"
+}

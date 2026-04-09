@@ -1,0 +1,44 @@
+{
+  "project_id": "ctgov-registry-survival-92f80fb3",
+  "scope_lock": {
+    "project_id": "ctgov-registry-survival-92f80fb3",
+    "project_path": "C:\\Projects\\ctgov-registry-survival",
+    "risk_profile": "medium_high",
+    "witness_count": 2,
+    "test_command": "python -m pytest tests/test_survival.py -q",
+    "smoke_modules": [
+      "rse.cohort",
+      "rse.competing_risks",
+      "rse.figures",
+      "rse.piecewise",
+      "rse.pipeline",
+      "rse.survival"
+    ],
+    "baseline_path": null,
+    "expected_outcome": "pass",
+    "source_hash": "4ea769789e06a52c",
+    "created_at": "2026-04-08T23:39:56+00:00"
+  },
+  "witness_results": [
+    {
+      "witness_type": "test_suite",
+      "verdict": "PASS",
+      "exit_code": 0,
+      "stdout": "....                                                                     [100%]\n============================== warnings summary ===============================\ntests/test_survival.py::TestCoxRegression::test_cox_coefficients_match_r\ntests/test_survival.py::TestCoxRegression::test_schoenfeld_detects_nonproportionality\n  C:\\Users\\user\\AppData\\Local\\Programs\\Python\\Python313\\Lib\\site-packages\\lifelines\\fitters\\coxph_fitter.py:1217: DeprecationWarning: datetime.datetime.utcnow() is deprecated and scheduled for removal in a future version. Use timezone-aware objects to represent datetimes in UTC: datetime.datetime.now(datetime.UTC).\n    self._time_fit_was_called = datetime.utcnow().strftime(\"%Y-%m-%d %H:%M:%S\") + \" UTC\"\n\n-- Docs: https://docs.pytest.org/en/stable/how-to/capture-warnings.html\n4 passed, 2 warnings in 3.01s\n",
+      "stderr": "",
+      "elapsed": 6.97
+    },
+    {
+      "witness_type": "smoke",
+      "verdict": "PASS",
+      "exit_code": 0,
+      "stdout": "6 modules imported OK",
+      "stderr": "",
+      "elapsed": 22.01
+    }
+  ],
+  "verdict": "CERTIFIED",
+  "arbitration_reason": "2/2 witnesses agree PASS",
+  "timestamp": "2026-04-08T23:40:25+00:00",
+  "bundle_hash": "4bd49daa0b9d4d5a"
+}

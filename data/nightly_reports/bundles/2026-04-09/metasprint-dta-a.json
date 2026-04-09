@@ -1,0 +1,50 @@
+{
+  "project_id": "metasprint-dta-a93f4933",
+  "scope_lock": {
+    "project_id": "metasprint-dta-a93f4933",
+    "project_path": "C:\\Users\\user\\OneDrive\\Backups\\Projects\\metasprint-dta",
+    "risk_profile": "high",
+    "witness_count": 2,
+    "test_command": "python R_validation/test_r_validation.py",
+    "smoke_modules": [
+      "convert_to_tiff",
+      "debug_dermoscopy",
+      "debug_error",
+      "debug_psma",
+      "debug_psma_ctx",
+      "dta_bivariate_reference",
+      "generate_figures",
+      "quick_test",
+      "run_dta_tests",
+      "test_13_topics",
+      "test_additional_20_topics",
+      "test_advanced_methods",
+      "test_dta_2x2_input",
+      "test_dta_advanced",
+      "test_dta_exports",
+      "test_dta_identity",
+      "test_dta_improvements_v2",
+      "test_dta_insights",
+      "test_dta_insights_extended",
+      "test_dta_methods"
+    ],
+    "baseline_path": null,
+    "expected_outcome": "pass",
+    "source_hash": "32c9860f1daa3b7b",
+    "created_at": "2026-04-09T01:31:41+00:00"
+  },
+  "witness_results": [
+    {
+      "witness_type": "test_suite",
+      "verdict": "FAIL",
+      "exit_code": -1,
+      "stdout": "",
+      "stderr": "Project hung \u2014 killed after 300s",
+      "elapsed": 300.0
+    }
+  ],
+  "verdict": "FAIL",
+  "arbitration_reason": "Hard timeout (300s) \u2014 process killed",
+  "timestamp": "2026-04-09T01:31:41+00:00",
+  "bundle_hash": "e4b4834858a79320"
+}

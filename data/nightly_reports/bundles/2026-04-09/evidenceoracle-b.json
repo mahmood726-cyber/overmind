@@ -1,0 +1,48 @@
+{
+  "project_id": "evidenceoracle-b78b3965",
+  "scope_lock": {
+    "project_id": "evidenceoracle-b78b3965",
+    "project_path": "C:\\Models\\EvidenceOracle",
+    "risk_profile": "high",
+    "witness_count": 3,
+    "test_command": "python -m pytest tests/test_oracle.py -q",
+    "smoke_modules": [
+      "assemble_features",
+      "train_model"
+    ],
+    "baseline_path": null,
+    "expected_outcome": "pass",
+    "source_hash": "cebd1cfcb0a2bb17",
+    "created_at": "2026-04-09T02:42:55+00:00"
+  },
+  "witness_results": [
+    {
+      "witness_type": "test_suite",
+      "verdict": "FAIL",
+      "exit_code": 1,
+      "stdout": "\nno tests ran in 6.58s\n",
+      "stderr": "s\\user\\AppData\\Local\\Programs\\Python\\Python313\\Lib\\site-packages\\_pytest\\main.py\", line 365, in pytest_cmdline_main\n    return wrap_session(config, _main)\n  File \"C:\\Users\\user\\AppData\\Local\\Programs\\Python\\Python313\\Lib\\site-packages\\_pytest\\main.py\", line 360, in wrap_session\n    config._ensure_unconfigure()\n    ~~~~~~~~~~~~~~~~~~~~~~~~~~^^\n  File \"C:\\Users\\user\\AppData\\Local\\Programs\\Python\\Python313\\Lib\\site-packages\\_pytest\\config\\__init__.py\", line 1171, in _ensure_unconfigure\n    self._cleanup_stack.close()\n    ~~~~~~~~~~~~~~~~~~~~~~~~~^^\n  File \"C:\\Users\\user\\AppData\\Local\\Programs\\Python\\Python313\\Lib\\contextlib.py\", line 627, in close\n    self.__exit__(None, None, None)\n    ~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^\n  File \"C:\\Users\\user\\AppData\\Local\\Programs\\Python\\Python313\\Lib\\contextlib.py\", line 619, in __exit__\n    raise exc\n  File \"C:\\Users\\user\\AppData\\Local\\Programs\\Python\\Python313\\Lib\\contextlib.py\", line 604, in __exit__\n    if cb(*exc_details):\n       ~~^^^^^^^^^^^^^^\n  File \"C:\\Users\\user\\AppData\\Local\\Programs\\Python\\Python313\\Lib\\contextlib.py\", line 482, in _exit_wrapper\n    callback(*args, **kwds)\n    ~~~~~~~~^^^^^^^^^^^^^^^\n  File \"C:\\Users\\user\\AppData\\Local\\Programs\\Python\\Python313\\Lib\\site-packages\\_pytest\\capture.py\", line 778, in stop_global_capturing\n    self._global_capturing.pop_outerr_to_orig()\n    ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~^^\n  File \"C:\\Users\\user\\AppData\\Local\\Programs\\Python\\Python313\\Lib\\site-packages\\_pytest\\capture.py\", line 659, in pop_outerr_to_orig\n    out, err = self.readouterr()\n               ~~~~~~~~~~~~~~~^^\n  File \"C:\\Users\\user\\AppData\\Local\\Programs\\Python\\Python313\\Lib\\site-packages\\_pytest\\capture.py\", line 706, in readouterr\n    out = self.out.snap() if self.out else \"\"\n          ~~~~~~~~~~~~~^^\n  File \"C:\\Users\\user\\AppData\\Local\\Programs\\Python\\Python313\\Lib\\site-packages\\_pytest\\capture.py\", line 591, in snap\n    self.tmpfile.seek(0)\n    ~~~~~~~~~~~~~~~~~^^^\nValueError: I/O operation on closed file.\n",
+      "elapsed": 14.13
+    },
+    {
+      "witness_type": "smoke",
+      "verdict": "FAIL",
+      "exit_code": 1,
+      "stdout": "",
+      "stderr": "train_model: import timed out",
+      "elapsed": 15.1
+    },
+    {
+      "witness_type": "numerical",
+      "verdict": "SKIP",
+      "exit_code": null,
+      "stdout": "",
+      "stderr": "No baseline file",
+      "elapsed": 0.0
+    }
+  ],
+  "verdict": "FAIL",
+  "arbitration_reason": "All witnesses FAIL: test_suite, smoke",
+  "timestamp": "2026-04-09T02:43:25+00:00",
+  "bundle_hash": "3214ce122ccb6a2f"
+}

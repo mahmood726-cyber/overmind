@@ -1,0 +1,58 @@
+{
+  "project_id": "truthcert-meta2-prototype-eec7d00d",
+  "scope_lock": {
+    "project_id": "truthcert-meta2-prototype-eec7d00d",
+    "project_path": "C:\\Models\\truthcert-meta2-prototype",
+    "risk_profile": "high",
+    "witness_count": 2,
+    "test_command": "python -m pytest tests/test_arbitration_conservative.py -q",
+    "smoke_modules": [
+      "applied_example_cd002042",
+      "paper.generate_figures",
+      "sim.arbitration",
+      "sim.bias_decomposition",
+      "sim.calibration",
+      "sim.config_schema",
+      "sim.decision",
+      "sim.fit_delta",
+      "sim.generate_trials",
+      "sim.generate_truth",
+      "sim.meta_fixed",
+      "sim.observed_world",
+      "sim.oracle",
+      "sim.propagate_engine",
+      "sim.question_contract",
+      "sim.regret",
+      "sim.run_suite",
+      "sim.score",
+      "sim.seed",
+      "sim.selection"
+    ],
+    "baseline_path": null,
+    "expected_outcome": "pass",
+    "source_hash": "97482181567e9ca0",
+    "created_at": "2026-04-08T23:31:52+00:00"
+  },
+  "witness_results": [
+    {
+      "witness_type": "test_suite",
+      "verdict": "PASS",
+      "exit_code": 0,
+      "stdout": ".                                                                        [100%]\n1 passed in 4.69s\n",
+      "stderr": "",
+      "elapsed": 7.5
+    },
+    {
+      "witness_type": "smoke",
+      "verdict": "FAIL",
+      "exit_code": 1,
+      "stdout": "",
+      "stderr": "sim.run_suite: import timed out\nsim.score: import timed out\nsim.selection: import timed out",
+      "elapsed": 85.49
+    }
+  ],
+  "verdict": "REJECT",
+  "arbitration_reason": "Witnesses disagree: test_suite PASS vs smoke FAIL",
+  "timestamp": "2026-04-08T23:34:50+00:00",
+  "bundle_hash": "be92b083728eb7ec"
+}

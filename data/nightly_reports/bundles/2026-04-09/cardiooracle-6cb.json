@@ -1,0 +1,42 @@
+{
+  "project_id": "cardiooracle-6cb36757",
+  "scope_lock": {
+    "project_id": "cardiooracle-6cb36757",
+    "project_path": "C:\\Models\\CardioOracle",
+    "risk_profile": "high",
+    "witness_count": 3,
+    "test_command": "python -m pytest tests/test_curation.py -q",
+    "smoke_modules": [
+      "debug_test",
+      "generate_figures",
+      "recalibrate",
+      "backtest.backtest",
+      "backtest.test_backtest",
+      "curate.export_training",
+      "curate.extract_aact",
+      "curate.extract_cad",
+      "curate.fit_model",
+      "curate.label_outcomes",
+      "curate.shared",
+      "curate.validate_labels"
+    ],
+    "baseline_path": null,
+    "expected_outcome": "pass",
+    "source_hash": "325190679c08c85e",
+    "created_at": "2026-04-09T02:05:27+00:00"
+  },
+  "witness_results": [
+    {
+      "witness_type": "test_suite",
+      "verdict": "FAIL",
+      "exit_code": -1,
+      "stdout": "",
+      "stderr": "Project hung \u2014 killed after 300s",
+      "elapsed": 300.0
+    }
+  ],
+  "verdict": "FAIL",
+  "arbitration_reason": "Hard timeout (300s) \u2014 process killed",
+  "timestamp": "2026-04-09T02:05:27+00:00",
+  "bundle_hash": "8e2cec9c2f139c2c"
+}

@@ -1,0 +1,39 @@
+{
+  "project_id": "componentnma-5d7f067c",
+  "scope_lock": {
+    "project_id": "componentnma-5d7f067c",
+    "project_path": "C:\\Models\\ComponentNMA",
+    "risk_profile": "medium_high",
+    "witness_count": 2,
+    "test_command": "python -m pytest tests/test_componentnma.py -q",
+    "smoke_modules": [
+      "test_component_nma"
+    ],
+    "baseline_path": null,
+    "expected_outcome": "pass",
+    "source_hash": "2bf02c4211e565ee",
+    "created_at": "2026-04-08T23:39:28+00:00"
+  },
+  "witness_results": [
+    {
+      "witness_type": "test_suite",
+      "verdict": "PASS",
+      "exit_code": 0,
+      "stdout": "...........................                                              [100%]\n27 passed in 22.84s\n",
+      "stderr": "",
+      "elapsed": 24.96
+    },
+    {
+      "witness_type": "smoke",
+      "verdict": "PASS",
+      "exit_code": 0,
+      "stdout": "1 modules imported OK",
+      "stderr": "",
+      "elapsed": 1.35
+    }
+  ],
+  "verdict": "CERTIFIED",
+  "arbitration_reason": "2/2 witnesses agree PASS",
+  "timestamp": "2026-04-08T23:39:54+00:00",
+  "bundle_hash": "05931881e24a8297"
+}

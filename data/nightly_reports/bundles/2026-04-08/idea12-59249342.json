@@ -1,0 +1,58 @@
+{
+  "project_id": "idea12-59249342",
+  "scope_lock": {
+    "project_id": "idea12-59249342",
+    "project_path": "C:\\Projects\\idea12",
+    "risk_profile": "high",
+    "witness_count": 3,
+    "test_command": "python -m pytest tests/test_basic.py -q",
+    "smoke_modules": [
+      "examples.complete_worked_example",
+      "examples.example_antidepressants",
+      "examples.forensic_hfpef_example",
+      "paper2.cochrane_data_extraction",
+      "validation.benchmark_lu_ades_2004",
+      "validation.create_publication_figures",
+      "validation.expand_concordant_validation",
+      "validation.forensic_simulation_study",
+      "validation.medical_reversal_validation",
+      "validation.optimize_thresholds",
+      "validation.run_quick_validation",
+      "validation.simulation_study_1_basic_nma"
+    ],
+    "baseline_path": null,
+    "expected_outcome": "pass",
+    "source_hash": "543f05a1ed01506c",
+    "created_at": "2026-04-08T23:06:41+00:00"
+  },
+  "witness_results": [
+    {
+      "witness_type": "test_suite",
+      "verdict": "FAIL",
+      "exit_code": 2,
+      "stdout": "\n=================================== ERRORS ====================================\n____________________ ERROR collecting tests/test_basic.py _____________________\nImportError while importing test module 'C:\\Projects\\idea12\\tests\\test_basic.py'.\nHint: make sure your test modules/packages have valid Python names.\nTraceback:\nC:\\Users\\user\\AppData\\Local\\Programs\\Python\\Python313\\Lib\\importlib\\__init__.py:88: in import_module\n    return _bootstrap._gcd_import(name[level:], package, level)\n           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\ntests\\test_basic.py:11: in <module>\n    from netmetareg.core.data_structure import NMAData, Study\nnetmetareg\\__init__.py:18: in <module>\n    from .selection.lasso_selection import LassoSelection\nnetmetareg\\selection\\__init__.py:4: in <module>\n    from .cross_validation import CrossValidationNMA\nE   ModuleNotFoundError: No module named 'netmetareg.selection.cross_validation'\n============================== warnings summary ===============================\n..\\..\\Users\\user\\AppData\\Local\\Programs\\Python\\Python313\\Lib\\site-packages\\arviz\\__init__.py:50\n  C:\\Users\\user\\AppData\\Local\\Programs\\Python\\Python313\\Lib\\site-packages\\arviz\\__init__.py:50: FutureWarning: \n  ArviZ is undergoing a major refactor to improve flexibility and extensibility while maintaining a user-friendly interface.\n  Some upcoming changes may be backward incompatible.\n  For details and migration guidance, visit: https://python.arviz.org/en/latest/user_guide/migration_guide.html\n    warn(\n\n-- Docs: https://docs.pytest.org/en/stable/how-to/capture-warnings.html\n=========================== short test summary info ===========================\nERROR tests/test_basic.py\n!!!!!!!!!!!!!!!!!!! Interrupted: 1 error during collection !!!!!!!!!!!!!!!!!!!!\n1 warning, 1 error in 8.60s\n",
+      "stderr": "",
+      "elapsed": 11.02
+    },
+    {
+      "witness_type": "smoke",
+      "verdict": "FAIL",
+      "exit_code": 1,
+      "stdout": "",
+      "stderr": "examples.complete_worked_example: ,encoding_table)[0]\n           ~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\nUnicodeEncodeError: 'charmap' codec can't encode character '\\u03c4' in position 31: character maps to <undefined>\nexamples.example_antidepressants: Projects\\idea12\\netmetareg\\selection\\__init__.py\", line 4, in <module>\n    from .cross_validation import CrossValidationNMA\nModuleNotFoundError: No module named 'netmetareg.selection.cross_validation'\nvalidation.benchmark_lu_ades_2004: Projects\\idea12\\netmetareg\\selection\\__init__.py\", line 4, in <module>\n    from .cross_validation import CrossValidationNMA\nModuleNotFoundError: No module named 'netmetareg.selection.cross_validation'\nvalidation.run_quick_validation: Projects\\idea12\\netmetareg\\selection\\__init__.py\", line 4, in <module>\n    from .cross_validation import CrossValidationNMA\nModuleNotFoundError: No module named 'netmetareg.selection.cross_validation'\nvalidation.simulation_study_1_basic_nma: Projects\\idea12\\netmetareg\\selection\\__init__.py\", line 4, in <module>\n    from .cross_validation import CrossValidationNMA\nModuleNotFoundError: No module named 'netmetareg.selection.cross_validation'",
+      "elapsed": 53.23
+    },
+    {
+      "witness_type": "numerical",
+      "verdict": "SKIP",
+      "exit_code": null,
+      "stdout": "",
+      "stderr": "No baseline file",
+      "elapsed": 0.0
+    }
+  ],
+  "verdict": "FAIL",
+  "arbitration_reason": "All witnesses FAIL: test_suite, smoke",
+  "timestamp": "2026-04-08T23:07:45+00:00",
+  "bundle_hash": "cda68cdb8701366d"
+}

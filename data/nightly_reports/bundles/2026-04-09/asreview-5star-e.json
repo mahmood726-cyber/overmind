@@ -1,0 +1,51 @@
+{
+  "project_id": "asreview-5star-e9fe8316",
+  "scope_lock": {
+    "project_id": "asreview-5star-e9fe8316",
+    "project_path": "C:\\Users\\user\\OneDrive\\Backups\\Projects\\asreview_5star",
+    "risk_profile": "high",
+    "witness_count": 3,
+    "test_command": "python -m pytest tests/test_integration.py -q",
+    "smoke_modules": [
+      "asreview_5star.cli",
+      "asreview_5star.irr",
+      "asreview_5star.meta_analysis",
+      "asreview_5star.prisma",
+      "asreview_5star.stopping"
+    ],
+    "baseline_path": null,
+    "expected_outcome": "pass",
+    "source_hash": "c43e9df1f4d136cc",
+    "created_at": "2026-04-09T02:49:07+00:00"
+  },
+  "witness_results": [
+    {
+      "witness_type": "test_suite",
+      "verdict": "FAIL",
+      "exit_code": 1,
+      "stdout": "i_upper=0.4807199058355748, se=0.136167516...ted': 0.6820000000000002, 'confusion_matrix': [[0.68, 0.17], [0.08, 0.07]], 'weights': None, 'confidence_level': 0.95}).coefficient\n\ntests\\test_integration.py:106: AssertionError\n________________ TestFullWorkflow.test_multiple_raters_fleiss _________________\n\nself = <tests.test_integration.TestFullWorkflow object at 0x0000018C1FA69B50>\n\n    def test_multiple_raters_fleiss(self):\n        \"\"\"Test multi-rater workflow with Fleiss' Kappa.\"\"\"\n        # Simulate 4 raters on 50 documents\n        np.random.seed(42)\n        n_docs = 50\n        n_raters = 4\n    \n        # True relevance\n        true_labels = np.random.choice([0, 1], size=n_docs, p=[0.8, 0.2])\n    \n        # Generate ratings with varying accuracy\n        accuracies = [0.90, 0.85, 0.80, 0.85]\n        ratings = []\n    \n        for i in range(n_docs):\n            doc_ratings = []\n            for j in range(n_raters):\n                if np.random.random() < accuracies[j]:\n                    doc_ratings.append(true_labels[i])\n                else:\n                    doc_ratings.append(1 - true_labels[i])\n            ratings.append(doc_ratings)\n    \n        # Calculate Fleiss' Kappa\n        result = fleiss_kappa(ratings)\n    \n        # Should have moderate to substantial agreement\n>       assert result.coefficient > 0.4\nE       AssertionError: assert 0.35632183908045983 > 0.4\nE        +  where 0.35632183908045983 = IRRResult(coefficient=0.35632183908045983, ci_lower=0.15742550768586025, ci_upper=0.5552181704750594, se=0.10147958481....7433333333333334, 'p_expected': 0.6012500000000001, 'category_proportions': [0.725, 0.275], 'confidence_level': 0.95}).coefficient\n\ntests\\test_integration.py:208: AssertionError\n=========================== short test summary info ===========================\nFAILED tests/test_integration.py::TestFullWorkflow::test_dual_screening_irr\nFAILED tests/test_integration.py::TestFullWorkflow::test_multiple_raters_fleiss\n2 failed, 7 passed in 11.49s\n",
+      "stderr": "",
+      "elapsed": 18.89
+    },
+    {
+      "witness_type": "smoke",
+      "verdict": "PASS",
+      "exit_code": 0,
+      "stdout": "5 modules imported OK",
+      "stderr": "",
+      "elapsed": 26.78
+    },
+    {
+      "witness_type": "numerical",
+      "verdict": "SKIP",
+      "exit_code": null,
+      "stdout": "",
+      "stderr": "No baseline file",
+      "elapsed": 0.0
+    }
+  ],
+  "verdict": "REJECT",
+  "arbitration_reason": "Witnesses disagree: smoke PASS vs test_suite FAIL",
+  "timestamp": "2026-04-09T02:50:13+00:00",
+  "bundle_hash": "54b75c57f7137920"
+}

@@ -1,0 +1,44 @@
+{
+  "project_id": "dataextractor-backup-20260114-110706-e7f95825",
+  "scope_lock": {
+    "project_id": "dataextractor-backup-20260114-110706-e7f95825",
+    "project_path": "C:\\Archive\\Backups\\Dataextractor_backup_20260114_110706",
+    "risk_profile": "high",
+    "witness_count": 3,
+    "test_command": "npm run test",
+    "smoke_modules": [
+      "selenium_30k_validation_test",
+      "selenium_app_test",
+      "selenium_chrome_test",
+      "selenium_complete_test",
+      "selenium_comprehensive_test",
+      "selenium_debug_port_test",
+      "selenium_full_test",
+      "selenium_full_v49_test",
+      "selenium_headless_test",
+      "selenium_headless_validation",
+      "selenium_real_articles_test",
+      "selenium_simple_test",
+      "selenium_wdm_test",
+      "zs_compare"
+    ],
+    "baseline_path": null,
+    "expected_outcome": "pass",
+    "source_hash": "7b05b8485892f705",
+    "created_at": "2026-04-08T23:17:56+00:00"
+  },
+  "witness_results": [
+    {
+      "witness_type": "test_suite",
+      "verdict": "FAIL",
+      "exit_code": -1,
+      "stdout": "",
+      "stderr": "Project hung \u2014 killed after 300s",
+      "elapsed": 300.0
+    }
+  ],
+  "verdict": "FAIL",
+  "arbitration_reason": "Hard timeout (300s) \u2014 process killed",
+  "timestamp": "2026-04-08T23:17:56+00:00",
+  "bundle_hash": "0e0f1b49a0ad2023"
+}

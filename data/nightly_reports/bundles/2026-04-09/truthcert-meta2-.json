@@ -1,0 +1,58 @@
+{
+  "project_id": "truthcert-meta2-prototype-cfcb4b6c",
+  "scope_lock": {
+    "project_id": "truthcert-meta2-prototype-cfcb4b6c",
+    "project_path": "C:\\Users\\user\\OneDrive\\Backups\\Models\\truthcert-meta2-prototype",
+    "risk_profile": "high",
+    "witness_count": 2,
+    "test_command": "python -m pytest tests/test_arbitration_conservative.py -q",
+    "smoke_modules": [
+      "applied_example_cd002042",
+      "paper.generate_figures",
+      "sim.arbitration",
+      "sim.bias_decomposition",
+      "sim.calibration",
+      "sim.config_schema",
+      "sim.decision",
+      "sim.fit_delta",
+      "sim.generate_trials",
+      "sim.generate_truth",
+      "sim.meta_fixed",
+      "sim.observed_world",
+      "sim.oracle",
+      "sim.propagate_engine",
+      "sim.question_contract",
+      "sim.regret",
+      "sim.run_suite",
+      "sim.score",
+      "sim.seed",
+      "sim.selection"
+    ],
+    "baseline_path": null,
+    "expected_outcome": "pass",
+    "source_hash": "1b224edd1196b2a7",
+    "created_at": "2026-04-09T01:31:51+00:00"
+  },
+  "witness_results": [
+    {
+      "witness_type": "test_suite",
+      "verdict": "PASS",
+      "exit_code": 0,
+      "stdout": ".                                                                        [100%]\n1 passed in 8.87s\n",
+      "stderr": "",
+      "elapsed": 12.5
+    },
+    {
+      "witness_type": "smoke",
+      "verdict": "PASS",
+      "exit_code": 0,
+      "stdout": "20 modules imported OK",
+      "stderr": "",
+      "elapsed": 32.08
+    }
+  ],
+  "verdict": "CERTIFIED",
+  "arbitration_reason": "2/2 witnesses agree PASS",
+  "timestamp": "2026-04-09T01:32:35+00:00",
+  "bundle_hash": "3d75da5bcc94329d"
+}

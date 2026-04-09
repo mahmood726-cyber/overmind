@@ -1,0 +1,49 @@
+{
+  "project_id": "pairwise70-5049aa49",
+  "scope_lock": {
+    "project_id": "pairwise70-5049aa49",
+    "project_path": "C:\\Users\\user\\OneDrive - NHS\\Documents\\Pairwise70",
+    "risk_profile": "high",
+    "witness_count": 3,
+    "test_command": "python -m pytest tests/selenium_comprehensive_test.py -q",
+    "smoke_modules": [
+      "truthcert.cli",
+      "truthcert.orchestrator",
+      "truthcert.setup"
+    ],
+    "baseline_path": null,
+    "expected_outcome": "pass",
+    "source_hash": "882702c1e0d543cc",
+    "created_at": "2026-04-09T02:41:48+00:00"
+  },
+  "witness_results": [
+    {
+      "witness_type": "test_suite",
+      "verdict": "FAIL",
+      "exit_code": 1,
+      "stdout": "ck, subtests, tmp_path, tmp_path_factory, tmpdir, tmpdir_factory, unused_tcp_port, unused_tcp_port_factory, unused_udp_port, unused_udp_port_factory\n>       use 'pytest --fixtures [testpath]' for help on them.\n\nC:\\Users\\user\\OneDrive - NHS\\Documents\\Pairwise70\\tests\\selenium_comprehensive_test.py:757\n=========================== short test summary info ===========================\nERROR tests/selenium_comprehensive_test.py::test_page_load\nERROR tests/selenium_comprehensive_test.py::test_navigation_tabs\nERROR tests/selenium_comprehensive_test.py::test_study_management\nERROR tests/selenium_comprehensive_test.py::test_effect_measure_dropdown\nERROR tests/selenium_comprehensive_test.py::test_clinical_threshold_input\nERROR tests/selenium_comprehensive_test.py::test_case_studies\nERROR tests/selenium_comprehensive_test.py::test_load_example_data\nERROR tests/selenium_comprehensive_test.py::test_run_analysis\nERROR tests/selenium_comprehensive_test.py::test_meta_analysis_results\nERROR tests/selenium_comprehensive_test.py::test_mafi_score_display\nERROR tests/selenium_comprehensive_test.py::test_mafi_variants\nERROR tests/selenium_comprehensive_test.py::test_fragility_indices\nERROR tests/selenium_comprehensive_test.py::test_component_bar\nERROR tests/selenium_comprehensive_test.py::test_forest_plot\nERROR tests/selenium_comprehensive_test.py::test_grade_assessment\nERROR tests/selenium_comprehensive_test.py::test_recommendations\nERROR tests/selenium_comprehensive_test.py::test_export_functions\nERROR tests/selenium_comprehensive_test.py::test_grade_tab_integration\nERROR tests/selenium_comprehensive_test.py::test_documentation_tab\nERROR tests/selenium_comprehensive_test.py::test_javascript_functions\nERROR tests/selenium_comprehensive_test.py::test_different_effect_measures\nERROR tests/selenium_comprehensive_test.py::test_edge_cases\nERROR tests/selenium_comprehensive_test.py::test_high_fragility_case\nERROR tests/selenium_comprehensive_test.py::test_responsive_elements\n24 errors in 2.85s\n",
+      "stderr": "",
+      "elapsed": 11.56
+    },
+    {
+      "witness_type": "smoke",
+      "verdict": "FAIL",
+      "exit_code": 1,
+      "stdout": "",
+      "stderr": "truthcert.setup: usage: -c [global_opts] cmd1 [cmd1_opts] [cmd2 [cmd2_opts] ...]\n   or: -c --help [cmd1 cmd2 ...]\n   or: -c --help-commands\n   or: -c cmd --help\n\nerror: no commands supplied",
+      "elapsed": 10.26
+    },
+    {
+      "witness_type": "numerical",
+      "verdict": "SKIP",
+      "exit_code": null,
+      "stdout": "",
+      "stderr": "No baseline file",
+      "elapsed": 0.0
+    }
+  ],
+  "verdict": "FAIL",
+  "arbitration_reason": "All witnesses FAIL: test_suite, smoke",
+  "timestamp": "2026-04-09T02:42:09+00:00",
+  "bundle_hash": "642b19533c45b721"
+}

@@ -1,0 +1,39 @@
+{
+  "project_id": "metaregression-b984b3aa",
+  "scope_lock": {
+    "project_id": "metaregression-b984b3aa",
+    "project_path": "C:\\Models\\MetaRegression",
+    "risk_profile": "medium_high",
+    "witness_count": 2,
+    "test_command": "python -m pytest tests/test_metaregression.py -q",
+    "smoke_modules": [
+      "test_meta_regression"
+    ],
+    "baseline_path": null,
+    "expected_outcome": "pass",
+    "source_hash": "c8835d4247c5389e",
+    "created_at": "2026-04-08T23:39:14+00:00"
+  },
+  "witness_results": [
+    {
+      "witness_type": "test_suite",
+      "verdict": "FAIL",
+      "exit_code": 1,
+      "stdout": "\nno tests ran in 0.61s\n",
+      "stderr": "s\\user\\AppData\\Local\\Programs\\Python\\Python313\\Lib\\site-packages\\_pytest\\main.py\", line 365, in pytest_cmdline_main\n    return wrap_session(config, _main)\n  File \"C:\\Users\\user\\AppData\\Local\\Programs\\Python\\Python313\\Lib\\site-packages\\_pytest\\main.py\", line 360, in wrap_session\n    config._ensure_unconfigure()\n    ~~~~~~~~~~~~~~~~~~~~~~~~~~^^\n  File \"C:\\Users\\user\\AppData\\Local\\Programs\\Python\\Python313\\Lib\\site-packages\\_pytest\\config\\__init__.py\", line 1171, in _ensure_unconfigure\n    self._cleanup_stack.close()\n    ~~~~~~~~~~~~~~~~~~~~~~~~~^^\n  File \"C:\\Users\\user\\AppData\\Local\\Programs\\Python\\Python313\\Lib\\contextlib.py\", line 627, in close\n    self.__exit__(None, None, None)\n    ~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^\n  File \"C:\\Users\\user\\AppData\\Local\\Programs\\Python\\Python313\\Lib\\contextlib.py\", line 619, in __exit__\n    raise exc\n  File \"C:\\Users\\user\\AppData\\Local\\Programs\\Python\\Python313\\Lib\\contextlib.py\", line 604, in __exit__\n    if cb(*exc_details):\n       ~~^^^^^^^^^^^^^^\n  File \"C:\\Users\\user\\AppData\\Local\\Programs\\Python\\Python313\\Lib\\contextlib.py\", line 482, in _exit_wrapper\n    callback(*args, **kwds)\n    ~~~~~~~~^^^^^^^^^^^^^^^\n  File \"C:\\Users\\user\\AppData\\Local\\Programs\\Python\\Python313\\Lib\\site-packages\\_pytest\\capture.py\", line 778, in stop_global_capturing\n    self._global_capturing.pop_outerr_to_orig()\n    ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~^^\n  File \"C:\\Users\\user\\AppData\\Local\\Programs\\Python\\Python313\\Lib\\site-packages\\_pytest\\capture.py\", line 659, in pop_outerr_to_orig\n    out, err = self.readouterr()\n               ~~~~~~~~~~~~~~~^^\n  File \"C:\\Users\\user\\AppData\\Local\\Programs\\Python\\Python313\\Lib\\site-packages\\_pytest\\capture.py\", line 706, in readouterr\n    out = self.out.snap() if self.out else \"\"\n          ~~~~~~~~~~~~~^^\n  File \"C:\\Users\\user\\AppData\\Local\\Programs\\Python\\Python313\\Lib\\site-packages\\_pytest\\capture.py\", line 591, in snap\n    self.tmpfile.seek(0)\n    ~~~~~~~~~~~~~~~~~^^^\nValueError: I/O operation on closed file.\n",
+      "elapsed": 3.49
+    },
+    {
+      "witness_type": "smoke",
+      "verdict": "PASS",
+      "exit_code": 0,
+      "stdout": "1 modules imported OK",
+      "stderr": "",
+      "elapsed": 1.08
+    }
+  ],
+  "verdict": "REJECT",
+  "arbitration_reason": "Witnesses disagree: smoke PASS vs test_suite FAIL",
+  "timestamp": "2026-04-08T23:39:22+00:00",
+  "bundle_hash": "1f12d2e833fe7d13"
+}

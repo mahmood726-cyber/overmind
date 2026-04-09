@@ -1,0 +1,47 @@
+{
+  "project_id": "metasprint-dose-response-1819ced5",
+  "scope_lock": {
+    "project_id": "metasprint-dose-response-1819ced5",
+    "project_path": "C:\\Projects\\metasprint-dose-response",
+    "risk_profile": "high",
+    "witness_count": 3,
+    "test_command": "python -m pytest test_dose_response_models.py -v",
+    "smoke_modules": [
+      "test_dose_response_models"
+    ],
+    "baseline_path": null,
+    "expected_outcome": "pass",
+    "source_hash": "2a1e8a922e932a4e",
+    "created_at": "2026-04-08T23:22:11+00:00"
+  },
+  "witness_results": [
+    {
+      "witness_type": "test_suite",
+      "verdict": "PASS",
+      "exit_code": 0,
+      "stdout": "ixed_effects_se_matches_r PASSED [ 81%]\ntest_dose_response_models.py::TestRValidation::test_reml_coefficient_matches_r PASSED [ 82%]\ntest_dose_response_models.py::TestRValidation::test_reml_tau2_matches_r PASSED [ 83%]\ntest_dose_response_models.py::TestRValidation::test_reml_se_larger_than_fixed PASSED [ 83%]\ntest_dose_response_models.py::TestRValidation::test_ml_tau2_leq_reml_tau2 PASSED [ 84%]\ntest_dose_response_models.py::TestRValidation::test_reml_predictions_match_r PASSED [ 85%]\ntest_dose_response_models.py::TestRValidation::test_aic_values_finite_and_distinct PASSED [ 86%]\ntest_dose_response_models.py::TestRValidation::test_quadratic_coefficients_direction PASSED [ 87%]\ntest_dose_response_models.py::TestRValidation::test_regression_snapshot_fixed_coef PASSED [ 88%]\ntest_dose_response_models.py::TestRValidation::test_regression_snapshot_reml_tau2 PASSED [ 89%]\ntest_dose_response_models.py::TestCoverageGaps::test_csv_import_round_trip SKIPPED [ 90%]\ntest_dose_response_models.py::TestCoverageGaps::test_dark_mode_toggle_persistence PASSED [ 91%]\ntest_dose_response_models.py::TestCoverageGaps::test_prediction_interval_k2_edge PASSED [ 92%]\ntest_dose_response_models.py::TestCoverageGaps::test_dose_ranging_detection_basic SKIPPED [ 93%]\ntest_dose_response_models.py::TestCoverageGaps::test_localstorage_fallback PASSED [ 94%]\ntest_dose_response_models.py::TestCoverageGaps::test_model_averaging_weights_sum_one PASSED [ 95%]\ntest_dose_response_models.py::TestCoverageGaps::test_escapehtml_covers_quotes PASSED [ 96%]\ntest_dose_response_models.py::TestCoverageGaps::test_gl_covariance_ci_type PASSED [ 97%]\ntest_dose_response_models.py::TestCoverageGaps::test_heterogeneity_nparams_by_model PASSED [ 98%]\ntest_dose_response_models.py::TestCoverageGaps::test_bayesian_posterior_shrinkage PASSED [ 99%]\ntest_dose_response_models.py::TestCoverageGaps::test_canvas_accessibility_attributes PASSED [100%]\n\n======================= 104 passed, 2 skipped in 12.16s =======================\n",
+      "stderr": "",
+      "elapsed": 15.53
+    },
+    {
+      "witness_type": "smoke",
+      "verdict": "PASS",
+      "exit_code": 0,
+      "stdout": "1 modules imported OK",
+      "stderr": "",
+      "elapsed": 2.13
+    },
+    {
+      "witness_type": "numerical",
+      "verdict": "SKIP",
+      "exit_code": null,
+      "stdout": "",
+      "stderr": "No baseline file",
+      "elapsed": 0.0
+    }
+  ],
+  "verdict": "PASS",
+  "arbitration_reason": "2/2 witnesses PASS (numerical skipped \u2014 no baseline)",
+  "timestamp": "2026-04-08T23:22:28+00:00",
+  "bundle_hash": "7df581417a2f9986"
+}

@@ -1,0 +1,44 @@
+{
+  "project_id": "metasprintnma-0e348987",
+  "scope_lock": {
+    "project_id": "metasprintnma-0e348987",
+    "project_path": "C:\\Users\\user\\OneDrive\\Backups\\Projects\\metasprintnma",
+    "risk_profile": "high",
+    "witness_count": 3,
+    "test_command": "python test_expanded_suite.py",
+    "smoke_modules": [
+      "test_10_topics_nma",
+      "test_10_topics_round2",
+      "test_10_topics_round3",
+      "test_10_topics_round4",
+      "test_auto_extract",
+      "test_canonical_validation",
+      "test_concordance_improvements",
+      "test_deep_integration",
+      "test_expanded_suite",
+      "test_nma_comprehensive",
+      "test_nma_concordance",
+      "test_real_meta",
+      "test_replicate_mrcc_nma",
+      "test_session_features"
+    ],
+    "baseline_path": null,
+    "expected_outcome": "pass",
+    "source_hash": "14494baa2b179a4a",
+    "created_at": "2026-04-09T02:35:40+00:00"
+  },
+  "witness_results": [
+    {
+      "witness_type": "test_suite",
+      "verdict": "FAIL",
+      "exit_code": -1,
+      "stdout": "",
+      "stderr": "Project hung \u2014 killed after 300s",
+      "elapsed": 300.0
+    }
+  ],
+  "verdict": "FAIL",
+  "arbitration_reason": "Hard timeout (300s) \u2014 process killed",
+  "timestamp": "2026-04-09T02:35:40+00:00",
+  "bundle_hash": "5b56ec4b6d810aac"
+}

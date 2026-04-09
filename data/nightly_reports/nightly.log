@@ -26,3 +26,44 @@ Thread 0x000079fc (most recent call first):
   File "C:\overmind\overmind\verification\truthcert_engine.py", line 58 in verify
   File "C:\overmind\scripts\nightly_verify.py", line 152 in main
   File "C:\overmind\scripts\nightly_verify.py", line 385 in <module>
+Overmind Nightly Verifier - 2026-04-09 02:00:05 UTC
+Config: limit=50, timeout=120s, min_risk=medium, dry_run=False
+
+Selected 50 projects for verification
+
+[1/50] advanced-nma-pooling... PASS (16.5s) [2/2 witnesses PASS (numerical skipped — no baseline)]
+[2/50] CardioOracle... FAIL (303.8s) [Hard timeout (300s) — process killed]
+[3/50] Dataextractor_backup_20260114_110706... FAIL (304.3s) [Hard timeout (300s) — process killed]
+[4/50] esc-acs-living-meta... PASS (8.8s) [2/2 witnesses PASS (numerical skipped — no baseline)]
+[5/50] idea12... FAIL (126.2s) [All witnesses FAIL: test_suite, smoke]
+[6/50] ipd-meta-pro-link... PASS (36.4s) [Single witness: test_suite PASS]
+[7/50] metasprint-autopilot... FAIL (307.4s) [Hard timeout (300s) — process killed]
+[8/50] overmind... PASS (48.7s) [2/2 witnesses PASS (numerical skipped — no baseline)]
+[9/50] prognostic-meta... PASS (12.6s) [Single witness: test_suite PASS]
+[10/50] superapp... FAIL (304.3s) [Hard timeout (300s) — process killed]
+[11/50] Dataextractor... FAIL (306.4s) [Hard timeout (300s) — process killed]
+[12/50] evidence-inference... FAIL (42.5s) [All witnesses FAIL: test_suite, smoke]
+[13/50] Cbamm... FAIL (2.4s) [Single witness: test_suite FAIL]
+[14/50] DTA70... FAIL (4.4s) [Single witness: test_suite FAIL]
+[15/50] metasprintnma... FAIL (304.1s) [Hard timeout (300s) — process killed]
+[16/50] lec_phase0_project... PASS (132.8s) [2/2 witnesses PASS (numerical skipped — no baseline) (upgraded after retry)]
+[17/50] ipd_qma_project... REJECT (224.6s) [Witnesses disagree: test_suite PASS vs smoke FAIL]
+[18/50] Pairwise70... FAIL (33.2s) [All witnesses FAIL: test_suite, smoke]
+[19/50] rct-extractor-v2... PASS (40.4s) [2/2 witnesses PASS (numerical skipped — no baseline)]
+[20/50] rmstnma... FAIL (2.4s) [Single witness: test_suite FAIL]
+[21/50] EvidenceOracle... FAIL (32.4s) [All witnesses FAIL: test_suite, smoke]
+[22/50] globalst... FAIL (32.6s) [All witnesses FAIL: test_suite, smoke]
+[23/50] hfpef_registry_synth... PASS (41.2s) [Single witness: test_suite PASS]
+[24/50] repo300-ENMA-SNMA... REJECT (18.8s) [Witnesses disagree: test_suite PASS vs smoke FAIL]
+[25/50] BayesianMA... REJECT (245.4s) [Witnesses disagree: smoke PASS vs test_suite FAIL]
+[26/50] asreview_5star... REJECT (68.5s) [Witnesses disagree: smoke PASS vs test_suite FAIL]
+[27/50] metasprint-dose-response... REJECT (249.5s) [Witnesses disagree: smoke PASS vs test_suite FAIL]
+[28/50] experimental-meta-analysis... FAIL (304.3s) [Hard timeout (300s) — process killed]
+[29/50] FATIHA_Project... FAIL (3.2s) [Single witness: test_suite FAIL]
+[30/50] moonshot-evidence-lab... PASS (20.4s) [2/2 witnesses PASS (numerical skipped — no baseline)]
+[31/50] new-app... Timeout (1:00:00)!
+Thread 0x0001c2d0 (most recent call first):
+  File "C:\overmind\scripts\nightly_verify.py", line 133 in _verify_with_timeout
+  File "C:\overmind\scripts\nightly_verify.py", line 386 in _run_verification
+  File "C:\overmind\scripts\nightly_verify.py", line 292 in main
+  File "C:\overmind\scripts\nightly_verify.py", line 748 in <module>

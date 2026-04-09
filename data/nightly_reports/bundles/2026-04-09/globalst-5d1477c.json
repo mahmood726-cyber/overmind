@@ -1,0 +1,48 @@
+{
+  "project_id": "globalst-5d1477cf",
+  "scope_lock": {
+    "project_id": "globalst-5d1477cf",
+    "project_path": "C:\\Projects\\globalst",
+    "risk_profile": "high",
+    "witness_count": 3,
+    "test_command": "python -m pytest tests/test_pipeline.py -q",
+    "smoke_modules": [
+      "src.ingest_data",
+      "src.model_stnma"
+    ],
+    "baseline_path": null,
+    "expected_outcome": "pass",
+    "source_hash": "6cc3f8bb0d9e86fc",
+    "created_at": "2026-04-09T02:43:28+00:00"
+  },
+  "witness_results": [
+    {
+      "witness_type": "test_suite",
+      "verdict": "FAIL",
+      "exit_code": 1,
+      "stdout": "    def test_input_exists(self):\n>       self.assertTrue(os.path.exists(\"globalst/data/cvd_synthesis_input.json\"))\nE       AssertionError: False is not true\n\ntests\\test_pipeline.py:12: AssertionError\n___________________ TestGlobalSTPipeline.test_output_exists ___________________\n\nself = <test_pipeline.TestGlobalSTPipeline testMethod=test_output_exists>\n\n    def test_output_exists(self):\n>       self.assertTrue(os.path.exists(\"globalst/output/st_nma_results.json\"))\nE       AssertionError: False is not true\n\ntests\\test_pipeline.py:15: AssertionError\n_________________ TestGlobalSTPipeline.test_results_structure _________________\n\nself = <test_pipeline.TestGlobalSTPipeline testMethod=test_results_structure>\n\n    def test_results_structure(self):\n>       with open(\"globalst/output/st_nma_results.json\", 'r') as f:\n             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\nE       FileNotFoundError: [Errno 2] No such file or directory: 'globalst/output/st_nma_results.json'\n\ntests\\test_pipeline.py:18: FileNotFoundError\n________________ TestGlobalSTPipeline.test_truthcert_integrity ________________\n\nself = <test_pipeline.TestGlobalSTPipeline testMethod=test_truthcert_integrity>\n\n    def test_truthcert_integrity(self):\n        # Verify that the results contain hashes for each region's evidence\n>       with open(\"globalst/output/st_nma_results.json\", 'r') as f:\n             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\nE       FileNotFoundError: [Errno 2] No such file or directory: 'globalst/output/st_nma_results.json'\n\ntests\\test_pipeline.py:26: FileNotFoundError\n=========================== short test summary info ===========================\nFAILED tests/test_pipeline.py::TestGlobalSTPipeline::test_input_exists - Asse...\nFAILED tests/test_pipeline.py::TestGlobalSTPipeline::test_output_exists - Ass...\nFAILED tests/test_pipeline.py::TestGlobalSTPipeline::test_results_structure\nFAILED tests/test_pipeline.py::TestGlobalSTPipeline::test_truthcert_integrity\n4 failed in 0.95s\n",
+      "stderr": "",
+      "elapsed": 11.48
+    },
+    {
+      "witness_type": "smoke",
+      "verdict": "FAIL",
+      "exit_code": 1,
+      "stdout": "",
+      "stderr": "src.model_stnma: import timed out",
+      "elapsed": 18.01
+    },
+    {
+      "witness_type": "numerical",
+      "verdict": "SKIP",
+      "exit_code": null,
+      "stdout": "",
+      "stderr": "No baseline file",
+      "elapsed": 0.0
+    }
+  ],
+  "verdict": "FAIL",
+  "arbitration_reason": "All witnesses FAIL: test_suite, smoke",
+  "timestamp": "2026-04-09T02:43:58+00:00",
+  "bundle_hash": "acee4ed73cc014d2"
+}

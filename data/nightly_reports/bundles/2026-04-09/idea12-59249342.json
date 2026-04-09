@@ -1,0 +1,55 @@
+{
+  "project_id": "idea12-59249342",
+  "scope_lock": {
+    "project_id": "idea12-59249342",
+    "project_path": "C:\\Projects\\idea12",
+    "risk_profile": "high",
+    "witness_count": 3,
+    "test_command": "python -m pytest tests/test_basic.py -q",
+    "smoke_modules": [
+      "paper2.cochrane_data_extraction",
+      "validation.benchmark_lu_ades_2004",
+      "validation.create_publication_figures",
+      "validation.expand_concordant_validation",
+      "validation.forensic_simulation_study",
+      "validation.medical_reversal_validation",
+      "validation.optimize_thresholds",
+      "validation.run_quick_validation",
+      "validation.simulation_study_1_basic_nma"
+    ],
+    "baseline_path": null,
+    "expected_outcome": "pass",
+    "source_hash": "543f05a1ed01506c",
+    "created_at": "2026-04-09T02:10:41+00:00"
+  },
+  "witness_results": [
+    {
+      "witness_type": "test_suite",
+      "verdict": "FAIL",
+      "exit_code": 2,
+      "stdout": "\n=================================== ERRORS ====================================\n____________________ ERROR collecting tests/test_basic.py _____________________\nImportError while importing test module 'C:\\Projects\\idea12\\tests\\test_basic.py'.\nHint: make sure your test modules/packages have valid Python names.\nTraceback:\nC:\\Users\\user\\AppData\\Local\\Programs\\Python\\Python313\\Lib\\importlib\\__init__.py:88: in import_module\n    return _bootstrap._gcd_import(name[level:], package, level)\n           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\ntests\\test_basic.py:11: in <module>\n    from netmetareg.core.data_structure import NMAData, Study\nnetmetareg\\__init__.py:18: in <module>\n    from .selection.lasso_selection import LassoSelection\nnetmetareg\\selection\\__init__.py:4: in <module>\n    from .cross_validation import CrossValidationNMA\nE   ModuleNotFoundError: No module named 'netmetareg.selection.cross_validation'\n=========================== short test summary info ===========================\nERROR tests/test_basic.py\n!!!!!!!!!!!!!!!!!!! Interrupted: 1 error during collection !!!!!!!!!!!!!!!!!!!!\n1 error in 35.56s\n",
+      "stderr": "",
+      "elapsed": 40.23
+    },
+    {
+      "witness_type": "smoke",
+      "verdict": "FAIL",
+      "exit_code": 1,
+      "stdout": "",
+      "stderr": "validation.benchmark_lu_ades_2004: import timed out\nvalidation.create_publication_figures: import timed out\nvalidation.forensic_simulation_study: import timed out\nvalidation.medical_reversal_validation: import timed out\nvalidation.optimize_thresholds: import timed out\nvalidation.run_quick_validation: import timed out\nvalidation.simulation_study_1_basic_nma: import timed out",
+      "elapsed": 83.47
+    },
+    {
+      "witness_type": "numerical",
+      "verdict": "SKIP",
+      "exit_code": null,
+      "stdout": "",
+      "stderr": "No baseline file",
+      "elapsed": 0.0
+    }
+  ],
+  "verdict": "FAIL",
+  "arbitration_reason": "All witnesses FAIL: test_suite, smoke",
+  "timestamp": "2026-04-09T02:12:45+00:00",
+  "bundle_hash": "516d4b2b9fc42e58"
+}

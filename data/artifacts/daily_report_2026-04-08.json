@@ -1,0 +1,405 @@
+{
+  "benchmark": {
+    "active_regressions": 34,
+    "coverage_percent": 18.9,
+    "heuristics_learned": 27,
+    "overall_pass_rate": 49.4,
+    "projects_testable": 285,
+    "projects_verified": 54,
+    "q_router_entries": 4,
+    "total_memories": 123,
+    "total_verifications": 320
+  },
+  "daily_targets": {
+    "actions": [
+      "FIX 41 active regression(s) first",
+      "Verify 5 projects from priority queue (coverage: 19%)",
+      "Next project: overmind (priority=25)"
+    ],
+    "coverage_target": 23.9,
+    "verify_count": 5
+  },
+  "day_number": 1,
+  "generated_at": "2026-04-08T22:13:36+00:00",
+  "memory_health": {
+    "avg_relevance": 0.89,
+    "by_status": {
+      "active": 123
+    },
+    "by_type": {
+      "audit_snapshot": 54,
+      "heuristic": 27,
+      "project_learning": 1,
+      "regression": 41
+    },
+    "heuristics_count": 27,
+    "total": 123
+  },
+  "portfolio": {
+    "by_risk": {
+      "high": 89,
+      "medium": 277,
+      "medium_high": 150
+    },
+    "by_type": {
+      "browser_app": 345,
+      "hybrid_browser_analytics_app": 91,
+      "python_tool": 9,
+      "r_project": 58,
+      "unknown": 13
+    },
+    "git_repos": 394,
+    "total_projects": 516,
+    "with_advanced_math": 178,
+    "with_browser_tests": 4,
+    "with_test_commands": 285
+  },
+  "priority_queue": [
+    {
+      "math_score": 20,
+      "name": "overmind",
+      "priority_score": 25,
+      "project_id": "overmind-b3047661",
+      "risk": "high",
+      "test_cmd": "python -m pytest tests/integration/test_orchestrator_run_once.py -q"
+    },
+    {
+      "math_score": 17,
+      "name": "DTA70",
+      "priority_score": 25,
+      "project_id": "dta70-4451dfb5",
+      "risk": "high",
+      "test_cmd": "python -m pytest tests/test_smoke.py -q"
+    },
+    {
+      "math_score": 15,
+      "name": "Pairwise70",
+      "priority_score": 22,
+      "project_id": "pairwise70-900619fe",
+      "risk": "high",
+      "test_cmd": "python -m pytest tests/selenium_comprehensive_test.py -q"
+    },
+    {
+      "math_score": 15,
+      "name": "rmstnma",
+      "priority_score": 22,
+      "project_id": "rmstnma-13acbe1e",
+      "risk": "high",
+      "test_cmd": "python -m pytest tests/test_smoke.py -q"
+    },
+    {
+      "math_score": 15,
+      "name": "Pairwise70",
+      "priority_score": 22,
+      "project_id": "pairwise70-4020df78",
+      "risk": "high",
+      "test_cmd": "python -m pytest tests/selenium_comprehensive_test.py -q"
+    },
+    {
+      "math_score": 20,
+      "name": "advanced-nma-pooling",
+      "priority_score": 22,
+      "project_id": "advanced-nma-pooling-be850427",
+      "risk": "high",
+      "test_cmd": "python -m pytest tests/simulation/test_smoke_simulation.py -q"
+    },
+    {
+      "math_score": 10,
+      "name": "ctgov-search-strategies",
+      "priority_score": 22,
+      "project_id": "ctgov-search-strategies-0fdde498",
+      "risk": "high",
+      "test_cmd": "pytest tests/test_strategy_optimizer.py"
+    },
+    {
+      "math_score": 9,
+      "name": "metasprint-dta",
+      "priority_score": 21,
+      "project_id": "metasprint-dta-5dffce53",
+      "risk": "high",
+      "test_cmd": "python R_validation/test_r_validation.py"
+    },
+    {
+      "math_score": 10,
+      "name": "Cbamm",
+      "priority_score": 20,
+      "project_id": "cbamm-c5df0bd2",
+      "risk": "high",
+      "test_cmd": "Rscript -e \"testthat::test_dir('tests/testthat')\""
+    },
+    {
+      "math_score": 6,
+      "name": "MLMResearch",
+      "priority_score": 18,
+      "project_id": "mlmresearch-5b768890",
+      "risk": "high",
+      "test_cmd": "Rscript -e \"testthat::test_dir('tests/testthat')\""
+    },
+    {
+      "math_score": 6,
+      "name": "metaoverfit",
+      "priority_score": 18,
+      "project_id": "metaoverfit-14a56132",
+      "risk": "high",
+      "test_cmd": "Rscript -e \"testthat::test_dir('tests/testthat')\""
+    },
+    {
+      "math_score": 7,
+      "name": "Pair786",
+      "priority_score": 12,
+      "project_id": "pair786-75c04b41",
+      "risk": "medium_high",
+      "test_cmd": "Rscript -e \"testthat::test_dir('tests/testthat')\""
+    },
+    {
+      "math_score": 7,
+      "name": "LFA",
+      "priority_score": 12,
+      "project_id": "lfa-36caf1fb",
+      "risk": "medium_high",
+      "test_cmd": "Rscript -e \"testthat::test_dir('tests/testthat')\""
+    },
+    {
+      "math_score": 5,
+      "name": "PriorLab",
+      "priority_score": 12,
+      "project_id": "priorlab-8915f200",
+      "risk": "medium_high",
+      "test_cmd": "python -m pytest tests/test_functional_bayes.py -q"
+    },
+    {
+      "math_score": 7,
+      "name": "LFA",
+      "priority_score": 12,
+      "project_id": "lfa-e2baec9b",
+      "risk": "medium_high",
+      "test_cmd": "Rscript -e \"testthat::test_dir('tests/testthat')\""
+    },
+    {
+      "math_score": 7,
+      "name": "Metanew",
+      "priority_score": 12,
+      "project_id": "metanew-a9a46268",
+      "risk": "medium_high",
+      "test_cmd": "python -m pytest tests/py/test_transform.py -q"
+    },
+    {
+      "math_score": 7,
+      "name": "HFN786",
+      "priority_score": 12,
+      "project_id": "hfn786-14ea7a6e",
+      "risk": "medium_high",
+      "test_cmd": "Rscript -e \"testthat::test_dir('tests/testthat')\""
+    },
+    {
+      "math_score": 7,
+      "name": "Pair786",
+      "priority_score": 12,
+      "project_id": "pair786-9bf5205d",
+      "risk": "medium_high",
+      "test_cmd": "Rscript -e \"testthat::test_dir('tests/testthat')\""
+    },
+    {
+      "math_score": 4,
+      "name": "FragilityAtlas",
+      "priority_score": 11,
+      "project_id": "fragilityatlas-7779f784",
+      "risk": "medium_high",
+      "test_cmd": "python -m pytest tests/test_estimators.py -q"
+    },
+    {
+      "math_score": 4,
+      "name": "repo100",
+      "priority_score": 11,
+      "project_id": "repo100-8f261f45",
+      "risk": "medium_high",
+      "test_cmd": "Rscript -e \"testthat::test_dir('tests/testthat')\""
+    }
+  ],
+  "regressions": {
+    "active_regressions": 41,
+    "details": [
+      {
+        "created": "2026-04-08T21:43:15+00:00",
+        "scope": "advanced-nma-pooling-6e3c8bdb",
+        "title": "Nightly: advanced-nma-pooling REJECT"
+      },
+      {
+        "created": "2026-04-08T21:48:18+00:00",
+        "scope": "cardiooracle-6cb36757",
+        "title": "Pass rate degraded: 16% -> 0%"
+      },
+      {
+        "created": "2026-04-08T21:48:18+00:00",
+        "scope": "cardiooracle-6cb36757",
+        "title": "Nightly: CardioOracle FAIL"
+      },
+      {
+        "created": "2026-04-08T21:49:23+00:00",
+        "scope": "idea12-59249342",
+        "title": "Nightly: idea12 FAIL"
+      },
+      {
+        "created": "2026-04-08T21:49:45+00:00",
+        "scope": "ipd-meta-pro-link-40520491",
+        "title": "Nightly: ipd-meta-pro-link REJECT"
+      },
+      {
+        "created": "2026-04-08T21:50:19+00:00",
+        "scope": "dataextractor-9c5488b5",
+        "title": "Nightly: Dataextractor_backup_20260114_110706 FAIL"
+      },
+      {
+        "created": "2026-04-08T21:50:33+00:00",
+        "scope": "evidence-inference-4c874004",
+        "title": "Nightly: EvidenceOracle REJECT"
+      },
+      {
+        "created": "2026-04-08T21:50:35+00:00",
+        "scope": "cbamm-0820ec88",
+        "title": "Nightly: Cbamm FAIL"
+      },
+      {
+        "created": "2026-04-08T21:50:38+00:00",
+        "scope": "dta70-4b170dbc",
+        "title": "Nightly: DTA70 FAIL"
+      },
+      {
+        "created": "2026-04-08T21:54:12+00:00",
+        "scope": "ipd-qma-project-b5694da4",
+        "title": "Nightly: ipd_qma_project REJECT"
+      }
+    ]
+  },
+  "runner_performance": {
+    "by_runner": {
+      "claude": {
+        "avg_q_value": 0.391,
+        "task_types": 1,
+        "total_losses": 125,
+        "total_wins": 80
+      },
+      "codex": {
+        "avg_q_value": 0.8,
+        "task_types": 1,
+        "total_losses": 0,
+        "total_wins": 3
+      },
+      "gemini": {
+        "avg_q_value": 0.667,
+        "task_types": 1,
+        "total_losses": 0,
+        "total_wins": 1
+      },
+      "test_runner": {
+        "avg_q_value": 0.664,
+        "task_types": 1,
+        "total_losses": 37,
+        "total_wins": 74
+      }
+    },
+    "entries": 4,
+    "status": "active"
+  },
+  "session_mining": {
+    "failure_lines": 2056,
+    "insights_generated": 3,
+    "sessions_analyzed": 30,
+    "success_lines": 737,
+    "top_errors": {
+      "AssertionError": 8,
+      "ImportError": 58,
+      "KeyError": 13,
+      "ModuleNotFoundError": 22,
+      "SyntaxError": 41,
+      "TypeError": 15,
+      "ValueError": 53
+    },
+    "top_projects": {
+      "": 6,
+      "afghanistan-conflict-zone-trials": 2,
+      "b1dpqrf0f": 1,
+      "b2ex1vpem": 1,
+      "b79rzbm1n": 1,
+      "b9cp7g9d6": 1,
+      "benford-law-enrollment-audit": 2,
+      "bip9zbprn": 1,
+      "bjsjtsdh3": 1,
+      "bq31btaej": 1,
+      "buns6gqo9": 1,
+      "bvdnenn3j": 1,
+      "code_generator": 4,
+      "nightly_verify": 6,
+      "user": 29
+    },
+    "total_messages": 7901
+  },
+  "verification_coverage": {
+    "coverage_percent": 18.9,
+    "high_risk_unverified_count": 105,
+    "high_risk_unverified_top10": [
+      {
+        "id": "overmind-b3047661",
+        "math_score": 20,
+        "name": "overmind",
+        "risk": "high"
+      },
+      {
+        "id": "advanced-nma-pooling-be850427",
+        "math_score": 20,
+        "name": "advanced-nma-pooling",
+        "risk": "high"
+      },
+      {
+        "id": "dta70-4451dfb5",
+        "math_score": 17,
+        "name": "DTA70",
+        "risk": "high"
+      },
+      {
+        "id": "pairwise70-900619fe",
+        "math_score": 15,
+        "name": "Pairwise70",
+        "risk": "high"
+      },
+      {
+        "id": "rmstnma-13acbe1e",
+        "math_score": 15,
+        "name": "rmstnma",
+        "risk": "high"
+      },
+      {
+        "id": "pairwise70-4020df78",
+        "math_score": 15,
+        "name": "Pairwise70",
+        "risk": "high"
+      },
+      {
+        "id": "ctgov-search-strategies-0fdde498",
+        "math_score": 10,
+        "name": "ctgov-search-strategies",
+        "risk": "high"
+      },
+      {
+        "id": "cbamm-c5df0bd2",
+        "math_score": 10,
+        "name": "Cbamm",
+        "risk": "high"
+      },
+      {
+        "id": "metasprint-dta-5dffce53",
+        "math_score": 9,
+        "name": "metasprint-dta",
+        "risk": "high"
+      },
+      {
+        "id": "pair786-75c04b41",
+        "math_score": 7,
+        "name": "Pair786",
+        "risk": "medium_high"
+      }
+    ],
+    "total_testable": 285,
+    "verified_count": 54
+  }
+}

@@ -1,0 +1,47 @@
+{
+  "project_id": "bayesianma-240f4a74",
+  "scope_lock": {
+    "project_id": "bayesianma-240f4a74",
+    "project_path": "C:\\Models\\BayesianMA",
+    "risk_profile": "high",
+    "witness_count": 3,
+    "test_command": "python -m pytest tests/test_bayesianma.py -q",
+    "smoke_modules": [
+      "test_bayesian_ma"
+    ],
+    "baseline_path": null,
+    "expected_outcome": "pass",
+    "source_hash": "4b2c10461141671c",
+    "created_at": "2026-04-08T23:21:07+00:00"
+  },
+  "witness_results": [
+    {
+      "witness_type": "test_suite",
+      "verdict": "PASS",
+      "exit_code": 0,
+      "stdout": "...................................                                      [100%]\n35 passed in 23.08s\n",
+      "stderr": "",
+      "elapsed": 26.52
+    },
+    {
+      "witness_type": "smoke",
+      "verdict": "PASS",
+      "exit_code": 0,
+      "stdout": "1 modules imported OK",
+      "stderr": "",
+      "elapsed": 0.81
+    },
+    {
+      "witness_type": "numerical",
+      "verdict": "SKIP",
+      "exit_code": null,
+      "stdout": "",
+      "stderr": "No baseline file",
+      "elapsed": 0.0
+    }
+  ],
+  "verdict": "PASS",
+  "arbitration_reason": "2/2 witnesses PASS (numerical skipped \u2014 no baseline)",
+  "timestamp": "2026-04-08T23:21:34+00:00",
+  "bundle_hash": "839d10b2dc124fbf"
+}
