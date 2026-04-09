@@ -19,13 +19,21 @@ from overmind.evolution.recipe import Recipe
 
 @dataclass
 class Skill:
-    """A validated fix recipe promoted to reusable skill."""
+    """A validated fix recipe promoted to reusable skill.
+
+    Two-level abstraction (Mem^p pattern):
+    - fix_script: concrete steps ("pip install scipy")
+    - abstract_strategy: higher-level pattern ("dependency rot → check if external → pip install")
+    """
     skill_id: str
     failure_type: str
     pattern: str
     description: str  # Natural-language description for retrieval
-    fix_script: str   # The actual fix command or code
-    confidence: float
+    fix_script: str   # Concrete fix command or code
+    abstract_strategy: str = ""  # Mem^p: higher-level strategy
+    confidence: float = 0.0
+    durability: float = 1.0  # PRAXIS: how often fix holds over time
+    contrastive_diff: str = ""  # MACLA: what changed between fail→success
     times_used: int = 0
     times_succeeded: int = 0
     created_from_recipe: str = ""
@@ -44,7 +52,10 @@ class Skill:
             "pattern": self.pattern,
             "description": self.description,
             "fix_script": self.fix_script,
+            "abstract_strategy": self.abstract_strategy,
             "confidence": self.confidence,
+            "durability": self.durability,
+            "contrastive_diff": self.contrastive_diff,
             "times_used": self.times_used,
             "times_succeeded": self.times_succeeded,
             "created_from_recipe": self.created_from_recipe,
@@ -74,7 +85,10 @@ class SkillLibrary:
             pattern=recipe.pattern,
             description=f"Fix {recipe.failure_type}: {recipe.fix_description}",
             fix_script=recipe.fix_description,
+            abstract_strategy=recipe.abstract_strategy or f"{recipe.failure_type} → {recipe.fix_description[:50]}",
             confidence=recipe.confidence,
+            durability=recipe.durability,
+            contrastive_diff=recipe.contrastive_diff,
             created_from_recipe=recipe.recipe_id,
             tags=[recipe.failure_type, recipe.pattern[:20]],
         )

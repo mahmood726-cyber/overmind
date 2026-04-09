@@ -48,12 +48,16 @@ Project: {project_path}
 Failure type: {failure_type}
 Diagnosis: {summary}
 Recommended action: {recommended_action}
+Failing file: {failing_file}
 
 Evidence:
 {evidence}
 
+Project documentation:
+{project_docs}
+
 Rules:
-1. Generate the SMALLEST possible fix
+1. Generate the SMALLEST possible fix — target the specific failing file, not the whole project
 2. Do NOT change any formula, mathematical constant, or numerical logic
 3. Do NOT add new features — only fix the diagnosed issue
 4. If the fix requires installing a package, output: INSTALL: package_name
@@ -173,12 +177,35 @@ class LLMRepairer:
         return FixResult(False, "llm_repair", f"Unknown fix_type: {plan.fix_type}")
 
     def _generate_plan(self, diagnosis: Diagnosis, project_path: str) -> LLMRepairResult | None:
+        # Extract specific failing file from evidence (DRV paper: narrow scope)
+        failing_file = "unknown"
+        for ev in diagnosis.evidence:
+            import re
+            m = re.search(r'File "([^"]+)"', ev)
+            if m:
+                failing_file = m.group(1)
+                break
+
+        # Load project documentation (RepoRepair pattern)
+        project_docs = "No documentation found."
+        for doc_name in ("CLAUDE.md", "README.md", "AGENTS.md"):
+            doc_path = Path(project_path) / doc_name
+            if doc_path.exists():
+                try:
+                    content = doc_path.read_text(encoding="utf-8")[:500]
+                    project_docs = f"{doc_name}:\n{content}"
+                    break
+                except OSError:
+                    pass
+
         prompt = REPAIR_PROMPT.format(
             project_path=project_path,
             failure_type=diagnosis.failure_type,
             summary=diagnosis.summary[:200],
             recommended_action=diagnosis.recommended_action[:200],
             evidence="\n".join(diagnosis.evidence[:3]),
+            failing_file=failing_file,
+            project_docs=project_docs[:600],
         )
 
         try:

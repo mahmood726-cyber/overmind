@@ -835,6 +835,25 @@ def _run_verification(db: StateDatabase, args: argparse.Namespace, run_start: da
     print(f"  Bundles: {bundles_dir}")
     print("=" * 60)
 
+    # Generate HTML morning insights dashboard
+    try:
+        from scripts.generate_dashboard import load_latest_report, load_report_history, load_cusum_warnings, load_skills, generate_html
+        dashboard_dir = Path("C:/overmind/dashboard")
+        dashboard_dir.mkdir(parents=True, exist_ok=True)
+        dash_report = load_latest_report()
+        if dash_report:
+            html = generate_html(dash_report, load_report_history(7), load_cusum_warnings(), load_skills())
+            dash_path = dashboard_dir / "index.html"
+            dash_path.write_text(html, encoding="utf-8")
+            print(f"  Dashboard: {dash_path}")
+            # Auto-open in morning (only if not 3 AM — skip if running at night)
+            import webbrowser
+            hour = datetime.now().hour
+            if 6 <= hour <= 22:  # Only open during waking hours
+                webbrowser.open(str(dash_path))
+    except Exception as exc:
+        print(f"  Dashboard: failed ({exc})")
+
 
 if __name__ == "__main__":
     main()

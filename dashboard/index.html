@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Overmind Morning Insights</title>
+<style>
+* { margin: 0; padding: 0; box-sizing: border-box; }
+body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; background: #0a0e17; color: #e0e6ed; padding: 24px; }
+.header { text-align: center; margin-bottom: 32px; }
+.header h1 { font-size: 28px; color: #fff; letter-spacing: 2px; }
+.header .date { color: #8892a4; font-size: 14px; margin-top: 4px; }
+.header .runtime { color: #5a6577; font-size: 12px; }
+.grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 16px; margin-bottom: 32px; }
+.card { background: #131926; border-radius: 12px; padding: 20px; text-align: center; border: 1px solid #1e2a3a; }
+.card .number { font-size: 42px; font-weight: 700; line-height: 1; }
+.card .label { font-size: 12px; color: #8892a4; text-transform: uppercase; letter-spacing: 1px; margin-top: 6px; }
+.certified .number { color: #00e676; }
+.pass .number { color: #448aff; }
+.reject .number { color: #ff9100; }
+.fail .number { color: #ff5252; }
+.section { background: #131926; border-radius: 12px; padding: 24px; margin-bottom: 24px; border: 1px solid #1e2a3a; }
+.section h2 { font-size: 16px; color: #fff; margin-bottom: 16px; border-bottom: 1px solid #1e2a3a; padding-bottom: 8px; }
+table { width: 100%; border-collapse: collapse; font-size: 13px; }
+th { text-align: left; color: #8892a4; font-weight: 500; padding: 8px; border-bottom: 1px solid #1e2a3a; }
+td { padding: 8px; border-bottom: 1px solid #0d1117; }
+.verdict-certified { color: #00e676; font-weight: 600; }
+.verdict-pass { color: #448aff; }
+.verdict-reject { color: #ff9100; }
+.verdict-fail { color: #ff5252; }
+.warn { background: #2a1800; border: 1px solid #ff9100; border-radius: 8px; padding: 12px; margin-bottom: 8px; font-size: 13px; }
+.insight { background: #0d1a0d; border: 1px solid #00e676; border-radius: 8px; padding: 12px; margin-bottom: 8px; font-size: 13px; }
+.trend { display: flex; gap: 4px; align-items: flex-end; height: 60px; }
+.trend-bar { flex: 1; border-radius: 3px 3px 0 0; min-width: 8px; }
+.footer { text-align: center; color: #5a6577; font-size: 11px; margin-top: 32px; }
+</style>
+</head>
+<body>
+<div class="header">
+    <h1>OVERMIND</h1>
+    <div class="date">Morning Insights — 2026-04-09</div>
+    <div class="runtime">50 projects verified in 2866s</div>
+</div>
+
+<div class="grid">
+    <div class="card certified"><div class="number">3</div><div class="label">Certified</div></div>
+    <div class="card pass"><div class="number">19</div><div class="label">Pass</div></div>
+    <div class="card reject"><div class="number">7</div><div class="label">Reject</div></div>
+    <div class="card fail"><div class="number">21</div><div class="label">Fail</div></div>
+</div>
+
+
+
+<div class="section"><h2>Certified (3)</h2><table><tr><th>Project</th><th>Risk</th><th>Math</th><th>Witnesses</th><th>Time</th></tr><tr><td>truthcert-meta2-prototype</td><td>high</td><td>8</td><td>2</td><td>46.2s</td></tr><tr><td>ctgov-search-strategies_backup_20260114-110157</td><td>high</td><td>7</td><td>2</td><td>18.2s</td></tr><tr><td>Meta_Ecosystem_Model</td><td>high</td><td>7</td><td>2</td><td>18.4s</td></tr></table></div>
+
+<div class="section"><h2>Needs Investigation (7)</h2><table><tr><th>Project</th><th>Risk</th><th>Reason</th><th>Time</th></tr><tr><td>ipd_qma_project</td><td>high</td><td style="font-size:11px">Witnesses disagree: test_suite PASS vs smoke FAIL</td><td>132.4s</td></tr><tr><td>EvidenceOracle</td><td>high</td><td style="font-size:11px">Witnesses disagree: smoke PASS vs test_suite FAIL</td><td>19.6s</td></tr><tr><td>repo300-ENMA-SNMA</td><td>high</td><td style="font-size:11px">Witnesses disagree: test_suite PASS vs smoke FAIL</td><td>8.2s</td></tr><tr><td>asreview_5star</td><td>high</td><td style="font-size:11px">Witnesses disagree: smoke PASS vs test_suite FAIL</td><td>28.2s</td></tr><tr><td>ubcma</td><td>high</td><td style="font-size:11px">Witnesses disagree: test_suite PASS vs numerical FAIL</td><td>14.0s</td></tr><tr><td>llm-meta-analysis</td><td>high</td><td style="font-size:11px">Witnesses disagree: test_suite PASS vs smoke FAIL</td><td>120.3s</td></tr><tr><td>ctgov-search-strategies</td><td>high</td><td style="font-size:11px">Witnesses disagree: smoke PASS vs test_suite FAIL</td><td>32.1s</td></tr></table></div>
+
+<div class="section"><h2>Failed (21)</h2><table><tr><th>Project</th><th>Risk</th><th>Reason</th><th>Time</th></tr><tr><td>CardioOracle</td><td>high</td><td style="font-size:11px">Hard timeout (300s) — process killed</td><td>303.4s</td></tr><tr><td>Dataextractor_backup_20260114_110706</td><td>high</td><td style="font-size:11px">All witnesses FAIL: test_suite, smoke</td><td>28.2s</td></tr><tr><td>idea12</td><td>high</td><td style="font-size:11px">All witnesses FAIL: test_suite, smoke</td><td>72.1s</td></tr><tr><td>metasprint-autopilot</td><td>high</td><td style="font-size:11px">Hard timeout (300s) — process killed</td><td>303.9s</td></tr><tr><td>superapp</td><td>high</td><td style="font-size:11px">Hard timeout (300s) — process killed</td><td>304.6s</td></tr><tr><td>Dataextractor</td><td>high</td><td style="font-size:11px">All witnesses FAIL: test_suite, smoke</td><td>36.3s</td></tr><tr><td>evidence-inference</td><td>high</td><td style="font-size:11px">All witnesses FAIL: test_suite, smoke</td><td>26.3s</td></tr><tr><td>Cbamm</td><td>high</td><td style="font-size:11px">Single witness: test_suite FAIL</td><td>2.3s</td></tr><tr><td>DTA70</td><td>high</td><td style="font-size:11px">Single witness: test_suite FAIL</td><td>2.2s</td></tr><tr><td>Pairwise70</td><td>high</td><td style="font-size:11px">All witnesses FAIL: test_suite, smoke</td><td>12.2s</td></tr><tr><td>rmstnma</td><td>high</td><td style="font-size:11px">Single witness: test_suite FAIL</td><td>2.2s</td></tr><tr><td>globalst</td><td>high</td><td style="font-size:11px">All witnesses FAIL: test_suite, smoke</td><td>16.2s</td></tr><tr><td>FATIHA_Project</td><td>high</td><td style="font-size:11px">Single witness: test_suite FAIL</td><td>2.2s</td></tr><tr><td>new-app</td><td>high</td><td style="font-size:11px">Single witness: test_suite FAIL</td><td>122.9s</td></tr><tr><td>NMA</td><td>high</td><td style="font-size:11px">Single witness: test_suite FAIL</td><td>2.0s</td></tr><tr><td>HTA_Evidence_Integrity_Suite</td><td>high</td><td style="font-size:11px">Single witness: test_suite FAIL</td><td>8.3s</td></tr><tr><td>lec_phase0_bundle</td><td>high</td><td style="font-size:11px">Hard timeout (300s) — process killed</td><td>303.7s</td></tr><tr><td>registry_first_rct_meta</td><td>high</td><td style="font-size:11px">Single witness: test_suite FAIL</td><td>8.4s</td></tr><tr><td>metasprint-cardio-universe</td><td>high</td><td style="font-size:11px">Single witness: test_suite FAIL</td><td>2.2s</td></tr><tr><td>metasprint-dta</td><td>high</td><td style="font-size:11px">Hard timeout (300s) — process killed</td><td>304.3s</td></tr><tr><td>GRMA_paper</td><td>high</td><td style="font-size:11px">All witnesses FAIL: test_suite, smoke</td><td>12.1s</td></tr></table></div>
+
+<div class="section"><h2>Passing (19)</h2><table><tr><th>Project</th><th>Risk</th><th>Math</th><th>Time</th></tr><tr><td>advanced-nma-pooling</td><td>high</td><td>20</td><td>10.2s</td></tr><tr><td>esc-acs-living-meta</td><td>high</td><td>20</td><td>4.1s</td></tr><tr><td>ipd-meta-pro-link</td><td>high</td><td>20</td><td>30.1s</td></tr><tr><td>overmind</td><td>high</td><td>20</td><td>14.4s</td></tr><tr><td>prognostic-meta</td><td>high</td><td>20</td><td>10.3s</td></tr><tr><td>metasprintnma</td><td>high</td><td>17</td><td>138.3s</td></tr><tr><td>lec_phase0_project</td><td>high</td><td>16</td><td>44.2s</td></tr><tr><td>rct-extractor-v2</td><td>high</td><td>15</td><td>22.2s</td></tr><tr><td>hfpef_registry_synth</td><td>high</td><td>14</td><td>10.2s</td></tr><tr><td>BayesianMA</td><td>high</td><td>13</td><td>28.2s</td></tr><tr><td>metasprint-dose-response</td><td>high</td><td>12</td><td>18.2s</td></tr><tr><td>experimental-meta-analysis</td><td>high</td><td>11</td><td>68.2s</td></tr><tr><td>moonshot-evidence-lab</td><td>high</td><td>11</td><td>10.2s</td></tr><tr><td>Transcendent-Meta-Analysis-Lab</td><td>high</td><td>11</td><td>59.7s</td></tr><tr><td>cardio-ctgov-living-meta-portfolio</td><td>high</td><td>10</td><td>8.3s</td></tr><tr><td>truthcert-denominator-phase1</td><td>high</td><td>10</td><td>38.5s</td></tr><tr><td>Denominator_Calibrated_Living_NMA</td><td>high</td><td>8</td><td>8.4s</td></tr><tr><td>GWAM</td><td>high</td><td>7</td><td>16.1s</td></tr><tr><td>lec_phase0_bundle_backup_20260114_110427</td><td>high</td><td>7</td><td>12.1s</td></tr></table></div>
+
+<div class="section">
+    <h2>System Health</h2>
+    <table>
+        <tr><td>Dream cycle</td><td>35 merges, 0 archives, 206&rarr;171 memories</td></tr>
+        <tr><td>Skills library</td><td>0 skills</td></tr>
+        <tr><td>CUSUM warnings</td><td>0 projects drifting</td></tr>
+    </table>
+</div>
+
+<div class="footer">
+    Generated by Overmind v3.2 &middot; 2026-04-09 15:14 UTC
+</div>
+</body>
+</html>
