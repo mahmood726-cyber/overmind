@@ -1,7 +1,7 @@
-# CardioOracle
+# metasprint-autopilot
 
 **Last verified:** 2026-04-09 01:34 UTC | **Verdict:** FAIL (Hard timeout (300s) — process killed)
-**Bundle hash:** 4d06987293db7f8a | **Risk:** high | **Math:** 20
+**Bundle hash:** c96956db4f9b9dbb | **Risk:** high | **Math:** 20
 
 ## Health
 
@@ -11,19 +11,16 @@
 
 ## Project
 
-- **Path:** C:\Models\CardioOracle
-- **Type:** browser_app
-- **Stack:** css, html, javascript
-- **Test command:** `python -m pytest tests/test_curation.py -q`
+- **Path:** C:\Users\user\OneDrive\Backups\Projects\metasprint-autopilot
+- **Type:** hybrid_browser_analytics_app
+- **Stack:** css, html, javascript, playwright, python
+- **Test command:** `python run_all_tests.py`
 
 ## Verification History
 
 | Date | Verdict | Witnesses | Time | Hash |
 |------|---------|-----------|------|------|
-| 2026-04-08 | FAIL | 1/1 | 300.0s | ec4b2ac9d0d4cecc |
-| 2026-04-08 | FAIL | 1/1 | 300.0s | 2322da815c19e7a0 |
-| 2026-04-08 | FAIL | 1/1 | 300.0s | fa8c05ade29db7b1 |
-| 2026-04-09 | FAIL | 1/1 | 300.0s | 4d06987293db7f8a |
+| 2026-04-09 | FAIL | 1/1 | 300.0s | c96956db4f9b9dbb |
 
 ## Notes
 

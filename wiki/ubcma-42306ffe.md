@@ -1,15 +1,15 @@
 # ubcma
 
-**Last verified:** 2026-04-08 23:40 UTC | **Verdict:** REJECT (Witnesses disagree: test_suite PASS vs smoke, numerical FAIL)
-**Bundle hash:** 207a1e37f614b7e8 | **Risk:** high | **Math:** 11
+**Last verified:** 2026-04-09 01:34 UTC | **Verdict:** REJECT (Witnesses disagree: test_suite PASS vs numerical FAIL)
+**Bundle hash:** 380e3a398177acc7 | **Risk:** high | **Math:** 11
 
 ## Health
 
 | Witness | Verdict | Time | Detail |
 |---------|---------|------|--------|
-| test_suite | PASS | 16.8s | .......                                                                  [100%]
+| test_suite | PASS | 11.9s | .......                                                                  [100%]
  |
-| smoke | FAIL | 14.7s | examples.quickstart: io\common.py", line 873, in get_handle |
+| smoke | SKIP | 0.0s | skipped |
 | numerical | FAIL | 0.0s | Failed to start: [WinError 2] The system cannot find the file specified |
 
 ## Project
@@ -26,17 +26,10 @@
 | 2026-04-08 | FAIL | 1/1 | 300.0s | 1e69d9e49a54861c |
 | 2026-04-08 | FAIL | 3/3 | 129.5s | aae6f0747b35b54d |
 | 2026-04-08 | REJECT | 3/3 | 31.5s | 207a1e37f614b7e8 |
+| 2026-04-09 | REJECT | 2/3 | 11.9s | 380e3a398177acc7 |
 
 ## Notes
 
-Witnesses disagree: test_suite PASS vs smoke, numerical FAIL
-
-**smoke:** examples.quickstart: io\common.py", line 873, in get_handle
-    handle = open(
-        handle,
-    ...<3 lines>...
-        newline="",
-    )
-FileNotFoundError: [Errno 2] No such file or directory: 've
+Witnesses disagree: test_suite PASS vs numerical FAIL
 
 **numerical:** Failed to start: [WinError 2] The system cannot find the file specified

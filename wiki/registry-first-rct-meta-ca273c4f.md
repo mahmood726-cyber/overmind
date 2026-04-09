@@ -1,14 +1,14 @@
 # registry_first_rct_meta
 
-**Last verified:** 2026-04-08 23:40 UTC | **Verdict:** REJECT (Witnesses disagree: smoke PASS vs test_suite FAIL)
-**Bundle hash:** ab7b152c34af7d98 | **Risk:** high | **Math:** 10
+**Last verified:** 2026-04-09 01:34 UTC | **Verdict:** FAIL (Single witness: test_suite FAIL)
+**Bundle hash:** a1b3e40277de2cf3 | **Risk:** high | **Math:** 10
 
 ## Health
 
 | Witness | Verdict | Time | Detail |
 |---------|---------|------|--------|
-| test_suite | FAIL | 5.9s |  |
-| smoke | PASS | 5.2s | 2 modules imported OK |
+| test_suite | FAIL | 5.6s |  |
+| smoke | SKIP | 0.0s | skipped |
 | numerical | SKIP | 0.0s | skipped |
 
 ## Project
@@ -25,7 +25,8 @@
 | 2026-04-08 | REJECT | 2/3 | 16.5s | 1c328a3598ca1940 |
 | 2026-04-08 | REJECT | 2/3 | 10.4s | 9972e720fefa1744 |
 | 2026-04-08 | REJECT | 2/3 | 11.2s | ab7b152c34af7d98 |
+| 2026-04-09 | FAIL | 1/3 | 5.6s | a1b3e40277de2cf3 |
 
 ## Notes
 
-Witnesses disagree: smoke PASS vs test_suite FAIL
+Single witness: test_suite FAIL

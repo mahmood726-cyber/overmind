@@ -1,7 +1,7 @@
-# CardioOracle
+# superapp
 
 **Last verified:** 2026-04-09 01:34 UTC | **Verdict:** FAIL (Hard timeout (300s) — process killed)
-**Bundle hash:** 4d06987293db7f8a | **Risk:** high | **Math:** 20
+**Bundle hash:** 13a290549b7da024 | **Risk:** high | **Math:** 20
 
 ## Health
 
@@ -11,19 +11,16 @@
 
 ## Project
 
-- **Path:** C:\Models\CardioOracle
+- **Path:** C:\Users\user\OneDrive\Backups\Projects\superapp
 - **Type:** browser_app
 - **Stack:** css, html, javascript
-- **Test command:** `python -m pytest tests/test_curation.py -q`
+- **Test command:** `npm run test`
 
 ## Verification History
 
 | Date | Verdict | Witnesses | Time | Hash |
 |------|---------|-----------|------|------|
-| 2026-04-08 | FAIL | 1/1 | 300.0s | ec4b2ac9d0d4cecc |
-| 2026-04-08 | FAIL | 1/1 | 300.0s | 2322da815c19e7a0 |
-| 2026-04-08 | FAIL | 1/1 | 300.0s | fa8c05ade29db7b1 |
-| 2026-04-09 | FAIL | 1/1 | 300.0s | 4d06987293db7f8a |
+| 2026-04-09 | FAIL | 1/1 | 300.0s | 13a290549b7da024 |
 
 ## Notes
 
