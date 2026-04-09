@@ -1,0 +1,17 @@
+{
+  "command": "C:\\Users\\user\\AppData\\Local\\Programs\\Python\\Python313\\python.exe C:\\overmind\\data\\baseline_probes\\probe_saarc-e156-students.py",
+  "values": {
+    "gini_uniform": 0.0,
+    "gini_skewed": 0.720874,
+    "shannon_uniform": 2.0,
+    "spearman_inverse": -1.0,
+    "linreg_slope": 3.0,
+    "linreg_intercept": -1.0,
+    "linreg_r_squared": 1.0,
+    "cohens_d": -3.162278,
+    "odds_ratio": 0.444444
+  },
+  "tolerance": 1e-06,
+  "project_path": "C:\\saarc-e156-students",
+  "created_by": "create_baselines.py"
+}

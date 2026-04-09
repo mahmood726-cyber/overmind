@@ -26,10 +26,17 @@ class FixResult:
 class DependencyRotFix:
     """Fix missing Python modules via pip install."""
 
-    # Modules that are local (part of the project, not pip-installable)
+    # Modules that are local project code, not pip-installable.
+    # Also includes generic names that exist on PyPI but are never the right package.
     LOCAL_MODULE_PATTERNS = re.compile(
-        r"^(pipeline|lib|src|engine|sim|shared|metavoi|metafrontier|"
-        r"priorlab|ubcma|metaaudit|nma_pool)\b"
+        r"^(pipeline|lib|src|engine|sim|shared|scripts|examples|dev|tests|"
+        r"metavoi|metafrontier|priorlab|ubcma|metaaudit|nma_pool|"
+        r"gwam_utils|hfpef_calibrate|statistical_framework|"
+        r"adaptsim|trustgate|fragility|gradepro|overmind|cardiosynth|"
+        r"evaluation|sensitivity_analysis|"
+        # Generic PyPI names that are false matches
+        r"utils|helpers|config|common|core|app|main|run|setup|tool|tools"
+        r")\b"
     )
 
     def can_fix(self, diagnosis) -> bool:

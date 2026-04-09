@@ -111,16 +111,23 @@ class TruthCertEngine:
             timestamp=utc_now(),
         )
 
+    # Directories containing scripts/examples/dev tools — not importable modules
+    _SKIP_DIRS = {".", "_", "test", "tests", "node_modules", "scripts", "examples",
+                  "dev", "docs", "data", "fixtures", "migrations", "backup", "archive"}
+    # Root-level files that are scripts, not importable modules
+    _SKIP_FILES = {"setup", "conftest", "manage", "run", "main", "cli", "app",
+                   "noxfile", "fabfile", "tasks"}
+
     def _discover_modules(self, root_path: str) -> list[str]:
         modules: list[str] = []
         root = Path(root_path)
         for py_file in sorted(root.glob("*.py")):
             name = py_file.stem
-            if name.startswith("_") or name == "setup":
+            if name.startswith("_") or name in self._SKIP_FILES:
                 continue
             modules.append(name)
         for py_file in sorted(root.glob("*/*.py")):
-            if py_file.parent.name.startswith((".", "_", "test", "node_modules")):
+            if any(py_file.parent.name.startswith(s) for s in self._SKIP_DIRS):
                 continue
             name = py_file.stem
             if name.startswith("_"):
