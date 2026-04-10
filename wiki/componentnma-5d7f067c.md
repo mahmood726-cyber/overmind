@@ -1,15 +1,14 @@
 # ComponentNMA
 
-**Last verified:** 2026-04-08 23:40 UTC | **Verdict:** CERTIFIED (2/2 witnesses agree PASS)
-**Bundle hash:** 05931881e24a8297 | **Risk:** medium_high | **Math:** 7
+**Last verified:** 2026-04-10 02:33 UTC | **Verdict:** REJECT (Witnesses disagree: smoke PASS vs test_suite FAIL)
+**Bundle hash:** 9c046c70056edee2 | **Risk:** medium_high | **Math:** 7
 
 ## Health
 
 | Witness | Verdict | Time | Detail |
 |---------|---------|------|--------|
-| test_suite | PASS | 25.0s | ...........................                                              [100%]
- |
-| smoke | PASS | 1.4s | 1 modules imported OK |
+| test_suite | FAIL | 120.0s | Timed out after 120s |
+| smoke | PASS | 0.6s | 1 modules imported OK |
 
 ## Project
 
@@ -25,3 +24,10 @@
 | 2026-04-08 | CERTIFIED | 2/2 | 103.5s | adcc1b6b239f808e |
 | 2026-04-08 | CERTIFIED | 2/2 | 25.5s | ba565363628aec33 |
 | 2026-04-08 | CERTIFIED | 2/2 | 26.3s | 05931881e24a8297 |
+| 2026-04-10 | REJECT | 2/2 | 120.6s | 9c046c70056edee2 |
+
+## Notes
+
+Witnesses disagree: smoke PASS vs test_suite FAIL
+
+**test_suite:** Timed out after 120s

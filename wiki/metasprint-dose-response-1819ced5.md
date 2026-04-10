@@ -1,15 +1,14 @@
 # metasprint-dose-response
 
-**Last verified:** 2026-04-08 23:40 UTC | **Verdict:** PASS (2/2 witnesses PASS (numerical skipped — no baseline))
-**Bundle hash:** 7df581417a2f9986 | **Risk:** high | **Math:** 12
+**Last verified:** 2026-04-10 02:33 UTC | **Verdict:** FAIL (Single witness: test_suite FAIL)
+**Bundle hash:** ac82c5ee1cc2caf2 | **Risk:** high | **Math:** 12
 
 ## Health
 
 | Witness | Verdict | Time | Detail |
 |---------|---------|------|--------|
-| test_suite | PASS | 15.5s | ixed_effects_se_matches_r PASSED [ 81%]
-test_dose_response_models.py::TestRValid |
-| smoke | PASS | 2.1s | 1 modules imported OK |
+| test_suite | FAIL | 0.0s | Failed to start: [WinError 267] The directory name is invalid |
+| smoke | SKIP | 0.0s | skipped |
 | numerical | SKIP | 0.0s | skipped |
 
 ## Project
@@ -26,3 +25,10 @@ test_dose_response_models.py::TestRValid |
 | 2026-04-08 | PASS | 2/3 | 21.1s | d77ace5e9a167ae3 |
 | 2026-04-08 | PASS | 2/3 | 12.2s | d7cac4a25f3d9050 |
 | 2026-04-08 | PASS | 2/3 | 17.7s | 7df581417a2f9986 |
+| 2026-04-10 | FAIL | 1/3 | 0.0s | ac82c5ee1cc2caf2 |
+
+## Notes
+
+Single witness: test_suite FAIL
+
+**test_suite:** Failed to start: [WinError 267] The directory name is invalid

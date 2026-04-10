@@ -1,14 +1,15 @@
 # ctgov-search-strategies
 
-**Last verified:** 2026-04-08 23:40 UTC | **Verdict:** REJECT (Witnesses disagree: smoke PASS vs test_suite FAIL)
-**Bundle hash:** 9adc19b2fb479203 | **Risk:** high | **Math:** 7
+**Last verified:** 2026-04-10 02:33 UTC | **Verdict:** CERTIFIED (2/2 witnesses agree PASS)
+**Bundle hash:** 2613a5c9290963ea | **Risk:** high | **Math:** 7
 
 ## Health
 
 | Witness | Verdict | Time | Detail |
 |---------|---------|------|--------|
-| test_suite | FAIL | 18.8s |  |
-| smoke | PASS | 14.3s | 20 modules imported OK |
+| test_suite | PASS | 9.5s | search.py                    110    110     0%   6-175
+enhanced_strategy.py      |
+| smoke | PASS | 9.6s | 20 modules imported OK |
 
 ## Project
 
@@ -24,7 +25,4 @@
 | 2026-04-08 | REJECT | 2/2 | 20.9s | b10da6704b62307a |
 | 2026-04-08 | REJECT | 2/2 | 14.2s | c8a3562791de4445 |
 | 2026-04-08 | REJECT | 2/2 | 33.1s | 9adc19b2fb479203 |
-
-## Notes
-
-Witnesses disagree: smoke PASS vs test_suite FAIL
+| 2026-04-10 | CERTIFIED | 2/2 | 19.1s | 2613a5c9290963ea |

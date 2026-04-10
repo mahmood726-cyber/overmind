@@ -1,15 +1,15 @@
 # ipd_qma_project
 
-**Last verified:** 2026-04-09 01:34 UTC | **Verdict:** REJECT (Witnesses disagree: test_suite PASS vs smoke FAIL)
-**Bundle hash:** 1f0fa6928f88c397 | **Risk:** high | **Math:** 15
+**Last verified:** 2026-04-10 02:33 UTC | **Verdict:** REJECT (Witnesses disagree: test_suite PASS vs smoke FAIL)
+**Bundle hash:** cbee2ff0743724ef | **Risk:** high | **Math:** 15
 
 ## Health
 
 | Witness | Verdict | Time | Detail |
 |---------|---------|------|--------|
-| test_suite | PASS | 14.7s | ..........................................s.................             [100%]
+| test_suite | PASS | 5.6s | ..........................................s.................             [100%]
  |
-| smoke | FAIL | 60.3s | ipd_qma_bayesian: , in <module> |
+| smoke | FAIL | 34.0s | ipd_qma_ml: ost recent call last): |
 | numerical | SKIP | 0.0s | skipped |
 
 ## Project
@@ -27,14 +27,16 @@
 | 2026-04-08 | REJECT | 2/3 | 32.4s | eb25bbf0a9bb54b2 |
 | 2026-04-08 | REJECT | 2/3 | 52.3s | d2908cfa3d0f0027 |
 | 2026-04-09 | REJECT | 2/3 | 75.0s | 1f0fa6928f88c397 |
+| 2026-04-10 | REJECT | 2/3 | 39.6s | cbee2ff0743724ef |
 
 ## Notes
 
 Witnesses disagree: test_suite PASS vs smoke FAIL
 
-**smoke:** ipd_qma_bayesian: , in <module>
-    import ipd_qma_bayesian
-  File "C:\Projects\ipd_qma_project\ipd_qma_bayesian.py", line 418
-    """
+**smoke:** ipd_qma_ml: ost recent call last):
+  File "<string>", line 1, in <module>
+    import ipd_qma_ml
+  File "C:\Projects\ipd_qma_project\ipd_qma_ml.py", line 1
+    .asarray(treatment)
     ^
-SyntaxError: unterminated triple-quoted string literal (det
+SyntaxError: in

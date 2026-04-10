@@ -1,7 +1,7 @@
 # NMA
 
-**Last verified:** 2026-04-08 23:40 UTC | **Verdict:** FAIL (Single witness: test_suite FAIL)
-**Bundle hash:** 894fce35b0e5b88a | **Risk:** high | **Math:** 11
+**Last verified:** 2026-04-10 02:33 UTC | **Verdict:** FAIL (Single witness: test_suite FAIL)
+**Bundle hash:** 208d2cc9b35f346c | **Risk:** high | **Math:** 11
 
 ## Health
 
@@ -25,6 +25,7 @@
 | 2026-04-08 | FAIL | 1/3 | 0.0s | 6c83c1e31f6b9730 |
 | 2026-04-08 | FAIL | 1/3 | 0.0s | c875316c69d118d8 |
 | 2026-04-08 | FAIL | 1/3 | 0.0s | 894fce35b0e5b88a |
+| 2026-04-10 | FAIL | 1/3 | 0.0s | 208d2cc9b35f346c |
 
 ## Notes
 

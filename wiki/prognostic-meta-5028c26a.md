@@ -1,14 +1,13 @@
 # prognostic-meta
 
-**Last verified:** 2026-04-09 01:34 UTC | **Verdict:** PASS (Single witness: test_suite PASS)
-**Bundle hash:** 3a530d79f690f726 | **Risk:** high | **Math:** 20
+**Last verified:** 2026-04-10 02:33 UTC | **Verdict:** FAIL (Single witness: test_suite FAIL)
+**Bundle hash:** 85c0bfdbf286b3b0 | **Risk:** high | **Math:** 20
 
 ## Health
 
 | Witness | Verdict | Time | Detail |
 |---------|---------|------|--------|
-| test_suite | PASS | 6.2s | .                                                                        [100%]
- |
+| test_suite | FAIL | 0.0s | Failed to start: [WinError 267] The directory name is invalid |
 | smoke | SKIP | 0.0s | skipped |
 | numerical | SKIP | 0.0s | skipped |
 
@@ -27,3 +26,10 @@
 | 2026-04-08 | PASS | 1/3 | 1.9s | e61f9f12bd4d7ce5 |
 | 2026-04-08 | PASS | 1/3 | 3.6s | 5b4ecab7564716a8 |
 | 2026-04-09 | PASS | 1/3 | 6.2s | 3a530d79f690f726 |
+| 2026-04-10 | FAIL | 1/3 | 0.0s | 85c0bfdbf286b3b0 |
+
+## Notes
+
+Single witness: test_suite FAIL
+
+**test_suite:** Failed to start: [WinError 267] The directory name is invalid

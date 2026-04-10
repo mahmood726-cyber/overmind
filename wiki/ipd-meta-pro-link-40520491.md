@@ -1,14 +1,13 @@
 # ipd-meta-pro-link
 
-**Last verified:** 2026-04-09 01:34 UTC | **Verdict:** PASS (Single witness: test_suite PASS)
-**Bundle hash:** 24e4808e6191868f | **Risk:** high | **Math:** 20
+**Last verified:** 2026-04-10 02:33 UTC | **Verdict:** FAIL (Single witness: test_suite FAIL)
+**Bundle hash:** cec61aa68a2e0675 | **Risk:** high | **Math:** 20
 
 ## Health
 
 | Witness | Verdict | Time | Detail |
 |---------|---------|------|--------|
-| test_suite | PASS | 24.5s | ======================================================================
-IPD Meta- |
+| test_suite | FAIL | 0.1s | python: can't open file 'C:\\Projects\\ipd-meta-pro-link\\dev\\build-scripts\\us |
 | smoke | SKIP | 0.0s | skipped |
 | numerical | SKIP | 0.0s | skipped |
 
@@ -27,3 +26,11 @@ IPD Meta- |
 | 2026-04-08 | REJECT | 2/3 | 17.3s | 0088cb59051b088b |
 | 2026-04-08 | REJECT | 2/3 | 36.8s | 3f55b321992e0539 |
 | 2026-04-09 | PASS | 1/3 | 24.5s | 24e4808e6191868f |
+| 2026-04-10 | FAIL | 1/3 | 0.1s | cec61aa68a2e0675 |
+
+## Notes
+
+Single witness: test_suite FAIL
+
+**test_suite:** python: can't open file 'C:\\Projects\\ipd-meta-pro-link\\dev\\build-scripts\\user_flow_smoke_test.py': [Errno 2] No such file or directory
+

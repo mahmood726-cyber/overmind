@@ -1,15 +1,15 @@
 # rct-extractor-v2
 
-**Last verified:** 2026-04-09 01:34 UTC | **Verdict:** PASS (2/2 witnesses PASS (numerical skipped — no baseline))
-**Bundle hash:** a07fb82e3d85f341 | **Risk:** high | **Math:** 15
+**Last verified:** 2026-04-10 02:33 UTC | **Verdict:** PASS (2/2 witnesses PASS (numerical skipped — no baseline))
+**Bundle hash:** ba7416ffef8e7129 | **Risk:** high | **Math:** 15
 
 ## Health
 
 | Witness | Verdict | Time | Detail |
 |---------|---------|------|--------|
-| test_suite | PASS | 15.6s | %]
+| test_suite | PASS | 39.6s | %]
 tests/test_ctg_validation.py::TestCTGScraperStructures::test_ctg_study_creati |
-| smoke | PASS | 2.0s | 2 modules imported OK |
+| smoke | PASS | 1.2s | 2 modules imported OK |
 | numerical | SKIP | 0.0s | skipped |
 
 ## Project
@@ -27,3 +27,4 @@ tests/test_ctg_validation.py::TestCTGScraperStructures::test_ctg_study_creati |
 | 2026-04-08 | PASS | 2/3 | 11.2s | 22708e19c3947096 |
 | 2026-04-08 | PASS | 2/3 | 18.6s | 0d36ad1cebc18b18 |
 | 2026-04-09 | PASS | 2/3 | 17.6s | a07fb82e3d85f341 |
+| 2026-04-10 | PASS | 2/3 | 40.8s | ba7416ffef8e7129 |

@@ -1,14 +1,15 @@
 # EvidenceOracle
 
-**Last verified:** 2026-04-09 01:34 UTC | **Verdict:** REJECT (Witnesses disagree: smoke PASS vs test_suite FAIL)
-**Bundle hash:** 956e79f678e86669 | **Risk:** high | **Math:** 14
+**Last verified:** 2026-04-10 02:33 UTC | **Verdict:** PASS (2/2 witnesses PASS (numerical skipped — no baseline))
+**Bundle hash:** c03f19e8c514ca36 | **Risk:** high | **Math:** 14
 
 ## Health
 
 | Witness | Verdict | Time | Detail |
 |---------|---------|------|--------|
-| test_suite | FAIL | 5.2s | s\user\AppData\Local\Programs\Python\Python313\Lib\site-packages\_pytest\main.py |
-| smoke | PASS | 8.8s | 2 modules imported OK |
+| test_suite | PASS | 2.6s | ................                                                         [100%]
+ |
+| smoke | PASS | 3.7s | 2 modules imported OK |
 | numerical | SKIP | 0.0s | skipped |
 
 ## Project
@@ -26,11 +27,4 @@
 | 2026-04-08 | REJECT | 2/3 | 6.5s | c1ecae7c507baea4 |
 | 2026-04-08 | REJECT | 2/3 | 9.5s | 44df63bde770eda3 |
 | 2026-04-09 | REJECT | 2/3 | 14.0s | 956e79f678e86669 |
-
-## Notes
-
-Witnesses disagree: smoke PASS vs test_suite FAIL
-
-**test_suite:** s\user\AppData\Local\Programs\Python\Python313\Lib\site-packages\_pytest\main.py", line 365, in pytest_cmdline_main
-    return wrap_session(config, _main)
-  File "C:\Users\user\AppData\Local\Programs\
+| 2026-04-10 | PASS | 2/3 | 6.3s | c03f19e8c514ca36 |

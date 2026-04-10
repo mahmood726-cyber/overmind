@@ -1,15 +1,15 @@
 # repo300-ENMA-SNMA
 
-**Last verified:** 2026-04-09 01:34 UTC | **Verdict:** REJECT (Witnesses disagree: test_suite PASS vs smoke FAIL)
-**Bundle hash:** d8c7b57cd398bafe | **Risk:** high | **Math:** 14
+**Last verified:** 2026-04-10 02:33 UTC | **Verdict:** REJECT (Witnesses disagree: test_suite PASS vs smoke FAIL)
+**Bundle hash:** f7b7c23c62f0c6bc | **Risk:** high | **Math:** 14
 
 ## Health
 
 | Witness | Verdict | Time | Detail |
 |---------|---------|------|--------|
-| test_suite | PASS | 2.8s | .                                                                        [100%]
+| test_suite | PASS | 1.7s | .                                                                        [100%]
  |
-| smoke | FAIL | 1.4s | R.01_data_audit_and_fix: File "<string>", line 1 |
+| smoke | FAIL | 1.2s | R.01_data_audit_and_fix: File "<string>", line 1 |
 | numerical | SKIP | 0.0s | skipped |
 
 ## Project
@@ -27,6 +27,7 @@
 | 2026-04-08 | REJECT | 2/3 | 3.4s | c916fce545b72e8f |
 | 2026-04-08 | REJECT | 2/3 | 6.1s | fdd92540adc3644c |
 | 2026-04-09 | REJECT | 2/3 | 4.2s | d8c7b57cd398bafe |
+| 2026-04-10 | REJECT | 2/3 | 2.9s | f7b7c23c62f0c6bc |
 
 ## Notes
 

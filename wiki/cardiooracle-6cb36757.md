@@ -1,7 +1,7 @@
 # CardioOracle
 
-**Last verified:** 2026-04-09 01:34 UTC | **Verdict:** FAIL (Hard timeout (300s) — process killed)
-**Bundle hash:** 4d06987293db7f8a | **Risk:** high | **Math:** 20
+**Last verified:** 2026-04-10 02:33 UTC | **Verdict:** FAIL (Hard timeout (300s) — process killed)
+**Bundle hash:** 9fa9840d991498d2 | **Risk:** high | **Math:** 20
 
 ## Health
 
@@ -24,6 +24,7 @@
 | 2026-04-08 | FAIL | 1/1 | 300.0s | 2322da815c19e7a0 |
 | 2026-04-08 | FAIL | 1/1 | 300.0s | fa8c05ade29db7b1 |
 | 2026-04-09 | FAIL | 1/1 | 300.0s | 4d06987293db7f8a |
+| 2026-04-10 | FAIL | 1/1 | 300.0s | 9fa9840d991498d2 |
 
 ## Notes
 

@@ -1,14 +1,14 @@
 # MetaRegression
 
-**Last verified:** 2026-04-08 23:40 UTC | **Verdict:** REJECT (Witnesses disagree: smoke PASS vs test_suite FAIL)
-**Bundle hash:** 1f12d2e833fe7d13 | **Risk:** medium_high | **Math:** 8
+**Last verified:** 2026-04-10 02:33 UTC | **Verdict:** REJECT (Witnesses disagree: smoke PASS vs test_suite FAIL)
+**Bundle hash:** 2b028a18abd44216 | **Risk:** medium_high | **Math:** 8
 
 ## Health
 
 | Witness | Verdict | Time | Detail |
 |---------|---------|------|--------|
-| test_suite | FAIL | 3.5s | s\user\AppData\Local\Programs\Python\Python313\Lib\site-packages\_pytest\main.py |
-| smoke | PASS | 1.1s | 1 modules imported OK |
+| test_suite | FAIL | 120.0s | Timed out after 120s |
+| smoke | PASS | 0.9s | 1 modules imported OK |
 
 ## Project
 
@@ -24,11 +24,10 @@
 | 2026-04-08 | REJECT | 2/2 | 3.3s | 54c3f3b4fcee603b |
 | 2026-04-08 | REJECT | 2/2 | 3.1s | 7ac0dafc4767d32b |
 | 2026-04-08 | REJECT | 2/2 | 4.6s | 1f12d2e833fe7d13 |
+| 2026-04-10 | REJECT | 2/2 | 121.0s | 2b028a18abd44216 |
 
 ## Notes
 
 Witnesses disagree: smoke PASS vs test_suite FAIL
 
-**test_suite:** s\user\AppData\Local\Programs\Python\Python313\Lib\site-packages\_pytest\main.py", line 365, in pytest_cmdline_main
-    return wrap_session(config, _main)
-  File "C:\Users\user\AppData\Local\Programs\
+**test_suite:** Timed out after 120s
