@@ -1,5 +1,13 @@
 # Overmind Wiki Changelog
 
+## 2026-04-11
+
+**Verified:** 50 | **Certified:** 4 | **Rejected:** 10 | **Failed:** 20
+
+### Changes from last night
+- BayesianMA: REJECT -> PASS
+
+
 ## 2026-04-10
 
 **Verified:** 50 | **Certified:** 4 | **Rejected:** 12 | **Failed:** 19

@@ -1,13 +1,13 @@
 # hfpef_registry_calibration
 
-**Last verified:** 2026-04-10 02:33 UTC | **Verdict:** PASS (Single witness: test_suite PASS)
-**Bundle hash:** 399585afbf4e75ff | **Risk:** high | **Math:** 6
+**Last verified:** 2026-04-11 02:30 UTC | **Verdict:** PASS (Single witness: test_suite PASS)
+**Bundle hash:** 91e2146198886a43 | **Risk:** high | **Math:** 6
 
 ## Health
 
 | Witness | Verdict | Time | Detail |
 |---------|---------|------|--------|
-| test_suite | PASS | 3.3s | .                                                                        [100%]
+| test_suite | PASS | 3.5s | .                                                                        [100%]
  |
 | smoke | SKIP | 0.0s | skipped |
 
@@ -26,3 +26,4 @@
 | 2026-04-08 | REJECT | 2/2 | 6.7s | 0d4c593a914f472f |
 | 2026-04-08 | REJECT | 2/2 | 7.6s | c51ebe4913953e3e |
 | 2026-04-10 | PASS | 1/2 | 3.3s | 399585afbf4e75ff |
+| 2026-04-11 | PASS | 1/2 | 3.5s | 91e2146198886a43 |

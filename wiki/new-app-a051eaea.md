@@ -1,13 +1,13 @@
 # new-app
 
-**Last verified:** 2026-04-10 02:33 UTC | **Verdict:** FAIL (Single witness: test_suite FAIL)
-**Bundle hash:** 3e24762c5db8a94d | **Risk:** high | **Math:** 11
+**Last verified:** 2026-04-11 02:30 UTC | **Verdict:** FAIL (Single witness: test_suite FAIL)
+**Bundle hash:** 3f7201a974d9c709 | **Risk:** high | **Math:** 11
 
 ## Health
 
 | Witness | Verdict | Time | Detail |
 |---------|---------|------|--------|
-| test_suite | FAIL | 120.2s | Timed out after 120s |
+| test_suite | FAIL | 120.1s | Timed out after 120s |
 | smoke | SKIP | 0.0s | skipped |
 | numerical | SKIP | 0.0s | skipped |
 
@@ -26,6 +26,7 @@
 | 2026-04-08 | FAIL | 1/3 | 120.1s | 22ceb263b90acd29 |
 | 2026-04-08 | FAIL | 1/3 | 120.2s | aeda2273f4e1f681 |
 | 2026-04-10 | FAIL | 1/3 | 120.2s | 3e24762c5db8a94d |
+| 2026-04-11 | FAIL | 1/3 | 120.1s | 3f7201a974d9c709 |
 
 ## Notes
 

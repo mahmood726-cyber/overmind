@@ -1,7 +1,7 @@
 # pub-bias-simulation
 
-**Last verified:** 2026-04-10 02:33 UTC | **Verdict:** FAIL (Single witness: test_suite FAIL)
-**Bundle hash:** 1f7e175fcd9af14d | **Risk:** medium_high | **Math:** 8
+**Last verified:** 2026-04-11 02:30 UTC | **Verdict:** FAIL (Single witness: test_suite FAIL)
+**Bundle hash:** e1d31d01f125d805 | **Risk:** medium_high | **Math:** 8
 
 ## Health
 
@@ -25,6 +25,7 @@
 | 2026-04-08 | PASS | 1/2 | 2.4s | b4b25fe8d56b789f |
 | 2026-04-08 | PASS | 1/2 | 2.1s | df31b5175e50f542 |
 | 2026-04-10 | FAIL | 1/2 | 0.0s | 1f7e175fcd9af14d |
+| 2026-04-11 | FAIL | 1/2 | 0.0s | e1d31d01f125d805 |
 
 ## Notes
 

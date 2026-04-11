@@ -1,7 +1,7 @@
 # metasprint-dose-response
 
-**Last verified:** 2026-04-10 02:33 UTC | **Verdict:** FAIL (Single witness: test_suite FAIL)
-**Bundle hash:** ac82c5ee1cc2caf2 | **Risk:** high | **Math:** 12
+**Last verified:** 2026-04-11 02:30 UTC | **Verdict:** FAIL (Single witness: test_suite FAIL)
+**Bundle hash:** 50e8493b7a02b988 | **Risk:** high | **Math:** 12
 
 ## Health
 
@@ -26,6 +26,7 @@
 | 2026-04-08 | PASS | 2/3 | 12.2s | d7cac4a25f3d9050 |
 | 2026-04-08 | PASS | 2/3 | 17.7s | 7df581417a2f9986 |
 | 2026-04-10 | FAIL | 1/3 | 0.0s | ac82c5ee1cc2caf2 |
+| 2026-04-11 | FAIL | 1/3 | 0.0s | 50e8493b7a02b988 |
 
 ## Notes
 
