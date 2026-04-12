@@ -1,0 +1,22 @@
+{
+  "skills": [
+    {
+      "skill_id": "TIMEOUT:advanced-n",
+      "failure_type": "TIMEOUT",
+      "pattern": "timed out",
+      "description": "Fix TIMEOUT: Check for WMI deadlock (Python 3.13), infinite loop, or slow",
+      "fix_script": "Check for WMI deadlock (Python 3.13), infinite loop, or slow",
+      "abstract_strategy": "TIMEOUT \u2192 Check for WMI deadlock (Python 3.13), infinite loo",
+      "confidence": 0.33,
+      "durability": 1.0,
+      "contrastive_diff": "",
+      "times_used": 0,
+      "times_succeeded": 0,
+      "created_from_recipe": "TIMEOUT:advanced-n",
+      "tags": [
+        "TIMEOUT",
+        "timed out"
+      ]
+    }
+  ]
+}

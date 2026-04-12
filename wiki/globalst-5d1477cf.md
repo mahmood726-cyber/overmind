@@ -1,14 +1,15 @@
 # globalst
 
-**Last verified:** 2026-04-11 02:30 UTC | **Verdict:** REJECT (Witnesses disagree: smoke PASS vs test_suite FAIL)
-**Bundle hash:** 82b6bfd71de2629f | **Risk:** high | **Math:** 14
+**Last verified:** 2026-04-12 02:25 UTC | **Verdict:** PASS (2/2 witnesses PASS (numerical skipped — no baseline))
+**Bundle hash:** 8b4c1f68f99be69e | **Risk:** high | **Math:** 14
 
 ## Health
 
 | Witness | Verdict | Time | Detail |
 |---------|---------|------|--------|
-| test_suite | FAIL | 1.9s |  |
-| smoke | PASS | 9.5s | 2 modules imported OK |
+| test_suite | PASS | 2.9s | ....                                                                     [100%]
+ |
+| smoke | PASS | 10.7s | 2 modules imported OK |
 | numerical | SKIP | 0.0s | skipped |
 
 ## Project
@@ -25,7 +26,4 @@
 | 2026-04-09 | FAIL | 2/3 | 15.3s | b2924327238d2fdb |
 | 2026-04-10 | REJECT | 2/3 | 9.9s | 9e3afb9b9c2e2442 |
 | 2026-04-11 | REJECT | 2/3 | 11.3s | 82b6bfd71de2629f |
-
-## Notes
-
-Witnesses disagree: smoke PASS vs test_suite FAIL
+| 2026-04-12 | PASS | 2/3 | 13.6s | 8b4c1f68f99be69e |

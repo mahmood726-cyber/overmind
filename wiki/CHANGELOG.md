@@ -1,5 +1,17 @@
 # Overmind Wiki Changelog
 
+## 2026-04-12
+
+**Verified:** 50 | **Certified:** 5 | **Rejected:** 9 | **Failed:** 18
+
+### Changes from last night
+- globalst: REJECT -> PASS
+- registry_first_rct_meta: FAIL -> PASS
+
+### New projects verified
+- meta-paradigm-shift
+
+
 ## 2026-04-11
 
 **Verified:** 50 | **Certified:** 4 | **Rejected:** 10 | **Failed:** 20

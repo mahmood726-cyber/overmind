@@ -1,13 +1,15 @@
 # Dataextractor
 
-**Last verified:** 2026-04-11 02:30 UTC | **Verdict:** FAIL (Hard timeout (300s) — process killed)
-**Bundle hash:** dd8f7aab6f57f167 | **Risk:** high | **Math:** 18
+**Last verified:** 2026-04-12 02:25 UTC | **Verdict:** FAIL (All witnesses FAIL: test_suite, smoke)
+**Bundle hash:** 91418e1d77c44552 | **Risk:** high | **Math:** 18
 
 ## Health
 
 | Witness | Verdict | Time | Detail |
 |---------|---------|------|--------|
-| test_suite | FAIL | 300.0s | Project hung — killed after 300s |
+| test_suite | FAIL | 0.0s | Failed to start: [WinError 2] The system cannot find the file specified |
+| smoke | FAIL | 34.6s | expand_validation: ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ |
+| numerical | SKIP | 0.0s | skipped |
 
 ## Project
 
@@ -25,9 +27,13 @@
 | 2026-04-08 | FAIL | 2/3 | 28.7s | d5197921767ced4f |
 | 2026-04-10 | FAIL | 2/3 | 25.4s | 43e8719d5bed9926 |
 | 2026-04-11 | FAIL | 1/1 | 300.0s | dd8f7aab6f57f167 |
+| 2026-04-12 | FAIL | 2/3 | 34.6s | 91418e1d77c44552 |
 
 ## Notes
 
-Hard timeout (300s) — process killed
+All witnesses FAIL: test_suite, smoke
 
-**test_suite:** Project hung — killed after 300s
+**test_suite:** Failed to start: [WinError 2] The system cannot find the file specified
+
+**smoke:** expand_validation: ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+FileNotFoundError: [Errno 2] No such file or directory: 'C:\\Users\\user\\Downloads\\Dataextractor\\validat

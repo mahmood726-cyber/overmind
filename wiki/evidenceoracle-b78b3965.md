@@ -1,15 +1,15 @@
 # EvidenceOracle
 
-**Last verified:** 2026-04-11 02:30 UTC | **Verdict:** PASS (2/2 witnesses PASS (numerical skipped — no baseline))
-**Bundle hash:** 31d91370448f7131 | **Risk:** high | **Math:** 14
+**Last verified:** 2026-04-12 02:25 UTC | **Verdict:** PASS (2/2 witnesses PASS (numerical skipped — no baseline))
+**Bundle hash:** b6795019af8258d7 | **Risk:** high | **Math:** 14
 
 ## Health
 
 | Witness | Verdict | Time | Detail |
 |---------|---------|------|--------|
-| test_suite | PASS | 3.6s | ................                                                         [100%]
+| test_suite | PASS | 4.5s | ................                                                         [100%]
  |
-| smoke | PASS | 5.4s | 2 modules imported OK |
+| smoke | PASS | 7.0s | 2 modules imported OK |
 | numerical | SKIP | 0.0s | skipped |
 
 ## Project
@@ -29,3 +29,4 @@
 | 2026-04-09 | REJECT | 2/3 | 14.0s | 956e79f678e86669 |
 | 2026-04-10 | PASS | 2/3 | 6.3s | c03f19e8c514ca36 |
 | 2026-04-11 | PASS | 2/3 | 9.1s | 31d91370448f7131 |
+| 2026-04-12 | PASS | 2/3 | 11.5s | b6795019af8258d7 |

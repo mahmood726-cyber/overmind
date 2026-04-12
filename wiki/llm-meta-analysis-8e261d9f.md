@@ -1,15 +1,15 @@
 # llm-meta-analysis
 
-**Last verified:** 2026-04-11 02:30 UTC | **Verdict:** REJECT (Witnesses disagree: test_suite PASS vs smoke FAIL)
-**Bundle hash:** 256e52d8246a772d | **Risk:** high | **Math:** 10
+**Last verified:** 2026-04-12 02:25 UTC | **Verdict:** REJECT (Witnesses disagree: test_suite PASS vs smoke FAIL)
+**Bundle hash:** 77d10392a1fa5199 | **Risk:** high | **Math:** 10
 
 ## Health
 
 | Witness | Verdict | Time | Detail |
 |---------|---------|------|--------|
-| test_suite | PASS | 1.6s | .                                                                        [100%]
+| test_suite | PASS | 1.4s | .                                                                        [100%]
  |
-| smoke | FAIL | 35.7s | evaluation.bayesian_meta_analysis: n_meta_analysis |
+| smoke | FAIL | 33.1s | evaluation.bayesian_meta_analysis: n_meta_analysis |
 | numerical | SKIP | 0.0s | skipped |
 
 ## Project
@@ -29,6 +29,7 @@
 | 2026-04-09 | REJECT | 2/3 | 61.8s | 63d0abb9660d11c5 |
 | 2026-04-10 | REJECT | 2/3 | 66.9s | 7095d58901b6e158 |
 | 2026-04-11 | REJECT | 2/3 | 37.4s | 256e52d8246a772d |
+| 2026-04-12 | REJECT | 2/3 | 34.5s | 77d10392a1fa5199 |
 
 ## Notes
 
