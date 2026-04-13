@@ -1,7 +1,7 @@
 # truthcert-meta2-prototype
 
-**Last verified:** 2026-04-12 02:25 UTC | **Verdict:** CERTIFIED (2/2 witnesses agree PASS)
-**Bundle hash:** ba31ab8a47b4963f | **Risk:** high | **Math:** 8
+**Last verified:** 2026-04-13 02:18 UTC | **Verdict:** CERTIFIED (2/2 witnesses agree PASS)
+**Bundle hash:** 2217619d50475acd | **Risk:** high | **Math:** 8
 
 ## Health
 
@@ -9,7 +9,7 @@
 |---------|---------|------|--------|
 | test_suite | PASS | 5.8s | .                                                                        [100%]
  |
-| smoke | PASS | 24.2s | 20 modules imported OK |
+| smoke | PASS | 23.8s | 20 modules imported OK |
 
 ## Project
 
@@ -28,3 +28,4 @@
 | 2026-04-10 | CERTIFIED | 2/2 | 32.7s | 8c43c93ba6de979b |
 | 2026-04-11 | CERTIFIED | 2/2 | 37.7s | 4cf1f239bec19b66 |
 | 2026-04-12 | CERTIFIED | 2/2 | 30.0s | ba31ab8a47b4963f |
+| 2026-04-13 | CERTIFIED | 2/2 | 29.6s | 2217619d50475acd |

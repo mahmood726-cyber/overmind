@@ -1,14 +1,14 @@
 # evidence-inference
 
-**Last verified:** 2026-04-12 02:25 UTC | **Verdict:** FAIL (All witnesses FAIL: test_suite, smoke)
-**Bundle hash:** 05c008f6387187ba | **Risk:** high | **Math:** 18
+**Last verified:** 2026-04-13 02:18 UTC | **Verdict:** FAIL (All witnesses FAIL: test_suite, smoke)
+**Bundle hash:** 2b87e12a4464cb07 | **Risk:** high | **Math:** 18
 
 ## Health
 
 | Witness | Verdict | Time | Detail |
 |---------|---------|------|--------|
-| test_suite | FAIL | 3.2s |  |
-| smoke | FAIL | 15.7s | verify_span_quality: ntences, gen_exact_evid_array |
+| test_suite | FAIL | 1.3s |  |
+| smoke | FAIL | 6.5s | verify_span_quality: ntences, gen_exact_evid_array |
 | numerical | SKIP | 0.0s | skipped |
 
 ## Project
@@ -29,6 +29,7 @@
 | 2026-04-10 | FAIL | 2/3 | 14.0s | aaefe93e90029d88 |
 | 2026-04-11 | FAIL | 2/3 | 11.8s | 780701fc4151a1a5 |
 | 2026-04-12 | FAIL | 2/3 | 19.0s | 05c008f6387187ba |
+| 2026-04-13 | FAIL | 2/3 | 7.8s | 2b87e12a4464cb07 |
 
 ## Notes
 

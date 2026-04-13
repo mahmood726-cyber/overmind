@@ -1,15 +1,15 @@
 # BayesianMA
 
-**Last verified:** 2026-04-12 02:25 UTC | **Verdict:** PASS (2/2 witnesses PASS (numerical skipped — no baseline))
-**Bundle hash:** 11a3634ee42a58de | **Risk:** high | **Math:** 13
+**Last verified:** 2026-04-13 02:18 UTC | **Verdict:** PASS (2/2 witnesses PASS (numerical skipped — no baseline))
+**Bundle hash:** 1b94da45891bcdb6 | **Risk:** high | **Math:** 13
 
 ## Health
 
 | Witness | Verdict | Time | Detail |
 |---------|---------|------|--------|
-| test_suite | PASS | 33.4s | ...................................                                      [100%]
+| test_suite | PASS | 21.1s | ...................................                                      [100%]
  |
-| smoke | PASS | 0.8s | 1 modules imported OK |
+| smoke | PASS | 0.4s | 1 modules imported OK |
 | numerical | SKIP | 0.0s | skipped |
 
 ## Project
@@ -30,3 +30,4 @@
 | 2026-04-10 | REJECT | 2/3 | 120.5s | d9eb3bfd311f56ae |
 | 2026-04-11 | PASS | 2/3 | 51.6s | 0b192f996240fb65 |
 | 2026-04-12 | PASS | 2/3 | 34.1s | 11a3634ee42a58de |
+| 2026-04-13 | PASS | 2/3 | 21.6s | 1b94da45891bcdb6 |

@@ -1,15 +1,15 @@
 # asreview_5star
 
-**Last verified:** 2026-04-12 02:25 UTC | **Verdict:** PASS (2/2 witnesses PASS (numerical skipped — no baseline))
-**Bundle hash:** 3bc83a48fa0c0b85 | **Risk:** high | **Math:** 12
+**Last verified:** 2026-04-13 02:18 UTC | **Verdict:** PASS (2/2 witnesses PASS (numerical skipped — no baseline))
+**Bundle hash:** 8f3463143bab3db8 | **Risk:** high | **Math:** 12
 
 ## Health
 
 | Witness | Verdict | Time | Detail |
 |---------|---------|------|--------|
-| test_suite | PASS | 5.4s | .........                                                                [100%]
+| test_suite | PASS | 2.4s | .........                                                                [100%]
  |
-| smoke | PASS | 10.1s | 5 modules imported OK |
+| smoke | PASS | 5.7s | 5 modules imported OK |
 | numerical | SKIP | 0.0s | skipped |
 
 ## Project
@@ -29,3 +29,4 @@
 | 2026-04-10 | PASS | 2/3 | 10.6s | 77a86b3876494a8c |
 | 2026-04-11 | PASS | 2/3 | 13.8s | f10f12840274b1b5 |
 | 2026-04-12 | PASS | 2/3 | 15.5s | 3bc83a48fa0c0b85 |
+| 2026-04-13 | PASS | 2/3 | 8.1s | 8f3463143bab3db8 |

@@ -1,13 +1,16 @@
 # CardioOracle
 
-**Last verified:** 2026-04-12 02:25 UTC | **Verdict:** FAIL (Hard timeout (300s) — process killed)
-**Bundle hash:** bb641ab77c157aba | **Risk:** high | **Math:** 20
+**Last verified:** 2026-04-13 02:18 UTC | **Verdict:** REJECT (Witnesses disagree: test_suite PASS vs smoke FAIL)
+**Bundle hash:** 38c2c460dce9fd7d | **Risk:** high | **Math:** 20
 
 ## Health
 
 | Witness | Verdict | Time | Detail |
 |---------|---------|------|--------|
-| test_suite | FAIL | 300.0s | Project hung — killed after 300s |
+| test_suite | PASS | 8.1s | ..............................                                           [100%]
+ |
+| smoke | FAIL | 17.1s | debug_test: Verifier [0x2eee9a+2baa] |
+| numerical | SKIP | 0.0s | skipped |
 
 ## Project
 
@@ -27,9 +30,14 @@
 | 2026-04-10 | FAIL | 1/1 | 300.0s | 9fa9840d991498d2 |
 | 2026-04-11 | FAIL | 1/1 | 300.0s | 86e3651b3b90bf0f |
 | 2026-04-12 | FAIL | 1/1 | 300.0s | bb641ab77c157aba |
+| 2026-04-13 | REJECT | 2/3 | 25.2s | 38c2c460dce9fd7d |
 
 ## Notes
 
-Hard timeout (300s) — process killed
+Witnesses disagree: test_suite PASS vs smoke FAIL
 
-**test_suite:** Project hung — killed after 300s
+**smoke:** debug_test: Verifier [0x2eee9a+2baa]
+	KERNEL32!BaseThreadInitThunk [0x75d85d49+19]
+	ntdll!RtlInitializeExceptionChain [0x770dd83b+6b]
+	ntdll!RtlGetAppContainerNamedObjectPath [0x770dd7c1+231]
+	(No sym

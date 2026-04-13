@@ -1,15 +1,15 @@
 # moonshot-evidence-lab
 
-**Last verified:** 2026-04-12 02:25 UTC | **Verdict:** PASS (2/2 witnesses PASS (numerical skipped — no baseline))
-**Bundle hash:** 2811177f890efd70 | **Risk:** high | **Math:** 11
+**Last verified:** 2026-04-13 02:18 UTC | **Verdict:** PASS (2/2 witnesses PASS (numerical skipped — no baseline))
+**Bundle hash:** d29fb7bc4d58bc25 | **Risk:** high | **Math:** 11
 
 ## Health
 
 | Witness | Verdict | Time | Detail |
 |---------|---------|------|--------|
-| test_suite | PASS | 2.2s | ...........                                                              [100%]
+| test_suite | PASS | 1.6s | ...........                                                              [100%]
  |
-| smoke | PASS | 2.9s | 14 modules imported OK |
+| smoke | PASS | 2.0s | 14 modules imported OK |
 | numerical | SKIP | 0.0s | skipped |
 
 ## Project
@@ -27,3 +27,4 @@
 | 2026-04-10 | PASS | 2/3 | 5.9s | 977328167fbe8ccc |
 | 2026-04-11 | PASS | 2/3 | 6.2s | f6e0bddd8fc850c6 |
 | 2026-04-12 | PASS | 2/3 | 5.1s | 2811177f890efd70 |
+| 2026-04-13 | PASS | 2/3 | 3.6s | d29fb7bc4d58bc25 |

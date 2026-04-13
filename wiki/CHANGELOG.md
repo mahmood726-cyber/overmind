@@ -1,5 +1,13 @@
 # Overmind Wiki Changelog
 
+## 2026-04-13
+
+**Verified:** 50 | **Certified:** 5 | **Rejected:** 10 | **Failed:** 17
+
+### Changes from last night
+- CardioOracle: FAIL -> REJECT
+
+
 ## 2026-04-12
 
 **Verified:** 50 | **Certified:** 5 | **Rejected:** 9 | **Failed:** 18

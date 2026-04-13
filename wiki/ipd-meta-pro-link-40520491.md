@@ -1,13 +1,13 @@
 # ipd-meta-pro-link
 
-**Last verified:** 2026-04-12 02:25 UTC | **Verdict:** FAIL (Single witness: test_suite FAIL)
-**Bundle hash:** 1f883ed33a69f96d | **Risk:** high | **Math:** 20
+**Last verified:** 2026-04-13 02:18 UTC | **Verdict:** FAIL (Single witness: test_suite FAIL)
+**Bundle hash:** 6a2d1c5fafb75b79 | **Risk:** high | **Math:** 20
 
 ## Health
 
 | Witness | Verdict | Time | Detail |
 |---------|---------|------|--------|
-| test_suite | FAIL | 0.2s | python: can't open file 'C:\\Projects\\ipd-meta-pro-link\\dev\\build-scripts\\us |
+| test_suite | FAIL | 0.1s | python: can't open file 'C:\\Projects\\ipd-meta-pro-link\\dev\\build-scripts\\us |
 | smoke | SKIP | 0.0s | skipped |
 | numerical | SKIP | 0.0s | skipped |
 
@@ -29,6 +29,7 @@
 | 2026-04-10 | FAIL | 1/3 | 0.1s | cec61aa68a2e0675 |
 | 2026-04-11 | FAIL | 1/3 | 0.1s | 406c962478635f69 |
 | 2026-04-12 | FAIL | 1/3 | 0.2s | 1f883ed33a69f96d |
+| 2026-04-13 | FAIL | 1/3 | 0.1s | 6a2d1c5fafb75b79 |
 
 ## Notes
 

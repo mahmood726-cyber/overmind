@@ -1,14 +1,14 @@
 # Pairwise70
 
-**Last verified:** 2026-04-12 02:25 UTC | **Verdict:** FAIL (All witnesses FAIL: test_suite, smoke)
-**Bundle hash:** 7a3c106bea091122 | **Risk:** high | **Math:** 15
+**Last verified:** 2026-04-13 02:18 UTC | **Verdict:** FAIL (All witnesses FAIL: test_suite, smoke)
+**Bundle hash:** bb3fc48447c5dedc | **Risk:** high | **Math:** 15
 
 ## Health
 
 | Witness | Verdict | Time | Detail |
 |---------|---------|------|--------|
-| test_suite | FAIL | 3.6s |  |
-| smoke | FAIL | 2.7s | truthcert.setup: usage: -c [global_opts] cmd1 [cmd1_opts] [cmd2 [cmd2_opts] ...] |
+| test_suite | FAIL | 120.0s | Timed out after 120s |
+| smoke | FAIL | 1.3s | truthcert.setup: usage: -c [global_opts] cmd1 [cmd1_opts] [cmd2 [cmd2_opts] ...] |
 | numerical | SKIP | 0.0s | skipped |
 
 ## Project
@@ -29,10 +29,13 @@
 | 2026-04-10 | FAIL | 2/3 | 4.3s | 45188bb4e02575e8 |
 | 2026-04-11 | FAIL | 2/3 | 4.7s | 0b93ed9907e210c4 |
 | 2026-04-12 | FAIL | 2/3 | 6.3s | 7a3c106bea091122 |
+| 2026-04-13 | FAIL | 2/3 | 121.3s | bb3fc48447c5dedc |
 
 ## Notes
 
 All witnesses FAIL: test_suite, smoke
+
+**test_suite:** Timed out after 120s
 
 **smoke:** truthcert.setup: usage: -c [global_opts] cmd1 [cmd1_opts] [cmd2 [cmd2_opts] ...]
    or: -c --help [cmd1 cmd2 ...]

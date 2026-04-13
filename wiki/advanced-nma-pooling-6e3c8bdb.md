@@ -1,15 +1,15 @@
 # advanced-nma-pooling
 
-**Last verified:** 2026-04-12 02:25 UTC | **Verdict:** REJECT (Witnesses disagree: test_suite, smoke PASS vs numerical FAIL)
-**Bundle hash:** b84340037aafe220 | **Risk:** high | **Math:** 20
+**Last verified:** 2026-04-13 02:18 UTC | **Verdict:** REJECT (Witnesses disagree: test_suite, smoke PASS vs numerical FAIL)
+**Bundle hash:** 67030363e12da07b | **Risk:** high | **Math:** 20
 
 ## Health
 
 | Witness | Verdict | Time | Detail |
 |---------|---------|------|--------|
-| test_suite | PASS | 3.4s | .                                                                        [100%]
+| test_suite | PASS | 1.8s | .                                                                        [100%]
  |
-| smoke | PASS | 8.6s | 10 modules imported OK |
+| smoke | PASS | 3.8s | 10 modules imported OK |
 | numerical | FAIL | 0.0s | Failed to start: [WinError 2] The system cannot find the file specified |
 
 ## Project
@@ -30,6 +30,7 @@
 | 2026-04-10 | REJECT | 3/3 | 7.7s | 2035e3271ee3f016 |
 | 2026-04-11 | REJECT | 3/3 | 11.4s | d22a47059eb1ef8c |
 | 2026-04-12 | REJECT | 3/3 | 12.1s | b84340037aafe220 |
+| 2026-04-13 | REJECT | 3/3 | 5.5s | 67030363e12da07b |
 
 ## Notes
 

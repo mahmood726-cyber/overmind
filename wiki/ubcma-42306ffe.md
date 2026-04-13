@@ -1,13 +1,13 @@
 # ubcma
 
-**Last verified:** 2026-04-12 02:25 UTC | **Verdict:** REJECT (Witnesses disagree: test_suite PASS vs numerical FAIL)
-**Bundle hash:** 5d7d8dd479a4ec74 | **Risk:** high | **Math:** 11
+**Last verified:** 2026-04-13 02:18 UTC | **Verdict:** REJECT (Witnesses disagree: test_suite PASS vs numerical FAIL)
+**Bundle hash:** 1b4261b77231a1a2 | **Risk:** high | **Math:** 11
 
 ## Health
 
 | Witness | Verdict | Time | Detail |
 |---------|---------|------|--------|
-| test_suite | PASS | 3.6s | .......                                                                  [100%]
+| test_suite | PASS | 3.7s | .......                                                                  [100%]
  |
 | smoke | SKIP | 0.0s | skipped |
 | numerical | FAIL | 0.0s | Failed to start: [WinError 2] The system cannot find the file specified |
@@ -30,6 +30,7 @@
 | 2026-04-10 | REJECT | 2/3 | 8.0s | 785c1f2797af1d65 |
 | 2026-04-11 | REJECT | 2/3 | 6.2s | f04c2ee81d2dd3af |
 | 2026-04-12 | REJECT | 2/3 | 3.6s | 5d7d8dd479a4ec74 |
+| 2026-04-13 | REJECT | 2/3 | 3.7s | 1b4261b77231a1a2 |
 
 ## Notes
 

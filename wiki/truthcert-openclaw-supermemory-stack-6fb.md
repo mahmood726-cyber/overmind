@@ -1,15 +1,15 @@
 # truthcert-openclaw-supermemory-stack
 
-**Last verified:** 2026-04-12 02:25 UTC | **Verdict:** CERTIFIED (2/2 witnesses agree PASS)
-**Bundle hash:** e7ec4136ee89b947 | **Risk:** high | **Math:** 2
+**Last verified:** 2026-04-13 02:18 UTC | **Verdict:** CERTIFIED (2/2 witnesses agree PASS)
+**Bundle hash:** 23074671b33554ed | **Risk:** high | **Math:** 2
 
 ## Health
 
 | Witness | Verdict | Time | Detail |
 |---------|---------|------|--------|
-| test_suite | PASS | 2.2s | r::test_valid_scope_lock_passes PASSED [ 42%]
+| test_suite | PASS | 2.5s | r::test_valid_scope_lock_passes PASSED [ 42%]
 tests/test_validators.py::TestScop |
-| smoke | PASS | 13.6s | 20 modules imported OK |
+| smoke | PASS | 12.9s | 20 modules imported OK |
 
 ## Project
 
@@ -28,3 +28,4 @@ tests/test_validators.py::TestScop |
 | 2026-04-10 | CERTIFIED | 2/2 | 27.1s | 2632e64868f2d7b3 |
 | 2026-04-11 | CERTIFIED | 2/2 | 20.8s | abda803d5f3610a8 |
 | 2026-04-12 | CERTIFIED | 2/2 | 15.8s | e7ec4136ee89b947 |
+| 2026-04-13 | CERTIFIED | 2/2 | 15.4s | 23074671b33554ed |

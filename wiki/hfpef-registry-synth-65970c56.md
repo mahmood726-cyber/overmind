@@ -1,13 +1,13 @@
 # hfpef_registry_synth
 
-**Last verified:** 2026-04-12 02:25 UTC | **Verdict:** PASS (Single witness: test_suite PASS)
-**Bundle hash:** d9770049b3c9eb04 | **Risk:** high | **Math:** 14
+**Last verified:** 2026-04-13 02:18 UTC | **Verdict:** PASS (Single witness: test_suite PASS)
+**Bundle hash:** 20d80f89300093ed | **Risk:** high | **Math:** 14
 
 ## Health
 
 | Witness | Verdict | Time | Detail |
 |---------|---------|------|--------|
-| test_suite | PASS | 6.7s | .                                                                        [100%]
+| test_suite | PASS | 3.8s | .                                                                        [100%]
  |
 | smoke | SKIP | 0.0s | skipped |
 | numerical | SKIP | 0.0s | skipped |
@@ -30,3 +30,4 @@
 | 2026-04-10 | PASS | 1/3 | 5.7s | 3ff6ff10d63a497e |
 | 2026-04-11 | PASS | 1/3 | 5.4s | cad29dde4e7e70b8 |
 | 2026-04-12 | PASS | 1/3 | 6.7s | d9770049b3c9eb04 |
+| 2026-04-13 | PASS | 1/3 | 3.8s | 20d80f89300093ed |
