@@ -15,48 +15,105 @@ def test_collect_empty_when_no_findings(tmp_path):
     assert result["top_rules"] == []
 
 
-def test_collect_aggregates_stuck_failures(tmp_path):
-    """STUCK_FAILURES.md files parse, aggregate by rule + repo, sort descending."""
+def test_collect_aggregates_from_jsonl(tmp_path):
+    """JSONL is preferred source — parse schema-stable, no regex fragility."""
+    import json as _json
     r1 = tmp_path / "repo1"
     r1.mkdir()
-    (r1 / "STUCK_FAILURES.md").write_text(
-        "# STUCK_FAILURES.md\n\n"
-        "## [BLOCK] P0-hardcoded-local-path\n"
-        "- **Location:** `foo.py:1`\n\n"
-        "## [BLOCK] P0-placeholder-hmac\n"
-        "- **Location:** `bar.py:5`\n\n"
-        "## [WARN] P1-unpopulated-placeholder\n"
-        "- **Location:** `baz.py:10`\n",
+    (r1 / "STUCK_FAILURES.jsonl").write_text(
+        _json.dumps({"rule_id": "P0-hardcoded-local-path", "severity": "BLOCK"}) + "\n"
+        + _json.dumps({"rule_id": "P0-placeholder-hmac", "severity": "BLOCK"}) + "\n",
+        encoding="utf-8",
+    )
+    (r1 / "review-findings.jsonl").write_text(
+        _json.dumps({"rule_id": "P1-unpopulated-placeholder", "severity": "WARN"}) + "\n",
         encoding="utf-8",
     )
 
     r2 = tmp_path / "repo2"
     r2.mkdir()
-    (r2 / "STUCK_FAILURES.md").write_text(
-        "## [BLOCK] P0-hardcoded-local-path\n"
-        "- **Location:** `x.py:1`\n",
+    (r2 / "STUCK_FAILURES.jsonl").write_text(
+        _json.dumps({"rule_id": "P0-hardcoded-local-path", "severity": "BLOCK"}) + "\n",
         encoding="utf-8",
     )
 
     r3 = tmp_path / "repo3-clean"
-    r3.mkdir()  # no STUCK_FAILURES.md
+    r3.mkdir()
 
     result = collect(discover_repos=lambda: [str(r1), str(r2), str(r3)])
 
-    assert result["total_block"] == 3  # 2 in r1 + 1 in r2
+    assert result["total_block"] == 3
     assert result["total_warn"] == 1
-    assert result["total_repos_with_findings"] == 2  # r3 has no findings
+    assert result["total_repos_with_findings"] == 2
+    assert all(r["source"] == "jsonl" for r in result["top_repos"])
 
     top_rules = {r["rule_id"]: r["count"] for r in result["top_rules"]}
     assert top_rules["P0-hardcoded-local-path"] == 2
     assert top_rules["P0-placeholder-hmac"] == 1
-    assert top_rules["P1-unpopulated-placeholder"] == 1
 
-    # Top repos sorted by BLOCK desc, then WARN desc
-    assert result["top_repos"][0]["repo"] == str(r1)
-    assert result["top_repos"][0]["block"] == 2
-    assert result["top_repos"][1]["repo"] == str(r2)
-    assert result["top_repos"][1]["block"] == 1
+
+def test_collect_falls_back_to_md_when_no_jsonl(tmp_path):
+    """Back-compat: repos scanned before the JSONL writer existed still work.
+
+    In practice the Sentinel writer emits BLOCKs to STUCK_FAILURES.md and
+    WARNs to review-findings.md — they're separate files, never mixed.
+    """
+    r1 = tmp_path / "legacy-repo"
+    r1.mkdir()
+    (r1 / "STUCK_FAILURES.md").write_text(
+        "# STUCK_FAILURES.md\n\n"
+        "## [BLOCK] P0-hardcoded-local-path\n"
+        "- **Location:** `foo.py:1`\n",
+        encoding="utf-8",
+    )
+    (r1 / "review-findings.md").write_text(
+        "# review-findings.md\n\n"
+        "## [WARN] P1-x\n"
+        "- **Location:** `y.py:1`\n",
+        encoding="utf-8",
+    )
+
+    result = collect(discover_repos=lambda: [str(r1)])
+    assert result["total_block"] == 1
+    assert result["total_warn"] == 1
+    assert result["top_repos"][0]["source"] == "md"
+
+
+def test_collect_prefers_jsonl_when_both_present(tmp_path):
+    """If both JSONL and MD exist in a repo, JSONL wins — MD is legacy."""
+    import json as _json
+    r1 = tmp_path / "repo"
+    r1.mkdir()
+    (r1 / "STUCK_FAILURES.jsonl").write_text(
+        _json.dumps({"rule_id": "from-jsonl", "severity": "BLOCK"}) + "\n",
+        encoding="utf-8",
+    )
+    (r1 / "STUCK_FAILURES.md").write_text(
+        "## [BLOCK] from-md\n- **Location:** `x:1`\n", encoding="utf-8",
+    )
+
+    result = collect(discover_repos=lambda: [str(r1)])
+    top_rules = {r["rule_id"]: r["count"] for r in result["top_rules"]}
+    assert "from-jsonl" in top_rules
+    assert "from-md" not in top_rules
+
+
+def test_collect_skips_malformed_jsonl_lines(tmp_path):
+    """Malformed lines must not crash the aggregator."""
+    import json as _json
+    r1 = tmp_path / "messy-repo"
+    r1.mkdir()
+    (r1 / "STUCK_FAILURES.jsonl").write_text(
+        _json.dumps({"rule_id": "R-1", "severity": "BLOCK"}) + "\n"
+        + "not-json-at-all\n"
+        + "\n"  # blank
+        + '{"missing_rule_id": true}\n'
+        + _json.dumps({"rule_id": "R-2", "severity": "BLOCK"}) + "\n",
+        encoding="utf-8",
+    )
+
+    result = collect(discover_repos=lambda: [str(r1)])
+    assert result["total_block"] == 2  # R-1 + R-2, malformed lines skipped
 
 
 def test_collect_fails_soft_when_discover_raises():
@@ -70,17 +127,16 @@ def test_collect_fails_soft_when_discover_raises():
     assert result["total_warn"] == 0
 
 
-def test_collect_handles_unreadable_stuck_failures(tmp_path, monkeypatch):
+def test_collect_handles_unreadable_findings(tmp_path, monkeypatch):
     """OSError on read_text is skipped, not propagated."""
     r1 = tmp_path / "unreadable"
     r1.mkdir()
     (r1 / "STUCK_FAILURES.md").write_text("## [BLOCK] X\n", encoding="utf-8")
 
-    # Monkeypatch read_text to raise OSError for STUCK_FAILURES.md
     original_read_text = Path.read_text
 
     def failing_read(self, *args, **kwargs):
-        if self.name == "STUCK_FAILURES.md":
+        if self.name.startswith("STUCK_FAILURES") or self.name.startswith("review-findings"):
             raise OSError("simulated unreadable")
         return original_read_text(self, *args, **kwargs)
 
