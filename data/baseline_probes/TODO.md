@@ -36,7 +36,7 @@ Before writing a probe, confirm the project:
 
 ## Already deferred to Batch E (skip until source repaired)
 
-- `llm-meta-analysis` — compounding package-layout / dataclass-ordering issues
+*(empty — all Batch E deferred projects have been repaired as of 2026-04-14)*
 
 ## Repaired 2026-04-14 (now awaiting probe + baseline)
 
@@ -44,6 +44,11 @@ Before writing a probe, confirm the project:
   `ipd_qma_survival.py`, `_ipd_qma_bayesian_scaffold.py` fixed; truncated
   `ipd_qma_ml.py` header reconstructed. Smoke + tests PASS. A probe script
   is still needed to move numerical witness from SKIP to PASS.
+- `llm-meta-analysis` — 2 syntax errors (`meta_regression.py` bracket
+  mismatch, `report_generator.py` indent) and 3 broken sibling imports
+  fixed; backward-compat aliases added to `power_analysis.py`. 40-module
+  smoke now PASS (LLM backend adapters skipped via Overmind's
+  `_SKIP_FILES` since they need remote APIs).
 
 ## R-side probes
 

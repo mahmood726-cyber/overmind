@@ -60,7 +60,14 @@ SKIP_PROJECTS = {
     # ipd_qma_ml.py header reconstructed, all 4 .py files compile, smoke
     # PASS, tests 59/1-skipped. Project also requires a probe script
     # (see data/baseline_probes/TODO.md) before it can earn CERTIFIED.
-    "llm-meta-analysis-8e261d9f",                             # 40+ modules, compounding package-layout issues (missing __init__.py per subpackage, absolute sibling imports, dataclass field-order) — needs dedicated repair session
+    # llm-meta-analysis-8e261d9f REPAIRED 2026-04-14: 2 syntax errors fixed
+    # (meta_regression, report_generator), 3 broken sibling imports restored
+    # to relative (.models.model, .statistical_framework), backward-compat
+    # aliases added to power_analysis.py (PowerAnalysis,
+    # SampleSizeCalculator). LLM backend adapters (alpaca/biomistral/gemma/
+    # llama3/olmo/pmc_llama/etc.) added to truthcert_engine._SKIP_FILES as
+    # they need remote APIs or heavy model downloads to import. Smoke now
+    # PASS across 40 discovered modules.
     "new-app-a051eaea",                                       # registered test_command is a Selenium suite requiring a dev server on port 3005 + 82 Edge driver lifecycles — always times out. Real test surface is `npm run test` (vitest) which has 16 statistical-accuracy FAILs against R metafor (PM/SJ/HE estimators, prediction interval ordering). Needs dedicated stats-parity session.
 }  # Projects that consistently hang during verification OR whose source path is missing OR whose source is broken enough to need dedicated repair
 

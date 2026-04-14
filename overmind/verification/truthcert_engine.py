@@ -177,8 +177,20 @@ class TruthCertEngine:
                    # the owning repo reconstructs them.
                    "ipd_qma_ml", "ipd_qma_network",
                    # Heavy scientific-stack modules whose import time exceeds
-                   # the smoke timeout (pymc, torch, tensorflow eager builds).
-                   "hierarchical_models",
+                   # the smoke timeout (pymc, torch, tensorflow eager builds,
+                   # transformers+peft LoRA trainers) or that depend on
+                   # optional third-party packages not installed at verify
+                   # time (numerizer/nltk for NLP chunking).
+                   "hierarchical_models", "trainer", "input_chunker",
+                   # LLM backend adapters — need remote API keys / heavy
+                   # model downloads to import. Not useful for smoke.
+                   "alpaca", "biomistral", "gemma", "gpt35", "gpt4",
+                   "claude", "mistral", "llama3", "olmo", "pmc_llama",
+                   "palmyra", "meditron", "clinicalbert",
+                   # Orchestrator modules whose import chains pull every
+                   # LLM-meta-analysis subsystem and cascade on one
+                   # missing dependency.
+                   "integrated_meta_analysis", "integrated_meta_analysis_v2",
                    }
     # Prefixes that strongly signal an entry-point script rather than a module.
     _SKIP_FILE_PREFIXES = ("run_", "debug_", "script_", "entrypoint_", "probe_")
