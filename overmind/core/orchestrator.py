@@ -5,7 +5,12 @@ import subprocess
 import time
 from pathlib import Path
 
-from overmind.subprocess_utils import split_command, validate_command_prefix_with_detail
+from overmind.subprocess_utils import (
+    kill_process_tree,
+    split_command,
+    validate_command_prefix_with_detail,
+    verifier_popen_kwargs,
+)
 
 from overmind.config import AppConfig
 from overmind.core.health_manager import HealthManager
@@ -337,7 +342,12 @@ class Orchestrator:
 
         active_memory_count = len(self.memory_store.list_all(status="active"))
         if self.dream_engine.should_dream(self.tick_count, active_memory_count):
-            self.dream_engine.dream()
+            # Swallow dream failures — consolidation is a best-effort optimisation;
+            # a bug in the dream engine must not keep triggering on every tick.
+            try:
+                self.dream_engine.dream()
+            except Exception:  # noqa: BLE001 — background optimisation, not critical path
+                pass
             self.tick_count = 0
 
         return {
@@ -352,6 +362,8 @@ class Orchestrator:
             "checkpoint_id": checkpoint_id,
         }
 
+    _RUN_LOOP_HISTORY_CAP = 100
+
     def run_loop(
         self,
         iterations: int | None = None,
@@ -360,13 +372,23 @@ class Orchestrator:
     ) -> dict[str, object]:
         history: list[dict[str, object]] = []
         iteration = 0
-        while iterations is None or iteration < iterations:
-            history.append(self.run_once(focus_project_id=focus_project_id))
-            iteration += 1
-            if iterations is not None and iteration >= iterations:
-                break
-            time.sleep(sleep_seconds)
-        return {"iterations": history}
+        interrupted = False
+        try:
+            while iterations is None or iteration < iterations:
+                history.append(self.run_once(focus_project_id=focus_project_id))
+                # Cap history to avoid unbounded memory growth in long-running loops.
+                if len(history) > self._RUN_LOOP_HISTORY_CAP:
+                    del history[: len(history) - self._RUN_LOOP_HISTORY_CAP]
+                iteration += 1
+                if iterations is not None and iteration >= iterations:
+                    break
+                time.sleep(sleep_seconds)
+        except KeyboardInterrupt:
+            # Graceful shutdown: reconcile active sessions so we don't orphan
+            # subprocesses or leave tasks stuck in ASSIGNED / RUNNING state.
+            interrupted = True
+            self.session_manager.reconcile(0)
+        return {"iterations": history, "iterations_run": iteration, "interrupted": interrupted}
 
     def list_checkpoints(self, name: str | None = None, limit: int = 20) -> dict[str, object]:
         checkpoints = self.db.list_checkpoints(name=name, limit=limit)
@@ -387,6 +409,7 @@ class Orchestrator:
         checkpoint_id: int | None = None,
         checkpoint_name: str = "main",
         focus_project_id: str | None = None,
+        force: bool = False,
     ) -> dict[str, object]:
         checkpoint_record = self._resolve_checkpoint_record(checkpoint_id, checkpoint_name)
         if checkpoint_record is None:
@@ -396,6 +419,22 @@ class Orchestrator:
                 "restored": False,
                 "restored_counts": {},
                 "restored_checkpoint_id": None,
+            }
+
+        # Guard: restoring a checkpoint terminates all active sessions. If work
+        # is in flight, require explicit --force so we don't silently discard
+        # agent progress.
+        active = self.session_manager.active_count()
+        if active > 0 and not force:
+            return {
+                "checkpoint_id": checkpoint_record["id"],
+                "checkpoint_name": checkpoint_record["name"],
+                "restored": False,
+                "blocked_reason": (
+                    f"{active} active session(s) would be terminated by restore. "
+                    "Re-run with force=True to override."
+                ),
+                "active_sessions": active,
             }
 
         payload = self._filter_checkpoint_payload(checkpoint_record["payload"], focus_project_id) or {}
@@ -544,6 +583,21 @@ class Orchestrator:
             ]
         return filtered
 
+    @staticmethod
+    def _sanitize_prompt_value(value: str, limit: int = 200) -> str:
+        """Strip prompt-injection control sequences and bound length.
+
+        Task titles and project names flow into LLM prompts verbatim. Defence
+        in depth: replace fenced-code delimiters so a hostile title cannot
+        close the prompt's own code block, and cap length to avoid blowing
+        past the model's context budget.
+        """
+        cleaned = (value or "").replace("```", "'''")
+        cleaned = cleaned.replace("\r", " ").replace("\n", " ")
+        if len(cleaned) > limit:
+            cleaned = cleaned[: limit - 1] + "…"
+        return cleaned
+
     def _build_worker_prompt(self, project: ProjectRecord, task: TaskRecord) -> str:
         known_commands = []
         known_commands.extend(project.build_commands)
@@ -565,6 +619,8 @@ class Orchestrator:
             f"- risk factors: {analysis_risks}"
         )
         verification = "\n".join(f"- {item}" for item in task.required_verification)
+        safe_project_name = self._sanitize_prompt_value(project.name)
+        safe_task_title = self._sanitize_prompt_value(task.title)
         if task.task_type == "verification":
             verification_plan = self.verifier.planner.plan(task, project)
             preferred_commands: list[str] = []
@@ -574,8 +630,8 @@ class Orchestrator:
             primary_command = preferred_commands[0] if preferred_commands else "none discovered"
             fallback_command = preferred_commands[1] if len(preferred_commands) > 1 else "none"
             return (
-                f"PROJECT:\n{project.name} ({project.root_path})\n\n"
-                f"TASK:\n{task.title}\n\n"
+                f"PROJECT:\n{safe_project_name} ({project.root_path})\n\n"
+                f"TASK:\n{safe_task_title}\n\n"
                 "MODE:\n"
                 "- verification only\n"
                 "- follow the phases below strictly\n\n"
@@ -611,9 +667,9 @@ class Orchestrator:
         prior_learnings = "\n".join(prior_learnings_lines) if prior_learnings_lines else "- none"
 
         return self.worker_prompt_template.format(
-            project_name=project.name,
+            project_name=safe_project_name,
             project_path=project.root_path,
-            task_title=task.title,
+            task_title=safe_task_title,
             known_commands="\n".join(f"- {command}" for command in known_commands) or "- none discovered",
             guidance=guidance,
             activity_summary=activity_summary,
@@ -792,23 +848,23 @@ class Orchestrator:
                 "verify_command: blocked by policy "
                 f"{blocking_violation.rule_name}: {blocking_violation.message}"
             )
+        timeout = int(self.config.policies.limits.get("verify_command_timeout", 300))
         try:
             proc = subprocess.Popen(
                 split_command(command),
-                cwd=project.root_path,
-                shell=False,
-                stdout=subprocess.PIPE,
-                stderr=subprocess.PIPE,
-                text=True,
+                **verifier_popen_kwargs(project.root_path),
             )
             try:
-                stdout, stderr = proc.communicate(timeout=300)
+                stdout, stderr = proc.communicate(timeout=timeout)
                 _ = stdout, stderr
                 return proc.returncode == 0, f"verify_command: exit={proc.returncode} command={command}"
             except subprocess.TimeoutExpired:
-                proc.kill()
-                proc.communicate(timeout=5)
-                return False, f"verify_command: timed out after 300s command={command}"
+                kill_process_tree(proc)
+                try:
+                    proc.communicate(timeout=5)
+                except subprocess.TimeoutExpired:
+                    pass
+                return False, f"verify_command: timed out after {timeout}s command={command}"
         except OSError as exc:
             return False, f"verify_command: failed to start ({exc}) command={command}"
 

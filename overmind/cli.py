@@ -98,6 +98,11 @@ def build_parser() -> argparse.ArgumentParser:
     restore_parser.add_argument("--checkpoint-id", type=int, default=None)
     restore_parser.add_argument("--name", default="main")
     restore_parser.add_argument("--project-id", default=None)
+    restore_parser.add_argument(
+        "--force",
+        action="store_true",
+        help="Restore even if active sessions would be terminated.",
+    )
 
     memories_parser = subparsers.add_parser("memories")
     memories_parser.add_argument("--type", default=None)
@@ -210,6 +215,7 @@ def main(argv: list[str] | None = None) -> int:
                 checkpoint_id=args.checkpoint_id,
                 checkpoint_name=args.name,
                 focus_project_id=args.project_id,
+                force=args.force,
             )
         elif args.command == "memories":
             if args.forget:

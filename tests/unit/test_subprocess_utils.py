@@ -86,3 +86,85 @@ def test_validate_command_prefix_allows_repo_local_powershell_script(tmp_path):
 
     assert valid is True
     assert detail is None
+
+
+def test_safe_subprocess_env_strips_inheritance_vectors(monkeypatch):
+    """LD_PRELOAD, PYTHONSTARTUP, GIT_*, npm_config_* must not leak into the
+    verifier subprocess environment."""
+    from overmind.subprocess_utils import safe_subprocess_env
+
+    monkeypatch.setenv("LD_PRELOAD", "/tmp/evil.so")
+    monkeypatch.setenv("PYTHONSTARTUP", "/tmp/evil.py")
+    monkeypatch.setenv("GIT_DIR", "/tmp/evil-git")
+    monkeypatch.setenv("npm_config_registry", "https://evil.example/")
+    monkeypatch.setenv("PATH", "/usr/bin")
+
+    scrubbed = safe_subprocess_env()
+
+    assert "LD_PRELOAD" not in scrubbed
+    assert "PYTHONSTARTUP" not in scrubbed
+    assert "GIT_DIR" not in scrubbed
+    assert "npm_config_registry" not in scrubbed
+    assert "PATH" in scrubbed
+
+
+def test_verifier_popen_kwargs_sets_utf8_and_env(tmp_path, monkeypatch):
+    """Single source of truth for verification subprocess launch."""
+    from overmind.subprocess_utils import verifier_popen_kwargs
+
+    monkeypatch.setenv("LD_PRELOAD", "/tmp/evil.so")
+
+    kwargs = verifier_popen_kwargs(str(tmp_path))
+
+    assert kwargs["cwd"] == str(tmp_path)
+    assert kwargs["shell"] is False
+    assert kwargs["encoding"] == "utf-8"
+    assert kwargs["errors"] == "replace"
+    assert "LD_PRELOAD" not in kwargs["env"]
+
+
+def test_verifier_popen_kwargs_sets_new_process_group_on_windows():
+    import subprocess as _subprocess
+    import sys as _sys
+
+    from overmind.subprocess_utils import verifier_popen_kwargs
+
+    kwargs = verifier_popen_kwargs("/tmp")
+    if _sys.platform == "win32":
+        assert kwargs.get("creationflags", 0) & _subprocess.CREATE_NEW_PROCESS_GROUP
+    else:
+        assert "creationflags" not in kwargs
+
+
+def test_kill_process_tree_uses_taskkill_on_windows(monkeypatch):
+    """P0-1 parity: orchestrator and verifier both rely on taskkill /T to reach
+    pytest-xdist workers and any other spawned subprocesses."""
+    import subprocess as _subprocess
+    import sys as _sys
+
+    if _sys.platform != "win32":
+        import pytest
+        pytest.skip("Windows-specific taskkill behavior")
+
+    from overmind.subprocess_utils import kill_process_tree
+
+    captured: dict[str, object] = {}
+
+    def fake_run(args, **kwargs):
+        captured["args"] = args
+        return _subprocess.CompletedProcess(args, 0, "", "")
+
+    monkeypatch.setattr(_subprocess, "run", fake_run)
+
+    class StubProc:
+        pid = 9999
+
+        def kill(self):
+            captured.setdefault("fallback_kill_called", True)
+
+    kill_process_tree(StubProc())
+
+    assert captured["args"][0] == "taskkill"
+    assert "/T" in captured["args"]
+    assert "/F" in captured["args"]
+    assert str(9999) in captured["args"]

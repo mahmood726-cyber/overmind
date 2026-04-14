@@ -6,10 +6,74 @@ import os
 import re
 import shlex
 import shutil
+import subprocess
 import sys
 from pathlib import Path
 
 logger = logging.getLogger(__name__)
+
+# Env vars a verification subprocess is allowed to inherit from the parent.
+# Anything outside this list (LD_PRELOAD, PYTHONSTARTUP, GIT_*, npm_config_*, etc.)
+# is stripped so a malicious project directory cannot influence the verifier
+# via environment inheritance.
+SAFE_ENV_ALLOWLIST = frozenset({
+    "PATH", "PATHEXT", "SYSTEMROOT", "WINDIR", "SYSTEMDRIVE",
+    "TEMP", "TMP", "LOCALAPPDATA", "APPDATA", "PROGRAMFILES", "PROGRAMFILES(X86)",
+    "PROGRAMDATA", "COMSPEC", "HOMEDRIVE", "HOMEPATH", "USERPROFILE", "USERNAME",
+    "COMPUTERNAME", "NUMBER_OF_PROCESSORS", "PROCESSOR_ARCHITECTURE",
+    "LANG", "LC_ALL", "LC_CTYPE",
+    "PYTHONIOENCODING", "PYTHONUTF8",
+    "VIRTUAL_ENV",
+})
+
+
+def safe_subprocess_env() -> dict[str, str]:
+    """Return a scrubbed environment for verification subprocesses."""
+    return {k: v for k, v in os.environ.items() if k.upper() in SAFE_ENV_ALLOWLIST}
+
+
+def kill_process_tree(proc: subprocess.Popen) -> None:
+    """Kill a subprocess plus any children it spawned (pytest-xdist workers, etc.).
+
+    Uses `taskkill /F /T /PID` on Windows to reach grandchildren that a plain
+    `proc.kill()` would miss.
+    """
+    try:
+        if sys.platform == "win32":
+            subprocess.run(
+                ["taskkill", "/F", "/T", "/PID", str(proc.pid)],
+                capture_output=True,
+                timeout=5,
+            )
+        else:
+            proc.kill()
+    except (OSError, subprocess.TimeoutExpired):
+        try:
+            proc.kill()
+        except OSError:
+            pass
+
+
+def verifier_popen_kwargs(cwd: str) -> dict[str, object]:
+    """Build Popen kwargs for a hardened verification subprocess launch.
+
+    Single source of truth for env scrubbing, UTF-8 encoding, and the Windows
+    CREATE_NEW_PROCESS_GROUP flag so that all verification code paths stay in
+    sync. Callers pass the returned dict via `**kwargs` to `subprocess.Popen`.
+    """
+    kwargs: dict[str, object] = {
+        "cwd": cwd,
+        "shell": False,
+        "stdout": subprocess.PIPE,
+        "stderr": subprocess.PIPE,
+        "text": True,
+        "encoding": "utf-8",
+        "errors": "replace",
+        "env": safe_subprocess_env(),
+    }
+    if sys.platform == "win32":
+        kwargs["creationflags"] = subprocess.CREATE_NEW_PROCESS_GROUP
+    return kwargs
 
 # Direct executables that Overmind will launch for verification work.
 ALLOWED_COMMAND_PREFIXES = (
