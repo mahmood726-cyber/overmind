@@ -36,8 +36,14 @@ Before writing a probe, confirm the project:
 
 ## Already deferred to Batch E (skip until source repaired)
 
-- `ipd_qma_project` — cascading syntax errors in `ipd_qma_ml.py`, `ipd_qma_network.py`, `ipd_qma_survival.py`
 - `llm-meta-analysis` — compounding package-layout / dataclass-ordering issues
+
+## Repaired 2026-04-14 (now awaiting probe + baseline)
+
+- `ipd_qma_project` — 8 syntax errors across `ipd_qma_ml.py`, `ipd_qma_network.py`,
+  `ipd_qma_survival.py`, `_ipd_qma_bayesian_scaffold.py` fixed; truncated
+  `ipd_qma_ml.py` header reconstructed. Smoke + tests PASS. A probe script
+  is still needed to move numerical witness from SKIP to PASS.
 
 ## R-side probes
 

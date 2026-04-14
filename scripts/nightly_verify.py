@@ -56,7 +56,10 @@ SKIP_PROJECTS = {
     "lec-phase0-bundle-a2c59fad",                             # test suite hangs
     "hta-evidence-integrity-suite-dc1fe6c7",                  # test suite hangs (7946s last run)
     "meta-ecosystem-model-3d6353ab",                          # path genuinely absent (drive-wide search + reconcile_counts 2026-04-14)
-    "ipd-qma-project-b5694da4",                               # multiple files with cascading syntax errors (unterminated strings, mismatched brackets) — needs dedicated repair session
+    # ipd-qma-project-b5694da4 REPAIRED 2026-04-14: 8 files + truncated
+    # ipd_qma_ml.py header reconstructed, all 4 .py files compile, smoke
+    # PASS, tests 59/1-skipped. Project also requires a probe script
+    # (see data/baseline_probes/TODO.md) before it can earn CERTIFIED.
     "llm-meta-analysis-8e261d9f",                             # 40+ modules, compounding package-layout issues (missing __init__.py per subpackage, absolute sibling imports, dataclass field-order) — needs dedicated repair session
     "new-app-a051eaea",                                       # registered test_command is a Selenium suite requiring a dev server on port 3005 + 82 Edge driver lifecycles — always times out. Real test surface is `npm run test` (vitest) which has 16 statistical-accuracy FAILs against R metafor (PM/SJ/HE estimators, prediction interval ordering). Needs dedicated stats-parity session.
 }  # Projects that consistently hang during verification OR whose source path is missing OR whose source is broken enough to need dedicated repair
