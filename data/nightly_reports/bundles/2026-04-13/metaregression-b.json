@@ -1,0 +1,39 @@
+{
+  "project_id": "metaregression-b984b3aa",
+  "scope_lock": {
+    "project_id": "metaregression-b984b3aa",
+    "project_path": "C:\\Models\\MetaRegression",
+    "risk_profile": "medium_high",
+    "witness_count": 2,
+    "test_command": "python -m pytest tests/test_metaregression.py -q",
+    "smoke_modules": [
+      "test_meta_regression"
+    ],
+    "baseline_path": null,
+    "expected_outcome": "pass",
+    "source_hash": "c8835d4247c5389e",
+    "created_at": "2026-04-13T02:15:25+00:00"
+  },
+  "witness_results": [
+    {
+      "witness_type": "test_suite",
+      "verdict": "FAIL",
+      "exit_code": 1,
+      "stdout": "     \tchromedriver!GetHandleVerifier [0x7ff7edd7facc+3a88c]\nE       \tchromedriver!GetHandleVerifier [0x7ff7edd63634+1e3f4]\nE       \tchromedriver!GetHandleVerifier [0x7ff7edd637e6+1e5a6]\nE       \tchromedriver!GetHandleVerifier [0x7ff7edd47e37+2bf7]\nE       \tKERNEL32!BaseThreadInitThunk [0x7ffbe43be8d7+17]\nE       \tntdll!RtlUserThreadStart [0x7ffbe558c3fc+2c]\n\nC:\\Users\\user\\AppData\\Local\\Programs\\Python\\Python313\\Lib\\site-packages\\selenium\\webdriver\\remote\\errorhandler.py:233: JavascriptException\n=========================== short test summary info ===========================\nFAILED tests/test_metaregression.py::TestMetaRegression::test_13_load_BCG_example\nFAILED tests/test_metaregression.py::TestMetaRegression::test_14_load_exercise_example\nFAILED tests/test_metaregression.py::TestMetaRegression::test_15_validate_BCG\nFAILED tests/test_metaregression.py::TestMetaRegression::test_16_validate_empty_fails\nFAILED tests/test_metaregression.py::TestMetaRegression::test_18_run_regression_BCG\nFAILED tests/test_metaregression.py::TestMetaRegression::test_21_regression_results_numeric\nFAILED tests/test_metaregression.py::TestMetaRegression::test_22_tab_switching\nFAILED tests/test_metaregression.py::TestMetaRegression::test_26_csv_paste_parsing\nFAILED tests/test_metaregression.py::TestMetaRegression::test_27_clear_data\nFAILED tests/test_metaregression.py::TestMetaRegression::test_28_model_comparison_exercise\nFAILED tests/test_metaregression.py::TestMetaRegression::test_29_regression_diagnostics_present\nFAILED tests/test_metaregression.py::TestMetaRegression::test_31_R2_in_range\nFAILED tests/test_metaregression.py::TestMetaRegression::test_32_knapp_hartung_checkbox\nFAILED tests/test_metaregression.py::TestMetaRegression::test_34_moderator_config_change\nFAILED tests/test_metaregression.py::TestMetaRegression::test_35_state_after_example_load\nFAILED tests/test_metaregression.py::TestMetaRegression::test_36_exercise_multi_moderator_regression\n16 failed, 22 passed in 80.47s (0:01:20)\n",
+      "stderr": "",
+      "elapsed": 81.88
+    },
+    {
+      "witness_type": "smoke",
+      "verdict": "PASS",
+      "exit_code": 0,
+      "stdout": "1 modules imported OK",
+      "stderr": "",
+      "elapsed": 0.43
+    }
+  ],
+  "verdict": "REJECT",
+  "arbitration_reason": "Witnesses disagree: smoke PASS vs test_suite FAIL",
+  "timestamp": "2026-04-13T02:18:10+00:00",
+  "bundle_hash": "b4db130779ce2931"
+}

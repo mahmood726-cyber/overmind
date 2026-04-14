@@ -1,15 +1,15 @@
 {
-  "timestamp": "2026-04-13T02:00:02.160542+00:00",
+  "timestamp": "2026-04-12T02:00:02.862461+00:00",
   "total_projects": 50,
   "certified": 5,
-  "rejected": 10,
-  "failed": 17,
+  "rejected": 9,
+  "failed": 18,
   "single_pass": 18,
-  "total_time_seconds": 1085.7,
+  "total_time_seconds": 1501.9,
   "dream": {
-    "merges": 82,
+    "merges": 83,
     "archives": 0,
-    "memories_before": 281,
+    "memories_before": 282,
     "memories_after": 199
   },
   "projects": [
@@ -19,9 +19,9 @@
       "risk": "high",
       "math_score": 20,
       "verdict": "REJECT",
-      "bundle_hash": "67030363e12da07b",
+      "bundle_hash": "b84340037aafe220",
       "witness_count": 3,
-      "elapsed": 6.1,
+      "elapsed": 14.3,
       "arbitration_reason": "Witnesses disagree: test_suite, smoke PASS vs numerical FAIL"
     },
     {
@@ -29,11 +29,11 @@
       "path": "C:\\Models\\CardioOracle",
       "risk": "high",
       "math_score": 20,
-      "verdict": "REJECT",
-      "bundle_hash": "38c2c460dce9fd7d",
-      "witness_count": 2,
-      "elapsed": 40.1,
-      "arbitration_reason": "Witnesses disagree: test_suite PASS vs smoke FAIL"
+      "verdict": "FAIL",
+      "bundle_hash": "bb641ab77c157aba",
+      "witness_count": 1,
+      "elapsed": 303.8,
+      "arbitration_reason": "Hard timeout (300s) \u2014 process killed"
     },
     {
       "name": "esc-acs-living-meta",
@@ -41,9 +41,9 @@
       "risk": "high",
       "math_score": 20,
       "verdict": "PASS",
-      "bundle_hash": "94ff7d9712edbfee",
+      "bundle_hash": "65f474fe7624f0a9",
       "witness_count": 2,
-      "elapsed": 4.1,
+      "elapsed": 6.2,
       "arbitration_reason": "2/2 witnesses PASS (numerical skipped \u2014 no baseline)"
     },
     {
@@ -52,9 +52,9 @@
       "risk": "high",
       "math_score": 20,
       "verdict": "REJECT",
-      "bundle_hash": "6ed3f06a7517eed8",
+      "bundle_hash": "c6f7cc0c663f6e09",
       "witness_count": 2,
-      "elapsed": 112.1,
+      "elapsed": 158.4,
       "arbitration_reason": "Witnesses disagree: test_suite PASS vs smoke FAIL"
     },
     {
@@ -63,9 +63,9 @@
       "risk": "high",
       "math_score": 20,
       "verdict": "FAIL",
-      "bundle_hash": "6a2d1c5fafb75b79",
+      "bundle_hash": "1f883ed33a69f96d",
       "witness_count": 1,
-      "elapsed": 2.2,
+      "elapsed": 2.3,
       "arbitration_reason": "Single witness: test_suite FAIL"
     },
     {
@@ -74,9 +74,9 @@
       "risk": "high",
       "math_score": 20,
       "verdict": "PASS",
-      "bundle_hash": "68c1906e89253205",
+      "bundle_hash": "5bf854af43bca141",
       "witness_count": 2,
-      "elapsed": 12.1,
+      "elapsed": 14.3,
       "arbitration_reason": "2/2 witnesses PASS (numerical skipped \u2014 no baseline)"
     },
     {
@@ -85,9 +85,9 @@
       "risk": "high",
       "math_score": 20,
       "verdict": "FAIL",
-      "bundle_hash": "af28c171b12bcfe8",
+      "bundle_hash": "0388052fe50cef63",
       "witness_count": 1,
-      "elapsed": 2.1,
+      "elapsed": 2.2,
       "arbitration_reason": "Single witness: test_suite FAIL"
     },
     {
@@ -96,9 +96,9 @@
       "risk": "high",
       "math_score": 18,
       "verdict": "FAIL",
-      "bundle_hash": "f7b5c77bc491a363",
+      "bundle_hash": "91418e1d77c44552",
       "witness_count": 2,
-      "elapsed": 26.1,
+      "elapsed": 42.2,
       "arbitration_reason": "All witnesses FAIL: test_suite, smoke"
     },
     {
@@ -107,9 +107,9 @@
       "risk": "high",
       "math_score": 18,
       "verdict": "FAIL",
-      "bundle_hash": "2b87e12a4464cb07",
+      "bundle_hash": "05c008f6387187ba",
       "witness_count": 2,
-      "elapsed": 10.1,
+      "elapsed": 24.4,
       "arbitration_reason": "All witnesses FAIL: test_suite, smoke"
     },
     {
@@ -118,9 +118,9 @@
       "risk": "high",
       "math_score": 17,
       "verdict": "FAIL",
-      "bundle_hash": "da20bbf3e28c5359",
+      "bundle_hash": "6ed13107badf89e2",
       "witness_count": 1,
-      "elapsed": 2.1,
+      "elapsed": 2.3,
       "arbitration_reason": "Single witness: test_suite FAIL"
     },
     {
@@ -129,9 +129,9 @@
       "risk": "high",
       "math_score": 17,
       "verdict": "FAIL",
-      "bundle_hash": "0fda4fe619908f84",
+      "bundle_hash": "a39ba4961d62df30",
       "witness_count": 1,
-      "elapsed": 2.1,
+      "elapsed": 2.4,
       "arbitration_reason": "Single witness: test_suite FAIL"
     },
     {
@@ -140,9 +140,9 @@
       "risk": "high",
       "math_score": 17,
       "verdict": "FAIL",
-      "bundle_hash": "5a28884e67f709be",
+      "bundle_hash": "86c72cfd8e2030b0",
       "witness_count": 1,
-      "elapsed": 2.1,
+      "elapsed": 2.3,
       "arbitration_reason": "Single witness: test_suite FAIL"
     },
     {
@@ -151,9 +151,9 @@
       "risk": "high",
       "math_score": 16,
       "verdict": "PASS",
-      "bundle_hash": "14c3d6aad9a0f75d",
+      "bundle_hash": "66133bc878ef2720",
       "witness_count": 2,
-      "elapsed": 18.1,
+      "elapsed": 34.2,
       "arbitration_reason": "2/2 witnesses PASS (numerical skipped \u2014 no baseline)"
     },
     {
@@ -162,9 +162,9 @@
       "risk": "high",
       "math_score": 15,
       "verdict": "REJECT",
-      "bundle_hash": "285ada80d04c4164",
+      "bundle_hash": "2bbfb88d9b045c93",
       "witness_count": 2,
-      "elapsed": 54.1,
+      "elapsed": 114.3,
       "arbitration_reason": "Witnesses disagree: test_suite PASS vs smoke FAIL"
     },
     {
@@ -173,9 +173,9 @@
       "risk": "high",
       "math_score": 15,
       "verdict": "FAIL",
-      "bundle_hash": "bb3fc48447c5dedc",
+      "bundle_hash": "7a3c106bea091122",
       "witness_count": 2,
-      "elapsed": 122.1,
+      "elapsed": 12.5,
       "arbitration_reason": "All witnesses FAIL: test_suite, smoke"
     },
     {
@@ -184,9 +184,9 @@
       "risk": "high",
       "math_score": 15,
       "verdict": "PASS",
-      "bundle_hash": "2e65c96b562ffffb",
+      "bundle_hash": "3a4c7f8776a98cf5",
       "witness_count": 2,
-      "elapsed": 8.1,
+      "elapsed": 18.2,
       "arbitration_reason": "2/2 witnesses PASS (numerical skipped \u2014 no baseline)"
     },
     {
@@ -195,9 +195,9 @@
       "risk": "high",
       "math_score": 15,
       "verdict": "FAIL",
-      "bundle_hash": "98a08bae6d7ffb3e",
+      "bundle_hash": "61613fe5041b5505",
       "witness_count": 1,
-      "elapsed": 2.1,
+      "elapsed": 2.2,
       "arbitration_reason": "Single witness: test_suite FAIL"
     },
     {
@@ -206,9 +206,9 @@
       "risk": "high",
       "math_score": 14,
       "verdict": "PASS",
-      "bundle_hash": "84bcafe177baa055",
+      "bundle_hash": "b6795019af8258d7",
       "witness_count": 2,
-      "elapsed": 6.1,
+      "elapsed": 12.3,
       "arbitration_reason": "2/2 witnesses PASS (numerical skipped \u2014 no baseline)"
     },
     {
@@ -217,9 +217,9 @@
       "risk": "high",
       "math_score": 14,
       "verdict": "PASS",
-      "bundle_hash": "a9e6102aa58cd10e",
+      "bundle_hash": "8b4c1f68f99be69e",
       "witness_count": 2,
-      "elapsed": 8.1,
+      "elapsed": 16.2,
       "arbitration_reason": "2/2 witnesses PASS (numerical skipped \u2014 no baseline)"
     },
     {
@@ -228,9 +228,9 @@
       "risk": "high",
       "math_score": 14,
       "verdict": "PASS",
-      "bundle_hash": "20d80f89300093ed",
+      "bundle_hash": "d9770049b3c9eb04",
       "witness_count": 1,
-      "elapsed": 6.1,
+      "elapsed": 10.3,
       "arbitration_reason": "Single witness: test_suite PASS"
     },
     {
@@ -239,9 +239,9 @@
       "risk": "high",
       "math_score": 14,
       "verdict": "REJECT",
-      "bundle_hash": "ec005732c00b1caf",
+      "bundle_hash": "bb431d4ecc252f68",
       "witness_count": 2,
-      "elapsed": 4.1,
+      "elapsed": 8.2,
       "arbitration_reason": "Witnesses disagree: test_suite PASS vs smoke FAIL"
     },
     {
@@ -250,9 +250,9 @@
       "risk": "high",
       "math_score": 13,
       "verdict": "PASS",
-      "bundle_hash": "1b94da45891bcdb6",
+      "bundle_hash": "11a3634ee42a58de",
       "witness_count": 2,
-      "elapsed": 22.1,
+      "elapsed": 36.3,
       "arbitration_reason": "2/2 witnesses PASS (numerical skipped \u2014 no baseline)"
     },
     {
@@ -261,9 +261,9 @@
       "risk": "high",
       "math_score": 12,
       "verdict": "PASS",
-      "bundle_hash": "8f3463143bab3db8",
+      "bundle_hash": "3bc83a48fa0c0b85",
       "witness_count": 2,
-      "elapsed": 10.1,
+      "elapsed": 18.2,
       "arbitration_reason": "2/2 witnesses PASS (numerical skipped \u2014 no baseline)"
     },
     {
@@ -272,7 +272,7 @@
       "risk": "high",
       "math_score": 12,
       "verdict": "FAIL",
-      "bundle_hash": "ebfb236089bd6e8d",
+      "bundle_hash": "4112ec165d1210d1",
       "witness_count": 1,
       "elapsed": 2.1,
       "arbitration_reason": "Single witness: test_suite FAIL"
@@ -283,9 +283,9 @@
       "risk": "high",
       "math_score": 11,
       "verdict": "PASS",
-      "bundle_hash": "802ac900c73289bb",
+      "bundle_hash": "dc1a985d2f953003",
       "witness_count": 2,
-      "elapsed": 30.1,
+      "elapsed": 50.2,
       "arbitration_reason": "2/2 witnesses PASS (numerical skipped \u2014 no baseline)"
     },
     {
@@ -294,7 +294,7 @@
       "risk": "high",
       "math_score": 11,
       "verdict": "FAIL",
-      "bundle_hash": "f24961bd5cd5b450",
+      "bundle_hash": "b20af1445ed18b1d",
       "witness_count": 1,
       "elapsed": 2.1,
       "arbitration_reason": "Single witness: test_suite FAIL"
@@ -305,9 +305,9 @@
       "risk": "high",
       "math_score": 11,
       "verdict": "PASS",
-      "bundle_hash": "d29fb7bc4d58bc25",
+      "bundle_hash": "2811177f890efd70",
       "witness_count": 2,
-      "elapsed": 4.1,
+      "elapsed": 6.1,
       "arbitration_reason": "2/2 witnesses PASS (numerical skipped \u2014 no baseline)"
     },
     {
@@ -316,9 +316,9 @@
       "risk": "high",
       "math_score": 11,
       "verdict": "FAIL",
-      "bundle_hash": "3a7a648c94f1948b",
+      "bundle_hash": "1bbd69e62195f6ef",
       "witness_count": 1,
-      "elapsed": 122.1,
+      "elapsed": 124.5,
       "arbitration_reason": "Single witness: test_suite FAIL"
     },
     {
@@ -327,7 +327,7 @@
       "risk": "high",
       "math_score": 11,
       "verdict": "FAIL",
-      "bundle_hash": "74e05d3b9fb9166e",
+      "bundle_hash": "4a58c497a0848d4d",
       "witness_count": 1,
       "elapsed": 2.0,
       "arbitration_reason": "Single witness: test_suite FAIL"
@@ -338,9 +338,9 @@
       "risk": "high",
       "math_score": 11,
       "verdict": "PASS",
-      "bundle_hash": "d52ebb0d8a366a22",
+      "bundle_hash": "197adb60aa64d293",
       "witness_count": 2,
-      "elapsed": 12.1,
+      "elapsed": 14.1,
       "arbitration_reason": "2/2 witnesses PASS (numerical skipped \u2014 no baseline)"
     },
     {
@@ -349,7 +349,7 @@
       "risk": "high",
       "math_score": 11,
       "verdict": "REJECT",
-      "bundle_hash": "1b4261b77231a1a2",
+      "bundle_hash": "5d7d8dd479a4ec74",
       "witness_count": 2,
       "elapsed": 4.1,
       "arbitration_reason": "Witnesses disagree: test_suite PASS vs numerical FAIL"
@@ -360,9 +360,9 @@
       "risk": "high",
       "math_score": 10,
       "verdict": "PASS",
-      "bundle_hash": "438634430915159b",
+      "bundle_hash": "35878c8bedb1a7ae",
       "witness_count": 1,
-      "elapsed": 2.1,
+      "elapsed": 4.1,
       "arbitration_reason": "Single witness: test_suite PASS"
     },
     {
@@ -371,9 +371,9 @@
       "risk": "high",
       "math_score": 10,
       "verdict": "REJECT",
-      "bundle_hash": "d43d57fdfd85436d",
+      "bundle_hash": "77d10392a1fa5199",
       "witness_count": 2,
-      "elapsed": 62.1,
+      "elapsed": 72.1,
       "arbitration_reason": "Witnesses disagree: test_suite PASS vs smoke FAIL"
     },
     {
@@ -382,9 +382,9 @@
       "risk": "high",
       "math_score": 10,
       "verdict": "PASS",
-      "bundle_hash": "12027b6970fb21ad",
+      "bundle_hash": "ab800d0ac7f6198e",
       "witness_count": 1,
-      "elapsed": 4.1,
+      "elapsed": 4.2,
       "arbitration_reason": "Single witness: test_suite PASS"
     },
     {
@@ -393,9 +393,9 @@
       "risk": "high",
       "math_score": 10,
       "verdict": "REJECT",
-      "bundle_hash": "875651b66d9d5623",
+      "bundle_hash": "c808f3db46ed43ae",
       "witness_count": 3,
-      "elapsed": 22.1,
+      "elapsed": 24.1,
       "arbitration_reason": "Witnesses disagree: test_suite, smoke PASS vs numerical FAIL"
     },
     {
@@ -404,9 +404,9 @@
       "risk": "high",
       "math_score": 9,
       "verdict": "PASS",
-      "bundle_hash": "bd668a13457858a9",
+      "bundle_hash": "4c73305155fa6ecb",
       "witness_count": 1,
-      "elapsed": 2.1,
+      "elapsed": 4.2,
       "arbitration_reason": "Single witness: test_suite PASS"
     },
     {
@@ -415,9 +415,9 @@
       "risk": "high",
       "math_score": 8,
       "verdict": "PASS",
-      "bundle_hash": "756373b48b333aea",
+      "bundle_hash": "00aea3833e8fc566",
       "witness_count": 1,
-      "elapsed": 4.1,
+      "elapsed": 4.2,
       "arbitration_reason": "Single witness: test_suite PASS"
     },
     {
@@ -426,9 +426,9 @@
       "risk": "high",
       "math_score": 8,
       "verdict": "CERTIFIED",
-      "bundle_hash": "2217619d50475acd",
+      "bundle_hash": "ba31ab8a47b4963f",
       "witness_count": 2,
-      "elapsed": 30.1,
+      "elapsed": 32.1,
       "arbitration_reason": "2/2 witnesses agree PASS"
     },
     {
@@ -437,9 +437,9 @@
       "risk": "high",
       "math_score": 7,
       "verdict": "CERTIFIED",
-      "bundle_hash": "43c90ae7a2559ddc",
+      "bundle_hash": "db64f99f154ae822",
       "witness_count": 2,
-      "elapsed": 14.1,
+      "elapsed": 18.5,
       "arbitration_reason": "2/2 witnesses agree PASS"
     },
     {
@@ -448,9 +448,9 @@
       "risk": "high",
       "math_score": 7,
       "verdict": "FAIL",
-      "bundle_hash": "8bc3a6068e267e5f",
+      "bundle_hash": "6c36cf3353d001d1",
       "witness_count": 1,
-      "elapsed": 2.2,
+      "elapsed": 2.1,
       "arbitration_reason": "Single witness: test_suite FAIL"
     },
     {
@@ -459,9 +459,9 @@
       "risk": "high",
       "math_score": 7,
       "verdict": "PASS",
-      "bundle_hash": "aba95b8ce034d2e5",
+      "bundle_hash": "a51af8e024ea102d",
       "witness_count": 1,
-      "elapsed": 12.1,
+      "elapsed": 10.1,
       "arbitration_reason": "Single witness: test_suite PASS"
     },
     {
@@ -470,7 +470,7 @@
       "risk": "high",
       "math_score": 7,
       "verdict": "FAIL",
-      "bundle_hash": "94a773968f370874",
+      "bundle_hash": "819875a7ee32006b",
       "witness_count": 1,
       "elapsed": 2.1,
       "arbitration_reason": "Single witness: test_suite FAIL"
@@ -481,9 +481,9 @@
       "risk": "high",
       "math_score": 7,
       "verdict": "REJECT",
-      "bundle_hash": "401211baad54ea2c",
+      "bundle_hash": "06e6812eae342ee1",
       "witness_count": 2,
-      "elapsed": 58.0,
+      "elapsed": 50.0,
       "arbitration_reason": "Witnesses disagree: test_suite PASS vs smoke FAIL"
     },
     {
@@ -492,7 +492,7 @@
       "risk": "high",
       "math_score": 6,
       "verdict": "PASS",
-      "bundle_hash": "dbaaf63358c37293",
+      "bundle_hash": "d2bd0a949727c6a5",
       "witness_count": 1,
       "elapsed": 4.1,
       "arbitration_reason": "Single witness: test_suite PASS"
@@ -503,7 +503,7 @@
       "risk": "high",
       "math_score": 6,
       "verdict": "FAIL",
-      "bundle_hash": "20b883e9a1bd2870",
+      "bundle_hash": "7ddcbf6785dc5a8f",
       "witness_count": 1,
       "elapsed": 2.1,
       "arbitration_reason": "Single witness: test_suite FAIL"
@@ -514,7 +514,7 @@
       "risk": "high",
       "math_score": 6,
       "verdict": "FAIL",
-      "bundle_hash": "b1fb2e3954328617",
+      "bundle_hash": "76f4db98976f2ebc",
       "witness_count": 1,
       "elapsed": 2.1,
       "arbitration_reason": "Single witness: test_suite FAIL"
@@ -525,7 +525,7 @@
       "risk": "high",
       "math_score": 5,
       "verdict": "CERTIFIED",
-      "bundle_hash": "c9c0684dd226435c",
+      "bundle_hash": "623c25928052d7f9",
       "witness_count": 2,
       "elapsed": 6.1,
       "arbitration_reason": "2/2 witnesses agree PASS"
@@ -536,7 +536,7 @@
       "risk": "high",
       "math_score": 2,
       "verdict": "CERTIFIED",
-      "bundle_hash": "5c318522845c260a",
+      "bundle_hash": "dff202b64ac3b783",
       "witness_count": 2,
       "elapsed": 12.1,
       "arbitration_reason": "2/2 witnesses agree PASS"
@@ -547,9 +547,9 @@
       "risk": "high",
       "math_score": 2,
       "verdict": "CERTIFIED",
-      "bundle_hash": "23074671b33554ed",
+      "bundle_hash": "e7ec4136ee89b947",
       "witness_count": 2,
-      "elapsed": 16.1,
+      "elapsed": 18.1,
       "arbitration_reason": "2/2 witnesses agree PASS"
     },
     {
@@ -558,7 +558,7 @@
       "risk": "medium_high",
       "math_score": 8,
       "verdict": "REJECT",
-      "bundle_hash": "b4db130779ce2931",
+      "bundle_hash": "a03ce9bb059d6886",
       "witness_count": 2,
       "elapsed": 166.0,
       "arbitration_reason": "Witnesses disagree: smoke PASS vs test_suite FAIL"

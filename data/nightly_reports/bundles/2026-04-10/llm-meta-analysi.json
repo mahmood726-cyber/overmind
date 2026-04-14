@@ -1,0 +1,66 @@
+{
+  "project_id": "llm-meta-analysis-8e261d9f",
+  "scope_lock": {
+    "project_id": "llm-meta-analysis-8e261d9f",
+    "project_path": "C:\\Projects\\llm-meta-analysis",
+    "risk_profile": "high",
+    "witness_count": 3,
+    "test_command": "python -m pytest tests/test_smoke.py -q",
+    "smoke_modules": [
+      "evaluation.bayesian_meta_analysis",
+      "evaluation.benchmark_tests",
+      "evaluation.calculate_metrics",
+      "evaluation.clinical_decision_support",
+      "evaluation.cross_validation",
+      "evaluation.cumulative_analysis",
+      "evaluation.cumulative_analysis_v2",
+      "evaluation.diagnostic_plots",
+      "evaluation.dta_integration",
+      "evaluation.enhanced_metrics",
+      "evaluation.error_analyzer",
+      "evaluation.evaluate_output",
+      "evaluation.federated_learning",
+      "evaluation.glmm_meta_analysis",
+      "evaluation.grade_assessment",
+      "evaluation.input_chunker",
+      "evaluation.integrated_meta_analysis",
+      "evaluation.integrated_meta_analysis_v2",
+      "evaluation.ipd_meta_analysis",
+      "evaluation.meta_analysis_methods"
+    ],
+    "baseline_path": null,
+    "expected_outcome": "pass",
+    "source_hash": "dee2d41676831ce2",
+    "created_at": "2026-04-10T02:19:23+00:00"
+  },
+  "witness_results": [
+    {
+      "witness_type": "test_suite",
+      "verdict": "PASS",
+      "exit_code": 0,
+      "stdout": ".                                                                        [100%]\n",
+      "stderr": "",
+      "elapsed": 2.22
+    },
+    {
+      "witness_type": "smoke",
+      "verdict": "FAIL",
+      "exit_code": 1,
+      "stdout": "",
+      "stderr": "evaluation.bayesian_meta_analysis: n_meta_analysis\n  File \"C:\\Projects\\llm-meta-analysis\\evaluation\\bayesian_meta_analysis.py\", line 324\n    lors = []\n             ^\nIndentationError: unindent does not match any outer indentation level\nevaluation.cumulative_analysis: 1, in <module>\n    import evaluation.cumulative_analysis\n  File \"C:\\Projects\\llm-meta-analysis\\evaluation\\cumulative_analysis.py\", line 73\n    boundary_upper: float\nIndentationError: unexpected indent\nevaluation.diagnostic_plots: import timed out\nevaluation.dta_integration: aluation.dta_integration\n  File \"C:\\Projects\\llm-meta-analysis\\evaluation\\dta_integration.py\", line 219\n    'false_positives', 'false_negatives', 'true_negatives']]\nIndentationError: unexpected indent\nevaluation.enhanced_metrics: s\\llm-meta-analysis\\evaluation\\enhanced_metrics.py\", line 15, in <module>\n    from statistical_framework import (\n    ...<4 lines>...\n    )\nModuleNotFoundError: No module named 'statistical_framework'\nevaluation.evaluate_output:  from utils import (\n    ...<9 lines>...\n    )\nImportError: cannot import name 'load_json_file' from 'utils' (C:\\Users\\user\\AppData\\Local\\Programs\\Python\\Python313\\Lib\\site-packages\\utils\\__init__.py)\nevaluation.glmm_meta_analysis: le \"C:\\Projects\\llm-meta-analysis\\evaluation\\glmm_meta_analysis.py\", line 58, in GLMMResult\n    ci: UncertaintyInterval\n        ^^^^^^^^^^^^^^^^^^^\nNameError: name 'UncertaintyInterval' is not defined\nevaluation.input_chunker: import evaluation.input_chunker\n  File \"C:\\Projects\\llm-meta-analysis\\evaluation\\input_chunker.py\", line 1, in <module>\n    from models.model import Model\nModuleNotFoundError: No module named 'models'\nevaluation.integrated_meta_analysis: e 19, in <module>\n    from statistical_framework import (\n        EnhancedHeterogeneity, PublicationBiasAssessment, SmallStudyEffects\n    )\nModuleNotFoundError: No module named 'statistical_framework'\nevaluation.integrated_meta_analysis_v2: is\\evaluation\\integrated_meta_analysis_v2.py\", line 26, in <module>\n    from statistical_framework_v2 import (\n    ...<3 lines>...\n    )\nModuleNotFoundError: No module named 'statistical_framework_v2'\nevaluation.ipd_meta_analysis: import timed out\nevaluation.meta_analysis_methods: import timed out",
+      "elapsed": 64.7
+    },
+    {
+      "witness_type": "numerical",
+      "verdict": "SKIP",
+      "exit_code": null,
+      "stdout": "",
+      "stderr": "No baseline file",
+      "elapsed": 0.0
+    }
+  ],
+  "verdict": "REJECT",
+  "arbitration_reason": "Witnesses disagree: test_suite PASS vs smoke FAIL",
+  "timestamp": "2026-04-10T02:21:25+00:00",
+  "bundle_hash": "7095d58901b6e158"
+}

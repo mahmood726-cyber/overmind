@@ -1,0 +1,66 @@
+{
+  "project_id": "dataextractor-9c5488b5",
+  "scope_lock": {
+    "project_id": "dataextractor-9c5488b5",
+    "project_path": "C:\\Projects\\Dataextractor",
+    "risk_profile": "high",
+    "witness_count": 3,
+    "test_command": "npm run test",
+    "smoke_modules": [
+      "py:expand_validation",
+      "py:selenium_30k_validation_test",
+      "py:selenium_app_test",
+      "py:selenium_chrome_test",
+      "py:selenium_complete_test",
+      "py:selenium_comprehensive_test",
+      "py:selenium_debug_port_test",
+      "py:selenium_full_test",
+      "py:selenium_full_v49_test",
+      "py:selenium_headless_test",
+      "py:selenium_headless_validation",
+      "py:selenium_real_articles_test",
+      "py:selenium_simple_test",
+      "py:selenium_wdm_test",
+      "py:zs_compare",
+      "py:python.setup",
+      "js:_temp.js",
+      "js:_temp_test.js",
+      "js:accurate_paper_splitter.js",
+      "js:add_final_cases.js"
+    ],
+    "baseline_path": null,
+    "expected_outcome": "pass",
+    "source_hash": "ead616ca2bbf3e47",
+    "created_at": "2026-04-13T08:57:19+00:00"
+  },
+  "witness_results": [
+    {
+      "witness_type": "test_suite",
+      "verdict": "FAIL",
+      "exit_code": 1,
+      "stdout": " funnel()\n  \u00e2\u0153\u201c CSV format available\n\n--- Test 8: PRISMA 2020 Flow Diagram ---\n  \u00e2\u0153\u201c PRISMA 2020 structure created\n  \u00e2\u0153\u201c Identification count extracted\n  \u00e2\u0153\u201c Screening count extracted\n  \u00e2\u0153\u201c Duplicates detected\n  \u00e2\u0153\u201c Included studies count\n  \u00e2\u0153\u201c Meta-analysis count\n  \u00e2\u0153\u201c Exclusion reasons extracted\n\n--- Test 9: Cluster-RCT RoB 2.0 ---\n  \u00e2\u0153\u201c Cluster RCT detected\n  \u00e2\u0153\u201c ICC extracted\n  \u00e2\u0153\u201c ICC value correct (0.05)\n  \u00e2\u0153\u201c Design effect extracted\n  \u00e2\u0153\u201c Cluster adjustment detected\n  \u00e2\u0153\u201c Domain 1b assessed\n  \u00e2\u0153\u201c Domain 1c assessed\n\n--- Test 10: Validation Framework ---\n  \u00e2\u0153\u201c Validation structure created\n  \u00e2\u0153\u201c Plausibility checks run\n  \u00e2\u0153\u201c Effect in plausible range\n  \u00e2\u0153\u201c Accuracy metrics calculated\n  \u00e2\u0153\u201c Precision calculated\n  \u00e2\u0153\u201c Recall calculated\n  \u00e2\u0153\u201c F1 score calculated\n\n--- Test 11: Publication Bias Tests ---\n  \u00e2\u0153\u201c Egger test calculated\n  \u00e2\u0153\u201c Egger intercept present\n  \u00e2\u0153\u201c Egger t-statistic present\n  \u00e2\u0153\u201c Egger p-value present\n  \u00e2\u0153\u201c Begg test calculated\n  \u00e2\u0153\u201c Begg tau present\n  \u00e2\u0153\u201c Begg z-statistic present\n  \u00e2\u0153\u201c Begg p-value present\n  \u00e2\u0153\u201c Overall interpretation\n\n--- Test 12: Full Extraction Integration ---\n  \u00e2\u0153\u2014 Version in metadata \n  \u00e2\u0153\u201c AI enhancements listed\n  \u00e2\u0153\u201c GRADE extracted\n  \u00e2\u0153\u201c GRADE has 8 domains\n  \u00e2\u0153\u201c Heterogeneity in GRADE\n  \u00e2\u0153\u201c Effect measures extracted\n  \u00e2\u0153\u201c Subgroups structure exists\n  \u00e2\u0153\u201c PRISMA fields extracted\n  \u00e2\u0153\u201c Follow-up normalized\n  \u00e2\u0153\u201c Continuous outcomes extracted\n\n--- Test 13: RoB 2.0 Full Assessment ---\n  \u00e2\u0153\u201c RoB 2.0 structure exists\n  \u00e2\u0153\u201c Domain 1 (randomization) assessed\n  \u00e2\u0153\u201c Domain 2 (deviations) assessed\n  \u00e2\u0153\u201c Domain 3 (missing data) assessed\n  \u00e2\u0153\u201c Domain 4 (measurement) assessed\n  \u00e2\u0153\u201c Domain 5 (selection) assessed\n  \u00e2\u0153\u201c Overall RoB judgment\n\n======================================================================\nVALIDATION COMPLETE: 82 passed, 2 failed\nSuccess rate: 97.6%\n======================================================================\n\nFailed tests require attention.\n\nWrote test summary: C:\\Projects\\Dataextractor\\test_results.json\n",
+      "stderr": "",
+      "elapsed": 1.75
+    },
+    {
+      "witness_type": "smoke",
+      "verdict": "FAIL",
+      "exit_code": 1,
+      "stdout": "",
+      "stderr": "py:expand_validation: ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\nFileNotFoundError: [Errno 2] No such file or directory: 'C:\\\\Users\\\\user\\\\Downloads\\\\Dataextractor\\\\validation_independent.js'\npy:selenium_simple_test: \npy:zs_compare: import timed out\npy:python.setup: nalize_license_expression()\nusage: -c [global_opts] cmd1 [cmd1_opts] [cmd2 [cmd2_opts] ...]\n   or: -c --help [cmd1 cmd2 ...]\n   or: -c --help-commands\n   or: -c cmd --help\n\nerror: no commands supplied",
+      "elapsed": 28.47
+    },
+    {
+      "witness_type": "numerical",
+      "verdict": "SKIP",
+      "exit_code": null,
+      "stdout": "",
+      "stderr": "No baseline file",
+      "elapsed": 0.0
+    }
+  ],
+  "verdict": "FAIL",
+  "arbitration_reason": "All witnesses FAIL: test_suite, smoke",
+  "timestamp": "2026-04-13T08:57:49+00:00",
+  "bundle_hash": "3ac8a1b783f141ee"
+}

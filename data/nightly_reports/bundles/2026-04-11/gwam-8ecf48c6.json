@@ -1,0 +1,37 @@
+{
+  "project_id": "gwam-8ecf48c6",
+  "scope_lock": {
+    "project_id": "gwam-8ecf48c6",
+    "project_path": "C:\\Models\\GWAM",
+    "risk_profile": "high",
+    "witness_count": 2,
+    "test_command": "python -m pytest tests/test_bayesian_gwam.py -q",
+    "smoke_modules": [],
+    "baseline_path": null,
+    "expected_outcome": "pass",
+    "source_hash": "e2a8a7e21d9f4530",
+    "created_at": "2026-04-11T02:25:14+00:00"
+  },
+  "witness_results": [
+    {
+      "witness_type": "test_suite",
+      "verdict": "PASS",
+      "exit_code": 0,
+      "stdout": "...........                                                              [100%]\n11 passed in 18.39s\n",
+      "stderr": "",
+      "elapsed": 20.72
+    },
+    {
+      "witness_type": "smoke",
+      "verdict": "SKIP",
+      "exit_code": null,
+      "stdout": "",
+      "stderr": "No modules to check",
+      "elapsed": 0.0
+    }
+  ],
+  "verdict": "PASS",
+  "arbitration_reason": "Single witness: test_suite PASS",
+  "timestamp": "2026-04-11T02:25:35+00:00",
+  "bundle_hash": "74567fca5a787f91"
+}

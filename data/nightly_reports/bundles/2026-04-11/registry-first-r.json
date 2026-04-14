@@ -1,0 +1,45 @@
+{
+  "project_id": "registry-first-rct-meta-ca273c4f",
+  "scope_lock": {
+    "project_id": "registry-first-rct-meta-ca273c4f",
+    "project_path": "C:\\Projects\\registry_first_rct_meta",
+    "risk_profile": "high",
+    "witness_count": 3,
+    "test_command": "python -m pytest tests/test_meta.py -q",
+    "smoke_modules": [],
+    "baseline_path": null,
+    "expected_outcome": "pass",
+    "source_hash": "e054aedb5e25165b",
+    "created_at": "2026-04-11T02:23:28+00:00"
+  },
+  "witness_results": [
+    {
+      "witness_type": "test_suite",
+      "verdict": "FAIL",
+      "exit_code": 2,
+      "stdout": "\n=================================== ERRORS ====================================\n_____________________ ERROR collecting tests/test_meta.py _____________________\nImportError while importing test module 'C:\\Projects\\registry_first_rct_meta\\tests\\test_meta.py'.\nHint: make sure your test modules/packages have valid Python names.\nTraceback:\nC:\\Users\\user\\AppData\\Local\\Programs\\Python\\Python313\\Lib\\importlib\\__init__.py:88: in import_module\n    return _bootstrap._gcd_import(name[level:], package, level)\n           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\ntests\\test_meta.py:3: in <module>\n    from registry_first_ma.meta import meta_analyze_binary\nE   ModuleNotFoundError: No module named 'registry_first_ma'\n=========================== short test summary info ===========================\nERROR tests/test_meta.py\n!!!!!!!!!!!!!!!!!!! Interrupted: 1 error during collection !!!!!!!!!!!!!!!!!!!!\n1 error in 1.88s\n",
+      "stderr": "",
+      "elapsed": 4.54
+    },
+    {
+      "witness_type": "smoke",
+      "verdict": "SKIP",
+      "exit_code": null,
+      "stdout": "",
+      "stderr": "No modules to check",
+      "elapsed": 0.0
+    },
+    {
+      "witness_type": "numerical",
+      "verdict": "SKIP",
+      "exit_code": null,
+      "stdout": "",
+      "stderr": "No baseline file",
+      "elapsed": 0.0
+    }
+  ],
+  "verdict": "FAIL",
+  "arbitration_reason": "Single witness: test_suite FAIL",
+  "timestamp": "2026-04-11T02:23:33+00:00",
+  "bundle_hash": "74db024f76fb5e75"
+}

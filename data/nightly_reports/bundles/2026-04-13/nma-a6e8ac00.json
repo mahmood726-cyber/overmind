@@ -1,0 +1,45 @@
+{
+  "project_id": "nma-a6e8ac00",
+  "scope_lock": {
+    "project_id": "nma-a6e8ac00",
+    "project_path": "C:\\Projects\\NMA",
+    "risk_profile": "high",
+    "witness_count": 3,
+    "test_command": "Rscript -e \"testthat::test_dir('tests/testthat')\"",
+    "smoke_modules": [],
+    "baseline_path": null,
+    "expected_outcome": "pass",
+    "source_hash": "e3b0c44298fc1c14",
+    "created_at": "2026-04-13T08:57:16+00:00"
+  },
+  "witness_results": [
+    {
+      "witness_type": "test_suite",
+      "verdict": "FAIL",
+      "exit_code": 1,
+      "stdout": "v | F W  S  OK | Context\n\n/ |          0 | basic                                                          \n- | 1        0 | basic                                                          \nx | 2        0 | basic\n--------------------------------------------------------------------------------\nError ('test-basic.R:2:3'): simulate_surro_data produces expected structure\nError in `simulate_surro_data(K = 4, J = 6, per_study = 1, seed = 1)`: could not find function \"simulate_surro_data\"\n\nError ('test-basic.R:7:3'): frequentist pipeline runs\nError in `simulate_surro_data(K = 5, J = 10, per_study = 1, seed = 2)`: could not find function \"simulate_surro_data\"\n--------------------------------------------------------------------------------\n\n== Results =====================================================================\n-- Failed tests ----------------------------------------------------------------\nError ('test-basic.R:2:3'): simulate_surro_data produces expected structure\nError in `simulate_surro_data(K = 4, J = 6, per_study = 1, seed = 1)`: could not find function \"simulate_surro_data\"\n\nError ('test-basic.R:7:3'): frequentist pipeline runs\nError in `simulate_surro_data(K = 5, J = 10, per_study = 1, seed = 2)`: could not find function \"simulate_surro_data\"\n\n[ FAIL 2 | WARN 0 | SKIP 0 | PASS 0 ]\n",
+      "stderr": "During startup - Warning messages:\n1: Setting LC_COLLATE=C.UTF-8 failed \n2: Setting LC_CTYPE=C.UTF-8 failed \n3: Setting LC_MONETARY=C.UTF-8 failed \n4: Setting LC_TIME=C.UTF-8 failed \nError: Test failures\nExecution halted\n",
+      "elapsed": 1.28
+    },
+    {
+      "witness_type": "smoke",
+      "verdict": "SKIP",
+      "exit_code": null,
+      "stdout": "",
+      "stderr": "No modules to check",
+      "elapsed": 0.0
+    },
+    {
+      "witness_type": "numerical",
+      "verdict": "SKIP",
+      "exit_code": null,
+      "stdout": "",
+      "stderr": "No baseline file",
+      "elapsed": 0.0
+    }
+  ],
+  "verdict": "FAIL",
+  "arbitration_reason": "Single witness: test_suite FAIL",
+  "timestamp": "2026-04-13T08:57:17+00:00",
+  "bundle_hash": "9a80b04c22ad5bee"
+}

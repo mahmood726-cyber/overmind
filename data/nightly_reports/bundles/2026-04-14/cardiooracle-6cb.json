@@ -1,0 +1,60 @@
+{
+  "project_id": "cardiooracle-6cb36757",
+  "scope_lock": {
+    "project_id": "cardiooracle-6cb36757",
+    "project_path": "C:\\Models\\CardioOracle",
+    "risk_profile": "high",
+    "witness_count": 3,
+    "test_command": "python -m pytest tests/test_curation.py -q",
+    "smoke_modules": [
+      "py:backtest.backtest",
+      "py:backtest.test_backtest",
+      "py:curate.export_training",
+      "py:curate.extract_aact",
+      "py:curate.extract_cad",
+      "py:curate.fit_model",
+      "py:curate.label_outcomes",
+      "py:curate.shared",
+      "py:curate.validate_labels",
+      "py:debug_test",
+      "py:generate_figures",
+      "py:recalibrate",
+      "js:prospective_predictions.js",
+      "js:vendor/plotly-2.27.0.min.js"
+    ],
+    "baseline_path": null,
+    "expected_outcome": "pass",
+    "source_hash": "59130044e064da64",
+    "created_at": "2026-04-14T02:05:07+00:00"
+  },
+  "witness_results": [
+    {
+      "witness_type": "test_suite",
+      "verdict": "PASS",
+      "exit_code": 0,
+      "stdout": "..............................                                           [100%]\n30 passed in 1.59s\n",
+      "stderr": "",
+      "elapsed": 2.98
+    },
+    {
+      "witness_type": "smoke",
+      "verdict": "FAIL",
+      "exit_code": 1,
+      "stdout": "",
+      "stderr": "py:backtest.test_backtest: ic, predict_logistic, ensemble_predict,\n                           compute_metrics, solve_linear, normal_cdf, load_data)\nImportError: cannot import name 'similarity' from 'backtest' (unknown location)\npy:curate.extract_aact: import curate.extract_aact\n  File \"C:\\Models\\CardioOracle\\curate\\extract_aact.py\", line 22, in <module>\n    from shared import (\n    ...<4 lines>...\n    )\nModuleNotFoundError: No module named 'shared'\npy:debug_test: import timed out\npy:recalibrate: ata\\Local\\Programs\\Python\\Python313\\Lib\\json\\decoder.py\", line 348, in decode\n    raise JSONDecodeError(\"Extra data\", s, end)\njson.decoder.JSONDecodeError: Extra data: line 1 column 62849 (char 62848)",
+      "elapsed": 15.34
+    },
+    {
+      "witness_type": "numerical",
+      "verdict": "SKIP",
+      "exit_code": null,
+      "stdout": "",
+      "stderr": "No baseline file",
+      "elapsed": 0.0
+    }
+  ],
+  "verdict": "REJECT",
+  "arbitration_reason": "Witnesses disagree: test_suite PASS vs smoke FAIL",
+  "timestamp": "2026-04-14T02:05:38+00:00",
+  "bundle_hash": "885d14c823e48ea5"
+}

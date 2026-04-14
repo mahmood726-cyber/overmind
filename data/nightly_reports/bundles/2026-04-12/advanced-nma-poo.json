@@ -1,0 +1,56 @@
+{
+  "project_id": "advanced-nma-pooling-6e3c8bdb",
+  "scope_lock": {
+    "project_id": "advanced-nma-pooling-6e3c8bdb",
+    "project_path": "C:\\Models\\advanced-nma-pooling",
+    "risk_profile": "high",
+    "witness_count": 3,
+    "test_command": "python -m pytest tests/simulation/test_smoke_simulation.py -q",
+    "smoke_modules": [
+      "pipelines.run_analysis",
+      "pipelines.run_benchmark",
+      "pipelines.run_bias_adjusted",
+      "pipelines.run_bias_adjusted_bayesian",
+      "pipelines.run_bias_sensitivity",
+      "pipelines.run_mlnmr",
+      "pipelines.run_mlnmr_bayesian",
+      "pipelines.run_paper1_bundle",
+      "pipelines.run_publication_suite",
+      "pipelines.run_survival_nph"
+    ],
+    "baseline_path": "C:\\overmind\\data\\baselines\\advanced-nma-pooling-6e3c8bdb.json",
+    "expected_outcome": "pass",
+    "source_hash": "a5ee28a029b6f3b5",
+    "created_at": "2026-04-12T02:00:05+00:00"
+  },
+  "witness_results": [
+    {
+      "witness_type": "test_suite",
+      "verdict": "PASS",
+      "exit_code": 0,
+      "stdout": ".                                                                        [100%]\n",
+      "stderr": "",
+      "elapsed": 3.44
+    },
+    {
+      "witness_type": "smoke",
+      "verdict": "PASS",
+      "exit_code": 0,
+      "stdout": "10 modules imported OK",
+      "stderr": "",
+      "elapsed": 8.63
+    },
+    {
+      "witness_type": "numerical",
+      "verdict": "FAIL",
+      "exit_code": -1,
+      "stdout": "",
+      "stderr": "Failed to start: [WinError 2] The system cannot find the file specified",
+      "elapsed": 0.02
+    }
+  ],
+  "verdict": "REJECT",
+  "arbitration_reason": "Witnesses disagree: test_suite, smoke PASS vs numerical FAIL",
+  "timestamp": "2026-04-12T02:00:17+00:00",
+  "bundle_hash": "b84340037aafe220"
+}

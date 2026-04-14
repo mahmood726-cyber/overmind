@@ -1,0 +1,42 @@
+{
+  "project_id": "metasprint-cardio-universe-c652825d",
+  "scope_lock": {
+    "project_id": "metasprint-cardio-universe-c652825d",
+    "project_path": "C:\\Projects\\metasprint-cardio-universe",
+    "risk_profile": "high",
+    "witness_count": 2,
+    "test_command": "python -m pytest tests/test_smoke.py -q",
+    "smoke_modules": [
+      "js:public/adjudication-runtime.js",
+      "js:public/discovery-runtime.js",
+      "js:public/review-dashboard-main.js",
+      "js:src/main.js"
+    ],
+    "baseline_path": null,
+    "expected_outcome": "pass",
+    "source_hash": "f3b1114beb012605",
+    "created_at": "2026-04-13T07:48:58+00:00"
+  },
+  "witness_results": [
+    {
+      "witness_type": "test_suite",
+      "verdict": "PASS",
+      "exit_code": 0,
+      "stdout": ".                                                                        [100%]\n1 passed in 0.03s\n",
+      "stderr": "",
+      "elapsed": 1.26
+    },
+    {
+      "witness_type": "smoke",
+      "verdict": "PASS",
+      "exit_code": 0,
+      "stdout": "4 modules imported OK",
+      "stderr": "",
+      "elapsed": 0.21
+    }
+  ],
+  "verdict": "CERTIFIED",
+  "arbitration_reason": "2/2 witnesses agree PASS",
+  "timestamp": "2026-04-13T07:48:59+00:00",
+  "bundle_hash": "ff49cc0fe02d3faa"
+}

@@ -1,0 +1,37 @@
+{
+  "project_id": "hfpef-registry-calibration-bc694f74",
+  "scope_lock": {
+    "project_id": "hfpef-registry-calibration-bc694f74",
+    "project_path": "C:\\Projects\\hfpef_registry_calibration",
+    "risk_profile": "high",
+    "witness_count": 2,
+    "test_command": "python -m pytest tests/test_validation.py -q",
+    "smoke_modules": [],
+    "baseline_path": null,
+    "expected_outcome": "pass",
+    "source_hash": "02ccdd90ed42325a",
+    "created_at": "2026-04-11T02:26:42+00:00"
+  },
+  "witness_results": [
+    {
+      "witness_type": "test_suite",
+      "verdict": "PASS",
+      "exit_code": 0,
+      "stdout": ".                                                                        [100%]\n1 passed in 1.26s\n",
+      "stderr": "",
+      "elapsed": 3.51
+    },
+    {
+      "witness_type": "smoke",
+      "verdict": "SKIP",
+      "exit_code": null,
+      "stdout": "",
+      "stderr": "No modules to check",
+      "elapsed": 0.0
+    }
+  ],
+  "verdict": "PASS",
+  "arbitration_reason": "Single witness: test_suite PASS",
+  "timestamp": "2026-04-11T02:26:46+00:00",
+  "bundle_hash": "91e2146198886a43"
+}

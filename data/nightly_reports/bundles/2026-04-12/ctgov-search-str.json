@@ -1,0 +1,58 @@
+{
+  "project_id": "ctgov-search-strategies-b6ea3be1",
+  "scope_lock": {
+    "project_id": "ctgov-search-strategies-b6ea3be1",
+    "project_path": "C:\\Projects\\ctgov-analyses\\ctgov-search-strategies",
+    "risk_profile": "high",
+    "witness_count": 2,
+    "test_command": "pytest tests/test_strategy_optimizer.py",
+    "smoke_modules": [
+      "aact_debug",
+      "aact_full_validation",
+      "aact_search",
+      "aact_validation",
+      "advanced_search",
+      "api_versioning",
+      "benchmarks",
+      "challenging_conditions",
+      "combined_search",
+      "comprehensive_validation",
+      "ctgov_advanced",
+      "ctgov_config",
+      "ctgov_fast",
+      "ctgov_search",
+      "ctgov_terms",
+      "ctgov_utils",
+      "ctgov_workflow",
+      "deep_optimizer",
+      "direct_nct_search",
+      "enhanced_strategy"
+    ],
+    "baseline_path": null,
+    "expected_outcome": "pass",
+    "source_hash": "7c060c28eed9c9ce",
+    "created_at": "2026-04-12T02:20:19+00:00"
+  },
+  "witness_results": [
+    {
+      "witness_type": "test_suite",
+      "verdict": "PASS",
+      "exit_code": 0,
+      "stdout": "search.py                    110    110     0%   6-175\nenhanced_strategy.py                    114    114     0%   9-245\nerror_handling.py                       305    305     0%   29-764\nesc_cardiology_search.py                106    106     0%   19-481\nexpanded_therapeutic_validation.py      238    238     0%   22-976\nexpanded_validation.py                  141    141     0%   11-309\nmax_recall_strategy.py                  119    119     0%   7-243\nmesh_integration.py                     296    296     0%   19-762\nmulti_source_search.py                  246    246     0%   11-453\nprecision_metrics.py                    537    403    25%   105-124, 155-173, 210-244, 301-308, 342-348, 358, 370-371, 376, 421-427, 450-454, 477-481, 503-508, 546-550, 577-581, 615-648, 699-747, 790-801, 839-847, 876-891, 922-1060, 1081-1094, 1123-1175, 1204, 1209, 1213, 1245, 1254-1269, 1290-1313, 1324-1336, 1340, 1396-1401, 1405, 1409, 1434-1587, 1607-1971, 1983-1992, 2021-2062, 2086-2105\nprisma_generator.py                     224    224     0%   38-877\nregistry_adapters\\__init__.py           156    156     0%   26-425\nregistry_adapters\\anzctr_adapter.py     174    174     0%   8-376\nregistry_adapters\\base_adapter.py       234    234     0%   9-545\nregistry_adapters\\chictr_adapter.py     181    181     0%   8-401\nregistry_adapters\\ctri_adapter.py       194    194     0%   8-413\nregistry_adapters\\drks_adapter.py       211    211     0%   8-465\nregistry_adapters\\jrct_adapter.py       204    204     0%   8-424\nris_export.py                           334    334     0%   35-874\nscenario_optimizer.py                   196    196     0%   7-413\nsearch_methodology.py                   501    501     0%   26-1714\nstrategy_optimizer.py                   211     24    89%   643, 668, 675, 681, 738, 749-751, 779-785, 789-794, 882-885, 898-924, 934, 947\n-------------------------------------------------------------------\nTOTAL                                  8016   7596     5%\n\n28 passed in 4.27s\n",
+      "stderr": "",
+      "elapsed": 6.91
+    },
+    {
+      "witness_type": "smoke",
+      "verdict": "PASS",
+      "exit_code": 0,
+      "stdout": "20 modules imported OK",
+      "stderr": "",
+      "elapsed": 7.28
+    }
+  ],
+  "verdict": "CERTIFIED",
+  "arbitration_reason": "2/2 witnesses agree PASS",
+  "timestamp": "2026-04-12T02:20:33+00:00",
+  "bundle_hash": "db64f99f154ae822"
+}

@@ -1,0 +1,39 @@
+{
+  "project_id": "metaregression-b984b3aa",
+  "scope_lock": {
+    "project_id": "metaregression-b984b3aa",
+    "project_path": "C:\\Models\\MetaRegression",
+    "risk_profile": "medium_high",
+    "witness_count": 2,
+    "test_command": "python -m pytest tests/test_metaregression.py -q",
+    "smoke_modules": [
+      "test_meta_regression"
+    ],
+    "baseline_path": null,
+    "expected_outcome": "pass",
+    "source_hash": "c8835d4247c5389e",
+    "created_at": "2026-04-10T02:25:35+00:00"
+  },
+  "witness_results": [
+    {
+      "witness_type": "test_suite",
+      "verdict": "FAIL",
+      "exit_code": -1,
+      "stdout": "",
+      "stderr": "Timed out after 120s",
+      "elapsed": 120.03
+    },
+    {
+      "witness_type": "smoke",
+      "verdict": "PASS",
+      "exit_code": 0,
+      "stdout": "1 modules imported OK",
+      "stderr": "",
+      "elapsed": 0.93
+    }
+  ],
+  "verdict": "REJECT",
+  "arbitration_reason": "Witnesses disagree: smoke PASS vs test_suite FAIL",
+  "timestamp": "2026-04-10T02:29:36+00:00",
+  "bundle_hash": "2b028a18abd44216"
+}

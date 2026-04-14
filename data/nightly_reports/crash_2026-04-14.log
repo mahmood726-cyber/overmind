@@ -1,0 +1,23 @@
+Nightly crash at 2026-04-14T02:18:02.730691+00:00
+
+Traceback (most recent call last):
+  File "C:\overmind\scripts\nightly_verify.py", line 292, in main
+    _run_verification(db, args, run_start)
+    ~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^
+  File "C:\overmind\scripts\nightly_verify.py", line 386, in _run_verification
+    bundle = _verify_with_timeout(engine, proj, timeout=300)
+  File "C:\overmind\scripts\nightly_verify.py", line 183, in _verify_with_timeout
+    scope_lock=engine.build_scope_lock(proj),
+               ~~~~~~~~~~~~~~~~~~~~~~~^^^^^^
+  File "C:\overmind\overmind\verification\truthcert_engine.py", line 38, in build_scope_lock
+    source_hash = self._hash_source_files(project.root_path)
+  File "C:\overmind\overmind\verification\truthcert_engine.py", line 201, in _hash_source_files
+    if not path.is_file():
+           ~~~~~~~~~~~~^^
+  File "C:\Users\user\AppData\Local\Programs\Python\Python313\Lib\pathlib\_abc.py", line 482, in is_file
+    return S_ISREG(self.stat(follow_symlinks=follow_symlinks).st_mode)
+                   ~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\user\AppData\Local\Programs\Python\Python313\Lib\pathlib\_local.py", line 515, in stat
+    return os.stat(self, follow_symlinks=follow_symlinks)
+           ~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+OSError: [WinError 1920] The file cannot be accessed by the system: 'C:\\Users\\user\\OneDrive - NHS\\Documents\\Pairwise70\\open_api_rct_benchmark\\.venv\\lib64'

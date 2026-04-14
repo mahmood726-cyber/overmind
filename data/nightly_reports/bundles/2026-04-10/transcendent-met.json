@@ -1,0 +1,54 @@
+{
+  "project_id": "transcendent-meta-analysis-lab-dda9f9d3",
+  "scope_lock": {
+    "project_id": "transcendent-meta-analysis-lab-dda9f9d3",
+    "project_path": "C:\\Projects\\Transcendent-Meta-Analysis-Lab",
+    "risk_profile": "high",
+    "witness_count": 3,
+    "test_command": "python -m pytest tests/test_bayesian_model_avg.py -q",
+    "smoke_modules": [
+      "colorectal_cancer_synthesis",
+      "epistemic_horizon_synthesis",
+      "omniscience_tier_synthesis",
+      "the_absolute_limit",
+      "core.data_loader",
+      "core.types",
+      "core.validation",
+      "methods.bayesian_model_avg"
+    ],
+    "baseline_path": null,
+    "expected_outcome": "pass",
+    "source_hash": "3a856bf62d820476",
+    "created_at": "2026-04-10T02:18:48+00:00"
+  },
+  "witness_results": [
+    {
+      "witness_type": "test_suite",
+      "verdict": "PASS",
+      "exit_code": 0,
+      "stdout": "............                                                             [100%]\n12 passed in 1.79s\n",
+      "stderr": "",
+      "elapsed": 5.12
+    },
+    {
+      "witness_type": "smoke",
+      "verdict": "PASS",
+      "exit_code": 0,
+      "stdout": "8 modules imported OK",
+      "stderr": "",
+      "elapsed": 11.33
+    },
+    {
+      "witness_type": "numerical",
+      "verdict": "SKIP",
+      "exit_code": null,
+      "stdout": "",
+      "stderr": "No baseline file",
+      "elapsed": 0.0
+    }
+  ],
+  "verdict": "PASS",
+  "arbitration_reason": "2/2 witnesses PASS (numerical skipped \u2014 no baseline)",
+  "timestamp": "2026-04-10T02:19:04+00:00",
+  "bundle_hash": "26e19385584602c4"
+}

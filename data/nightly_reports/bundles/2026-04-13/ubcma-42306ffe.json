@@ -1,0 +1,56 @@
+{
+  "project_id": "ubcma-42306ffe",
+  "scope_lock": {
+    "project_id": "ubcma-42306ffe",
+    "project_path": "C:\\ubcma",
+    "risk_profile": "high",
+    "witness_count": 3,
+    "test_command": "python -m pytest tests/test_smoke.py -q",
+    "smoke_modules": [
+      "py:ubcma",
+      "py:ubcma.bayesian",
+      "py:ubcma.cli",
+      "py:ubcma.comparators",
+      "py:ubcma.data",
+      "py:ubcma.diagnostics",
+      "py:ubcma.inference",
+      "py:ubcma.model",
+      "py:ubcma.simulation",
+      "py:ubcma.simulation_study"
+    ],
+    "baseline_path": "C:\\overmind\\data\\baselines\\ubcma-42306ffe.json",
+    "expected_outcome": "pass",
+    "source_hash": "ce1d46bc46cbaebd",
+    "created_at": "2026-04-13T07:48:29+00:00"
+  },
+  "witness_results": [
+    {
+      "witness_type": "test_suite",
+      "verdict": "PASS",
+      "exit_code": 0,
+      "stdout": ".......                                                                  [100%]\n7 passed in 1.42s\n",
+      "stderr": "",
+      "elapsed": 3.04
+    },
+    {
+      "witness_type": "smoke",
+      "verdict": "PASS",
+      "exit_code": 0,
+      "stdout": "10 modules imported OK",
+      "stderr": "",
+      "elapsed": 22.51
+    },
+    {
+      "witness_type": "numerical",
+      "verdict": "PASS",
+      "exit_code": 0,
+      "stdout": "2 values within tolerance",
+      "stderr": "",
+      "elapsed": 1.65
+    }
+  ],
+  "verdict": "CERTIFIED",
+  "arbitration_reason": "3/3 witnesses agree PASS",
+  "timestamp": "2026-04-13T07:48:56+00:00",
+  "bundle_hash": "60df182f78690678"
+}

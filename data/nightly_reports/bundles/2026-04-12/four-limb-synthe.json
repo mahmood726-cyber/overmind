@@ -1,0 +1,41 @@
+{
+  "project_id": "four-limb-synthesis-65e6c202",
+  "scope_lock": {
+    "project_id": "four-limb-synthesis-65e6c202",
+    "project_path": "C:\\Projects\\four_limb_synthesis",
+    "risk_profile": "high",
+    "witness_count": 2,
+    "test_command": "python -m pytest tests/test_core.py -q",
+    "smoke_modules": [
+      "generate_massive_ctgov",
+      "generate_quantum_data",
+      "run_pipeline"
+    ],
+    "baseline_path": null,
+    "expected_outcome": "pass",
+    "source_hash": "51ba8d96c6937ee0",
+    "created_at": "2026-04-12T02:21:54+00:00"
+  },
+  "witness_results": [
+    {
+      "witness_type": "test_suite",
+      "verdict": "PASS",
+      "exit_code": 0,
+      "stdout": "...........                                                              [100%]\n11 passed in 1.73s\n",
+      "stderr": "",
+      "elapsed": 3.44
+    },
+    {
+      "witness_type": "smoke",
+      "verdict": "PASS",
+      "exit_code": 0,
+      "stdout": "3 modules imported OK",
+      "stderr": "",
+      "elapsed": 7.97
+    }
+  ],
+  "verdict": "CERTIFIED",
+  "arbitration_reason": "2/2 witnesses agree PASS",
+  "timestamp": "2026-04-12T02:22:06+00:00",
+  "bundle_hash": "dff202b64ac3b783"
+}

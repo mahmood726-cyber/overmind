@@ -1,0 +1,48 @@
+{
+  "project_id": "evidenceoracle-b78b3965",
+  "scope_lock": {
+    "project_id": "evidenceoracle-b78b3965",
+    "project_path": "C:\\Models\\EvidenceOracle",
+    "risk_profile": "high",
+    "witness_count": 3,
+    "test_command": "python -m pytest tests/test_oracle.py -q",
+    "smoke_modules": [
+      "assemble_features",
+      "train_model"
+    ],
+    "baseline_path": null,
+    "expected_outcome": "pass",
+    "source_hash": "03a60d5017bbf20a",
+    "created_at": "2026-04-10T02:11:00+00:00"
+  },
+  "witness_results": [
+    {
+      "witness_type": "test_suite",
+      "verdict": "PASS",
+      "exit_code": 0,
+      "stdout": "................                                                         [100%]\n16 passed in 0.90s\n",
+      "stderr": "",
+      "elapsed": 2.57
+    },
+    {
+      "witness_type": "smoke",
+      "verdict": "PASS",
+      "exit_code": 0,
+      "stdout": "2 modules imported OK",
+      "stderr": "",
+      "elapsed": 3.74
+    },
+    {
+      "witness_type": "numerical",
+      "verdict": "SKIP",
+      "exit_code": null,
+      "stdout": "",
+      "stderr": "No baseline file",
+      "elapsed": 0.0
+    }
+  ],
+  "verdict": "PASS",
+  "arbitration_reason": "2/2 witnesses PASS (numerical skipped \u2014 no baseline)",
+  "timestamp": "2026-04-10T02:11:06+00:00",
+  "bundle_hash": "c03f19e8c514ca36"
+}

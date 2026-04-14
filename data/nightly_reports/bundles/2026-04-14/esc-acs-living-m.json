@@ -1,0 +1,66 @@
+{
+  "project_id": "esc-acs-living-meta-dab41ea9",
+  "scope_lock": {
+    "project_id": "esc-acs-living-meta-dab41ea9",
+    "project_path": "C:\\Projects\\esc-acs-living-meta",
+    "risk_profile": "high",
+    "witness_count": 3,
+    "test_command": "python -m pytest tests/test_smoke.py -q",
+    "smoke_modules": [
+      "py:aact_local_gateway",
+      "js:ai-core.js",
+      "js:analysis.js",
+      "js:app.js",
+      "js:cache.js",
+      "js:collaboration.js",
+      "js:datasets.js",
+      "js:help-system.js",
+      "js:living-review.js",
+      "js:ml-local.js",
+      "js:r-validation.js",
+      "js:service-worker.js",
+      "js:test-runner-cli.js",
+      "js:tests.js",
+      "js:topics.js",
+      "js:visualization-advanced.js",
+      "js:worker.js",
+      "js:esc_flagged_remediation_pipeline.mjs",
+      "js:esc_guideline_universe_pipeline.mjs",
+      "js:plos_one_review_pipeline.mjs"
+    ],
+    "baseline_path": null,
+    "expected_outcome": "pass",
+    "source_hash": "cb819ef9f369e455",
+    "created_at": "2026-04-14T02:05:41+00:00"
+  },
+  "witness_results": [
+    {
+      "witness_type": "test_suite",
+      "verdict": "PASS",
+      "exit_code": 0,
+      "stdout": ".                                                                        [100%]\n1 passed in 0.02s\n",
+      "stderr": "",
+      "elapsed": 1.08
+    },
+    {
+      "witness_type": "smoke",
+      "verdict": "PASS",
+      "exit_code": 0,
+      "stdout": "20 modules imported OK",
+      "stderr": "",
+      "elapsed": 1.11
+    },
+    {
+      "witness_type": "numerical",
+      "verdict": "SKIP",
+      "exit_code": null,
+      "stdout": "",
+      "stderr": "No baseline file",
+      "elapsed": 0.0
+    }
+  ],
+  "verdict": "PASS",
+  "arbitration_reason": "2/2 witnesses PASS (numerical skipped \u2014 no baseline)",
+  "timestamp": "2026-04-14T02:05:43+00:00",
+  "bundle_hash": "f003f27da299039f"
+}

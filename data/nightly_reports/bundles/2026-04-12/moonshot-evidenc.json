@@ -1,0 +1,60 @@
+{
+  "project_id": "moonshot-evidence-lab-84ef000a",
+  "scope_lock": {
+    "project_id": "moonshot-evidence-lab-84ef000a",
+    "project_path": "C:\\Projects\\moonshot-evidence-lab",
+    "risk_profile": "high",
+    "witness_count": 3,
+    "test_command": "python -m pytest tests/test_advanced_meta.py -q",
+    "smoke_modules": [
+      "moonshot_evidence_lab.advanced_meta",
+      "moonshot_evidence_lab.autoresearch_loop",
+      "moonshot_evidence_lab.benchmarks",
+      "moonshot_evidence_lab.cli",
+      "moonshot_evidence_lab.evidence",
+      "moonshot_evidence_lab.extraction",
+      "moonshot_evidence_lab.literature",
+      "moonshot_evidence_lab.meta_analysis",
+      "moonshot_evidence_lab.models",
+      "moonshot_evidence_lab.multivariate_meta",
+      "moonshot_evidence_lab.network_meta",
+      "moonshot_evidence_lab.program_surface",
+      "moonshot_evidence_lab.review_pipeline",
+      "moonshot_evidence_lab.tabular_data"
+    ],
+    "baseline_path": null,
+    "expected_outcome": "pass",
+    "source_hash": "1c726e04526d93f5",
+    "created_at": "2026-04-12T02:15:19+00:00"
+  },
+  "witness_results": [
+    {
+      "witness_type": "test_suite",
+      "verdict": "PASS",
+      "exit_code": 0,
+      "stdout": "...........                                                              [100%]\n11 passed in 0.44s\n",
+      "stderr": "",
+      "elapsed": 2.19
+    },
+    {
+      "witness_type": "smoke",
+      "verdict": "PASS",
+      "exit_code": 0,
+      "stdout": "14 modules imported OK",
+      "stderr": "",
+      "elapsed": 2.94
+    },
+    {
+      "witness_type": "numerical",
+      "verdict": "SKIP",
+      "exit_code": null,
+      "stdout": "",
+      "stderr": "No baseline file",
+      "elapsed": 0.0
+    }
+  ],
+  "verdict": "PASS",
+  "arbitration_reason": "2/2 witnesses PASS (numerical skipped \u2014 no baseline)",
+  "timestamp": "2026-04-12T02:15:24+00:00",
+  "bundle_hash": "2811177f890efd70"
+}

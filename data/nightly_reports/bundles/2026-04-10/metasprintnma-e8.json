@@ -1,0 +1,45 @@
+{
+  "project_id": "metasprintnma-e8770e5e",
+  "scope_lock": {
+    "project_id": "metasprintnma-e8770e5e",
+    "project_path": "C:\\Projects\\metasprintnma",
+    "risk_profile": "high",
+    "witness_count": 3,
+    "test_command": "python test_expanded_suite.py",
+    "smoke_modules": [],
+    "baseline_path": null,
+    "expected_outcome": "pass",
+    "source_hash": "e3b0c44298fc1c14",
+    "created_at": "2026-04-10T02:08:22+00:00"
+  },
+  "witness_results": [
+    {
+      "witness_type": "test_suite",
+      "verdict": "FAIL",
+      "exit_code": -1,
+      "stdout": "",
+      "stderr": "Failed to start: [WinError 267] The directory name is invalid",
+      "elapsed": 0.0
+    },
+    {
+      "witness_type": "smoke",
+      "verdict": "SKIP",
+      "exit_code": null,
+      "stdout": "",
+      "stderr": "No modules to check",
+      "elapsed": 0.0
+    },
+    {
+      "witness_type": "numerical",
+      "verdict": "SKIP",
+      "exit_code": null,
+      "stdout": "",
+      "stderr": "No baseline file",
+      "elapsed": 0.0
+    }
+  ],
+  "verdict": "FAIL",
+  "arbitration_reason": "Single witness: test_suite FAIL",
+  "timestamp": "2026-04-10T02:08:22+00:00",
+  "bundle_hash": "be818fafeba56b74"
+}

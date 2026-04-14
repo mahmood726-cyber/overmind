@@ -1,0 +1,76 @@
+{
+  "project_id": "idea12-59249342",
+  "scope_lock": {
+    "project_id": "idea12-59249342",
+    "project_path": "C:\\Projects\\idea12",
+    "risk_profile": "high",
+    "witness_count": 3,
+    "test_command": "python -m pytest tests/test_basic.py -q",
+    "smoke_modules": [
+      "py:netmetareg",
+      "py:netmetareg.core",
+      "py:netmetareg.core.data_structure",
+      "py:netmetareg.core.network",
+      "py:netmetareg.forensic",
+      "py:netmetareg.forensic.bayesian_ess",
+      "py:netmetareg.forensic.bias_detector",
+      "py:netmetareg.inconsistency",
+      "py:netmetareg.inconsistency.design_treatment",
+      "py:netmetareg.inconsistency.node_splitting",
+      "py:netmetareg.models",
+      "py:netmetareg.models.bayesian_nma",
+      "py:netmetareg.models.frequentist_nma",
+      "py:netmetareg.regression",
+      "py:netmetareg.regression.meta_regression",
+      "py:netmetareg.selection",
+      "py:netmetareg.selection.cross_validation",
+      "py:netmetareg.selection.lasso_selection",
+      "py:netmetareg.utils",
+      "py:netmetareg.utils.missing_data",
+      "py:netmetareg.utils.simulation",
+      "py:paper2.cochrane_data_extraction",
+      "py:validation.benchmark_lu_ades_2004",
+      "py:validation.create_publication_figures",
+      "py:validation.expand_concordant_validation",
+      "py:validation.forensic_simulation_study",
+      "py:validation.medical_reversal_validation",
+      "py:validation.optimize_thresholds",
+      "py:validation.run_quick_validation",
+      "py:validation.simulation_study_1_basic_nma"
+    ],
+    "baseline_path": null,
+    "expected_outcome": "pass",
+    "source_hash": "f36f48b6c20500ad",
+    "created_at": "2026-04-14T02:05:45+00:00"
+  },
+  "witness_results": [
+    {
+      "witness_type": "test_suite",
+      "verdict": "PASS",
+      "exit_code": 0,
+      "stdout": "...............                                                          [100%]\n============================== warnings summary ===============================\n..\\..\\Users\\user\\AppData\\Local\\Programs\\Python\\Python313\\Lib\\site-packages\\arviz\\__init__.py:50\n  C:\\Users\\user\\AppData\\Local\\Programs\\Python\\Python313\\Lib\\site-packages\\arviz\\__init__.py:50: FutureWarning: \n  ArviZ is undergoing a major refactor to improve flexibility and extensibility while maintaining a user-friendly interface.\n  Some upcoming changes may be backward incompatible.\n  For details and migration guidance, visit: https://python.arviz.org/en/latest/user_guide/migration_guide.html\n    warn(\n\n-- Docs: https://docs.pytest.org/en/stable/how-to/capture-warnings.html\n15 passed, 1 warning in 7.86s\n",
+      "stderr": "",
+      "elapsed": 9.96
+    },
+    {
+      "witness_type": "smoke",
+      "verdict": "FAIL",
+      "exit_code": 1,
+      "stdout": "",
+      "stderr": "py:validation.run_quick_validation: ams\\Python\\Python313\\Lib\\site-packages\\pandas\\core\\apply.py\", line 663, in normalize_dictlike_arg\n    raise KeyError(f\"Column(s) {list(cols)} do not exist\")\nKeyError: \"Column(s) ['rmse'] do not exist\"",
+      "elapsed": 116.84
+    },
+    {
+      "witness_type": "numerical",
+      "verdict": "SKIP",
+      "exit_code": null,
+      "stdout": "",
+      "stderr": "No baseline file",
+      "elapsed": 0.0
+    }
+  ],
+  "verdict": "REJECT",
+  "arbitration_reason": "Witnesses disagree: test_suite PASS vs smoke FAIL",
+  "timestamp": "2026-04-14T02:09:52+00:00",
+  "bundle_hash": "9043128872112615"
+}

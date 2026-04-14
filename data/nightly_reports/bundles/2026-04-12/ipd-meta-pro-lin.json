@@ -1,0 +1,45 @@
+{
+  "project_id": "ipd-meta-pro-link-40520491",
+  "scope_lock": {
+    "project_id": "ipd-meta-pro-link-40520491",
+    "project_path": "C:\\Projects\\ipd-meta-pro-link",
+    "risk_profile": "high",
+    "witness_count": 3,
+    "test_command": "python dev/build-scripts/user_flow_smoke_test.py",
+    "smoke_modules": [],
+    "baseline_path": null,
+    "expected_outcome": "pass",
+    "source_hash": "e3b0c44298fc1c14",
+    "created_at": "2026-04-12T02:08:07+00:00"
+  },
+  "witness_results": [
+    {
+      "witness_type": "test_suite",
+      "verdict": "FAIL",
+      "exit_code": 2,
+      "stdout": "",
+      "stderr": "python: can't open file 'C:\\\\Projects\\\\ipd-meta-pro-link\\\\dev\\\\build-scripts\\\\user_flow_smoke_test.py': [Errno 2] No such file or directory\n",
+      "elapsed": 0.22
+    },
+    {
+      "witness_type": "smoke",
+      "verdict": "SKIP",
+      "exit_code": null,
+      "stdout": "",
+      "stderr": "No modules to check",
+      "elapsed": 0.0
+    },
+    {
+      "witness_type": "numerical",
+      "verdict": "SKIP",
+      "exit_code": null,
+      "stdout": "",
+      "stderr": "No baseline file",
+      "elapsed": 0.0
+    }
+  ],
+  "verdict": "FAIL",
+  "arbitration_reason": "Single witness: test_suite FAIL",
+  "timestamp": "2026-04-12T02:08:08+00:00",
+  "bundle_hash": "1f883ed33a69f96d"
+}

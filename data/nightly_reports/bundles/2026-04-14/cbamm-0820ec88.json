@@ -1,0 +1,45 @@
+{
+  "project_id": "cbamm-0820ec88",
+  "scope_lock": {
+    "project_id": "cbamm-0820ec88",
+    "project_path": "C:\\Users\\user\\OneDrive - NHS\\Documents\\Cbamm",
+    "risk_profile": "high",
+    "witness_count": 3,
+    "test_command": "Rscript -e \"testthat::test_dir('tests/testthat')\"",
+    "smoke_modules": [],
+    "baseline_path": null,
+    "expected_outcome": "pass",
+    "source_hash": "e3b0c44298fc1c14",
+    "created_at": "2026-04-14T02:16:10+00:00"
+  },
+  "witness_results": [
+    {
+      "witness_type": "test_suite",
+      "verdict": "FAIL",
+      "exit_code": 1,
+      "stdout": "\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\n\n\u2550\u2550 Results \u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\n\u2500\u2500 Failed tests \u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\nError ('test-advanced.R:4:3'): prediction intervals work\nError in `calculate_prediction_interval(effect = 0.5, se = 0.1, tau2 = 0.04)`: could not find function \"calculate_prediction_interval\"\n\nError ('test-advanced.R:10:3'): IPD simulation works\nError in `simulate_ipd_data(n_studies = 2, n_patients = 20)`: could not find function \"simulate_ipd_data\"\n\nError ('test-advanced.R:16:3'): diagnostic accuracy works\nError in `simulate_dta_data(n_studies = 3)`: could not find function \"simulate_dta_data\"\n\nError ('test-comprehensive.R:5:1'): (code run outside of `test_that()`)\n<packageNotFoundError/error/condition>\nError in `library(cbamm)`: there is no package called 'cbamm'\nBacktrace:\n    \u2586\n 1. \u2514\u2500base::library(cbamm) at test-comprehensive.R:5:1\n\nError ('test-core.R:4:1'): (code run outside of `test_that()`)\n<packageNotFoundError/error/condition>\nError in `library(cbamm)`: there is no package called 'cbamm'\nBacktrace:\n    \u2586\n 1. \u2514\u2500base::library(cbamm) at test-core.R:4:1\n\nError ('test-diagnostic.R:5:3'): Diagnostic accuracy analysis works\nError in `simulate_dta_data(n_studies = 5)`: could not find function \"simulate_dta_data\"\n\nError ('test-ipd.R:5:3'): IPD meta-analysis works with simulated data\nError in `simulate_ipd_data(n_studies = 3, n_patients_per_study = 50)`: could not find function \"simulate_ipd_data\"\n\nError ('test-living.R:5:3'): Living review framework works\nError in `simulate_sequential_data(n_studies = 5)`: could not find function \"simulate_sequential_data\"\n\nError ('test-new-features.R:2:1'): (code run outside of `test_that()`)\n<packageNotFoundError/error/condition>\nError in `library(cbamm)`: there is no package called 'cbamm'\nBacktrace:\n    \u2586\n 1. \u2514\u2500base::library(cbamm) at test-new-features.R:2:1\n\n[ FAIL 9 | WARN 0 | SKIP 0 | PASS 0 ]\n",
+      "stderr": "Error: Test failures\nExecution halted\n",
+      "elapsed": 3.32
+    },
+    {
+      "witness_type": "smoke",
+      "verdict": "SKIP",
+      "exit_code": null,
+      "stdout": "",
+      "stderr": "No modules to check",
+      "elapsed": 0.0
+    },
+    {
+      "witness_type": "numerical",
+      "verdict": "SKIP",
+      "exit_code": null,
+      "stdout": "",
+      "stderr": "No baseline file",
+      "elapsed": 0.0
+    }
+  ],
+  "verdict": "FAIL",
+  "arbitration_reason": "Single witness: test_suite FAIL",
+  "timestamp": "2026-04-14T02:16:13+00:00",
+  "bundle_hash": "71dc2076fd435dbe"
+}

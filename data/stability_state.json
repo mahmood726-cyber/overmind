@@ -1,0 +1,618 @@
+{
+  "advanced-nma-pooling-6e3c8bdb": {
+    "streak": 0,
+    "max_streak": 0,
+    "total": 4,
+    "history": [
+      "REJECT",
+      "REJECT",
+      "REJECT",
+      "REJECT"
+    ],
+    "last_verdict": "REJECT"
+  },
+  "cardiooracle-6cb36757": {
+    "streak": 0,
+    "max_streak": 0,
+    "total": 4,
+    "history": [
+      "FAIL",
+      "FAIL",
+      "FAIL",
+      "REJECT"
+    ],
+    "last_verdict": "REJECT"
+  },
+  "esc-acs-living-meta-dab41ea9": {
+    "streak": 4,
+    "max_streak": 4,
+    "total": 4,
+    "history": [
+      "PASS",
+      "PASS",
+      "PASS",
+      "PASS"
+    ],
+    "last_verdict": "PASS"
+  },
+  "idea12-59249342": {
+    "streak": 0,
+    "max_streak": 0,
+    "total": 4,
+    "history": [
+      "REJECT",
+      "REJECT",
+      "REJECT",
+      "REJECT"
+    ],
+    "last_verdict": "REJECT"
+  },
+  "ipd-meta-pro-link-40520491": {
+    "streak": 0,
+    "max_streak": 0,
+    "total": 4,
+    "history": [
+      "FAIL",
+      "FAIL",
+      "FAIL",
+      "FAIL"
+    ],
+    "last_verdict": "FAIL"
+  },
+  "overmind-b3047661": {
+    "streak": 4,
+    "max_streak": 4,
+    "total": 4,
+    "history": [
+      "PASS",
+      "PASS",
+      "PASS",
+      "PASS"
+    ],
+    "last_verdict": "PASS"
+  },
+  "prognostic-meta-5028c26a": {
+    "streak": 0,
+    "max_streak": 0,
+    "total": 4,
+    "history": [
+      "FAIL",
+      "FAIL",
+      "FAIL",
+      "FAIL"
+    ],
+    "last_verdict": "FAIL"
+  },
+  "dataextractor-9c5488b5": {
+    "streak": 0,
+    "max_streak": 0,
+    "total": 4,
+    "history": [
+      "FAIL",
+      "FAIL",
+      "FAIL",
+      "FAIL"
+    ],
+    "last_verdict": "FAIL"
+  },
+  "evidence-inference-4c874004": {
+    "streak": 0,
+    "max_streak": 0,
+    "total": 4,
+    "history": [
+      "FAIL",
+      "FAIL",
+      "FAIL",
+      "FAIL"
+    ],
+    "last_verdict": "FAIL"
+  },
+  "cbamm-0820ec88": {
+    "streak": 0,
+    "max_streak": 0,
+    "total": 4,
+    "history": [
+      "FAIL",
+      "FAIL",
+      "FAIL",
+      "FAIL"
+    ],
+    "last_verdict": "FAIL"
+  },
+  "dta70-4b170dbc": {
+    "streak": 0,
+    "max_streak": 0,
+    "total": 4,
+    "history": [
+      "FAIL",
+      "FAIL",
+      "FAIL",
+      "FAIL"
+    ],
+    "last_verdict": "FAIL"
+  },
+  "metasprintnma-e8770e5e": {
+    "streak": 0,
+    "max_streak": 0,
+    "total": 4,
+    "history": [
+      "FAIL",
+      "FAIL",
+      "FAIL",
+      "FAIL"
+    ],
+    "last_verdict": "FAIL"
+  },
+  "lec-phase0-project-b7f5a7f7": {
+    "streak": 4,
+    "max_streak": 4,
+    "total": 4,
+    "history": [
+      "PASS",
+      "PASS",
+      "PASS",
+      "PASS"
+    ],
+    "last_verdict": "PASS"
+  },
+  "ipd-qma-project-b5694da4": {
+    "streak": 0,
+    "max_streak": 0,
+    "total": 4,
+    "history": [
+      "REJECT",
+      "REJECT",
+      "REJECT",
+      "REJECT"
+    ],
+    "last_verdict": "REJECT"
+  },
+  "pairwise70-5049aa49": {
+    "streak": 0,
+    "max_streak": 0,
+    "total": 4,
+    "history": [
+      "FAIL",
+      "FAIL",
+      "FAIL",
+      "FAIL"
+    ],
+    "last_verdict": "FAIL"
+  },
+  "rct-extractor-v2-6c290650": {
+    "streak": 4,
+    "max_streak": 4,
+    "total": 4,
+    "history": [
+      "PASS",
+      "PASS",
+      "PASS",
+      "PASS"
+    ],
+    "last_verdict": "PASS"
+  },
+  "rmstnma-1810584a": {
+    "streak": 0,
+    "max_streak": 0,
+    "total": 4,
+    "history": [
+      "FAIL",
+      "FAIL",
+      "FAIL",
+      "FAIL"
+    ],
+    "last_verdict": "FAIL"
+  },
+  "evidenceoracle-b78b3965": {
+    "streak": 4,
+    "max_streak": 4,
+    "total": 4,
+    "history": [
+      "PASS",
+      "PASS",
+      "PASS",
+      "PASS"
+    ],
+    "last_verdict": "PASS"
+  },
+  "globalst-5d1477cf": {
+    "streak": 2,
+    "max_streak": 2,
+    "total": 4,
+    "history": [
+      "REJECT",
+      "REJECT",
+      "PASS",
+      "PASS"
+    ],
+    "last_verdict": "PASS"
+  },
+  "hfpef-registry-synth-65970c56": {
+    "streak": 4,
+    "max_streak": 4,
+    "total": 4,
+    "history": [
+      "PASS",
+      "PASS",
+      "PASS",
+      "PASS"
+    ],
+    "last_verdict": "PASS"
+  },
+  "repo300-enma-snma-a0216745": {
+    "streak": 0,
+    "max_streak": 0,
+    "total": 4,
+    "history": [
+      "REJECT",
+      "REJECT",
+      "REJECT",
+      "REJECT"
+    ],
+    "last_verdict": "REJECT"
+  },
+  "bayesianma-240f4a74": {
+    "streak": 3,
+    "max_streak": 3,
+    "total": 4,
+    "history": [
+      "REJECT",
+      "PASS",
+      "PASS",
+      "PASS"
+    ],
+    "last_verdict": "PASS"
+  },
+  "asreview-5star-8400d8d7": {
+    "streak": 4,
+    "max_streak": 4,
+    "total": 4,
+    "history": [
+      "PASS",
+      "PASS",
+      "PASS",
+      "PASS"
+    ],
+    "last_verdict": "PASS"
+  },
+  "metasprint-dose-response-1819ced5": {
+    "streak": 0,
+    "max_streak": 0,
+    "total": 4,
+    "history": [
+      "FAIL",
+      "FAIL",
+      "FAIL",
+      "FAIL"
+    ],
+    "last_verdict": "FAIL"
+  },
+  "experimental-meta-analysis-37d6e8a1": {
+    "streak": 4,
+    "max_streak": 4,
+    "total": 4,
+    "history": [
+      "PASS",
+      "PASS",
+      "PASS",
+      "PASS"
+    ],
+    "last_verdict": "PASS"
+  },
+  "fatiha-project-a8ec1065": {
+    "streak": 0,
+    "max_streak": 0,
+    "total": 4,
+    "history": [
+      "FAIL",
+      "FAIL",
+      "FAIL",
+      "FAIL"
+    ],
+    "last_verdict": "FAIL"
+  },
+  "moonshot-evidence-lab-84ef000a": {
+    "streak": 4,
+    "max_streak": 4,
+    "total": 4,
+    "history": [
+      "PASS",
+      "PASS",
+      "PASS",
+      "PASS"
+    ],
+    "last_verdict": "PASS"
+  },
+  "new-app-a051eaea": {
+    "streak": 0,
+    "max_streak": 0,
+    "total": 4,
+    "history": [
+      "FAIL",
+      "FAIL",
+      "FAIL",
+      "FAIL"
+    ],
+    "last_verdict": "FAIL"
+  },
+  "nma-a6e8ac00": {
+    "streak": 0,
+    "max_streak": 0,
+    "total": 4,
+    "history": [
+      "FAIL",
+      "FAIL",
+      "FAIL",
+      "FAIL"
+    ],
+    "last_verdict": "FAIL"
+  },
+  "transcendent-meta-analysis-lab-dda9f9d3": {
+    "streak": 4,
+    "max_streak": 4,
+    "total": 4,
+    "history": [
+      "PASS",
+      "PASS",
+      "PASS",
+      "PASS"
+    ],
+    "last_verdict": "PASS"
+  },
+  "ubcma-42306ffe": {
+    "streak": 0,
+    "max_streak": 0,
+    "total": 4,
+    "history": [
+      "REJECT",
+      "REJECT",
+      "REJECT",
+      "REJECT"
+    ],
+    "last_verdict": "REJECT"
+  },
+  "cardio-ctgov-living-meta-portfolio-10874f1d": {
+    "streak": 4,
+    "max_streak": 4,
+    "total": 4,
+    "history": [
+      "PASS",
+      "PASS",
+      "PASS",
+      "PASS"
+    ],
+    "last_verdict": "PASS"
+  },
+  "llm-meta-analysis-8e261d9f": {
+    "streak": 0,
+    "max_streak": 0,
+    "total": 4,
+    "history": [
+      "REJECT",
+      "REJECT",
+      "REJECT",
+      "REJECT"
+    ],
+    "last_verdict": "REJECT"
+  },
+  "truthcert-denominator-phase1-9b039a8d": {
+    "streak": 0,
+    "max_streak": 0,
+    "total": 4,
+    "history": [
+      "REJECT",
+      "REJECT",
+      "REJECT",
+      "REJECT"
+    ],
+    "last_verdict": "REJECT"
+  },
+  "metasprint-cardio-universe-c652825d": {
+    "streak": 4,
+    "max_streak": 4,
+    "total": 4,
+    "history": [
+      "PASS",
+      "PASS",
+      "PASS",
+      "PASS"
+    ],
+    "last_verdict": "PASS"
+  },
+  "denominator-calibrated-living-nma-c76e28d9": {
+    "streak": 4,
+    "max_streak": 4,
+    "total": 4,
+    "history": [
+      "PASS",
+      "PASS",
+      "PASS",
+      "PASS"
+    ],
+    "last_verdict": "PASS"
+  },
+  "truthcert-meta2-prototype-eec7d00d": {
+    "streak": 4,
+    "max_streak": 4,
+    "total": 4,
+    "history": [
+      "CERTIFIED",
+      "CERTIFIED",
+      "CERTIFIED",
+      "CERTIFIED"
+    ],
+    "last_verdict": "CERTIFIED"
+  },
+  "ctgov-search-strategies-b6ea3be1": {
+    "streak": 4,
+    "max_streak": 4,
+    "total": 4,
+    "history": [
+      "CERTIFIED",
+      "CERTIFIED",
+      "CERTIFIED",
+      "CERTIFIED"
+    ],
+    "last_verdict": "CERTIFIED"
+  },
+  "grma-paper-c4737385": {
+    "streak": 0,
+    "max_streak": 0,
+    "total": 4,
+    "history": [
+      "FAIL",
+      "FAIL",
+      "FAIL",
+      "FAIL"
+    ],
+    "last_verdict": "FAIL"
+  },
+  "gwam-8ecf48c6": {
+    "streak": 4,
+    "max_streak": 4,
+    "total": 4,
+    "history": [
+      "PASS",
+      "PASS",
+      "PASS",
+      "PASS"
+    ],
+    "last_verdict": "PASS"
+  },
+  "meta-ecosystem-model-3d6353ab": {
+    "streak": 0,
+    "max_streak": 0,
+    "total": 4,
+    "history": [
+      "FAIL",
+      "FAIL",
+      "FAIL",
+      "FAIL"
+    ],
+    "last_verdict": "FAIL"
+  },
+  "metaaudit-b111c205": {
+    "streak": 0,
+    "max_streak": 0,
+    "total": 4,
+    "history": [
+      "REJECT",
+      "REJECT",
+      "REJECT",
+      "REJECT"
+    ],
+    "last_verdict": "REJECT"
+  },
+  "hfpef-registry-calibration-bc694f74": {
+    "streak": 4,
+    "max_streak": 4,
+    "total": 4,
+    "history": [
+      "PASS",
+      "PASS",
+      "PASS",
+      "PASS"
+    ],
+    "last_verdict": "PASS"
+  },
+  "metaoverfit-5f64eb8f": {
+    "streak": 0,
+    "max_streak": 0,
+    "total": 4,
+    "history": [
+      "FAIL",
+      "FAIL",
+      "FAIL",
+      "FAIL"
+    ],
+    "last_verdict": "FAIL"
+  },
+  "mlmresearch-603c45f0": {
+    "streak": 0,
+    "max_streak": 0,
+    "total": 4,
+    "history": [
+      "FAIL",
+      "FAIL",
+      "FAIL",
+      "FAIL"
+    ],
+    "last_verdict": "FAIL"
+  },
+  "four-limb-synthesis-65e6c202": {
+    "streak": 4,
+    "max_streak": 4,
+    "total": 4,
+    "history": [
+      "CERTIFIED",
+      "CERTIFIED",
+      "CERTIFIED",
+      "CERTIFIED"
+    ],
+    "last_verdict": "CERTIFIED"
+  },
+  "truthcert-openclaw-supermemory-stack-6fba3f9d": {
+    "streak": 4,
+    "max_streak": 4,
+    "total": 4,
+    "history": [
+      "CERTIFIED",
+      "CERTIFIED",
+      "CERTIFIED",
+      "CERTIFIED"
+    ],
+    "last_verdict": "CERTIFIED"
+  },
+  "metaregression-b984b3aa": {
+    "streak": 0,
+    "max_streak": 0,
+    "total": 4,
+    "history": [
+      "REJECT",
+      "REJECT",
+      "REJECT",
+      "REJECT"
+    ],
+    "last_verdict": "REJECT"
+  },
+  "pub-bias-simulation-633c69de": {
+    "streak": 0,
+    "max_streak": 0,
+    "total": 2,
+    "history": [
+      "FAIL",
+      "FAIL"
+    ],
+    "last_verdict": "FAIL"
+  },
+  "componentnma-5d7f067c": {
+    "streak": 0,
+    "max_streak": 0,
+    "total": 1,
+    "history": [
+      "REJECT"
+    ],
+    "last_verdict": "REJECT"
+  },
+  "registry-first-rct-meta-ca273c4f": {
+    "streak": 2,
+    "max_streak": 2,
+    "total": 3,
+    "history": [
+      "FAIL",
+      "PASS",
+      "PASS"
+    ],
+    "last_verdict": "PASS"
+  },
+  "meta-paradigm-shift-96b2d6d2": {
+    "streak": 2,
+    "max_streak": 2,
+    "total": 2,
+    "history": [
+      "CERTIFIED",
+      "CERTIFIED"
+    ],
+    "last_verdict": "CERTIFIED"
+  }
+}

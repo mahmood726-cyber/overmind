@@ -1,0 +1,62 @@
+{
+  "project_id": "dataextractor-9c5488b5",
+  "scope_lock": {
+    "project_id": "dataextractor-9c5488b5",
+    "project_path": "C:\\Projects\\Dataextractor",
+    "risk_profile": "high",
+    "witness_count": 3,
+    "test_command": "npm run test",
+    "smoke_modules": [
+      "expand_validation",
+      "selenium_30k_validation_test",
+      "selenium_app_test",
+      "selenium_chrome_test",
+      "selenium_complete_test",
+      "selenium_comprehensive_test",
+      "selenium_debug_port_test",
+      "selenium_full_test",
+      "selenium_full_v49_test",
+      "selenium_headless_test",
+      "selenium_headless_validation",
+      "selenium_real_articles_test",
+      "selenium_simple_test",
+      "selenium_wdm_test",
+      "zs_compare",
+      "python.setup"
+    ],
+    "baseline_path": null,
+    "expected_outcome": "pass",
+    "source_hash": "ead616ca2bbf3e47",
+    "created_at": "2026-04-12T02:08:33+00:00"
+  },
+  "witness_results": [
+    {
+      "witness_type": "test_suite",
+      "verdict": "FAIL",
+      "exit_code": -1,
+      "stdout": "",
+      "stderr": "Failed to start: [WinError 2] The system cannot find the file specified",
+      "elapsed": 0.0
+    },
+    {
+      "witness_type": "smoke",
+      "verdict": "FAIL",
+      "exit_code": 1,
+      "stdout": "",
+      "stderr": "expand_validation: ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\nFileNotFoundError: [Errno 2] No such file or directory: 'C:\\\\Users\\\\user\\\\Downloads\\\\Dataextractor\\\\validation_independent.js'\nselenium_simple_test: import timed out\nzs_compare: import timed out\npython.setup: nalize_license_expression()\nusage: -c [global_opts] cmd1 [cmd1_opts] [cmd2 [cmd2_opts] ...]\n   or: -c --help [cmd1 cmd2 ...]\n   or: -c --help-commands\n   or: -c cmd --help\n\nerror: no commands supplied",
+      "elapsed": 34.62
+    },
+    {
+      "witness_type": "numerical",
+      "verdict": "SKIP",
+      "exit_code": null,
+      "stdout": "",
+      "stderr": "No baseline file",
+      "elapsed": 0.0
+    }
+  ],
+  "verdict": "FAIL",
+  "arbitration_reason": "All witnesses FAIL: test_suite, smoke",
+  "timestamp": "2026-04-12T02:09:07+00:00",
+  "bundle_hash": "91418e1d77c44552"
+}

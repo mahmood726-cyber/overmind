@@ -1,0 +1,37 @@
+{
+  "project_id": "mlmresearch-603c45f0",
+  "scope_lock": {
+    "project_id": "mlmresearch-603c45f0",
+    "project_path": "C:\\Users\\user\\OneDrive - NHS\\Documents\\MLMResearch",
+    "risk_profile": "high",
+    "witness_count": 2,
+    "test_command": "Rscript -e \"testthat::test_dir('tests/testthat')\"",
+    "smoke_modules": [],
+    "baseline_path": null,
+    "expected_outcome": "pass",
+    "source_hash": "e3b0c44298fc1c14",
+    "created_at": "2026-04-13T02:14:48+00:00"
+  },
+  "witness_results": [
+    {
+      "witness_type": "test_suite",
+      "verdict": "FAIL",
+      "exit_code": -1,
+      "stdout": "",
+      "stderr": "Failed to start: [WinError 2] The system cannot find the file specified",
+      "elapsed": 0.0
+    },
+    {
+      "witness_type": "smoke",
+      "verdict": "SKIP",
+      "exit_code": null,
+      "stdout": "",
+      "stderr": "No modules to check",
+      "elapsed": 0.0
+    }
+  ],
+  "verdict": "FAIL",
+  "arbitration_reason": "Single witness: test_suite FAIL",
+  "timestamp": "2026-04-13T02:14:48+00:00",
+  "bundle_hash": "b1fb2e3954328617"
+}

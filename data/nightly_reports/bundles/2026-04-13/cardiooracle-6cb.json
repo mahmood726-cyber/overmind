@@ -1,0 +1,58 @@
+{
+  "project_id": "cardiooracle-6cb36757",
+  "scope_lock": {
+    "project_id": "cardiooracle-6cb36757",
+    "project_path": "C:\\Models\\CardioOracle",
+    "risk_profile": "high",
+    "witness_count": 3,
+    "test_command": "python -m pytest tests/test_curation.py -q",
+    "smoke_modules": [
+      "debug_test",
+      "generate_figures",
+      "recalibrate",
+      "backtest.backtest",
+      "backtest.test_backtest",
+      "curate.export_training",
+      "curate.extract_aact",
+      "curate.extract_cad",
+      "curate.fit_model",
+      "curate.label_outcomes",
+      "curate.shared",
+      "curate.validate_labels"
+    ],
+    "baseline_path": null,
+    "expected_outcome": "pass",
+    "source_hash": "afe3f608efcd4e6e",
+    "created_at": "2026-04-13T02:00:09+00:00"
+  },
+  "witness_results": [
+    {
+      "witness_type": "test_suite",
+      "verdict": "PASS",
+      "exit_code": 0,
+      "stdout": "..............................                                           [100%]\n30 passed in 6.35s\n",
+      "stderr": "",
+      "elapsed": 8.14
+    },
+    {
+      "witness_type": "smoke",
+      "verdict": "FAIL",
+      "exit_code": 1,
+      "stdout": "",
+      "stderr": "debug_test: Verifier [0x2eee9a+2baa]\n\tKERNEL32!BaseThreadInitThunk [0x75d85d49+19]\n\tntdll!RtlInitializeExceptionChain [0x770dd83b+6b]\n\tntdll!RtlGetAppContainerNamedObjectPath [0x770dd7c1+231]\n\t(No symbol) [(nil)]\nrecalibrate: ata\\Local\\Programs\\Python\\Python313\\Lib\\json\\decoder.py\", line 348, in decode\n    raise JSONDecodeError(\"Extra data\", s, end)\njson.decoder.JSONDecodeError: Extra data: line 1 column 62849 (char 62848)\nbacktest.test_backtest: ic, predict_logistic, ensemble_predict,\n                           compute_metrics, solve_linear, normal_cdf, load_data)\nImportError: cannot import name 'similarity' from 'backtest' (unknown location)\ncurate.extract_aact: import curate.extract_aact\n  File \"C:\\Models\\CardioOracle\\curate\\extract_aact.py\", line 22, in <module>\n    from shared import (\n    ...<4 lines>...\n    )\nModuleNotFoundError: No module named 'shared'",
+      "elapsed": 17.05
+    },
+    {
+      "witness_type": "numerical",
+      "verdict": "SKIP",
+      "exit_code": null,
+      "stdout": "",
+      "stderr": "No baseline file",
+      "elapsed": 0.0
+    }
+  ],
+  "verdict": "REJECT",
+  "arbitration_reason": "Witnesses disagree: test_suite PASS vs smoke FAIL",
+  "timestamp": "2026-04-13T02:00:48+00:00",
+  "bundle_hash": "38c2c460dce9fd7d"
+}

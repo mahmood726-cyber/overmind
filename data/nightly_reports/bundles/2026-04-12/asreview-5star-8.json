@@ -1,0 +1,51 @@
+{
+  "project_id": "asreview-5star-8400d8d7",
+  "scope_lock": {
+    "project_id": "asreview-5star-8400d8d7",
+    "project_path": "C:\\Projects\\asreview_5star",
+    "risk_profile": "high",
+    "witness_count": 3,
+    "test_command": "python -m pytest tests/test_integration.py -q",
+    "smoke_modules": [
+      "asreview_5star.cli",
+      "asreview_5star.irr",
+      "asreview_5star.meta_analysis",
+      "asreview_5star.prisma",
+      "asreview_5star.stopping"
+    ],
+    "baseline_path": null,
+    "expected_outcome": "pass",
+    "source_hash": "4807d8bc4a11c0bc",
+    "created_at": "2026-04-12T02:14:06+00:00"
+  },
+  "witness_results": [
+    {
+      "witness_type": "test_suite",
+      "verdict": "PASS",
+      "exit_code": 0,
+      "stdout": ".........                                                                [100%]\n9 passed in 2.40s\n",
+      "stderr": "",
+      "elapsed": 5.38
+    },
+    {
+      "witness_type": "smoke",
+      "verdict": "PASS",
+      "exit_code": 0,
+      "stdout": "5 modules imported OK",
+      "stderr": "",
+      "elapsed": 10.1
+    },
+    {
+      "witness_type": "numerical",
+      "verdict": "SKIP",
+      "exit_code": null,
+      "stdout": "",
+      "stderr": "No baseline file",
+      "elapsed": 0.0
+    }
+  ],
+  "verdict": "PASS",
+  "arbitration_reason": "2/2 witnesses PASS (numerical skipped \u2014 no baseline)",
+  "timestamp": "2026-04-12T02:14:22+00:00",
+  "bundle_hash": "3bc83a48fa0c0b85"
+}

@@ -1,0 +1,48 @@
+{
+  "project_id": "rct-extractor-v2-6c290650",
+  "scope_lock": {
+    "project_id": "rct-extractor-v2-6c290650",
+    "project_path": "C:\\Projects\\rct-extractor-v2",
+    "risk_profile": "high",
+    "witness_count": 3,
+    "test_command": "python -m pytest tests/test_ctg_validation.py -q",
+    "smoke_modules": [
+      "validation.calibration_plot",
+      "validation.statistical_validation"
+    ],
+    "baseline_path": null,
+    "expected_outcome": "pass",
+    "source_hash": "cd6e6db1e3217189",
+    "created_at": "2026-04-12T02:12:25+00:00"
+  },
+  "witness_results": [
+    {
+      "witness_type": "test_suite",
+      "verdict": "PASS",
+      "exit_code": 0,
+      "stdout": "%]\ntests/test_ctg_validation.py::TestCTGScraperStructures::test_ctg_study_creation PASSED [ 13%]\ntests/test_ctg_validation.py::TestCTGScraperStructures::test_ctg_study_asdict PASSED [ 17%]\ntests/test_ctg_validation.py::TestCTGScraper::test_scraper_initialization PASSED [ 21%]\ntests/test_ctg_validation.py::TestCTGScraper::test_scraper_has_fetch_method PASSED [ 26%]\ntests/test_ctg_validation.py::TestCTGScraper::test_scraper_has_search_method PASSED [ 30%]\ntests/test_ctg_validation.py::TestCTGScraper::test_scraper_has_fetch_multiple_method PASSED [ 34%]\ntests/test_ctg_validation.py::TestCTGScraper::test_empty_nct_id_returns_none PASSED [ 39%]\ntests/test_ctg_validation.py::TestCTGScraper::test_invalid_nct_format PASSED [ 43%]\ntests/test_ctg_validation.py::TestCTGValidator::test_validator_initialization PASSED [ 47%]\ntests/test_ctg_validation.py::TestCTGValidator::test_values_match_exact PASSED [ 52%]\ntests/test_ctg_validation.py::TestCTGValidator::test_values_match_within_tolerance PASSED [ 56%]\ntests/test_ctg_validation.py::TestCTGValidator::test_values_match_zero PASSED [ 60%]\ntests/test_ctg_validation.py::TestCTGValidator::test_cis_match_exact PASSED [ 65%]\ntests/test_ctg_validation.py::TestCTGValidator::test_cis_match_within_tolerance PASSED [ 69%]\ntests/test_ctg_validation.py::TestCTGValidator::test_cis_match_no_expected PASSED [ 73%]\ntests/test_ctg_validation.py::TestCTGValidator::test_cis_match_no_extracted PASSED [ 78%]\ntests/test_ctg_validation.py::TestCTGValidator::test_match_score_calculation PASSED [ 82%]\ntests/test_ctg_validation.py::TestValidationResult::test_validation_result_creation PASSED [ 86%]\ntests/test_ctg_validation.py::TestStudyValidation::test_study_validation_creation PASSED [ 91%]\ntests/test_ctg_validation.py::TestIntegration::test_validate_study_no_effects PASSED [ 95%]\ntests/test_ctg_validation.py::TestIntegration::test_validate_study_with_effects PASSED [100%]\n\n============================= 23 passed in 6.50s ==============================\n",
+      "stderr": "",
+      "elapsed": 9.72
+    },
+    {
+      "witness_type": "smoke",
+      "verdict": "PASS",
+      "exit_code": 0,
+      "stdout": "2 modules imported OK",
+      "stderr": "",
+      "elapsed": 3.05
+    },
+    {
+      "witness_type": "numerical",
+      "verdict": "SKIP",
+      "exit_code": null,
+      "stdout": "",
+      "stderr": "No baseline file",
+      "elapsed": 0.0
+    }
+  ],
+  "verdict": "PASS",
+  "arbitration_reason": "2/2 witnesses PASS (numerical skipped \u2014 no baseline)",
+  "timestamp": "2026-04-12T02:12:38+00:00",
+  "bundle_hash": "3a4c7f8776a98cf5"
+}

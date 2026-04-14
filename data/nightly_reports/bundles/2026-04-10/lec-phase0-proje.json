@@ -1,0 +1,54 @@
+{
+  "project_id": "lec-phase0-project-b7f5a7f7",
+  "scope_lock": {
+    "project_id": "lec-phase0-project-b7f5a7f7",
+    "project_path": "C:\\Projects\\lec_phase0_project",
+    "risk_profile": "high",
+    "witness_count": 3,
+    "test_command": "python -m pytest tests/test_discovery_epmc.py -q",
+    "smoke_modules": [
+      "demo_pipeline",
+      "demo_pipeline_extended",
+      "pilot_pcsk9i_ascvd",
+      "pilot_sglt2i_hf",
+      "test_full_pipeline",
+      "test_lec_web_tool",
+      "verify_esc_compliance",
+      "benchmarks.metafor_comparison"
+    ],
+    "baseline_path": null,
+    "expected_outcome": "pass",
+    "source_hash": "e4679d04d6cb3051",
+    "created_at": "2026-04-10T02:08:25+00:00"
+  },
+  "witness_results": [
+    {
+      "witness_type": "test_suite",
+      "verdict": "PASS",
+      "exit_code": 0,
+      "stdout": "...                                                                      [100%]\n3 passed in 3.55s\n",
+      "stderr": "",
+      "elapsed": 6.27
+    },
+    {
+      "witness_type": "smoke",
+      "verdict": "PASS",
+      "exit_code": 0,
+      "stdout": "8 modules imported OK",
+      "stderr": "",
+      "elapsed": 13.65
+    },
+    {
+      "witness_type": "numerical",
+      "verdict": "SKIP",
+      "exit_code": null,
+      "stdout": "",
+      "stderr": "No baseline file",
+      "elapsed": 0.0
+    }
+  ],
+  "verdict": "PASS",
+  "arbitration_reason": "2/2 witnesses PASS (numerical skipped \u2014 no baseline)",
+  "timestamp": "2026-04-10T02:08:45+00:00",
+  "bundle_hash": "4b42e45b10762f54"
+}

@@ -1,0 +1,62 @@
+{
+  "project_id": "ipd-qma-project-b5694da4",
+  "scope_lock": {
+    "project_id": "ipd-qma-project-b5694da4",
+    "project_path": "C:\\Projects\\ipd_qma_project",
+    "risk_profile": "high",
+    "witness_count": 3,
+    "test_command": "python -m pytest tests/test_ipd_qma.py -q",
+    "smoke_modules": [
+      "py:api",
+      "py:benchmarks",
+      "py:benchmarks.benchmark_ipd_qma",
+      "py:data_loader",
+      "py:fetch_real_ipd",
+      "py:ipd_qma",
+      "py:ipd_qma_advanced",
+      "py:ipd_qma_ml",
+      "py:ipd_qma_network",
+      "py:ipd_qma_plots",
+      "py:ipd_qma_survival",
+      "py:ipd_qma_validation",
+      "py:run_ipd_qma_real_data",
+      "py:worldipd_loader",
+      "js:javascript/dta-pro-integration.js",
+      "js:javascript/ipd-qma.js"
+    ],
+    "baseline_path": null,
+    "expected_outcome": "pass",
+    "source_hash": "083ff784b2d1fd8f",
+    "created_at": "2026-04-14T02:17:28+00:00"
+  },
+  "witness_results": [
+    {
+      "witness_type": "test_suite",
+      "verdict": "PASS",
+      "exit_code": 0,
+      "stdout": "..........................................s.................             [100%]\n============================== warnings summary ===============================\ntests/test_ipd_qma.py::TestInputValidation::test_nan_values_raise_error\ntests/test_ipd_qma.py::TestInputValidation::test_infinite_values_raise_error\ntests/test_ipd_qma.py::TestInputValidation::test_list_inputs_converted\n  C:\\Projects\\ipd_qma_project\\ipd_qma.py:125: UserWarning: Small control sample size (n=5). Bootstrap may be unstable.\n    warnings.warn(f\"Small control sample size (n={len(control)}). Bootstrap may be unstable.\")\n\ntests/test_ipd_qma.py::TestInputValidation::test_nan_values_raise_error\ntests/test_ipd_qma.py::TestInputValidation::test_infinite_values_raise_error\ntests/test_ipd_qma.py::TestInputValidation::test_list_inputs_converted\n  C:\\Projects\\ipd_qma_project\\ipd_qma.py:127: UserWarning: Small treatment sample size (n=5). Bootstrap may be unstable.\n    warnings.warn(f\"Small treatment sample size (n={len(treatment)}). Bootstrap may be unstable.\")\n\n-- Docs: https://docs.pytest.org/en/stable/how-to/capture-warnings.html\n59 passed, 1 skipped, 6 warnings in 2.19s\n",
+      "stderr": "",
+      "elapsed": 3.82
+    },
+    {
+      "witness_type": "smoke",
+      "verdict": "FAIL",
+      "exit_code": 1,
+      "stdout": "",
+      "stderr": "py:ipd_qma_ml: ost recent call last):\n  File \"<string>\", line 1, in <module>\n    import ipd_qma_ml\n  File \"C:\\Projects\\ipd_qma_project\\ipd_qma_ml.py\", line 1\n    .asarray(treatment)\n    ^\nSyntaxError: invalid syntax\npy:ipd_qma_network: t):\n  File \"<string>\", line 1, in <module>\n    import ipd_qma_network\n  File \"C:\\Projects\\ipd_qma_project\\ipd_qma_network.py\", line 146\n    Network analysis results\nIndentationError: unexpected indent\npy:ipd_qma_survival: t ipd_qma_survival\n  File \"C:\\Projects\\ipd_qma_project\\ipd_qma_survival.py\", line 641\n    subset = df[df[stratify_col] == group]]\n                                          ^\nSyntaxError: unmatched ']'",
+      "elapsed": 13.3
+    },
+    {
+      "witness_type": "numerical",
+      "verdict": "SKIP",
+      "exit_code": null,
+      "stdout": "",
+      "stderr": "No baseline file",
+      "elapsed": 0.0
+    }
+  ],
+  "verdict": "REJECT",
+  "arbitration_reason": "Witnesses disagree: test_suite PASS vs smoke FAIL",
+  "timestamp": "2026-04-14T02:17:58+00:00",
+  "bundle_hash": "1c5409c075c41a8d"
+}

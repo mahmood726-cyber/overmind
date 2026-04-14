@@ -1,0 +1,45 @@
+{
+  "project_id": "ubcma-42306ffe",
+  "scope_lock": {
+    "project_id": "ubcma-42306ffe",
+    "project_path": "C:\\ubcma",
+    "risk_profile": "high",
+    "witness_count": 3,
+    "test_command": "python -m pytest tests/test_smoke.py -q",
+    "smoke_modules": [],
+    "baseline_path": "C:\\overmind\\data\\baselines\\ubcma-42306ffe.json",
+    "expected_outcome": "pass",
+    "source_hash": "ce1d46bc46cbaebd",
+    "created_at": "2026-04-10T02:19:06+00:00"
+  },
+  "witness_results": [
+    {
+      "witness_type": "test_suite",
+      "verdict": "PASS",
+      "exit_code": 0,
+      "stdout": ".......                                                                  [100%]\n7 passed in 3.71s\n",
+      "stderr": "",
+      "elapsed": 7.98
+    },
+    {
+      "witness_type": "smoke",
+      "verdict": "SKIP",
+      "exit_code": null,
+      "stdout": "",
+      "stderr": "No modules to check",
+      "elapsed": 0.0
+    },
+    {
+      "witness_type": "numerical",
+      "verdict": "FAIL",
+      "exit_code": -1,
+      "stdout": "",
+      "stderr": "Failed to start: [WinError 2] The system cannot find the file specified",
+      "elapsed": 0.06
+    }
+  ],
+  "verdict": "REJECT",
+  "arbitration_reason": "Witnesses disagree: test_suite PASS vs numerical FAIL",
+  "timestamp": "2026-04-10T02:19:15+00:00",
+  "bundle_hash": "785c1f2797af1d65"
+}

@@ -1,0 +1,55 @@
+{
+  "project_id": "idea12-59249342",
+  "scope_lock": {
+    "project_id": "idea12-59249342",
+    "project_path": "C:\\Projects\\idea12",
+    "risk_profile": "high",
+    "witness_count": 3,
+    "test_command": "python -m pytest tests/test_basic.py -q",
+    "smoke_modules": [
+      "paper2.cochrane_data_extraction",
+      "validation.benchmark_lu_ades_2004",
+      "validation.create_publication_figures",
+      "validation.expand_concordant_validation",
+      "validation.forensic_simulation_study",
+      "validation.medical_reversal_validation",
+      "validation.optimize_thresholds",
+      "validation.run_quick_validation",
+      "validation.simulation_study_1_basic_nma"
+    ],
+    "baseline_path": null,
+    "expected_outcome": "pass",
+    "source_hash": "543f05a1ed01506c",
+    "created_at": "2026-04-12T02:05:29+00:00"
+  },
+  "witness_results": [
+    {
+      "witness_type": "test_suite",
+      "verdict": "PASS",
+      "exit_code": 0,
+      "stdout": "...............                                                          [100%]\n15 passed in 10.53s\n",
+      "stderr": "",
+      "elapsed": 14.93
+    },
+    {
+      "witness_type": "smoke",
+      "verdict": "FAIL",
+      "exit_code": 1,
+      "stdout": "",
+      "stderr": "validation.benchmark_lu_ades_2004: import timed out\nvalidation.forensic_simulation_study: import timed out\nvalidation.run_quick_validation: import timed out\nvalidation.simulation_study_1_basic_nma: import timed out",
+      "elapsed": 69.56
+    },
+    {
+      "witness_type": "numerical",
+      "verdict": "SKIP",
+      "exit_code": null,
+      "stdout": "",
+      "stderr": "No baseline file",
+      "elapsed": 0.0
+    }
+  ],
+  "verdict": "REJECT",
+  "arbitration_reason": "Witnesses disagree: test_suite PASS vs smoke FAIL",
+  "timestamp": "2026-04-12T02:08:05+00:00",
+  "bundle_hash": "c6f7cc0c663f6e09"
+}

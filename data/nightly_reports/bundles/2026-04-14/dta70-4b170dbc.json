@@ -1,0 +1,31 @@
+{
+  "project_id": "dta70-4b170dbc",
+  "scope_lock": {
+    "project_id": "dta70-4b170dbc",
+    "project_path": "C:\\Users\\user\\OneDrive - NHS\\Documents\\DTA70",
+    "risk_profile": "high",
+    "witness_count": 3,
+    "test_command": "Rscript -e \"testthat::test_dir('tests/testthat')\"",
+    "smoke_modules": [
+      "js:zenodo_data/CL145_open_set_20181101/script.js"
+    ],
+    "baseline_path": "C:\\overmind\\data\\baselines\\dta70-4b170dbc.json",
+    "expected_outcome": "pass",
+    "source_hash": "7909a8c84f241d22",
+    "created_at": "2026-04-14T02:16:19+00:00"
+  },
+  "witness_results": [
+    {
+      "witness_type": "test_suite",
+      "verdict": "FAIL",
+      "exit_code": -1,
+      "stdout": "",
+      "stderr": "Worker error: Unexpected UTF-8 BOM (decode using utf-8-sig): line 1 column 1 (char 0)",
+      "elapsed": 0.0
+    }
+  ],
+  "verdict": "FAIL",
+  "arbitration_reason": "Worker error: Unexpected UTF-8 BOM (decode using utf-8-sig): line 1 column 1 (char 0)",
+  "timestamp": "2026-04-14T02:16:19+00:00",
+  "bundle_hash": "9af39569dfbd0250"
+}

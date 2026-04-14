@@ -1,0 +1,66 @@
+{
+  "project_id": "evidence-inference-4c874004",
+  "scope_lock": {
+    "project_id": "evidence-inference-4c874004",
+    "project_path": "C:\\Projects\\evidence-inference",
+    "risk_profile": "high",
+    "witness_count": 3,
+    "test_command": "python -m pytest tests/test_imports.py -q",
+    "smoke_modules": [
+      "verify_span_quality",
+      "annotations.gen_json",
+      "root_backup.add_2000_trials_batch19_38",
+      "root_backup.add_5_5_features",
+      "root_backup.add_advanced_r_features",
+      "root_backup.add_all_improvements",
+      "root_backup.add_all_missing_modules",
+      "root_backup.add_all_modules_comprehensive",
+      "root_backup.add_all_modules_v2",
+      "root_backup.add_batch10",
+      "root_backup.add_batch11",
+      "root_backup.add_batch12",
+      "root_backup.add_batch13",
+      "root_backup.add_batch14",
+      "root_backup.add_batch15",
+      "root_backup.add_batch16",
+      "root_backup.add_batch17",
+      "root_backup.add_batch18_final",
+      "root_backup.add_batch19_20_cardiology",
+      "root_backup.add_batch21_22_oncology"
+    ],
+    "baseline_path": null,
+    "expected_outcome": "pass",
+    "source_hash": "2404523af7975bcf",
+    "created_at": "2026-04-11T02:12:56+00:00"
+  },
+  "witness_results": [
+    {
+      "witness_type": "test_suite",
+      "verdict": "FAIL",
+      "exit_code": 5,
+      "stdout": "\nno tests ran in 0.03s\n",
+      "stderr": "",
+      "elapsed": 2.22
+    },
+    {
+      "witness_type": "smoke",
+      "verdict": "FAIL",
+      "exit_code": 1,
+      "stdout": "",
+      "stderr": "verify_span_quality: ntences, gen_exact_evid_array\n  File \"C:\\Projects\\evidence-inference\\evidence_inference\\preprocess\\sentence_split.py\", line 8, in <module>\n    import spacy\nModuleNotFoundError: No module named 'spacy'\nroot_backup.add_2000_trials_batch19_38: ncoding='utf-8') as f:\n         ~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\nFileNotFoundError: [Errno 2] No such file or directory: 'C:\\\\Users\\\\user\\\\Downloads\\\\Dataextractor\\\\validation_study_expanded.js'\nroot_backup.add_batch10: ncoding='utf-8') as f:\n         ~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\nFileNotFoundError: [Errno 2] No such file or directory: 'C:\\\\Users\\\\user\\\\Downloads\\\\Dataextractor\\\\validation_study_expanded.js'\nroot_backup.add_batch11: ncoding='utf-8') as f:\n         ~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\nFileNotFoundError: [Errno 2] No such file or directory: 'C:\\\\Users\\\\user\\\\Downloads\\\\Dataextractor\\\\validation_study_expanded.js'\nroot_backup.add_batch12: ncoding='utf-8') as f:\n         ~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\nFileNotFoundError: [Errno 2] No such file or directory: 'C:\\\\Users\\\\user\\\\Downloads\\\\Dataextractor\\\\validation_study_expanded.js'\nroot_backup.add_batch13: ncoding='utf-8') as f:\n         ~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\nFileNotFoundError: [Errno 2] No such file or directory: 'C:\\\\Users\\\\user\\\\Downloads\\\\Dataextractor\\\\validation_study_expanded.js'\nroot_backup.add_batch14: ncoding='utf-8') as f:\n         ~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\nFileNotFoundError: [Errno 2] No such file or directory: 'C:\\\\Users\\\\user\\\\Downloads\\\\Dataextractor\\\\validation_study_expanded.js'\nroot_backup.add_batch15: ncoding='utf-8') as f:\n         ~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\nFileNotFoundError: [Errno 2] No such file or directory: 'C:\\\\Users\\\\user\\\\Downloads\\\\Dataextractor\\\\validation_study_expanded.js'\nroot_backup.add_batch16: ncoding='utf-8') as f:\n         ~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\nFileNotFoundError: [Errno 2] No such file or directory: 'C:\\\\Users\\\\user\\\\Downloads\\\\Dataextractor\\\\validation_study_expanded.js'\nroot_backup.add_batch17: ncoding='utf-8') as f:\n         ~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\nFileNotFoundError: [Errno 2] No such file or directory: 'C:\\\\Users\\\\user\\\\Downloads\\\\Dataextractor\\\\validation_study_expanded.js'\nroot_backup.add_batch18_final: ncoding='utf-8') as f:\n         ~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\nFileNotFoundError: [Errno 2] No such file or directory: 'C:\\\\Users\\\\user\\\\Downloads\\\\Dataextractor\\\\validation_study_expanded.js'",
+      "elapsed": 9.55
+    },
+    {
+      "witness_type": "numerical",
+      "verdict": "SKIP",
+      "exit_code": null,
+      "stdout": "",
+      "stderr": "No baseline file",
+      "elapsed": 0.0
+    }
+  ],
+  "verdict": "FAIL",
+  "arbitration_reason": "All witnesses FAIL: test_suite, smoke",
+  "timestamp": "2026-04-11T02:13:08+00:00",
+  "bundle_hash": "780701fc4151a1a5"
+}

@@ -1,0 +1,61 @@
+{
+  "project_id": "truthcert-denominator-phase1-9b039a8d",
+  "scope_lock": {
+    "project_id": "truthcert-denominator-phase1-9b039a8d",
+    "project_path": "C:\\Models\\truthcert-denominator-phase1",
+    "risk_profile": "high",
+    "witness_count": 3,
+    "test_command": "python -m pytest tests/test_posterior_validity.py -q",
+    "smoke_modules": [
+      "py:sim",
+      "py:sim.config_schema",
+      "py:sim.decision",
+      "py:sim.fit_delta",
+      "py:sim.generate_trials",
+      "py:sim.generate_truth",
+      "py:sim.meta_fixed",
+      "py:sim.observed_world",
+      "py:sim.oracle",
+      "py:sim.propagate_engine",
+      "py:sim.run_suite",
+      "py:sim.score",
+      "py:sim.seed",
+      "py:sim.selection",
+      "py:sim.utils"
+    ],
+    "baseline_path": "C:\\overmind\\data\\baselines\\truthcert-denominator-phase1-9b039a8d.json",
+    "expected_outcome": "pass",
+    "source_hash": "7df487b13de182a1",
+    "created_at": "2026-04-13T07:48:13+00:00"
+  },
+  "witness_results": [
+    {
+      "witness_type": "test_suite",
+      "verdict": "PASS",
+      "exit_code": 0,
+      "stdout": ".                                                                        [100%]\n1 passed in 1.83s\n",
+      "stderr": "",
+      "elapsed": 3.45
+    },
+    {
+      "witness_type": "smoke",
+      "verdict": "PASS",
+      "exit_code": 0,
+      "stdout": "15 modules imported OK",
+      "stderr": "",
+      "elapsed": 11.35
+    },
+    {
+      "witness_type": "numerical",
+      "verdict": "PASS",
+      "exit_code": 0,
+      "stdout": "5 values within tolerance",
+      "stderr": "",
+      "elapsed": 1.1
+    }
+  ],
+  "verdict": "CERTIFIED",
+  "arbitration_reason": "3/3 witnesses agree PASS",
+  "timestamp": "2026-04-13T07:48:28+00:00",
+  "bundle_hash": "6a2599be96e38b67"
+}
