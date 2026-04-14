@@ -1,11 +1,21 @@
 from __future__ import annotations
 
+import hashlib
 import json
 from pathlib import Path
 from typing import Any
 
 from overmind.storage.db import StateDatabase
 from overmind.storage.models import InsightRecord, MemoryRecord, utc_now
+
+
+def file_source_hash(path: str | Path) -> str | None:
+    """SHA-256 hex prefix for a file, used to ground memory records to sources."""
+    try:
+        data = Path(path).read_bytes()
+    except OSError:
+        return None
+    return hashlib.sha256(data).hexdigest()[:16]
 
 
 class MemoryStore:
@@ -111,6 +121,39 @@ class MemoryStore:
 
     def stats(self) -> dict[str, int]:
         return self.db.memory_stats()
+
+    def is_stale(self, memory: MemoryRecord) -> bool:
+        """Return True if the memory references a source whose current hash
+        differs from the hash captured at extraction time. Implements the
+        "memory != evidence" rule from CLAUDE.md — a memory whose source file
+        was overwritten is no longer authoritative.
+
+        Memories without a `source_path`/`source_hash` are not considered
+        stale (they weren't source-grounded to begin with).
+        """
+        if not memory.source_path or not memory.source_hash:
+            return False
+        current = file_source_hash(memory.source_path)
+        if current is None:
+            return True  # source file gone = stale
+        return current != memory.source_hash
+
+    def invalidate_stale(self) -> int:
+        """Mark source-grounded memories whose source changed as 'expired'.
+
+        Returns the count of memories invalidated. Safe to call repeatedly —
+        already-expired memories are untouched.
+        """
+        count = 0
+        now = utc_now()
+        for memory in self.list_all(status="active", limit=10_000):
+            if self.is_stale(memory):
+                memory.status = "expired"
+                memory.valid_until = now
+                memory.updated_at = now
+                self.db.upsert_memory(memory)
+                count += 1
+        return count
 
     def save_insights(self, insights: list[InsightRecord]) -> None:
         for insight in insights:

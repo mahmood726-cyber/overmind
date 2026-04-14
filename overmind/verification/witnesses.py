@@ -1,8 +1,14 @@
-"""Three witness types for TruthCert multi-witness verification."""
+"""Witness types for TruthCert multi-witness verification.
+
+Current set: SuiteWitness, SmokeWitness, NumericalWitness, DeterminismWitness.
+The Determinism witness is optional — added for projects whose release
+contract requires reproducible output across runs.
+"""
 from __future__ import annotations
 
 import json
 import os
+import re
 import subprocess
 import sys
 import time
@@ -228,4 +234,119 @@ class NumericalWitness:
             witness_type="numerical", verdict="PASS", exit_code=0,
             stdout=f"{len(expected)} values within tolerance",
             stderr="", elapsed=elapsed,
+        )
+
+
+# Patterns stripped before comparing outputs for determinism — ISO dates,
+# timestamps, elapsed times, and `in X.XXs` markers that pytest emits.
+_NONDETERMINISTIC_PATTERNS = [
+    (re.compile(r"\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}(?:[.,]\d+)?(?:Z|[+-]\d{2}:?\d{2})?"), "<TS>"),
+    (re.compile(r"\d{4}-\d{2}-\d{2} \d{2}:\d{2}:\d{2}(?:[.,]\d+)?"), "<TS>"),
+    (re.compile(r"\d+\.\d+s\b"), "<DUR>"),
+    (re.compile(r"\belapsed=\d+\.\d+"), "elapsed=<DUR>"),
+    (re.compile(r"\bin \d+\.\d+ ?s"), "in <DUR>"),
+    (re.compile(r"0x[0-9a-fA-F]+"), "<ADDR>"),
+    (re.compile(r"/tmp/[\w./-]+"), "<TMP>"),
+    (re.compile(r"\\AppData\\Local\\Temp\\[\w./\\-]+"), "<TMP>"),
+]
+
+
+def _normalize_for_determinism(text: str) -> str:
+    """Strip common nondeterministic markers (timestamps, durations, addresses,
+    temp-paths) so two runs of the same command can be hashed for equality."""
+    import re as _re  # local alias because `re` is module-global
+    normalized = text
+    for pattern, replacement in _NONDETERMINISTIC_PATTERNS:
+        normalized = pattern.sub(replacement, normalized)
+    # Collapse trailing whitespace per line for CRLF/LF neutrality.
+    normalized = "\n".join(line.rstrip() for line in normalized.splitlines())
+    return normalized
+
+
+class DeterminismWitness:
+    """Run a command twice; PASS iff normalized outputs hash-match.
+
+    Catches flaky tests, clock-dependent logic, and hidden nondeterminism
+    that breaks numerical baselines across nightlies. Use for tier-3
+    projects where reproducibility is a release requirement.
+    """
+
+    def __init__(self, timeout: int = 60) -> None:
+        self.timeout = timeout
+        self.policy_guard = PolicyGuard()
+
+    def run(self, command: str, cwd: str) -> WitnessResult:
+        import hashlib as _hashlib
+
+        start = time.time()
+        valid, detail = validate_command_prefix_with_detail(command, cwd=cwd)
+        if not valid:
+            return WitnessResult(
+                witness_type="determinism", verdict="FAIL", exit_code=-1,
+                stdout="", stderr=detail or f"Blocked: command prefix not allowlisted: {command[:80]}",
+                elapsed=round(time.time() - start, 2),
+            )
+        blocking_violation = next(
+            (v for v in self.policy_guard.evaluate([command]) if v.severity == "block"),
+            None,
+        )
+        if blocking_violation is not None:
+            return WitnessResult(
+                witness_type="determinism", verdict="FAIL", exit_code=-1,
+                stdout="",
+                stderr=f"Blocked: policy violation {blocking_violation.rule_name}: {blocking_violation.message}",
+                elapsed=round(time.time() - start, 2),
+            )
+
+        outputs: list[str] = []
+        for run_idx in range(2):
+            try:
+                proc = subprocess.run(
+                    split_command(command), cwd=cwd, shell=False,
+                    capture_output=True, text=True, timeout=self.timeout,
+                    encoding="utf-8", errors="replace",
+                )
+            except subprocess.TimeoutExpired:
+                return WitnessResult(
+                    witness_type="determinism", verdict="FAIL", exit_code=-1,
+                    stdout="", stderr=f"Run {run_idx + 1} timed out after {self.timeout}s",
+                    elapsed=round(time.time() - start, 2),
+                )
+            except OSError as exc:
+                return WitnessResult(
+                    witness_type="determinism", verdict="FAIL", exit_code=-1,
+                    stdout="", stderr=f"Run {run_idx + 1} failed to start: {exc}",
+                    elapsed=round(time.time() - start, 2),
+                )
+            if proc.returncode != 0:
+                return WitnessResult(
+                    witness_type="determinism", verdict="FAIL",
+                    exit_code=proc.returncode,
+                    stdout=proc.stdout[-500:],
+                    stderr=f"Run {run_idx + 1} exited {proc.returncode}: {proc.stderr.strip()[-300:]}",
+                    elapsed=round(time.time() - start, 2),
+                )
+            outputs.append(proc.stdout)
+
+        normalized = [_normalize_for_determinism(o) for o in outputs]
+        hashes = [_hashlib.sha256(n.encode("utf-8", errors="replace")).hexdigest()[:16] for n in normalized]
+        elapsed = round(time.time() - start, 2)
+        if hashes[0] == hashes[1]:
+            return WitnessResult(
+                witness_type="determinism", verdict="PASS", exit_code=0,
+                stdout=f"Two runs produced identical normalized output ({hashes[0]})",
+                stderr="", elapsed=elapsed,
+            )
+        # Emit a short first-diff line for operator triage.
+        from difflib import unified_diff
+        diff = list(unified_diff(
+            normalized[0].splitlines()[:50],
+            normalized[1].splitlines()[:50],
+            lineterm="", n=1,
+        ))
+        return WitnessResult(
+            witness_type="determinism", verdict="FAIL", exit_code=0,
+            stdout=f"Hashes differ: {hashes[0]} vs {hashes[1]}",
+            stderr="Nondeterministic output:\n" + "\n".join(diff[:20]),
+            elapsed=elapsed,
         )

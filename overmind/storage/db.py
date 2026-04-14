@@ -152,6 +152,8 @@ class StateDatabase:
             ("valid_from", "TEXT"),
             ("valid_until", "TEXT"),
             ("embedding", "TEXT"),
+            ("source_path", "TEXT"),
+            ("source_hash", "TEXT"),
         ]
         for col_name, col_type in migrations:
             if col_name not in existing:
@@ -240,8 +242,8 @@ class StateDatabase:
             INSERT INTO memories (id, memory_type, scope, title, content,
                 source_task_id, source_tick, relevance, confidence,
                 tags, linked_memories, created_at, updated_at, status,
-                valid_from, valid_until, embedding)
-            VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+                valid_from, valid_until, embedding, source_path, source_hash)
+            VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
             ON CONFLICT(id) DO UPDATE SET
                 title = excluded.title,
                 content = excluded.content,
@@ -253,7 +255,9 @@ class StateDatabase:
                 status = excluded.status,
                 valid_from = excluded.valid_from,
                 valid_until = excluded.valid_until,
-                embedding = excluded.embedding
+                embedding = excluded.embedding,
+                source_path = excluded.source_path,
+                source_hash = excluded.source_hash
             """,
             (
                 memory.memory_id, memory.memory_type, memory.scope,
@@ -263,6 +267,7 @@ class StateDatabase:
                 encoded_tags, encoded_linked,
                 memory.created_at, memory.updated_at, memory.status,
                 memory.valid_from, memory.valid_until, encoded_embedding,
+                memory.source_path, memory.source_hash,
             ),
         )
         self.connection.commit()
@@ -421,6 +426,8 @@ class StateDatabase:
             valid_from=row["valid_from"] if "valid_from" in row.keys() else None,
             valid_until=row["valid_until"] if "valid_until" in row.keys() else None,
             embedding=emb,
+            source_path=row["source_path"] if "source_path" in row.keys() else None,
+            source_hash=row["source_hash"] if "source_hash" in row.keys() else None,
         )
 
     def update_routing_score(self, runner_type: str, task_type: str, success: bool) -> None:

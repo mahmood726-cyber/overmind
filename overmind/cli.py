@@ -145,6 +145,14 @@ def build_parser() -> argparse.ArgumentParser:
     mine_parser = subparsers.add_parser("mine-sessions")
     mine_parser.add_argument("--count", type=int, default=30)
 
+    # Blame: walk a task id back to the witness evidence that produced its verdict.
+    blame_parser = subparsers.add_parser(
+        "blame",
+        help="Trace a task's verdict back to witness evidence and artifact tails.",
+    )
+    blame_parser.add_argument("task_id")
+    blame_parser.add_argument("--tail-lines", type=int, default=30)
+
     return parser
 
 
@@ -250,6 +258,8 @@ def main(argv: list[str] | None = None) -> int:
             from overmind.intelligence.session_miner import SessionMiner
             miner = SessionMiner(orchestrator.db)
             payload = miner.mine_and_store(max_sessions=args.count)
+        elif args.command == "blame":
+            payload = orchestrator.blame_task(args.task_id, tail_lines=args.tail_lines)
         else:
             payload = orchestrator.show_state(focus_project_id=args.project_id)
         return _emit_payload(payload)

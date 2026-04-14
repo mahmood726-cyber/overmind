@@ -236,3 +236,8 @@ class MemoryRecord(SerializableModel):
     valid_from: str | None = None
     valid_until: str | None = None
     embedding: list[float] | None = None
+    # Hash of the file(s) this memory was extracted from. When the source
+    # changes, the memory is stale and should not be recalled as evidence —
+    # implements the "memory != evidence" non-negotiable in CLAUDE.md.
+    source_path: str | None = None
+    source_hash: str | None = None

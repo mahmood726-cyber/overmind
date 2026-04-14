@@ -902,6 +902,49 @@ class Orchestrator:
         self.memory_store.forget(memory_id)
         return {"forgotten": memory_id}
 
+    def blame_task(self, task_id: str, tail_lines: int = 30) -> dict[str, object]:
+        """Walk a task's verdict back to the witness evidence that produced it.
+
+        Operator UX for "why did this fail" — collects the task record, its
+        verification_summary, and the tails of any artifact log files written
+        for the task so the answer is visible in one command instead of
+        requiring grep through data/artifacts/.
+        """
+        task = self.db.get_task(task_id)
+        if task is None:
+            return {"task_id": task_id, "found": False, "error": "task not found"}
+
+        artifacts_dir = self.config.data_dir / "artifacts"
+        trace_id = task.trace_id or task.task_id
+        artifact_logs: list[dict[str, object]] = []
+        if artifacts_dir.exists():
+            for log_path in sorted(artifacts_dir.glob(f"{trace_id}_{task.task_id}_*.log")):
+                try:
+                    text = log_path.read_text(encoding="utf-8", errors="replace")
+                except OSError as exc:
+                    artifact_logs.append({"path": str(log_path), "error": str(exc)})
+                    continue
+                lines = text.splitlines()
+                artifact_logs.append({
+                    "path": str(log_path),
+                    "total_lines": len(lines),
+                    "tail": "\n".join(lines[-tail_lines:]),
+                })
+
+        return {
+            "task_id": task.task_id,
+            "found": True,
+            "status": task.status,
+            "project_id": task.project_id,
+            "task_type": task.task_type,
+            "risk": task.risk,
+            "last_error": task.last_error,
+            "required_verification": list(task.required_verification),
+            "verification_summary": list(task.verification_summary or []),
+            "verify_command": task.verify_command,
+            "artifact_logs": artifact_logs,
+        }
+
     def _recover_abandoned_tasks(self) -> None:
         for task in self.db.list_tasks():
             if task.status in {"ASSIGNED", "RUNNING", "VERIFYING"}:

@@ -215,6 +215,7 @@ def _verify_with_timeout(engine, proj, timeout=300):
         arbitration_reason=data["arbitration_reason"],
         timestamp=data["timestamp"],
         bundle_hash=data["bundle_hash"],
+        failure_class=data.get("failure_class"),
     )
 
 
@@ -442,6 +443,27 @@ def _run_verification(db: StateDatabase, args: argparse.Namespace, run_start: da
                 confidence=0.95,
                 tags=["nightly", "verification", verdict.lower()],
             ))
+            # Also emit a typed bundle_failure memory so the dream engine
+            # can cluster failures by failure_class across projects.
+            if bundle.failure_class:
+                memory_store.save(MemoryRecord(
+                    memory_id=f"bundle_fail_{proj.project_id[:8]}_{tick}",
+                    memory_type="bundle_failure",
+                    scope=proj.project_id,
+                    title=f"{proj.name}: {bundle.failure_class}",
+                    content=(
+                        f"{bundle.failure_class}: {bundle.arbitration_reason[:200]}"
+                    ),
+                    source_task_id=task_id,
+                    source_tick=tick,
+                    relevance=1.0,
+                    confidence=0.9,
+                    tags=[
+                        "nightly", "bundle_failure",
+                        f"failure_class:{bundle.failure_class}",
+                        verdict.lower(),
+                    ],
+                ))
 
         # Save per-project bundle JSON
         bundle_path = bundles_dir / f"{proj.project_id[:16]}.json"

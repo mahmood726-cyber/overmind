@@ -7,6 +7,8 @@ from pathlib import Path
 
 from overmind.storage.models import ProjectRecord, utc_now
 from overmind.verification.cert_bundle import Arbitrator, CertBundle
+from overmind.verification.failure_taxonomy import classify_bundle
+from overmind.verification.preflight import PreflightChecker
 from overmind.verification.scope_lock import ScopeLock, WitnessResult, compute_tier
 from overmind.verification.witnesses import (
     NumericalWitness,
@@ -29,6 +31,7 @@ class TruthCertEngine:
         self.smoke_witness = SmokeWitness(timeout=smoke_timeout)
         self.numerical_witness = NumericalWitness(timeout=numerical_timeout)
         self.arbitrator = Arbitrator()
+        self.preflight = PreflightChecker()
 
     def build_scope_lock(self, project: ProjectRecord) -> ScopeLock:
         tier = compute_tier(project.risk_profile, project.advanced_math_score)
@@ -52,6 +55,37 @@ class TruthCertEngine:
 
     def verify(self, project: ProjectRecord) -> CertBundle:
         lock = self.build_scope_lock(project)
+
+        # Preflight: catch missing ingredients before we spend witness time.
+        # Converts the largest observed nightly failure class (missing baseline,
+        # missing module, missing path) from a generic FAIL into a typed verdict
+        # the dream engine can aggregate and surface.
+        preflight = self.preflight.check(
+            root_path=lock.project_path,
+            test_command=lock.test_command,
+            smoke_modules=lock.smoke_modules,
+            baseline_path=lock.baseline_path,
+            tier=lock.witness_count,
+        )
+        if not preflight.ready:
+            synthetic = WitnessResult(
+                witness_type="preflight",
+                verdict="FAIL",
+                exit_code=-1,
+                stdout="",
+                stderr=preflight.to_witness_stderr(),
+                elapsed=0.0,
+            )
+            return CertBundle(
+                project_id=project.project_id,
+                scope_lock=lock,
+                witness_results=[synthetic],
+                verdict="FAIL",
+                arbitration_reason=f"Preflight failed: {preflight.failure_class}",
+                timestamp=utc_now(),
+                failure_class=preflight.failure_class,
+            )
+
         results: list[WitnessResult] = []
 
         # Witness 1: always run test suite
@@ -103,6 +137,7 @@ class TruthCertEngine:
             if verdict != "REJECT":
                 reason = f"{reason} (upgraded after retry)"
 
+        failure_class = classify_bundle(results) if verdict in {"FAIL", "REJECT"} else None
         return CertBundle(
             project_id=project.project_id,
             scope_lock=lock,
@@ -110,6 +145,7 @@ class TruthCertEngine:
             verdict=verdict,
             arbitration_reason=reason,
             timestamp=utc_now(),
+            failure_class=failure_class,
         )
 
     # Directories containing scripts/examples/dev tools; not importable modules.

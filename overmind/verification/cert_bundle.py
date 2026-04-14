@@ -50,12 +50,15 @@ class CertBundle:
     arbitration_reason: str
     timestamp: str
     bundle_hash: str = ""
+    failure_class: str | None = None  # from failure_taxonomy; None when CERTIFIED/PASS
 
     def __post_init__(self) -> None:
         if not self.bundle_hash:
             self.bundle_hash = self._compute_hash()
 
     def _compute_hash(self) -> str:
+        # failure_class is excluded from hash so a nightly re-classifying an
+        # existing bundle's failure category doesn't invalidate prior hashes.
         payload = {
             "project_id": self.project_id,
             "scope_lock": _frozen_to_dict(self.scope_lock),
@@ -76,6 +79,7 @@ class CertBundle:
             "arbitration_reason": self.arbitration_reason,
             "timestamp": self.timestamp,
             "bundle_hash": self.bundle_hash,
+            "failure_class": self.failure_class,
         }
 
 

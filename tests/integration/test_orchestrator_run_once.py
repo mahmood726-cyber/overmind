@@ -1137,6 +1137,68 @@ def test_run_once_survives_dream_engine_exception(tmp_path, monkeypatch):
         orchestrator.close()
 
 
+def test_blame_task_returns_not_found_for_missing_task(tmp_path):
+    config = _write_minimal_config(tmp_path / "config", tmp_path / "data")
+    orchestrator = Orchestrator(config)
+    try:
+        result = orchestrator.blame_task("no-such-task-id")
+        assert result["found"] is False
+    finally:
+        orchestrator.close()
+
+
+def test_blame_task_surfaces_artifact_log_tails(tmp_path):
+    config = _write_minimal_config(tmp_path / "config", tmp_path / "data")
+    orchestrator = Orchestrator(config)
+    try:
+        project = ProjectRecord(
+            project_id="p-blame",
+            name="Blame P",
+            root_path=str(tmp_path / "r"),
+            project_type="python_tool",
+            stack=["python"],
+        )
+        task = TaskRecord(
+            task_id="t-blame",
+            project_id=project.project_id,
+            title="Blame this",
+            task_type="verification",
+            source="test",
+            priority=0.5,
+            risk="medium",
+            expected_runtime_min=1,
+            expected_context_cost="low",
+            required_verification=["relevant_tests"],
+            trace_id="trace-blame",
+            verification_summary=["tests: PASS (exit=0)"],
+            last_error=None,
+            status="COMPLETED",
+        )
+        orchestrator.db.upsert_project(project)
+        orchestrator.db.upsert_task(task)
+
+        artifacts = config.data_dir / "artifacts"
+        artifacts.mkdir(parents=True, exist_ok=True)
+        log = artifacts / "trace-blame_t-blame_relevant_tests_1.log"
+        log.write_text(
+            "$ pytest\n\nSTDOUT:\n" + "\n".join(f"line {i}" for i in range(50)),
+            encoding="utf-8",
+        )
+
+        result = orchestrator.blame_task("t-blame", tail_lines=5)
+
+        assert result["found"] is True
+        assert result["status"] == "COMPLETED"
+        assert result["verification_summary"] == ["tests: PASS (exit=0)"]
+        assert len(result["artifact_logs"]) == 1
+        log_entry = result["artifact_logs"][0]
+        assert log_entry["total_lines"] > 5
+        assert "line 49" in log_entry["tail"]
+        assert "line 0" not in log_entry["tail"]
+    finally:
+        orchestrator.close()
+
+
 def test_verify_command_uses_scrubbed_env_and_config_timeout(tmp_path, monkeypatch):
     """P0-1 + P1-2 parity: verify_command must route through the same hardened
     subprocess launch as VerificationEngine, with timeout from config."""
