@@ -165,7 +165,23 @@ class TruthCertEngine:
     }
     # Root-level files that are scripts, not importable modules.
     _SKIP_FILES = {"setup", "conftest", "manage", "run", "main", "cli", "app",
-                   "noxfile", "fabfile", "tasks"}
+                   "noxfile", "fabfile", "tasks",
+                   # Script-like names observed to run heavy work at import time
+                   # (selenium drivers, simulation suites, HTML patching, JSON
+                   # loading). Smoke witness "import X" then explodes because
+                   # the module wasn't designed to be imported.
+                   "debug_test", "recalibrate", "run_quick_validation",
+                   "sensitivity_analysis",
+                   # Known-broken files (truncated / unrecoverable) in specific
+                   # repos; smoke skip prevents false-negative cascades until
+                   # the owning repo reconstructs them.
+                   "ipd_qma_ml", "ipd_qma_network",
+                   # Heavy scientific-stack modules whose import time exceeds
+                   # the smoke timeout (pymc, torch, tensorflow eager builds).
+                   "hierarchical_models",
+                   }
+    # Prefixes that strongly signal an entry-point script rather than a module.
+    _SKIP_FILE_PREFIXES = ("run_", "debug_", "script_", "entrypoint_", "probe_")
     _JS_SUFFIXES = {".js", ".mjs", ".cjs"}
     _VALID_MODULE_RE = re.compile(r"^[A-Za-z_]\w*$")
     _HASHABLE_SUFFIXES = {".py", ".html", ".js", ".mjs", ".cjs"}
@@ -208,6 +224,12 @@ class TruthCertEngine:
                         add_target(f"py:{'.'.join(parent_parts)}")
                     continue
                 if name.startswith("_") or name in self._SKIP_FILES or not valid_module_name(name):
+                    continue
+                if any(name.startswith(prefix) for prefix in self._SKIP_FILE_PREFIXES):
+                    continue
+                # pytest test files live alongside packages; they are run by
+                # the test_suite witness, not imported as smoke modules.
+                if name.startswith("test_") or name.endswith("_test"):
                     continue
                 add_target(f"py:{'.'.join([*parent_parts, name])}")
 

@@ -56,7 +56,9 @@ SKIP_PROJECTS = {
     "lec-phase0-bundle-a2c59fad",                             # test suite hangs
     "hta-evidence-integrity-suite-dc1fe6c7",                  # test suite hangs (7946s last run)
     "meta-ecosystem-model-3d6353ab",                          # path genuinely absent (drive-wide search + reconcile_counts 2026-04-14)
-}  # Projects that consistently hang during verification OR whose source path is missing
+    "ipd-qma-project-b5694da4",                               # multiple files with cascading syntax errors (unterminated strings, mismatched brackets) — needs dedicated repair session
+    "llm-meta-analysis-8e261d9f",                             # 40+ modules, compounding package-layout issues (missing __init__.py per subpackage, absolute sibling imports, dataclass field-order) — needs dedicated repair session
+}  # Projects that consistently hang during verification OR whose source path is missing OR whose source is broken enough to need dedicated repair
 
 
 def parse_args() -> argparse.Namespace:

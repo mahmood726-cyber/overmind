@@ -95,10 +95,15 @@ class SmokeWitness:
         start = time.time()
         failures: list[str] = []
         env = os.environ.copy()
+        # Ensure the project root itself is on PYTHONPATH so top-level sibling
+        # modules (e.g. `shared.py` at repo root being imported from
+        # `curate/extract_aact.py`) resolve. Also add src/ when present.
+        pythonpath_parts = [str(Path(cwd))]
         src_dir = Path(cwd) / "src"
         if src_dir.is_dir():
-            existing = env.get("PYTHONPATH")
-            env["PYTHONPATH"] = str(src_dir) if not existing else str(src_dir) + os.pathsep + existing
+            pythonpath_parts.insert(0, str(src_dir))
+        existing = env.get("PYTHONPATH")
+        env["PYTHONPATH"] = os.pathsep.join(pythonpath_parts + ([existing] if existing else []))
         for module in modules:
             try:
                 if module.startswith("js:"):
