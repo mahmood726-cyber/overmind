@@ -55,7 +55,8 @@ SKIP_PROJECTS = {
     "metasprint-dta-5dffce53",                                # smoke import hangs (30K-line app)
     "lec-phase0-bundle-a2c59fad",                             # test suite hangs
     "hta-evidence-integrity-suite-dc1fe6c7",                  # test suite hangs (7946s last run)
-}  # Projects that consistently hang during verification
+    "meta-ecosystem-model-3d6353ab",                          # path genuinely absent (drive-wide search + reconcile_counts 2026-04-14)
+}  # Projects that consistently hang during verification OR whose source path is missing
 
 
 def parse_args() -> argparse.Namespace:
