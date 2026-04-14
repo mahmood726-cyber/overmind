@@ -50,8 +50,30 @@ class MemoryStore:
     def recall_heuristics(self, task_type: str, limit: int = 5) -> list[MemoryRecord]:
         return self.db.search_memories(task_type, memory_type="heuristic", limit=limit)
 
-    def decay_all(self, factor: float = 0.95) -> int:
-        return self.db.decay_memories(factor)
+    # Per-type decay rates. Feedback memories encode user preferences and
+    # should age very slowly; bundle_failure / regression memories couple to
+    # state and age fast so the dream cluster analysis doesn't re-surface
+    # yesterday's problem after it's been fixed.
+    DEFAULT_DECAY_RATES: dict[str, float] = {
+        "feedback": 0.99,
+        "user": 0.99,
+        "reference": 0.98,
+        "heuristic": 0.97,
+        "runner_learning": 0.96,
+        "project": 0.92,
+        "regression": 0.90,
+        "bundle_failure": 0.85,
+    }
+
+    def decay_all(
+        self,
+        factor: float = 0.95,
+        *,
+        per_type: dict[str, float] | None = None,
+    ) -> int:
+        """Decay relevance scores. Uses DEFAULT_DECAY_RATES when no override."""
+        rates = per_type if per_type is not None else self.DEFAULT_DECAY_RATES
+        return self.db.decay_memories(factor, per_type=rates)
 
     def archive_stale(self, threshold: float = 0.1) -> int:
         return self.db.archive_stale_memories(threshold)

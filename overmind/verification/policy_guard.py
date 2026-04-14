@@ -11,6 +11,7 @@ from __future__ import annotations
 
 import re
 from dataclasses import dataclass, field
+from pathlib import Path
 from typing import Literal
 
 from overmind.storage.models import utc_now
@@ -51,6 +52,18 @@ DEFAULT_RULES: list[PolicyRule] = [
         re.compile(r"rm\s+-[a-zA-Z]*r[a-zA-Z]*f?\s+\.\s*$", re.IGNORECASE),
         "block",
         "Blocked: rm -rf on current directory",
+    ),
+    PolicyRule(
+        # Absolute-path rm -rf. Default severity is `block`; PolicyGuard's
+        # path-aware evaluator downgrades to `warn` when the target is inside
+        # the project root (e.g. `rm -rf C:\repo\build` in that repo's session).
+        "rm_rf_absolute_path",
+        re.compile(
+            r"rm\s+-[a-zA-Z]*r[a-zA-Z]*f?\s+(?:[A-Za-z]:[\\/]|/)\S+",
+            re.IGNORECASE,
+        ),
+        "block",
+        "Blocked: rm -rf targeting an absolute path",
     ),
     PolicyRule(
         "powershell_remove_item_broad",
@@ -180,26 +193,79 @@ DEFAULT_RULES: list[PolicyRule] = [
 class PolicyGuard:
     """Evaluate terminal output lines against a set of policy rules."""
 
+    # Pattern for rm/Remove-Item/del target extraction so we can do
+    # path-aware downgrade (target inside project root → warn; outside → block).
+    _RM_TARGET_RE = re.compile(
+        r"(?:rm|Remove-Item|rmdir|rd|del|erase)(?:\s+[/-]\S+)*\s+['\"]?([^'\"\s|&;]+)['\"]?",
+        re.IGNORECASE,
+    )
+
     def __init__(self, rules: list[PolicyRule] | None = None) -> None:
         self.rules = rules if rules is not None else list(DEFAULT_RULES)
 
-    def evaluate(self, lines: list[str]) -> list[PolicyViolation]:
-        """Check lines against all rules.  Returns violations sorted by severity."""
+    def evaluate(
+        self,
+        lines: list[str],
+        *,
+        project_root: str | Path | None = None,
+    ) -> list[PolicyViolation]:
+        """Check lines against all rules.
+
+        When `project_root` is provided, path-scoped destructive rules
+        (rm_rf_broad, cmd_rmdir_broad, etc.) are downgraded from `block` to
+        `warn` if the target path is clearly inside the project root. A path
+        like `./build` inside a repo is a normal operation; `/home/user` from
+        the same agent is not. Rules targeting drive roots or `/` are always
+        kept at their original severity.
+        """
         violations: list[PolicyViolation] = []
+        root_resolved: Path | None = None
+        if project_root is not None:
+            try:
+                root_resolved = Path(project_root).resolve()
+            except (OSError, ValueError):
+                root_resolved = None
+
         for line in lines:
             for rule in self.rules:
-                if rule.pattern.search(line):
-                    violations.append(
-                        PolicyViolation(
-                            rule_name=rule.name,
-                            severity=rule.severity,
-                            matched_line=line.strip()[:200],
-                            message=rule.message,
-                        )
+                match = rule.pattern.search(line)
+                if not match:
+                    continue
+                effective_severity = rule.severity
+                if root_resolved is not None and rule.severity == "block":
+                    if self._target_is_inside_project(line, root_resolved):
+                        effective_severity = "warn"
+                violations.append(
+                    PolicyViolation(
+                        rule_name=rule.name,
+                        severity=effective_severity,
+                        matched_line=line.strip()[:200],
+                        message=rule.message,
                     )
+                )
         severity_order: dict[str, int] = {"block": 0, "warn": 1, "review": 2}
         violations.sort(key=lambda v: severity_order.get(v.severity, 9))
         return violations
+
+    @classmethod
+    def _target_is_inside_project(cls, line: str, project_root: Path) -> bool:
+        """Best-effort: extract the deletion target and check containment."""
+        match = cls._RM_TARGET_RE.search(line)
+        if not match:
+            return False
+        raw = match.group(1).strip().strip("'\"")
+        # Wildcards / bare drive roots / filesystem roots are always unsafe.
+        if raw in {".", "*", "/", "\\"} or re.match(r"^[A-Za-z]:\\?\*?$", raw):
+            return False
+        try:
+            target = (project_root / raw).resolve() if not Path(raw).is_absolute() else Path(raw).resolve()
+        except (OSError, ValueError):
+            return False
+        try:
+            target.relative_to(project_root)
+            return True
+        except ValueError:
+            return False
 
     def has_blocks(self, violations: list[PolicyViolation]) -> bool:
         """Return True if any violation has 'block' severity."""

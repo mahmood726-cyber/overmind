@@ -361,13 +361,49 @@ class StateDatabase:
         scored.sort(key=lambda x: x[1], reverse=True)
         return scored[:limit]
 
-    def decay_memories(self, factor: float = 0.95) -> int:
-        cursor = self.connection.execute(
-            "UPDATE memories SET relevance = ROUND(relevance * ?, 4), updated_at = ? WHERE status = 'active'",
-            (factor, utc_now()),
-        )
+    def decay_memories(
+        self,
+        factor: float = 0.95,
+        *,
+        per_type: dict[str, float] | None = None,
+    ) -> int:
+        """Decay active memory relevance.
+
+        If `per_type` is provided, apply per-memory-type factors; any type not
+        in the dict falls back to `factor`. Feedback (user preferences) should
+        decay slower than project (state-coupled) memories — see the
+        `DEFAULT_DECAY_RATES` in MemoryStore for the policy defaults.
+        """
+        now = utc_now()
+        if not per_type:
+            cursor = self.connection.execute(
+                "UPDATE memories SET relevance = ROUND(relevance * ?, 4), updated_at = ? WHERE status = 'active'",
+                (factor, now),
+            )
+            self.connection.commit()
+            return cursor.rowcount
+
+        total = 0
+        # Per-type pass first so fallback UPDATE doesn't double-decay them.
+        typed_types = list(per_type.keys())
+        for memory_type, type_factor in per_type.items():
+            cursor = self.connection.execute(
+                "UPDATE memories SET relevance = ROUND(relevance * ?, 4), updated_at = ? "
+                "WHERE status = 'active' AND memory_type = ?",
+                (type_factor, now, memory_type),
+            )
+            total += cursor.rowcount
+        # Fallback for any type not explicitly listed.
+        if typed_types:
+            placeholders = ",".join("?" for _ in typed_types)
+            cursor = self.connection.execute(
+                f"UPDATE memories SET relevance = ROUND(relevance * ?, 4), updated_at = ? "
+                f"WHERE status = 'active' AND memory_type NOT IN ({placeholders})",
+                (factor, now, *typed_types),
+            )
+            total += cursor.rowcount
         self.connection.commit()
-        return cursor.rowcount
+        return total
 
     def archive_stale_memories(self, threshold: float = 0.1) -> int:
         cursor = self.connection.execute(

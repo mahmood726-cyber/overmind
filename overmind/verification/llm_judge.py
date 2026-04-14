@@ -305,3 +305,101 @@ def _parse_csv(value: str) -> list[str]:
     """Parse comma-separated value, filtering 'none' and empty strings."""
     items = [item.strip() for item in value.split(",")]
     return [item for item in items if item and item.lower() != "none"]
+
+
+# ── Quorum judge ────────────────────────────────────────────────────
+
+
+@dataclass(slots=True)
+class QuorumVerdict:
+    passed: bool
+    confidence: float
+    reasoning: str
+    backend_verdicts: list[JudgeVerdict] = field(default_factory=list)
+    concerns: list[str] = field(default_factory=list)
+    created_at: str = field(default_factory=utc_now)
+
+
+class QuorumJudge:
+    """Run a task through multiple LLM backends and require agreement.
+
+    Mitigates single-vendor bias, single-vendor outages, and prompt-specific
+    blind spots (a Claude-backed judge missing something a Gemini-backed judge
+    catches, and vice versa). Quorum policy: the verdict passes iff
+    ≥`quorum_threshold` of available backends agree on PASS. Backends that
+    error are excluded from the denominator; if fewer than
+    `min_backends` succeed, returns `judge_error` concern so the orchestrator
+    falls back to tests-only verification.
+    """
+
+    def __init__(
+        self,
+        judges: list[LLMJudge],
+        quorum_threshold: float = 0.5,
+        min_backends: int = 1,
+    ) -> None:
+        if not judges:
+            raise ValueError("QuorumJudge requires at least one LLMJudge")
+        self.judges = judges
+        self.quorum_threshold = quorum_threshold
+        self.min_backends = min_backends
+
+    def judge(
+        self,
+        task: TaskRecord,
+        project: ProjectRecord,
+        verification_result: VerificationResult,
+        transcript_lines: list[str] | None = None,
+    ) -> QuorumVerdict:
+        verdicts: list[JudgeVerdict] = []
+        for judge in self.judges:
+            try:
+                verdicts.append(judge.judge(task, project, verification_result, transcript_lines))
+            except Exception as exc:  # noqa: BLE001 — backend-specific failure, isolate
+                verdicts.append(JudgeVerdict(
+                    passed=True, confidence=0.0,
+                    reasoning=f"Judge backend raised: {type(exc).__name__}: {exc}",
+                    concerns=["judge_error", "backend_exception"],
+                ))
+
+        available = [v for v in verdicts if "judge_error" not in v.concerns]
+        if len(available) < self.min_backends:
+            return QuorumVerdict(
+                passed=True,  # orchestrator gates on judge_error, not passed.
+                confidence=0.0,
+                reasoning=(
+                    f"Quorum unavailable: {len(available)}/{len(self.judges)} "
+                    "backends returned usable verdicts."
+                ),
+                backend_verdicts=verdicts,
+                concerns=["judge_error", "quorum_unreachable"],
+            )
+
+        pass_count = sum(1 for v in available if v.passed)
+        pass_ratio = pass_count / len(available)
+        passed = pass_ratio >= self.quorum_threshold
+        avg_confidence = sum(v.confidence for v in available) / len(available)
+        disagreement = len({v.passed for v in available}) > 1
+        reasoning = (
+            f"Quorum: {pass_count}/{len(available)} backends PASS "
+            f"(threshold={self.quorum_threshold:.0%}, avg_conf={avg_confidence:.2f})"
+        )
+        concerns: list[str] = []
+        if disagreement:
+            concerns.append("quorum_disagreement")
+        # Aggregate distinctive concerns from ALL backends (not just available)
+        # so a transient backend_exception surfaces even when another backend
+        # succeeded and the quorum passed.
+        seen = set(concerns)
+        for v in verdicts:
+            for c in v.concerns:
+                if c not in seen:
+                    concerns.append(c)
+                    seen.add(c)
+        return QuorumVerdict(
+            passed=passed,
+            confidence=avg_confidence,
+            reasoning=reasoning,
+            backend_verdicts=verdicts,
+            concerns=concerns,
+        )

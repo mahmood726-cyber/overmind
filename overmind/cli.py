@@ -153,6 +153,21 @@ def build_parser() -> argparse.ArgumentParser:
     blame_parser.add_argument("task_id")
     blame_parser.add_argument("--tail-lines", type=int, default=30)
 
+    # Meta-verify: run the canary fixture to detect a broken verifier.
+    subparsers.add_parser(
+        "meta-verify",
+        help="Run the canary fixture through TruthCertEngine to assert the verifier is healthy.",
+    )
+
+    # Watch-fs: poll indexed projects for file changes and queue verification.
+    watch_fs_parser = subparsers.add_parser(
+        "watch-fs",
+        help="Poll indexed project roots and queue verification when files change.",
+    )
+    watch_fs_parser.add_argument("--interval", type=float, default=30.0)
+    watch_fs_parser.add_argument("--iterations", type=int, default=None,
+                                 help="Stop after N poll ticks (default: run forever).")
+
     return parser
 
 
@@ -260,6 +275,13 @@ def main(argv: list[str] | None = None) -> int:
             payload = miner.mine_and_store(max_sessions=args.count)
         elif args.command == "blame":
             payload = orchestrator.blame_task(args.task_id, tail_lines=args.tail_lines)
+        elif args.command == "meta-verify":
+            payload = orchestrator.meta_verify()
+        elif args.command == "watch-fs":
+            payload = orchestrator.watch_filesystem(
+                interval_seconds=args.interval,
+                iterations=args.iterations,
+            )
         else:
             payload = orchestrator.show_state(focus_project_id=args.project_id)
         return _emit_payload(payload)

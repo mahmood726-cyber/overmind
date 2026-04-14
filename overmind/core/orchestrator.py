@@ -902,6 +902,64 @@ class Orchestrator:
         self.memory_store.forget(memory_id)
         return {"forgotten": memory_id}
 
+    def meta_verify(self) -> dict[str, object]:
+        """Run the canary fixture through TruthCertEngine.
+
+        Asserts the verifier itself is healthy. Returns a dict suitable for
+        CLI emission. Writes `data/meta_verification_alarm.json` on failure.
+        """
+        from overmind.verification.meta_verification import (
+            run_meta_verification,
+            write_meta_verification_alarm,
+        )
+        canary_root = self.config.data_dir / "meta_verification" / "canary"
+        baselines_dir = self.config.data_dir / "meta_verification" / "baselines"
+        result = run_meta_verification(canary_root, baselines_dir)
+        if not result.passed:
+            alarm_path = write_meta_verification_alarm(self.config.data_dir, result)
+            return {
+                "passed": False,
+                "verdict": result.verdict,
+                "failure_class": result.failure_class,
+                "reason": result.reason,
+                "alarm_written": str(alarm_path),
+            }
+        # Clear any stale alarm from a prior broken run.
+        alarm_path = self.config.data_dir / "meta_verification_alarm.json"
+        if alarm_path.exists():
+            try:
+                alarm_path.unlink()
+            except OSError:
+                pass
+        return {
+            "passed": True,
+            "verdict": result.verdict,
+            "bundle_hash": result.bundle_hash,
+        }
+
+    def watch_filesystem(self, interval_seconds: float = 30.0, iterations: int | None = None) -> dict[str, object]:
+        """Poll indexed project roots; queue verification tasks on change."""
+        from overmind.activation.fs_watcher import FileSystemWatcher
+        from overmind.tasks.task_models import build_baseline_task
+
+        fired: list[str] = []
+
+        def enqueue(project_id: str) -> None:
+            project = self.db.get_project(project_id)
+            if project is None:
+                return
+            task = build_baseline_task(project)
+            self.task_queue.upsert([task])
+            fired.append(project_id)
+
+        watcher = FileSystemWatcher(
+            projects_fn=self.db.list_projects,
+            changed_callback=enqueue,
+            interval_seconds=interval_seconds,
+        )
+        watcher.run(iterations=iterations)
+        return {"fired_project_ids": fired, "iterations": iterations}
+
     def blame_task(self, task_id: str, tail_lines: int = 30) -> dict[str, object]:
         """Walk a task's verdict back to the witness evidence that produced it.
 
