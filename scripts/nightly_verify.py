@@ -72,6 +72,18 @@ SKIP_PROJECTS = {
 }  # Projects that consistently hang during verification OR whose source path is missing OR whose source is broken enough to need dedicated repair
 
 
+from overmind.integrations.sentinel_aggregator import collect as _collect_sentinel
+
+
+def collect_sentinel_findings() -> dict:
+    """Thin wrapper around overmind.integrations.sentinel_aggregator.collect.
+
+    Kept as a module-level name here so the nightly_verify tests and report
+    can refer to it without importing the integration module directly.
+    """
+    return _collect_sentinel()
+
+
 def parse_args() -> argparse.Namespace:
     parser = argparse.ArgumentParser(description="Overmind Nightly Verifier")
     parser.add_argument("--dry-run", action="store_true", help="Show plan without executing")
@@ -804,6 +816,13 @@ def _run_verification(db: StateDatabase, args: argparse.Namespace, run_start: da
             "arbitration_reason": b.arbitration_reason,
         })
 
+    # Aggregate Sentinel findings portfolio-wide (STUCK_FAILURES.md per repo).
+    # Fails soft — sentinel integration errors must not crash nightly verify.
+    try:
+        report["sentinel"] = collect_sentinel_findings()
+    except Exception as e:
+        report["sentinel"] = {"error": f"aggregation crashed: {type(e).__name__}: {e}"}
+
     # Write JSON report
     REPORT_DIR.mkdir(parents=True, exist_ok=True)
 
@@ -912,6 +931,40 @@ def _run_verification(db: StateDatabase, args: argparse.Namespace, run_start: da
                     detail = (w.stderr or w.stdout or "")[:300]
                     md_lines.append(f"**{w.witness_type}:** {detail}")
             md_lines.append("")
+
+    # Sentinel portfolio findings section
+    sentinel = report.get("sentinel") or {}
+    if sentinel.get("error"):
+        md_lines.extend([
+            "## Sentinel Portfolio Findings",
+            "",
+            f"_Aggregation error: {sentinel['error']}_",
+            "",
+        ])
+    elif sentinel.get("total_block") or sentinel.get("total_warn"):
+        md_lines.extend([
+            "## Sentinel Portfolio Findings",
+            "",
+            f"**{sentinel['total_block']} BLOCK** / {sentinel['total_warn']} WARN "
+            f"across {sentinel['total_repos_with_findings']} repos",
+            "",
+            "### Top repos by finding count",
+            "",
+            "| Repo | BLOCK | WARN |",
+            "|------|-------|------|",
+        ])
+        for r in sentinel.get("top_repos", [])[:10]:
+            md_lines.append(f"| `{r['repo']}` | {r['block']} | {r['warn']} |")
+        md_lines.extend([
+            "",
+            "### Top rules fired",
+            "",
+            "| Rule | Count |",
+            "|------|-------|",
+        ])
+        for r in sentinel.get("top_rules", [])[:10]:
+            md_lines.append(f"| `{r['rule_id']}` | {r['count']} |")
+        md_lines.append("")
 
     md_lines.extend([
         f"Dream: {dream['merges']} merges, {dream['archives']} archives, "
