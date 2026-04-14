@@ -58,6 +58,7 @@ SKIP_PROJECTS = {
     "meta-ecosystem-model-3d6353ab",                          # path genuinely absent (drive-wide search + reconcile_counts 2026-04-14)
     "ipd-qma-project-b5694da4",                               # multiple files with cascading syntax errors (unterminated strings, mismatched brackets) — needs dedicated repair session
     "llm-meta-analysis-8e261d9f",                             # 40+ modules, compounding package-layout issues (missing __init__.py per subpackage, absolute sibling imports, dataclass field-order) — needs dedicated repair session
+    "new-app-a051eaea",                                       # registered test_command is a Selenium suite requiring a dev server on port 3005 + 82 Edge driver lifecycles — always times out. Real test surface is `npm run test` (vitest) which has 16 statistical-accuracy FAILs against R metafor (PM/SJ/HE estimators, prediction interval ordering). Needs dedicated stats-parity session.
 }  # Projects that consistently hang during verification OR whose source path is missing OR whose source is broken enough to need dedicated repair
 
 
