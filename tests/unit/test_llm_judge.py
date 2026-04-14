@@ -112,12 +112,14 @@ def test_parse_verdict_handles_judge_error():
 
 
 def test_parse_verdict_handles_garbage_response():
+    """Unparseable responses must carry a judge_error concern so the orchestrator
+    (orchestrator.py:718) does not silently auto-approve on a garbled LLM reply."""
     backend = StubBackend(response="I don't understand the format")
     judge = LLMJudge(backend=backend)
     verdict = judge.judge(_task(), _project(), _result())
-    # defaults to PASS with low confidence
-    assert verdict.passed is True
-    assert verdict.confidence == 0.5
+    assert verdict.confidence == 0.0
+    assert "judge_error" in verdict.concerns
+    assert "judge_parse_error" in verdict.concerns
 
 
 def test_parse_csv_filters_none():
@@ -247,3 +249,106 @@ def test_subprocess_backend_uses_shell_safe_split(monkeypatch):
 
     assert "VERDICT: PASS" in response
     assert captured["args"] == [sys.executable, "-m", "overmind_judge", "--flag", "two words"]
+
+
+def test_subprocess_backend_forces_utf8_encoding(monkeypatch):
+    """SubprocessBackend must pin encoding=utf-8 so Windows cp1252 default does
+    not mangle non-ASCII prompts/responses."""
+    captured: dict[str, object] = {}
+
+    class DummyResult:
+        stdout = "VERDICT: PASS\nCONFIDENCE: 0.9\nREASONING: ok"
+
+    def fake_run(args, **kwargs):
+        captured["kwargs"] = kwargs
+        return DummyResult()
+
+    monkeypatch.setattr("subprocess.run", fake_run)
+    backend = SubprocessBackend(command=f'"{sys.executable}" -m overmind_judge')
+    backend.query("judge this")
+
+    assert captured["kwargs"].get("encoding") == "utf-8"
+    assert captured["kwargs"].get("errors") == "replace"
+
+
+def test_gemini_backend_sends_api_key_in_header_not_url(monkeypatch):
+    """API key must travel in x-goog-api-key header so proxy logs and error
+    payloads do not leak it via the URL query string."""
+    captured: dict[str, object] = {}
+
+    class DummyResp:
+        def __enter__(self):
+            return self
+
+        def __exit__(self, *args):
+            return False
+
+        def read(self):
+            return (
+                b'{"candidates":[{"content":{"parts":[{"text":"VERDICT: PASS\\n'
+                b'CONFIDENCE: 0.9\\nREASONING: ok"}]}}]}'
+            )
+
+    def fake_urlopen(req, timeout=None):
+        captured["url"] = req.full_url
+        captured["headers"] = dict(req.header_items())
+        return DummyResp()
+
+    monkeypatch.setattr("overmind.verification.llm_judge.urlopen", fake_urlopen)
+    backend = GeminiBackend(api_key="secret-key-abc")
+    backend.query("judge this")
+
+    assert "key=" not in captured["url"]
+    assert "secret-key-abc" not in captured["url"]
+    header_map = {k.lower(): v for k, v in captured["headers"].items()}
+    assert header_map.get("x-goog-api-key") == "secret-key-abc"
+
+
+def test_gemini_backend_retries_on_transient_failure(monkeypatch):
+    """Transient URLError / OSError must trigger bounded retry, not immediately
+    return JUDGE_ERROR and fail-open-to-tests on the first blip."""
+    from urllib.error import URLError
+
+    call_count = {"n": 0}
+
+    class DummyResp:
+        def __enter__(self):
+            return self
+
+        def __exit__(self, *args):
+            return False
+
+        def read(self):
+            return (
+                b'{"candidates":[{"content":{"parts":[{"text":"VERDICT: PASS\\n'
+                b'CONFIDENCE: 0.9\\nREASONING: ok"}]}}]}'
+            )
+
+    def flaky_urlopen(req, timeout=None):
+        call_count["n"] += 1
+        if call_count["n"] < 3:
+            raise URLError("transient DNS flap")
+        return DummyResp()
+
+    monkeypatch.setattr("overmind.verification.llm_judge.urlopen", flaky_urlopen)
+    monkeypatch.setattr("overmind.verification.llm_judge.time.sleep", lambda _s: None)
+    backend = GeminiBackend(api_key="k")
+    response = backend.query("prompt")
+
+    assert call_count["n"] == 3
+    assert "VERDICT: PASS" in response
+
+
+def test_gemini_backend_returns_judge_error_after_max_retries(monkeypatch):
+    from urllib.error import URLError
+
+    def always_fails(_req, timeout=None):
+        raise URLError("down")
+
+    monkeypatch.setattr("overmind.verification.llm_judge.urlopen", always_fails)
+    monkeypatch.setattr("overmind.verification.llm_judge.time.sleep", lambda _s: None)
+    backend = GeminiBackend(api_key="k")
+    response = backend.query("prompt")
+
+    assert response.startswith("JUDGE_ERROR:")
+    assert "URLError" in response

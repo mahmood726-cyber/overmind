@@ -265,3 +265,58 @@ def test_verifier_decodes_utf8_subprocess_output_on_windows(tmp_path):
 
     assert result.success is True
     assert "relevant_tests" in result.completed_checks
+
+
+def test_verifier_scrubs_env_to_allowlist(tmp_path, monkeypatch):
+    """LD_PRELOAD, PYTHONSTARTUP, GIT_DIR and other inheritance vectors must not
+    pass through to the verification subprocess."""
+    from overmind.verification import verifier as verifier_mod
+
+    monkeypatch.setenv("LD_PRELOAD", "/tmp/evil.so")
+    monkeypatch.setenv("PYTHONSTARTUP", "/tmp/evil.py")
+    monkeypatch.setenv("GIT_DIR", "/tmp/evil-git")
+    monkeypatch.setenv("PATH", "/usr/bin")
+
+    scrubbed = verifier_mod._safe_env()
+
+    assert "LD_PRELOAD" not in scrubbed
+    assert "PYTHONSTARTUP" not in scrubbed
+    assert "GIT_DIR" not in scrubbed
+    assert "PATH" in scrubbed
+
+
+def test_verifier_uses_new_process_group_on_windows(tmp_path, monkeypatch):
+    """Popen must be invoked with CREATE_NEW_PROCESS_GROUP on Windows so the
+    timeout handler can kill pytest-xdist workers via taskkill /T."""
+    import subprocess as _subprocess
+    import sys as _sys
+
+    if _sys.platform != "win32":
+        import pytest
+        pytest.skip("Windows-specific process group behavior")
+
+    captured: dict[str, object] = {}
+
+    class DummyProc:
+        pid = 12345
+        returncode = 0
+
+        def communicate(self, timeout=None):
+            return ("ok", "")
+
+    def fake_popen(args, **kwargs):
+        captured["kwargs"] = kwargs
+        return DummyProc()
+
+    monkeypatch.setattr(_subprocess, "Popen", fake_popen)
+
+    from overmind.verification.verifier import VerificationEngine
+    engine = VerificationEngine(tmp_path / "artifacts")
+    engine._run_command(f'"{_sys.executable}" -c "print(1)"', str(tmp_path))
+
+    flags = captured["kwargs"].get("creationflags", 0)
+    assert flags & _subprocess.CREATE_NEW_PROCESS_GROUP
+
+    env = captured["kwargs"].get("env")
+    assert env is not None
+    assert "LD_PRELOAD" not in env

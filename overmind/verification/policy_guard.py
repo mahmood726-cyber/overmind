@@ -65,6 +65,20 @@ DEFAULT_RULES: list[PolicyRule] = [
         "Blocked: Remove-Item -Recurse -Force targeting current directory or drive root",
     ),
     PolicyRule(
+        # PowerShell's Remove-Item accepts a positional path without -Path/-LiteralPath.
+        # Catch positional forms like `Remove-Item -Recurse -Force C:\*` or `Remove-Item . -Recurse -Force`.
+        "powershell_remove_item_positional",
+        re.compile(
+            r"(?=.*\bRemove-Item\b)"
+            r"(?=.*(?:^|\s)-Recurse(?:\s|$))"
+            r"(?=.*(?:^|\s)-Force(?:\s|$))"
+            r"(?=.*(?:^|\s)['\"]?(?:\.|[A-Za-z]:\\\*?|~|/)['\"]?(?:\s|$))",
+            re.IGNORECASE,
+        ),
+        "block",
+        "Blocked: Remove-Item -Recurse -Force with positional path targeting current directory or drive root",
+    ),
+    PolicyRule(
         "cmd_rmdir_broad",
         re.compile(r"\b(?:rmdir|rd)\b\s+/s\s+/q\s+['\"]?(?:\.|[A-Za-z]:\\)['\"]?(?:\s|$)", re.IGNORECASE),
         "block",
@@ -78,8 +92,14 @@ DEFAULT_RULES: list[PolicyRule] = [
     ),
     # Destructive git
     PolicyRule(
+        # Catch both --force (excluding --force-with-lease) and -f short form.
+        # Lookahead approach avoids the `\s+push\s+` swallowing the space that
+        # precedes `-f` in `git push -f origin main`.
         "git_force_push",
-        re.compile(r"git\s+push\s+.*--force(?!-with-lease)", re.IGNORECASE),
+        re.compile(
+            r"git\s+push\b(?=[^\n]*?(?:--force(?!-with-lease)|\s-f(?:\s|$)))",
+            re.IGNORECASE,
+        ),
         "block",
         "Blocked: force push without --force-with-lease",
     ),

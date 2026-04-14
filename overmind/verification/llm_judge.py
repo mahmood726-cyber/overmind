@@ -16,6 +16,7 @@ import json
 import os
 import re
 import subprocess
+import time
 from dataclasses import dataclass, field
 from pathlib import Path
 from typing import Protocol
@@ -61,6 +62,8 @@ class SubprocessBackend:
                 input=prompt,
                 capture_output=True,
                 text=True,
+                encoding="utf-8",
+                errors="replace",
                 timeout=self.timeout,
             )
             return result.stdout.strip()
@@ -116,28 +119,43 @@ class GeminiBackend:
                     return line.split("=", 1)[1].strip()
         return ""
 
+    # Retry transient network failures with bounded exponential backoff.
+    _RETRY_ATTEMPTS = 3
+    _RETRY_BACKOFF_SECONDS = (1.0, 2.0)
+
     def query(self, prompt: str) -> str:
         key = self.api_key
         if not key:
             return "JUDGE_ERROR: GEMINI_API_KEY not found in environment or .env file"
-        url = self.ENDPOINT.format(model=self.model) + f"?key={key}"
+        url = self.ENDPOINT.format(model=self.model)
         payload = json.dumps({
             "contents": [{"parts": [{"text": prompt}]}],
             "generationConfig": {"temperature": 0.1, "maxOutputTokens": 1024},
         })
-        req = Request(url, data=payload.encode("utf-8"), method="POST")
-        req.add_header("Content-Type", "application/json")
-        try:
-            with urlopen(req, timeout=self.timeout) as resp:
-                data = json.loads(resp.read().decode("utf-8"))
-            candidates = data.get("candidates", [])
-            if candidates:
-                parts = candidates[0].get("content", {}).get("parts", [])
-                if parts:
-                    return parts[0].get("text", "JUDGE_ERROR: empty response")
-            return "JUDGE_ERROR: no candidates in response"
-        except (URLError, OSError, json.JSONDecodeError, KeyError) as exc:
-            return f"JUDGE_ERROR: {exc}"
+        last_error: str = "JUDGE_ERROR: no attempt succeeded"
+        for attempt in range(self._RETRY_ATTEMPTS):
+            req = Request(url, data=payload.encode("utf-8"), method="POST")
+            req.add_header("Content-Type", "application/json")
+            # API key in header (not URL query) so it is not leaked via proxy logs,
+            # error messages, or persisted verdict.reasoning fields.
+            req.add_header("x-goog-api-key", key)
+            try:
+                with urlopen(req, timeout=self.timeout) as resp:
+                    data = json.loads(resp.read().decode("utf-8"))
+                candidates = data.get("candidates", [])
+                if candidates:
+                    parts = candidates[0].get("content", {}).get("parts", [])
+                    if parts:
+                        return parts[0].get("text", "JUDGE_ERROR: empty response")
+                return "JUDGE_ERROR: no candidates in response"
+            except (URLError, OSError, json.JSONDecodeError, KeyError) as exc:
+                # Redact the URL in case an exception stringifies the request target —
+                # the URL no longer carries the key but rate-limit / 5xx payloads can
+                # still echo request metadata back.
+                last_error = f"JUDGE_ERROR: {type(exc).__name__}: {str(exc)[:200]}"
+                if attempt + 1 < self._RETRY_ATTEMPTS:
+                    time.sleep(self._RETRY_BACKOFF_SECONDS[min(attempt, len(self._RETRY_BACKOFF_SECONDS) - 1)])
+        return last_error
 
 
 # ── Judge prompt ────────────────────────────────────────────────────
@@ -229,10 +247,18 @@ class LLMJudge:
         )
 
     def _parse_verdict(self, response: str) -> JudgeVerdict:
-        """Parse structured LLM response into JudgeVerdict."""
+        """Parse structured LLM response into JudgeVerdict.
+
+        Failure semantics (orchestrator.py:718 gates on "judge_error" concern):
+        - JUDGE_ERROR response: tag judge_error so the orchestrator falls back
+          to test-suite-only verification (documented fail-open-to-tests path).
+        - Missing VERDICT field (unparseable response): tag judge_error AND
+          judge_parse_error so the orchestrator does not silently auto-approve
+          on a garbled LLM response.
+        """
         if response.startswith("JUDGE_ERROR:"):
             return JudgeVerdict(
-                passed=True,  # fail-open: don't block on judge errors
+                passed=True,  # orchestrator ignores verdict when judge_error tagged
                 confidence=0.0,
                 reasoning=f"Judge unavailable: {response}",
                 concerns=["judge_error"],
@@ -245,7 +271,15 @@ class LLMJudge:
             if match:
                 fields[match.group(1).upper()] = match.group(2).strip()
 
-        passed = fields.get("VERDICT", "PASS").upper() == "PASS"
+        if "VERDICT" not in fields:
+            return JudgeVerdict(
+                passed=True,  # orchestrator gates on judge_error; no silent approval
+                confidence=0.0,
+                reasoning=f"Judge response unparseable: {response[:200]}",
+                concerns=["judge_error", "judge_parse_error"],
+            )
+
+        passed = fields["VERDICT"].upper() == "PASS"
         try:
             confidence = float(fields.get("CONFIDENCE", "0.5"))
             confidence = max(0.0, min(1.0, confidence))

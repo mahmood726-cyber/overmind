@@ -1,6 +1,8 @@
 from __future__ import annotations
 
+import os
 import subprocess
+import sys
 from pathlib import Path
 
 from overmind.subprocess_utils import split_command, validate_command_prefix_with_detail
@@ -8,6 +10,43 @@ from overmind.subprocess_utils import split_command, validate_command_prefix_wit
 from overmind.storage.models import ProjectRecord, TaskRecord, VerificationResult
 from overmind.verification.policy_guard import PolicyGuard
 from overmind.verification.profiles import VerificationPlanner
+
+
+# Env vars the verification subprocess inherits from the parent. Anything outside
+# this list (LD_PRELOAD, PYTHONSTARTUP, GIT_*, npm_config_*, etc.) is stripped so
+# a malicious project directory cannot influence the verifier via environment.
+_VERIFIER_ENV_ALLOWLIST = {
+    "PATH", "PATHEXT", "SYSTEMROOT", "WINDIR", "SYSTEMDRIVE",
+    "TEMP", "TMP", "LOCALAPPDATA", "APPDATA", "PROGRAMFILES", "PROGRAMFILES(X86)",
+    "PROGRAMDATA", "COMSPEC", "HOMEDRIVE", "HOMEPATH", "USERPROFILE", "USERNAME",
+    "COMPUTERNAME", "NUMBER_OF_PROCESSORS", "PROCESSOR_ARCHITECTURE",
+    "LANG", "LC_ALL", "LC_CTYPE",
+    "PYTHONIOENCODING", "PYTHONUTF8",
+    "VIRTUAL_ENV",
+}
+
+
+def _safe_env() -> dict[str, str]:
+    """Return a scrubbed environment for verification subprocesses."""
+    return {k: v for k, v in os.environ.items() if k.upper() in _VERIFIER_ENV_ALLOWLIST}
+
+
+def _kill_process_tree(proc: subprocess.Popen) -> None:
+    """Kill a subprocess plus any children it spawned (pytest-xdist workers, etc.)."""
+    try:
+        if sys.platform == "win32":
+            subprocess.run(
+                ["taskkill", "/F", "/T", "/PID", str(proc.pid)],
+                capture_output=True,
+                timeout=5,
+            )
+        else:
+            proc.kill()
+    except (OSError, subprocess.TimeoutExpired):
+        try:
+            proc.kill()
+        except OSError:
+            pass
 
 
 class VerificationEngine:
@@ -88,22 +127,27 @@ class VerificationEngine:
                 f"Blocked: policy violation {blocking_violation.rule_name}: "
                 f"{blocking_violation.message}"
             )
+        popen_kwargs: dict[str, object] = {
+            "cwd": cwd,
+            "shell": False,
+            "stdout": subprocess.PIPE,
+            "stderr": subprocess.PIPE,
+            "text": True,
+            "encoding": "utf-8",
+            "errors": "replace",
+            "env": _safe_env(),
+        }
+        if sys.platform == "win32":
+            # New process group so taskkill /T can reach pytest-xdist workers and
+            # any other child processes spawned during verification.
+            popen_kwargs["creationflags"] = subprocess.CREATE_NEW_PROCESS_GROUP
         try:
-            proc = subprocess.Popen(
-                split_command(command),
-                cwd=cwd,
-                shell=False,
-                stdout=subprocess.PIPE,
-                stderr=subprocess.PIPE,
-                text=True,
-                encoding="utf-8",
-                errors="replace",
-            )
+            proc = subprocess.Popen(split_command(command), **popen_kwargs)
             try:
                 stdout, stderr = proc.communicate(timeout=self.verification_timeout)
                 return proc.returncode, stdout, stderr
             except subprocess.TimeoutExpired:
-                proc.kill()
+                _kill_process_tree(proc)
                 try:
                     stdout, stderr = proc.communicate(timeout=5)
                 except subprocess.TimeoutExpired:

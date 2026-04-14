@@ -192,12 +192,32 @@ class TruthCertEngine:
         path = self.baselines_dir / f"{project_id}.json"
         return str(path) if path.exists() else None
 
+    @staticmethod
+    def _safe_rglob(root: Path):
+        """Walk `root` yielding file paths while swallowing OSError from reparse
+        points, broken symlinks, and OneDrive "Files On-Demand" placeholders.
+
+        `Path.rglob` on Windows may raise mid-iteration when scandir hits an
+        inaccessible directory; that aborts the hash pass. os.walk with an
+        onerror callback lets us log-and-continue instead.
+        """
+        import os as _os
+
+        def _on_error(_exc: OSError) -> None:
+            return None  # skip unreadable subtrees
+
+        for dirpath, _dirnames, filenames in _os.walk(
+            str(root), onerror=_on_error, followlinks=False
+        ):
+            for name in filenames:
+                yield Path(dirpath) / name
+
     def _hash_source_files(self, root_path: str) -> str:
         """Hash source, test, and JS/HTML files to detect any code change."""
         hasher = hashlib.sha256()
         root = Path(root_path)
         files: list[Path] = []
-        for path in root.rglob("*"):
+        for path in self._safe_rglob(root):
             try:
                 relative = path.relative_to(root)
             except ValueError:

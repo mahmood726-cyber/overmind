@@ -49,6 +49,33 @@ def test_detects_force_push():
     assert any(v.severity == "block" for v in violations)
 
 
+def test_detects_force_push_short_form():
+    """`-f` is a documented short form of `--force` and must also be blocked."""
+    guard = PolicyGuard()
+    violations = guard.evaluate(["$ git push -f origin main"])
+    assert any(v.rule_name == "git_force_push" for v in violations)
+
+
+def test_force_push_with_lease_not_blocked():
+    guard = PolicyGuard()
+    violations = guard.evaluate(["$ git push origin main --force-with-lease"])
+    assert not any(v.rule_name == "git_force_push" for v in violations)
+
+
+def test_detects_powershell_remove_item_positional_drive_root():
+    """Remove-Item with a positional path bypasses the -Path/-LiteralPath rule."""
+    guard = PolicyGuard()
+    violations = guard.evaluate(["Remove-Item -Recurse -Force C:\\*"])
+    assert any(v.rule_name == "powershell_remove_item_positional" for v in violations)
+    assert any(v.severity == "block" for v in violations)
+
+
+def test_detects_powershell_remove_item_positional_current_dir():
+    guard = PolicyGuard()
+    violations = guard.evaluate(["Remove-Item . -Recurse -Force"])
+    assert any(v.rule_name == "powershell_remove_item_positional" for v in violations)
+
+
 def test_allows_force_with_lease():
     guard = PolicyGuard()
     violations = guard.evaluate(["$ git push --force-with-lease origin feature"])

@@ -112,6 +112,36 @@ def test_truthcert_source_hash_changes_for_nested_source_file(tmp_path):
     assert hash_before != hash_after
 
 
+def test_truthcert_source_hash_survives_oserror_during_walk(tmp_path, monkeypatch):
+    """P1-6: `os.walk` mid-iteration errors (reparse points, OneDrive
+    placeholders) must not abort the hash pass — the onerror handler should
+    skip the unreadable subtree."""
+    import os as _os
+
+    project_root = tmp_path / "demo"
+    project_root.mkdir()
+    (project_root / "ok.py").write_text("VALUE = 1\n", encoding="utf-8")
+
+    real_walk = _os.walk
+
+    def flaky_walk(top, *args, **kwargs):
+        onerror = kwargs.get("onerror")
+        if args:
+            onerror = args[0] if args[0] is not None else onerror
+        # Simulate scandir raising partway through; the verifier's handler
+        # should swallow this and continue.
+        if onerror is not None:
+            onerror(OSError(1920, "simulated reparse-point failure"))
+        yield from real_walk(top, *args, **kwargs)
+
+    monkeypatch.setattr(_os, "walk", flaky_walk)
+
+    engine = TruthCertEngine(tmp_path / "baselines")
+    result = engine._hash_source_files(str(project_root))
+
+    assert isinstance(result, str) and len(result) == 16
+
+
 def test_truthcert_source_hash_skips_inaccessible_paths(tmp_path, monkeypatch):
     """Nightly crash repro: .venv/lib64 symlink raises OSError on is_file().
 
