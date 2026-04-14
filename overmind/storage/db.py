@@ -5,6 +5,7 @@ import sqlite3
 from pathlib import Path
 from typing import Any, Callable, TypeVar
 
+from overmind.memory import embeddings
 from overmind.storage.models import InsightRecord, MemoryRecord, ProjectRecord, RunnerRecord, TaskRecord, utc_now
 
 T = TypeVar("T")
@@ -137,9 +138,25 @@ class StateDatabase:
             """
         )
         self.connection.commit()
+        self._migrate_memories_v2()
 
     def close(self) -> None:
         self.connection.close()
+
+    def _migrate_memories_v2(self) -> None:
+        """Add validity-window and embedding columns if missing (v3.1 upgrade)."""
+        existing = {
+            row[1] for row in self.connection.execute("PRAGMA table_info(memories)").fetchall()
+        }
+        migrations = [
+            ("valid_from", "TEXT"),
+            ("valid_until", "TEXT"),
+            ("embedding", "TEXT"),
+        ]
+        for col_name, col_type in migrations:
+            if col_name not in existing:
+                self.connection.execute(f"ALTER TABLE memories ADD COLUMN {col_name} {col_type}")
+        self.connection.commit()
 
     def _validate_table(self, table: str) -> None:
         if table not in VALID_TABLES:
@@ -206,22 +223,25 @@ class StateDatabase:
     def list_insights(self) -> list[InsightRecord]:
         return self._list("insights", InsightRecord)
 
-    def write_checkpoint(self, name: str, payload: dict[str, Any]) -> None:
-        self.connection.execute(
+    def write_checkpoint(self, name: str, payload: dict[str, Any]) -> int:
+        cursor = self.connection.execute(
             "INSERT INTO checkpoints (name, payload, created_at) VALUES (?, ?, ?)",
             (name, json.dumps(payload, sort_keys=True), utc_now()),
         )
         self.connection.commit()
+        return int(cursor.lastrowid)
 
     def upsert_memory(self, memory: MemoryRecord) -> None:
         encoded_tags = json.dumps(memory.tags)
         encoded_linked = json.dumps(memory.linked_memories)
+        encoded_embedding = json.dumps(memory.embedding) if memory.embedding else None
         self.connection.execute(
             """
             INSERT INTO memories (id, memory_type, scope, title, content,
                 source_task_id, source_tick, relevance, confidence,
-                tags, linked_memories, created_at, updated_at, status)
-            VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+                tags, linked_memories, created_at, updated_at, status,
+                valid_from, valid_until, embedding)
+            VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
             ON CONFLICT(id) DO UPDATE SET
                 title = excluded.title,
                 content = excluded.content,
@@ -230,7 +250,10 @@ class StateDatabase:
                 tags = excluded.tags,
                 linked_memories = excluded.linked_memories,
                 updated_at = excluded.updated_at,
-                status = excluded.status
+                status = excluded.status,
+                valid_from = excluded.valid_from,
+                valid_until = excluded.valid_until,
+                embedding = excluded.embedding
             """,
             (
                 memory.memory_id, memory.memory_type, memory.scope,
@@ -239,6 +262,7 @@ class StateDatabase:
                 memory.relevance, memory.confidence,
                 encoded_tags, encoded_linked,
                 memory.created_at, memory.updated_at, memory.status,
+                memory.valid_from, memory.valid_until, encoded_embedding,
             ),
         )
         self.connection.commit()
@@ -252,10 +276,14 @@ class StateDatabase:
         return self._row_to_memory(row)
 
     def list_memories(
-        self, status: str = "active", memory_type: str | None = None, scope: str | None = None, limit: int = 100
+        self, status: str = "active", memory_type: str | None = None, scope: str | None = None,
+        limit: int = 100, include_expired: bool = False,
     ) -> list[MemoryRecord]:
         query = "SELECT * FROM memories WHERE status = ?"
         params: list[object] = [status]
+        if status == "active" and not include_expired:
+            query += " AND (valid_until IS NULL OR valid_until > ?)"
+            params.append(utc_now())
         if memory_type:
             query += " AND memory_type = ?"
             params.append(memory_type)
@@ -280,8 +308,9 @@ class StateDatabase:
             SELECT m.* FROM memories m
             JOIN memories_fts f ON m.rowid = f.rowid
             WHERE memories_fts MATCH ? AND m.status = 'active'
+            AND (m.valid_until IS NULL OR m.valid_until > ?)
         """
-        params: list[object] = [fts_query]
+        params: list[object] = [fts_query, utc_now()]
         if scope:
             sql += " AND m.scope = ?"
             params.append(scope)
@@ -292,6 +321,40 @@ class StateDatabase:
         params.append(limit)
         rows = self.connection.execute(sql, params).fetchall()
         return [self._row_to_memory(row) for row in rows]
+
+    def semantic_search_memories(
+        self, query: str, scope: str | None = None, memory_type: str | None = None, limit: int = 10
+    ) -> list[tuple[MemoryRecord, float]]:
+        """Search memories by semantic similarity.  Returns (memory, score) pairs.
+
+        Returns empty list if embedding backend is unavailable.
+        """
+        query_embedding = embeddings.embed(query)
+        if query_embedding is None:
+            return []
+
+        # Load candidate memories that have embeddings
+        sql = "SELECT * FROM memories WHERE status = 'active' AND embedding IS NOT NULL"
+        sql += " AND (valid_until IS NULL OR valid_until > ?)"
+        params: list[object] = [utc_now()]
+        if scope:
+            sql += " AND scope = ?"
+            params.append(scope)
+        if memory_type:
+            sql += " AND memory_type = ?"
+            params.append(memory_type)
+        rows = self.connection.execute(sql, params).fetchall()
+
+        scored: list[tuple[MemoryRecord, float]] = []
+        for row in rows:
+            mem = self._row_to_memory(row)
+            if mem.embedding is None:
+                continue
+            score = embeddings.cosine_similarity(query_embedding, mem.embedding)
+            scored.append((mem, score))
+
+        scored.sort(key=lambda x: x[1], reverse=True)
+        return scored[:limit]
 
     def decay_memories(self, factor: float = 0.95) -> int:
         cursor = self.connection.execute(
@@ -324,9 +387,22 @@ class StateDatabase:
         stats["total"] = sum(v for k, v in stats.items() if k != "total")
         return stats
 
+    def expire_memories(self) -> int:
+        """Transition active memories past their valid_until to 'expired' status."""
+        now = utc_now()
+        cursor = self.connection.execute(
+            "UPDATE memories SET status = 'expired', updated_at = ? "
+            "WHERE status = 'active' AND valid_until IS NOT NULL AND valid_until <= ?",
+            (now, now),
+        )
+        self.connection.commit()
+        return cursor.rowcount
+
     def _row_to_memory(self, row: sqlite3.Row) -> MemoryRecord:
         tags = json.loads(row["tags"]) if isinstance(row["tags"], str) else row["tags"]
         linked = json.loads(row["linked_memories"]) if isinstance(row["linked_memories"], str) else row["linked_memories"]
+        raw_embedding = row["embedding"] if "embedding" in row.keys() else None
+        emb = json.loads(raw_embedding) if isinstance(raw_embedding, str) else None
         return MemoryRecord(
             memory_id=row["id"],
             memory_type=row["memory_type"],
@@ -342,6 +418,9 @@ class StateDatabase:
             created_at=row["created_at"],
             updated_at=row["updated_at"],
             status=row["status"],
+            valid_from=row["valid_from"] if "valid_from" in row.keys() else None,
+            valid_until=row["valid_until"] if "valid_until" in row.keys() else None,
+            embedding=emb,
         )
 
     def update_routing_score(self, runner_type: str, task_type: str, success: bool) -> None:
@@ -404,6 +483,44 @@ class StateDatabase:
         )
         self.connection.commit()
         return cursor.rowcount
+
+    def list_checkpoints(self, name: str | None = None, limit: int = 20) -> list[dict[str, Any]]:
+        if name:
+            rows = self.connection.execute(
+                "SELECT id, name, payload, created_at FROM checkpoints WHERE name = ? ORDER BY id DESC LIMIT ?",
+                (name, limit),
+            ).fetchall()
+        else:
+            rows = self.connection.execute(
+                "SELECT id, name, payload, created_at FROM checkpoints ORDER BY id DESC LIMIT ?",
+                (limit,),
+            ).fetchall()
+        entries: list[dict[str, Any]] = []
+        for row in rows:
+            payload = json.loads(row["payload"])
+            entries.append(
+                {
+                    "id": row["id"],
+                    "name": row["name"],
+                    "created_at": row["created_at"],
+                    "payload": payload,
+                }
+            )
+        return entries
+
+    def checkpoint_by_id(self, checkpoint_id: int) -> dict[str, Any] | None:
+        row = self.connection.execute(
+            "SELECT id, name, payload, created_at FROM checkpoints WHERE id = ?",
+            (checkpoint_id,),
+        ).fetchone()
+        if not row:
+            return None
+        return {
+            "id": row["id"],
+            "name": row["name"],
+            "created_at": row["created_at"],
+            "payload": json.loads(row["payload"]),
+        }
 
     def latest_checkpoint(self, name: str | None = None) -> dict[str, Any] | None:
         if name:

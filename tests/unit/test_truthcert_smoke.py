@@ -1,0 +1,155 @@
+from __future__ import annotations
+
+import subprocess
+from pathlib import Path
+
+from overmind.storage.models import ProjectRecord
+from overmind.verification.truthcert_engine import TruthCertEngine
+from overmind.verification.witnesses import SmokeWitness, SuiteWitness
+
+
+def test_truthcert_engine_discovers_src_python_and_js_targets(tmp_path):
+    project_root = tmp_path / "demo"
+    src_pkg = project_root / "src" / "evidencekit"
+    ui_dir = project_root / "ui"
+    src_pkg.mkdir(parents=True)
+    ui_dir.mkdir(parents=True)
+
+    (src_pkg / "__init__.py").write_text("from .model import VALUE\n", encoding="utf-8")
+    (src_pkg / "model.py").write_text("VALUE = 1\n", encoding="utf-8")
+    (project_root / "analysis.py").write_text("VALUE = 2\n", encoding="utf-8")
+    (project_root / "app.js").write_text("const x = 1;\n", encoding="utf-8")
+    (ui_dir / "dashboard.js").write_text("const y = 2;\n", encoding="utf-8")
+
+    engine = TruthCertEngine(tmp_path / "baselines")
+    targets = engine._discover_modules(str(project_root))
+
+    assert "py:analysis" in targets
+    assert "py:evidencekit" in targets
+    assert "py:evidencekit.model" in targets
+    assert "js:app.js" in targets
+    assert "js:ui/dashboard.js" in targets
+
+
+def test_smoke_witness_imports_src_layout_module(tmp_path):
+    project_root = tmp_path / "demo"
+    src_pkg = project_root / "src" / "evidencekit"
+    src_pkg.mkdir(parents=True)
+    (src_pkg / "model.py").write_text("VALUE = 1\n", encoding="utf-8")
+
+    result = SmokeWitness(timeout=5).run(["py:evidencekit.model"], str(project_root))
+
+    assert result.verdict == "PASS"
+    assert result.stdout == "1 modules imported OK"
+
+
+def test_smoke_witness_runs_node_check_for_js_targets(tmp_path, monkeypatch):
+    calls: list[list[str]] = []
+
+    def fake_run(command, **kwargs):
+        calls.append(command)
+        return subprocess.CompletedProcess(command, 0, "", "")
+
+    monkeypatch.setattr(subprocess, "run", fake_run)
+
+    result = SmokeWitness(timeout=5).run(["js:app.js"], str(tmp_path))
+
+    assert result.verdict == "PASS"
+    assert calls == [["node", "--check", "app.js"]]
+
+
+def test_truthcert_scope_lock_uses_smoke_targets_for_medium_high_project(tmp_path):
+    project_root = tmp_path / "demo"
+    project_root.mkdir()
+    (project_root / "analysis.py").write_text("VALUE = 1\n", encoding="utf-8")
+
+    project = ProjectRecord(
+        project_id="demo-project",
+        name="demo-project",
+        root_path=str(project_root),
+        project_type="python_tool",
+        stack=["python"],
+        risk_profile="medium_high",
+    )
+
+    engine = TruthCertEngine(tmp_path / "baselines")
+    lock = engine.build_scope_lock(project)
+
+    assert lock.witness_count == 2
+    assert "py:analysis" in lock.smoke_modules
+
+
+def test_truthcert_engine_discovers_nested_python_packages(tmp_path):
+    project_root = tmp_path / "demo"
+    nested_pkg = project_root / "src" / "evidencekit" / "subpkg"
+    nested_pkg.mkdir(parents=True)
+
+    (nested_pkg.parent / "__init__.py").write_text("", encoding="utf-8")
+    (nested_pkg / "__init__.py").write_text("", encoding="utf-8")
+    (nested_pkg / "module.py").write_text("VALUE = 1\n", encoding="utf-8")
+
+    engine = TruthCertEngine(tmp_path / "baselines")
+    targets = engine._discover_modules(str(project_root))
+
+    assert "py:evidencekit" in targets
+    assert "py:evidencekit.subpkg" in targets
+    assert "py:evidencekit.subpkg.module" in targets
+
+
+def test_truthcert_source_hash_changes_for_nested_source_file(tmp_path):
+    project_root = tmp_path / "demo"
+    nested_pkg = project_root / "pkg" / "subpkg"
+    nested_pkg.mkdir(parents=True)
+    target = nested_pkg / "module.py"
+    target.write_text("VALUE = 1\n", encoding="utf-8")
+
+    engine = TruthCertEngine(tmp_path / "baselines")
+    hash_before = engine._hash_source_files(str(project_root))
+
+    target.write_text("VALUE = 2\n", encoding="utf-8")
+    hash_after = engine._hash_source_files(str(project_root))
+
+    assert hash_before != hash_after
+
+
+def test_truthcert_source_hash_skips_inaccessible_paths(tmp_path, monkeypatch):
+    """Nightly crash repro: .venv/lib64 symlink raises OSError on is_file().
+
+    Regression for WinError 1920 crash at 2026-04-14 where a OneDrive-hosted
+    .venv/lib64 symlink aborted the entire scope-lock build.
+    """
+    project_root = tmp_path / "demo"
+    project_root.mkdir()
+    (project_root / "analysis.py").write_text("VALUE = 1\n", encoding="utf-8")
+
+    venv = project_root / ".venv"
+    venv.mkdir()
+    poison = venv / "lib64"
+    poison.write_text("placeholder\n", encoding="utf-8")
+
+    real_is_file = Path.is_file
+
+    def flaky_is_file(self, *, follow_symlinks=True):
+        if self.name == "lib64" and ".venv" in self.parts:
+            raise OSError(1920, "The file cannot be accessed by the system")
+        return real_is_file(self, follow_symlinks=follow_symlinks)
+
+    monkeypatch.setattr(Path, "is_file", flaky_is_file)
+
+    engine = TruthCertEngine(tmp_path / "baselines")
+    result = engine._hash_source_files(str(project_root))
+
+    assert isinstance(result, str) and len(result) == 16
+
+
+def test_suite_witness_blocks_unsafe_wrapper_command(tmp_path):
+    script = tmp_path / "safe.cmd"
+    script.write_text("@echo off\r\necho ok\r\n", encoding="utf-8")
+
+    result = SuiteWitness(timeout=5).run(
+        f'cmd /c "{script}" && del /s /q C:\\*',
+        str(tmp_path),
+    )
+
+    assert result.verdict == "FAIL"
+    assert "unsafe shell control operator" in result.stderr

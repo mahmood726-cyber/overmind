@@ -3,7 +3,7 @@ from __future__ import annotations
 import uuid
 
 from overmind.discovery.analysis_signals import recommended_analysis_checks
-from overmind.storage.models import ProjectRecord, TaskRecord
+from overmind.storage.models import ProjectRecord, TaskRecord, new_trace_id
 
 
 def build_baseline_task(project: ProjectRecord) -> TaskRecord:
@@ -48,6 +48,7 @@ def build_baseline_task(project: ProjectRecord) -> TaskRecord:
         expected_runtime_min=10 + min(project.advanced_math_score, 10),
         expected_context_cost="medium" if project.advanced_math_score >= 6 else "low",
         required_verification=list(dict.fromkeys(required_verification)),
+        trace_id=new_trace_id(),
         verify_command=verify_cmd,
     )
 
@@ -68,6 +69,7 @@ def build_test_first_tasks(project: ProjectRecord) -> list[TaskRecord]:
         expected_runtime_min=5,
         expected_context_cost="low",
         required_verification=["relevant_tests"],
+        trace_id=new_trace_id(),
     )
 
     verify_cmd = project.test_commands[0] if project.test_commands else None
@@ -83,6 +85,7 @@ def build_test_first_tasks(project: ProjectRecord) -> list[TaskRecord]:
         expected_runtime_min=10 + min(project.advanced_math_score, 10),
         expected_context_cost="medium" if project.advanced_math_score >= 6 else "low",
         required_verification=list(project.recommended_verification) or ["relevant_tests"],
+        trace_id=new_trace_id(),
         blocked_by=[test_task_id],
         verify_command=verify_cmd,
     )

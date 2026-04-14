@@ -33,6 +33,7 @@ class BaseRunnerAdapter:
                 quota_state=previous.quota_state,
                 preferred_tasks=previous.preferred_tasks,
                 optional=self.definition.optional,
+                isolated=self.definition.isolated,
                 available=available,
                 unavailability_reason=reason,
             )
@@ -43,7 +44,7 @@ class BaseRunnerAdapter:
             command=self.definition.command,
             preferred_tasks=[],
             optional=self.definition.optional,
+            isolated=self.definition.isolated,
             available=available,
             unavailability_reason=reason,
         )
-

@@ -39,6 +39,7 @@ class TerminalParser:
                 SessionEvidence(
                     task_id=observation.task_id,
                     runner_id=observation.runner_id,
+                    trace_id=observation.trace_id,
                     state=state,
                     risks=risks,
                     next_action=next_action,

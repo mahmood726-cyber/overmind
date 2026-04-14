@@ -11,8 +11,9 @@ class TranscriptStore:
         self.base_dir = base_dir
         self.base_dir.mkdir(parents=True, exist_ok=True)
 
-    def path_for(self, session_id: str, runner_id: str, task_id: str) -> Path:
-        return self.base_dir / f"{session_id}_{runner_id}_{task_id}.log"
+    def path_for(self, session_id: str, runner_id: str, task_id: str, trace_id: str | None = None) -> Path:
+        prefix = f"{trace_id}_" if trace_id else ""
+        return self.base_dir / f"{prefix}{session_id}_{runner_id}_{task_id}.log"
 
     def append_event(self, path: Path, message: str) -> None:
         with path.open("a", encoding="utf-8") as handle:

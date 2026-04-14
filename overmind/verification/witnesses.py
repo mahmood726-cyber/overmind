@@ -2,11 +2,14 @@
 from __future__ import annotations
 
 import json
+import os
 import subprocess
 import sys
 import time
+from pathlib import Path
 
-from overmind.subprocess_utils import split_command, validate_command_prefix
+from overmind.subprocess_utils import split_command, validate_command_prefix_with_detail
+from overmind.verification.policy_guard import PolicyGuard
 from overmind.verification.scope_lock import WitnessResult
 
 PYTHON_EXE = sys.executable
@@ -15,9 +18,31 @@ PYTHON_EXE = sys.executable
 class SuiteWitness:
     def __init__(self, timeout: int = 120) -> None:
         self.timeout = timeout
+        self.policy_guard = PolicyGuard()
 
     def run(self, command: str, cwd: str) -> WitnessResult:
         start = time.time()
+        valid, detail = validate_command_prefix_with_detail(command, cwd=cwd)
+        if not valid:
+            return WitnessResult(
+                witness_type="test_suite", verdict="FAIL", exit_code=-1,
+                stdout="", stderr=detail or f"Blocked: command prefix not allowlisted: {command[:80]}",
+                elapsed=round(time.time() - start, 2),
+            )
+        blocking_violation = next(
+            (violation for violation in self.policy_guard.evaluate([command]) if violation.severity == "block"),
+            None,
+        )
+        if blocking_violation is not None:
+            return WitnessResult(
+                witness_type="test_suite", verdict="FAIL", exit_code=-1,
+                stdout="",
+                stderr=(
+                    f"Blocked: policy violation {blocking_violation.rule_name}: "
+                    f"{blocking_violation.message}"
+                ),
+                elapsed=round(time.time() - start, 2),
+            )
         try:
             proc = subprocess.run(
                 split_command(command), cwd=cwd, shell=False,
@@ -57,13 +82,27 @@ class SmokeWitness:
             )
         start = time.time()
         failures: list[str] = []
+        env = os.environ.copy()
+        src_dir = Path(cwd) / "src"
+        if src_dir.is_dir():
+            existing = env.get("PYTHONPATH")
+            env["PYTHONPATH"] = str(src_dir) if not existing else str(src_dir) + os.pathsep + existing
         for module in modules:
             try:
-                proc = subprocess.run(
-                    [PYTHON_EXE, "-c", f"import {module}"],
-                    cwd=cwd, capture_output=True, text=True,
-                    timeout=self.timeout,
-                )
+                if module.startswith("js:"):
+                    target_path = module.split(":", 1)[1]
+                    proc = subprocess.run(
+                        ["node", "--check", target_path],
+                        cwd=cwd, capture_output=True, text=True,
+                        timeout=self.timeout,
+                    )
+                else:
+                    import_target = module.split(":", 1)[1] if module.startswith("py:") else module
+                    proc = subprocess.run(
+                        [PYTHON_EXE, "-c", f"import {import_target}"],
+                        cwd=cwd, capture_output=True, text=True,
+                        timeout=self.timeout, env=env,
+                    )
                 if proc.returncode != 0:
                     failures.append(f"{module}: {proc.stderr.strip()[-200:]}")
             except subprocess.TimeoutExpired:
@@ -87,6 +126,7 @@ class SmokeWitness:
 class NumericalWitness:
     def __init__(self, timeout: int = 30) -> None:
         self.timeout = timeout
+        self.policy_guard = PolicyGuard()
 
     def run(self, baseline_path: str, cwd: str) -> WitnessResult:
         from pathlib import Path
@@ -104,10 +144,25 @@ class NumericalWitness:
         expected = baseline["values"]
         tolerance = baseline.get("tolerance", 1e-6)
 
-        if not validate_command_prefix(command):
+        valid, detail = validate_command_prefix_with_detail(command, cwd=cwd)
+        if not valid:
             return WitnessResult(
                 witness_type="numerical", verdict="FAIL", exit_code=-1,
-                stdout="", stderr=f"Blocked: command prefix not allowlisted: {command[:80]}",
+                stdout="", stderr=detail or f"Blocked: command prefix not allowlisted: {command[:80]}",
+                elapsed=round(time.time() - start, 2),
+            )
+        blocking_violation = next(
+            (violation for violation in self.policy_guard.evaluate([command]) if violation.severity == "block"),
+            None,
+        )
+        if blocking_violation is not None:
+            return WitnessResult(
+                witness_type="numerical", verdict="FAIL", exit_code=-1,
+                stdout="",
+                stderr=(
+                    f"Blocked: policy violation {blocking_violation.rule_name}: "
+                    f"{blocking_violation.message}"
+                ),
                 elapsed=round(time.time() - start, 2),
             )
 

@@ -4,7 +4,7 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "overmind"
-version = "3.0.0"
+version = "3.1.0"
 description = "Local evidence-first orchestration for terminal coding agents."
 readme = "README.md"
 requires-python = ">=3.11"
@@ -16,6 +16,9 @@ dependencies = [
 [project.optional-dependencies]
 dev = [
   "pytest>=8.0",
+]
+embeddings = [
+  "sentence-transformers>=2.2",
 ]
 
 [project.scripts]

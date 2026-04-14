@@ -14,7 +14,8 @@ class DreamEngine:
         self.heuristic_engine = HeuristicEngine(db)
 
     def dream(self) -> dict[str, object]:
-        memories_before = len(self.db.list_memories(status="active", limit=10000))
+        memories_before = len(self.db.list_memories(status="active", limit=10000, include_expired=True))
+        expired = self.db.expire_memories()
         heuristics = self._phase_extract_heuristics()
         merges = self._phase_consolidate()
         archives = self._phase_prune()
@@ -27,6 +28,7 @@ class DreamEngine:
             "merges": merges,
             "heuristics_generated": len(heuristics),
             "archives": archives,
+            "expired": expired,
         }
         self.db.write_checkpoint("dream", summary)
         return summary

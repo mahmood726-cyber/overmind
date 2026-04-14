@@ -11,6 +11,8 @@ class TaskQueue:
 
     def upsert(self, tasks: list[TaskRecord]) -> None:
         for task in tasks:
+            if not task.trace_id:
+                task.trace_id = task.task_id
             task.updated_at = utc_now()
             self.db.upsert_task(task)
 
@@ -46,6 +48,8 @@ class TaskQueue:
         assert_valid_task_transition(task.status, status)
         task.status = status
         task.updated_at = utc_now()
+        if not task.trace_id:
+            task.trace_id = task.task_id
         if assigned_runner_id is not None:
             task.assigned_runner_id = assigned_runner_id
         if last_error is not None:
@@ -56,4 +60,3 @@ class TaskQueue:
             task.attempt_count += 1
         self.db.upsert_task(task)
         return task
-

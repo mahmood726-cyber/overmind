@@ -2,11 +2,57 @@ from __future__ import annotations
 
 import argparse
 import json
+import os
 import sys
 from pathlib import Path
 
-from overmind.config import AppConfig
+from overmind.config import AppConfig, default_db_path
 from overmind.core.orchestrator import Orchestrator
+
+_BROKEN_PIPE_STREAM = None
+_PIPE_ERROR_ERRNOS = {22, 32}
+_PIPE_ERROR_WINERRORS = {109, 232}
+
+
+def _silence_broken_pipe() -> None:
+    global _BROKEN_PIPE_STREAM
+    if _BROKEN_PIPE_STREAM is not None:
+        sys.stdout = _BROKEN_PIPE_STREAM
+        sys.__stdout__ = _BROKEN_PIPE_STREAM
+        return
+    encoding = getattr(sys.stdout, "encoding", None) or "utf-8"
+    try:
+        replacement = open(os.devnull, "w", encoding=encoding)
+    except OSError:
+        return
+    try:
+        stdout_fileno = sys.stdout.fileno()
+        os.dup2(replacement.fileno(), stdout_fileno)
+    except (AttributeError, OSError, ValueError):
+        pass
+    _BROKEN_PIPE_STREAM = replacement
+    sys.stdout = replacement
+    sys.__stdout__ = replacement
+
+
+def _emit_payload(payload: object, stream=None) -> int:
+    target = sys.stdout if stream is None else stream
+    try:
+        json.dump(payload, target, indent=2, sort_keys=True, default=str)
+        target.write("\n")
+        return 0
+    except BrokenPipeError:
+        if stream is None or target is sys.stdout:
+            _silence_broken_pipe()
+            raise SystemExit(0)
+        return 0
+    except OSError as exc:
+        if getattr(exc, "errno", None) not in _PIPE_ERROR_ERRNOS and getattr(exc, "winerror", None) not in _PIPE_ERROR_WINERRORS:
+            raise
+        if stream is None or target is sys.stdout:
+            _silence_broken_pipe()
+            raise SystemExit(0)
+        return 0
 
 
 def build_parser() -> argparse.ArgumentParser:
@@ -36,7 +82,22 @@ def build_parser() -> argparse.ArgumentParser:
     run_loop.add_argument("--iterations", type=int, default=5)
     run_loop.add_argument("--sleep-seconds", type=float, default=5.0)
 
-    subparsers.add_parser("show-state")
+    state_parser = subparsers.add_parser("show-state")
+    state_parser.add_argument("--project-id", default=None)
+
+    checkpoints_parser = subparsers.add_parser("checkpoints")
+    checkpoints_parser.add_argument("--name", default=None)
+    checkpoints_parser.add_argument("--limit", type=int, default=20)
+
+    replay_parser = subparsers.add_parser("replay-checkpoint")
+    replay_parser.add_argument("--checkpoint-id", type=int, default=None)
+    replay_parser.add_argument("--name", default="main")
+    replay_parser.add_argument("--project-id", default=None)
+
+    restore_parser = subparsers.add_parser("restore-checkpoint")
+    restore_parser.add_argument("--checkpoint-id", type=int, default=None)
+    restore_parser.add_argument("--name", default="main")
+    restore_parser.add_argument("--project-id", default=None)
 
     memories_parser = subparsers.add_parser("memories")
     memories_parser.add_argument("--type", default=None)
@@ -72,6 +133,9 @@ def build_parser() -> argparse.ArgumentParser:
     batch_parser.add_argument("--count", type=int, default=10)
     batch_parser.add_argument("--risk", default=None, choices=["high", "medium_high", "medium"])
 
+    eval_parser = subparsers.add_parser("eval-harness")
+    eval_parser.add_argument("--project-id", default=None)
+
     # Mine sessions
     mine_parser = subparsers.add_parser("mine-sessions")
     mine_parser.add_argument("--count", type=int, default=30)
@@ -79,36 +143,34 @@ def build_parser() -> argparse.ArgumentParser:
     return parser
 
 
-def main(argv: list[str] | None = None) -> None:
+def main(argv: list[str] | None = None) -> int:
     parser = build_parser()
     args = parser.parse_args(argv)
 
     # Commands that don't need full orchestrator
     if args.command == "wrap":
         from overmind.activation.wrap import wrap
-        db_path = args.db_path or Path("C:\\overmind\\data\\state\\overmind.db")
-        sys.exit(wrap(args.runner, args.extra, db_path=db_path))
-        return
+        db_path = args.db_path or default_db_path()
+        return wrap(args.runner, args.extra, db_path=db_path)
 
     if args.command == "watch":
         from overmind.activation.watchdog import watch
-        db_path = args.db_path or Path("C:\\overmind\\data\\state\\overmind.db")
+        db_path = args.db_path or default_db_path()
         watch(db_path, interval=args.interval, iterations=args.iterations)
-        return
+        return 0
 
     if args.command == "sessions":
         from overmind.activation.session_tracker import SessionTracker
         from overmind.storage.db import StateDatabase
-        db_path = args.db_path or Path("C:\\overmind\\data\\state\\overmind.db")
+        db_path = args.db_path or default_db_path()
         db = StateDatabase(db_path)
         try:
             tracker = SessionTracker(db)
             tracker.cleanup_stale()
             sessions = tracker.active_sessions()
-            print(json.dumps(sessions, indent=2, sort_keys=True, default=str))
+            return _emit_payload(sessions)
         finally:
             db.close()
-        return
 
     config = AppConfig.from_directory(
         config_dir=args.config_dir,
@@ -135,6 +197,20 @@ def main(argv: list[str] | None = None) -> None:
                 sleep_seconds=args.sleep_seconds,
                 focus_project_id=args.project_id,
             )
+        elif args.command == "checkpoints":
+            payload = orchestrator.list_checkpoints(name=args.name, limit=args.limit)
+        elif args.command == "replay-checkpoint":
+            payload = orchestrator.replay_checkpoint(
+                checkpoint_id=args.checkpoint_id,
+                checkpoint_name=args.name,
+                focus_project_id=args.project_id,
+            )
+        elif args.command == "restore-checkpoint":
+            payload = orchestrator.restore_checkpoint(
+                checkpoint_id=args.checkpoint_id,
+                checkpoint_name=args.name,
+                focus_project_id=args.project_id,
+            )
         elif args.command == "memories":
             if args.forget:
                 payload = orchestrator.forget_memory(args.forget)
@@ -159,12 +235,21 @@ def main(argv: list[str] | None = None) -> None:
         elif args.command == "batch-verify":
             from overmind.intelligence.batch_verify import batch_verify
             payload = batch_verify(orchestrator, count=args.count, risk_filter=args.risk)
+        elif args.command == "eval-harness":
+            from overmind.intelligence.eval_harness import EvalHarness
+            payload = EvalHarness(orchestrator, config.data_dir / "artifacts").run(
+                focus_project_id=args.project_id
+            )
         elif args.command == "mine-sessions":
             from overmind.intelligence.session_miner import SessionMiner
             miner = SessionMiner(orchestrator.db)
             payload = miner.mine_and_store(max_sessions=args.count)
         else:
-            payload = orchestrator.show_state()
-        print(json.dumps(payload, indent=2, sort_keys=True))
+            payload = orchestrator.show_state(focus_project_id=args.project_id)
+        return _emit_payload(payload)
     finally:
         orchestrator.close()
+
+
+if __name__ == "__main__":
+    raise SystemExit(main())

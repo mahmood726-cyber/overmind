@@ -5,7 +5,7 @@ from pathlib import Path
 from typing import Any
 
 from overmind.storage.db import StateDatabase
-from overmind.storage.models import InsightRecord, MemoryRecord
+from overmind.storage.models import InsightRecord, MemoryRecord, utc_now
 
 
 class MemoryStore:
@@ -59,6 +59,56 @@ class MemoryStore:
     def list_all(self, status: str = "active", limit: int = 50) -> list[MemoryRecord]:
         return self.db.list_memories(status=status, limit=limit)
 
+    def hybrid_search(
+        self, query: str, scope: str | None = None, memory_type: str | None = None, limit: int = 10,
+        semantic_fallback_threshold: int = 3,
+    ) -> list[MemoryRecord]:
+        """Search using FTS5 first; if fewer than threshold results, augment with semantic search.
+
+        Deduplicates by memory_id across both result sets.
+        """
+        fts_results = self.search(query, scope=scope, memory_type=memory_type, limit=limit)
+
+        if len(fts_results) >= semantic_fallback_threshold:
+            return fts_results
+
+        semantic_results = self.db.semantic_search_memories(
+            query, scope=scope, memory_type=memory_type, limit=limit,
+        )
+        seen_ids = {m.memory_id for m in fts_results}
+        merged = list(fts_results)
+        for mem, _score in semantic_results:
+            if mem.memory_id not in seen_ids:
+                merged.append(mem)
+                seen_ids.add(mem.memory_id)
+            if len(merged) >= limit:
+                break
+        return merged
+
+    def supersede(self, old_memory_id: str, new_memory: MemoryRecord) -> bool:
+        """Close an existing memory (set valid_until) and save a new one that replaces it.
+
+        Returns True if old memory was found and superseded.
+        """
+        old = self.db.get_memory(old_memory_id)
+        if old is None:
+            return False
+        now = utc_now()
+        old.valid_until = now
+        old.status = "expired"
+        old.updated_at = now
+        self.db.upsert_memory(old)
+        if new_memory.valid_from is None:
+            new_memory.valid_from = now
+        if old.memory_id not in new_memory.linked_memories:
+            new_memory.linked_memories.append(old.memory_id)
+        self.db.upsert_memory(new_memory)
+        return True
+
+    def expire_old(self) -> int:
+        """Expire active memories that have passed their valid_until."""
+        return self.db.expire_memories()
+
     def stats(self) -> dict[str, int]:
         return self.db.memory_stats()
 
@@ -66,7 +116,8 @@ class MemoryStore:
         for insight in insights:
             self.db.add_insight(insight)
 
-    def write_checkpoint(self, name: str, payload: dict[str, Any]) -> None:
-        self.db.write_checkpoint(name, payload)
+    def write_checkpoint(self, name: str, payload: dict[str, Any]) -> int:
+        checkpoint_id = self.db.write_checkpoint(name, payload)
         checkpoint_path = self.checkpoints_dir / f"{name}.json"
         checkpoint_path.write_text(json.dumps(payload, indent=2, sort_keys=True), encoding="utf-8")
+        return checkpoint_id

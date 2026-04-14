@@ -2,6 +2,7 @@ from __future__ import annotations
 
 import uuid
 
+from overmind.memory import embeddings
 from overmind.storage.db import StateDatabase
 from overmind.storage.models import (
     MemoryRecord,
@@ -120,6 +121,8 @@ class MemoryExtractor:
         tags: list[str] | None = None,
         confidence: float = 0.5,
     ) -> MemoryRecord:
+        now = utc_now()
+        embed_text = f"{title}. {content}"
         return MemoryRecord(
             memory_id=f"mem_{uuid.uuid4().hex[:8]}",
             memory_type=memory_type,
@@ -130,6 +133,8 @@ class MemoryExtractor:
             source_tick=tick,
             tags=tags or [],
             confidence=confidence,
+            valid_from=now,
+            embedding=embeddings.embed(embed_text),
         )
 
     def _deduplicate_and_save(self, memories: list[MemoryRecord]) -> None:

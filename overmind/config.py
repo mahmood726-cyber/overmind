@@ -8,6 +8,9 @@ from typing import Any
 import yaml
 
 
+APP_STATE_DIRNAME = "Overmind" if os.name == "nt" else "overmind"
+
+
 def _load_yaml(path: Path) -> dict[str, Any]:
     if not path.exists():
         return {}
@@ -16,6 +19,53 @@ def _load_yaml(path: Path) -> dict[str, Any]:
     if not isinstance(loaded, dict):
         raise ValueError(f"Expected mapping in {path}")
     return loaded
+
+
+def _source_checkout_data_dir() -> Path | None:
+    package_root = Path(__file__).resolve().parents[1]
+    candidate = package_root / "data"
+    if (
+        (package_root / "pyproject.toml").exists()
+        and (package_root / "config").exists()
+        and candidate.exists()
+    ):
+        return candidate
+    return None
+
+
+def default_data_dir() -> Path:
+    override = os.environ.get("OVERMIND_DATA_DIR")
+    if override:
+        return Path(override)
+
+    source_data_dir = _source_checkout_data_dir()
+    if source_data_dir is not None:
+        return source_data_dir
+
+    if os.name == "nt":
+        local_app_data = os.environ.get("LOCALAPPDATA")
+        if local_app_data:
+            return Path(local_app_data) / APP_STATE_DIRNAME
+        return Path.home() / "AppData" / "Local" / APP_STATE_DIRNAME
+
+    xdg_state_home = os.environ.get("XDG_STATE_HOME")
+    if xdg_state_home:
+        return Path(xdg_state_home) / APP_STATE_DIRNAME
+
+    xdg_data_home = os.environ.get("XDG_DATA_HOME")
+    if xdg_data_home:
+        return Path(xdg_data_home) / APP_STATE_DIRNAME
+
+    return Path.home() / ".local" / "share" / APP_STATE_DIRNAME
+
+
+def default_db_path(data_dir: Path | None = None) -> Path:
+    override = os.environ.get("OVERMIND_DB_PATH")
+    if override:
+        return Path(override)
+
+    resolved_data_dir = Path(data_dir) if data_dir is not None else default_data_dir()
+    return resolved_data_dir / "state" / "overmind.db"
 
 
 @dataclass(slots=True)
@@ -41,6 +91,7 @@ class RunnerDefinition:
     command: str
     environment: str
     optional: bool = False
+    isolated: bool = False
 
 
 @dataclass(slots=True)
@@ -88,7 +139,7 @@ class AppConfig:
             os.environ.get("OVERMIND_CONFIG_DIR", str(config_dir or package_root / "config"))
         )
         data_dir = Path(
-            os.environ.get("OVERMIND_DATA_DIR", str(data_dir or package_root / "data"))
+            os.environ.get("OVERMIND_DATA_DIR", str(data_dir or default_data_dir()))
         )
         db_path = Path(
             os.environ.get("OVERMIND_DB_PATH", str(db_path or data_dir / "state" / "overmind.db"))

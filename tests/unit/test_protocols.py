@@ -1,15 +1,21 @@
 from __future__ import annotations
 
+import subprocess
 import sys
+from pathlib import Path
 
 from overmind.config import AppConfig, RunnerDefinition
+from overmind.isolation.worktree_manager import WorktreeManager
 from overmind.runners.base import BaseRunnerAdapter
 from overmind.runners.claude_runner import ClaudeRunnerAdapter
 from overmind.runners.codex_runner import CodexRunnerAdapter
 from overmind.runners.gemini_runner import GeminiRunnerAdapter
 from overmind.runners.protocols import INTERACTIVE, ONE_SHOT, PIPE
 from overmind.runners.runner_registry import RunnerRegistry
+from overmind.sessions.session_manager import SessionManager
+from overmind.sessions.terminal_session import TerminalSession
 from overmind.storage.db import StateDatabase
+from overmind.storage.models import Assignment, ProjectRecord, RunnerRecord
 
 
 # ---------------------------------------------------------------------------
@@ -142,6 +148,142 @@ def test_gemini_adapter_returns_pipe():
 def test_base_adapter_defaults_to_interactive():
     adapter = BaseRunnerAdapter(_make_definition("unknown"))
     assert adapter.protocol() is INTERACTIVE
+
+
+def test_session_manager_resolves_bare_codex_command_and_rewrites_exec(tmp_path, monkeypatch):
+    monkeypatch.setattr("shutil.which", lambda name: r"C:\Tools\codex.CMD" if name == "codex" else None)
+    manager = SessionManager(tmp_path)
+    runner = RunnerRecord(
+        runner_id="codex_main",
+        runner_type="codex",
+        environment="windows",
+        command="codex",
+    )
+
+    command = manager._launch_command(runner)
+
+    assert command.startswith('"C:\\Tools\\codex.CMD"')
+    assert "--dangerously-bypass-approvals-and-sandbox" in command
+    assert "exec --skip-git-repo-check -" in command
+
+
+def _init_git_repo(path: Path) -> None:
+    subprocess.run(["git", "init", str(path)], check=True, capture_output=True)
+    subprocess.run(["git", "-C", str(path), "config", "user.email", "test@test.com"], check=True, capture_output=True)
+    subprocess.run(["git", "-C", str(path), "config", "user.name", "Test"], check=True, capture_output=True)
+    (path / "README.md").write_text("# Test\n", encoding="utf-8")
+    subprocess.run(["git", "-C", str(path), "add", "."], check=True, capture_output=True)
+    subprocess.run(["git", "-C", str(path), "commit", "-m", "init"], check=True, capture_output=True)
+
+
+def test_session_manager_uses_worktree_for_isolated_assignment(tmp_path, monkeypatch):
+    repo = tmp_path / "repo"
+    repo.mkdir()
+    _init_git_repo(repo)
+
+    class DummyProcess:
+        def __init__(self) -> None:
+            self.finished = False
+
+        def poll(self):
+            return 0 if self.finished else None
+
+        def terminate(self) -> None:
+            self.finished = True
+
+        def wait(self, timeout=None) -> int:
+            self.finished = True
+            return 0
+
+    def fake_start(self, prompt: str) -> None:
+        self.process = DummyProcess()
+
+    monkeypatch.setattr(TerminalSession, "start", fake_start)
+
+    manager = SessionManager(
+        tmp_path / "transcripts",
+        worktree_manager=WorktreeManager(tmp_path / "worktrees"),
+        isolation_mode="worktree",
+    )
+    runner = RunnerRecord(
+        runner_id="codex_main",
+        runner_type="codex",
+        environment="windows",
+        command="codex",
+    )
+    project = ProjectRecord(
+        project_id="proj-1",
+        name="Repo",
+        root_path=str(repo),
+        is_git_repo=True,
+    )
+    assignment = Assignment(
+        runner_id=runner.runner_id,
+        task_id="task-1",
+        project_id=project.project_id,
+        prompt="do work",
+        trace_id="trace-1",
+        requires_isolation=True,
+    )
+
+    started = manager.dispatch(
+        [assignment],
+        {runner.runner_id: runner},
+        {project.project_id: project},
+    )
+
+    assert started == ["task-1"]
+    session = next(iter(manager.sessions.values()))
+    assert session.cwd != repo
+    assert (session.cwd / "README.md").exists()
+
+    worktree_path = session.cwd
+    session.process.finished = True  # type: ignore[union-attr]
+    manager.collect_output()
+    assert not worktree_path.exists()
+
+
+def test_session_manager_strict_worktree_fails_closed_for_non_git_project(tmp_path, monkeypatch):
+    def fake_start(self, prompt: str) -> None:
+        raise AssertionError("start should not be called")
+
+    monkeypatch.setattr(TerminalSession, "start", fake_start)
+
+    manager = SessionManager(
+        tmp_path / "transcripts",
+        worktree_manager=WorktreeManager(tmp_path / "worktrees"),
+        isolation_mode="strict_worktree",
+    )
+    runner = RunnerRecord(
+        runner_id="codex_main",
+        runner_type="codex",
+        environment="windows",
+        command="codex",
+    )
+    project = ProjectRecord(
+        project_id="proj-1",
+        name="Non Git",
+        root_path=str(tmp_path / "plain"),
+        is_git_repo=False,
+    )
+    Path(project.root_path).mkdir()
+    assignment = Assignment(
+        runner_id=runner.runner_id,
+        task_id="task-1",
+        project_id=project.project_id,
+        prompt="do work",
+        trace_id="trace-1",
+        requires_isolation=True,
+    )
+
+    started = manager.dispatch(
+        [assignment],
+        {runner.runner_id: runner},
+        {project.project_id: project},
+    )
+
+    assert started == []
+    assert manager.sessions == {}
 
 
 # ---------------------------------------------------------------------------

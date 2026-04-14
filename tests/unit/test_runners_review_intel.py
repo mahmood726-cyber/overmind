@@ -29,6 +29,7 @@ from overmind.runners.codex_runner import CodexRunnerAdapter
 from overmind.runners.gemini_runner import GeminiRunnerAdapter
 from overmind.runners.runner_registry import RunnerRegistry, _command_name
 from overmind.intelligence.daily_report import DailyReport
+from overmind.intelligence.portfolio_state import build_verification_state_index
 from overmind.intelligence.session_miner import SessionMiner
 from overmind.storage.db import StateDatabase
 from overmind.storage.models import MemoryRecord, ProjectRecord, RunnerRecord
@@ -522,5 +523,163 @@ def test_session_miner_detects_errors(tmp_path):
         assert results["failure_lines"] >= 2  # TypeError + ModuleNotFoundError lines
         assert results["success_lines"] >= 1  # "5 passed"
         assert "TypeError" in results["top_errors"] or "ModuleNotFoundError" in results["top_errors"]
+    finally:
+        db.close()
+
+
+def test_daily_report_generate_dedupes_identities_and_uses_latest_bundle_status(tmp_path):
+    config = _make_config(tmp_path)
+    config.ensure_directories()
+    db = StateDatabase(config.db_path)
+    artifacts_dir = tmp_path / "artifacts"
+    nightly_dir = tmp_path / "nightly_reports" / "bundles"
+    try:
+        alpha_a = ProjectRecord(
+            project_id="alpha-aaaaaaaa",
+            name="Alpha",
+            root_path=r"C:\Projects\Alpha",
+            risk_profile="high",
+            advanced_math_score=7,
+            test_commands=["python -m pytest -q"],
+        )
+        alpha_b = ProjectRecord(
+            project_id="alpha-bbbbbbbb",
+            name="Alpha",
+            root_path=r"C:\Models\Alpha",
+            risk_profile="high",
+            advanced_math_score=8,
+            test_commands=["python -m pytest -q"],
+        )
+        beta = ProjectRecord(
+            project_id="beta-cccccccc",
+            name="Beta",
+            root_path=r"C:\Projects\Beta",
+            risk_profile="medium_high",
+            advanced_math_score=6,
+            test_commands=["python -m pytest -q"],
+        )
+        for project in (alpha_a, alpha_b, beta):
+            db.upsert_project(project)
+
+        (nightly_dir / "2026-04-13").mkdir(parents=True)
+        (nightly_dir / "2026-04-14").mkdir(parents=True)
+        (nightly_dir / "2026-04-13" / "alpha-success.json").write_text(
+            json.dumps(
+                {
+                    "project_id": "alpha-aaaaaaaa",
+                    "verdict": "CERTIFIED",
+                    "timestamp": "2026-04-13T08:00:00+00:00",
+                    "arbitration_reason": "all witnesses passed",
+                    "scope_lock": {"project_path": r"C:\Projects\Alpha"},
+                }
+            ),
+            encoding="utf-8",
+        )
+        (nightly_dir / "2026-04-14" / "alpha-fail.json").write_text(
+            json.dumps(
+                {
+                    "project_id": "alpha-bbbbbbbb",
+                    "verdict": "FAIL",
+                    "timestamp": "2026-04-14T08:00:00+00:00",
+                    "arbitration_reason": "latest verification failed",
+                    "scope_lock": {"project_path": r"C:\Models\Alpha"},
+                }
+            ),
+            encoding="utf-8",
+        )
+        (nightly_dir / "2026-04-14" / "beta-pass.json").write_text(
+            json.dumps(
+                {
+                    "project_id": "beta-cccccccc",
+                    "verdict": "PASS",
+                    "timestamp": "2026-04-14T08:05:00+00:00",
+                    "arbitration_reason": "single witness pass",
+                    "scope_lock": {"project_path": r"C:\Projects\Beta"},
+                }
+            ),
+            encoding="utf-8",
+        )
+
+        report = DailyReport(db=db, artifacts_dir=artifacts_dir).generate()
+
+        assert report["portfolio"]["total_projects"] == 3
+        assert report["portfolio"]["distinct_project_identities"] == 2
+        assert report["portfolio"]["duplicate_variants"] == 1
+        assert report["verification_coverage"]["total_testable"] == 2
+        assert report["verification_coverage"]["verified_count"] == 1
+        queue_names = [item["name"] for item in report["priority_queue"]]
+        assert queue_names.count("Alpha") == 1
+        assert "Beta" not in queue_names
+    finally:
+        db.close()
+
+
+def test_verification_state_index_uses_latest_bundle_over_older_success(tmp_path):
+    config = _make_config(tmp_path)
+    config.ensure_directories()
+    db = StateDatabase(config.db_path)
+    artifacts_dir = tmp_path / "artifacts"
+    nightly_dir = tmp_path / "nightly_reports" / "bundles"
+    try:
+        project = ProjectRecord(
+            project_id="alpha-aaaaaaaa",
+            name="Alpha",
+            root_path=r"C:\Projects\Alpha",
+            test_commands=["python -m pytest -q"],
+        )
+        db.upsert_project(project)
+        (nightly_dir / "2026-04-13").mkdir(parents=True)
+        (nightly_dir / "2026-04-14").mkdir(parents=True)
+        (nightly_dir / "2026-04-13" / "ok.json").write_text(
+            json.dumps(
+                {
+                    "project_id": "alpha-aaaaaaaa",
+                    "verdict": "CERTIFIED",
+                    "timestamp": "2026-04-13T08:00:00+00:00",
+                    "scope_lock": {"project_path": r"C:\Projects\Alpha"},
+                }
+            ),
+            encoding="utf-8",
+        )
+        (nightly_dir / "2026-04-14" / "fail.json").write_text(
+            json.dumps(
+                {
+                    "project_id": "alpha-aaaaaaaa",
+                    "verdict": "FAIL",
+                    "timestamp": "2026-04-14T08:00:00+00:00",
+                    "scope_lock": {"project_path": r"C:\Projects\Alpha"},
+                }
+            ),
+            encoding="utf-8",
+        )
+
+        state = build_verification_state_index([project], [], artifacts_dir)
+        assert state["alpha"]["status"] == "failed"
+        assert state["alpha"]["verdict"] == "FAIL"
+    finally:
+        db.close()
+
+
+def test_session_miner_resolves_known_projects_from_windows_paths(tmp_path):
+    sessions_dir = tmp_path / "sessions"
+    sessions_dir.mkdir()
+
+    lines = [
+        json.dumps({"type": "user", "message": {"content": r"Please inspect C:\overmind\scripts\nightly_verify.py and C:\Users\user\AppData\Local\Overmind\artifacts\daily_report.json"}}),
+        json.dumps({"type": "user", "message": {"content": r"Then compare with C:\Projects\cardiology_mortality_atlas\README.md and ignore C:\Users\user\index"}}),
+    ]
+    (sessions_dir / "paths.jsonl").write_text("\n".join(lines), encoding="utf-8")
+
+    db = StateDatabase(tmp_path / "miner.db")
+    try:
+        db.upsert_project(ProjectRecord(project_id="overmind-b3047661", name="overmind", root_path=r"C:\overmind"))
+        db.upsert_project(ProjectRecord(project_id="cardio-12345678", name="cardiology_mortality_atlas", root_path=r"C:\Projects\cardiology_mortality_atlas"))
+        miner = SessionMiner(db=db, sessions_dir=sessions_dir)
+        results = miner.mine_all(max_sessions=5)
+
+        assert results["top_projects"]["overmind"] >= 1
+        assert results["top_projects"]["cardiology_mortality_atlas"] >= 1
+        assert "user" not in results["top_projects"]
+        assert "index" not in results["top_projects"]
     finally:
         db.close()

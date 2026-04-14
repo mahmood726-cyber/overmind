@@ -104,12 +104,12 @@ def test_required_proof_falls_back_to_task_verification():
 def _make_runner(runner_id: str, runner_type: str = "claude",
                  status: str = "AVAILABLE", available: bool = True,
                  success_rate: float = 0.8, failure_rate: float = 0.1,
-                 avg_latency: float = 5.0) -> RunnerRecord:
+                 avg_latency: float = 5.0, isolated: bool = False) -> RunnerRecord:
     return RunnerRecord(
         runner_id=runner_id, runner_type=runner_type, environment="local",
         command="echo test", status=status, available=available,
         success_rate_7d=success_rate, failure_rate_7d=failure_rate,
-        avg_latency_sec=avg_latency,
+        avg_latency_sec=avg_latency, isolated=isolated,
     )
 
 
@@ -173,6 +173,90 @@ def test_scheduler_test_strength_boosts_verification_tasks():
     projects = {"proj-1": _make_project()}
     assignments = scheduler.assign([task], [runner_strong, runner_weak], projects, capacity=1, prompt_builder=_prompt_builder)
     assert assignments[0].runner_id == "r-strong"
+
+
+def test_scheduler_prefers_codex_for_high_risk_test_writing():
+    policies = PoliciesConfig(
+        routing={
+            "claude": {"strengths": ["architecture"]},
+            "codex": {"strengths": ["tests", "targeted_fix", "cleanup"]},
+        }
+    )
+    scheduler = Scheduler(policies)
+    runner_claude = _make_runner("r-claude", runner_type="claude", success_rate=0.5, failure_rate=0.1)
+    runner_codex = _make_runner("r-codex", runner_type="codex", success_rate=0.5, failure_rate=0.1)
+    task = _make_task("t-tests", task_type="test_writing")
+    task.risk = "high"
+    projects = {"proj-1": _make_project()}
+
+    assignments = scheduler.assign([task], [runner_claude, runner_codex], projects, capacity=1, prompt_builder=_prompt_builder)
+
+    assert assignments[0].runner_id == "r-codex"
+
+
+def test_scheduler_requires_isolated_runner_for_high_risk_when_policy_enabled():
+    policies = PoliciesConfig(
+        isolation={"mode": "high_risk"},
+        routing={"claude": {"strengths": []}},
+    )
+    scheduler = Scheduler(policies)
+    task = _make_task("t-verify", task_type="verification")
+    task.risk = "high"
+    projects = {"proj-1": _make_project()}
+
+    assignments = scheduler.assign(
+        [task],
+        [_make_runner("r1", isolated=False)],
+        projects,
+        capacity=1,
+        prompt_builder=_prompt_builder,
+    )
+
+    assert assignments == []
+
+
+def test_scheduler_allows_isolated_runner_for_high_risk_when_policy_enabled():
+    policies = PoliciesConfig(
+        isolation={"mode": "high_risk"},
+        routing={"claude": {"strengths": []}},
+    )
+    scheduler = Scheduler(policies)
+    task = _make_task("t-verify", task_type="verification")
+    task.risk = "high"
+    projects = {"proj-1": _make_project()}
+
+    assignments = scheduler.assign(
+        [task],
+        [_make_runner("r1", isolated=True)],
+        projects,
+        capacity=1,
+        prompt_builder=_prompt_builder,
+    )
+
+    assert len(assignments) == 1
+    assert assignments[0].runner_id == "r1"
+
+
+def test_scheduler_marks_high_risk_worktree_assignments_for_isolation():
+    policies = PoliciesConfig(
+        isolation={"mode": "worktree"},
+        routing={"claude": {"strengths": []}},
+    )
+    scheduler = Scheduler(policies)
+    task = _make_task("t-verify", task_type="verification")
+    task.risk = "high"
+    projects = {"proj-1": _make_project()}
+
+    assignments = scheduler.assign(
+        [task],
+        [_make_runner("r1")],
+        projects,
+        capacity=1,
+        prompt_builder=_prompt_builder,
+    )
+
+    assert len(assignments) == 1
+    assert assignments[0].requires_isolation is True
 
 
 # ---------------------------------------------------------------------------

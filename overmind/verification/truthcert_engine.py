@@ -2,6 +2,7 @@
 from __future__ import annotations
 
 import hashlib
+import re
 from pathlib import Path
 
 from overmind.storage.models import ProjectRecord, utc_now
@@ -97,7 +98,7 @@ class TruthCertEngine:
                 else:
                     continue
                 if retry.verdict == "PASS":
-                    results[idx] = retry  # Transient flake — use retry result
+                    results[idx] = retry  # Transient flake; use retry result.
             verdict, reason = self.arbitrator.arbitrate(results)
             if verdict != "REJECT":
                 reason = f"{reason} (upgraded after retry)"
@@ -111,51 +112,113 @@ class TruthCertEngine:
             timestamp=utc_now(),
         )
 
-    # Directories containing scripts/examples/dev tools — not importable modules
-    _SKIP_DIRS = {".", "_", "test", "tests", "node_modules", "scripts", "examples",
-                  "dev", "docs", "data", "fixtures", "migrations", "backup", "archive"}
-    # Root-level files that are scripts, not importable modules
+    # Directories containing scripts/examples/dev tools; not importable modules.
+    _SKIP_DIR_NAMES = {
+        "test",
+        "tests",
+        "node_modules",
+        "scripts",
+        "examples",
+        "dev",
+        "docs",
+        "data",
+        "fixtures",
+        "migrations",
+        "backup",
+        "archive",
+    }
+    # Root-level files that are scripts, not importable modules.
     _SKIP_FILES = {"setup", "conftest", "manage", "run", "main", "cli", "app",
                    "noxfile", "fabfile", "tasks"}
+    _JS_SUFFIXES = {".js", ".mjs", ".cjs"}
+    _VALID_MODULE_RE = re.compile(r"^[A-Za-z_]\w*$")
+    _HASHABLE_SUFFIXES = {".py", ".html", ".js", ".mjs", ".cjs"}
 
     def _discover_modules(self, root_path: str) -> list[str]:
-        modules: list[str] = []
         root = Path(root_path)
-        for py_file in sorted(root.glob("*.py")):
-            name = py_file.stem
-            if name.startswith("_") or name in self._SKIP_FILES:
+        if not root.exists() or not root.is_dir():
+            return []
+
+        targets: list[str] = []
+        seen: set[str] = set()
+
+        def add_target(target: str) -> None:
+            if target and target not in seen:
+                seen.add(target)
+                targets.append(target)
+
+        def valid_module_name(name: str) -> bool:
+            return bool(self._VALID_MODULE_RE.fullmatch(name))
+
+        def skipped_dir(name: str) -> bool:
+            lowered = name.lower()
+            return lowered.startswith(".") or lowered.startswith("_") or lowered in self._SKIP_DIR_NAMES
+
+        # Import package roots and nested modules from repo root and src/ when present.
+        for base in [root, root / "src"]:
+            if not base.exists() or not base.is_dir():
                 continue
-            modules.append(name)
-        for py_file in sorted(root.glob("*/*.py")):
-            if any(py_file.parent.name.startswith(s) for s in self._SKIP_DIRS):
-                continue
-            name = py_file.stem
-            if name.startswith("_"):
-                continue
-            modules.append(f"{py_file.parent.name}.{name}")
-        return modules[:20]
+            for py_file in sorted(base.rglob("*.py")):
+                try:
+                    relative = py_file.relative_to(base)
+                except ValueError:
+                    continue
+                parent_parts = relative.parts[:-1]
+                if any(skipped_dir(part) or not valid_module_name(part) for part in parent_parts):
+                    continue
+                name = py_file.stem
+                if name == "__init__":
+                    if parent_parts:
+                        add_target(f"py:{'.'.join(parent_parts)}")
+                    continue
+                if name.startswith("_") or name in self._SKIP_FILES or not valid_module_name(name):
+                    continue
+                add_target(f"py:{'.'.join([*parent_parts, name])}")
+
+        # For browser/JS projects, smoke-check syntax for nested JS files outside ignored dirs.
+        for suffix in sorted(self._JS_SUFFIXES):
+            for js_file in sorted(root.rglob(f"*{suffix}")):
+                try:
+                    relative = js_file.relative_to(root)
+                except ValueError:
+                    continue
+                if any(skipped_dir(part) for part in relative.parts[:-1]):
+                    continue
+                add_target(f"js:{relative.as_posix()}")
+
+        return targets[:40]
 
     def _find_baseline(self, project_id: str) -> str | None:
         path = self.baselines_dir / f"{project_id}.json"
         return str(path) if path.exists() else None
 
     def _hash_source_files(self, root_path: str) -> str:
-        """Hash source, test, and HTML files to detect any code change."""
+        """Hash source, test, and JS/HTML files to detect any code change."""
         hasher = hashlib.sha256()
         root = Path(root_path)
-        source_files = sorted(root.glob("*.py"))
-        source_files += sorted(root.glob("*/*.py"))
-        # Include HTML dashboards — formula changes in 50K-line HTML files must invalidate cache
-        html_files = sorted(root.glob("*.html"))
-        test_files = sorted(
-            list(root.glob("**/test_*.py")) + list(root.glob("**/*_test.py"))
-        )
-        all_files = sorted(set(source_files + test_files + html_files), key=lambda p: str(p))
-        for f in all_files[:100]:
-            if any(part.startswith((".", "node_modules", "__pycache__", ".git")) for part in f.parts):
+        files: list[Path] = []
+        for path in root.rglob("*"):
+            try:
+                relative = path.relative_to(root)
+            except ValueError:
+                continue
+            if any(
+                part.startswith(".") or part in {"node_modules", "__pycache__", ".git"}
+                for part in relative.parts[:-1]
+            ):
                 continue
             try:
-                hasher.update(f.read_bytes())
+                if not path.is_file():
+                    continue
+            except OSError:
+                # Broken symlinks, restricted files, OneDrive placeholders (WinError 1920),
+                # etc. — skip rather than abort the entire hash pass.
+                continue
+            if path.suffix.lower() in self._HASHABLE_SUFFIXES or re.match(r"^(test_.*|.*_test)\.py$", path.name):
+                files.append(path)
+        for file_path in sorted(files, key=lambda p: str(p))[:500]:
+            try:
+                hasher.update(file_path.read_bytes())
             except OSError:
                 continue
         return hasher.hexdigest()[:16]

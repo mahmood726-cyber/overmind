@@ -15,6 +15,14 @@ import json
 from datetime import UTC, datetime
 from pathlib import Path
 
+from overmind.intelligence.portfolio_state import (
+    build_project_identity_groups,
+    build_verification_state_index,
+    is_verified_identity,
+    project_identity_key,
+    project_priority_score,
+    select_representative_project,
+)
 from overmind.storage.db import StateDatabase
 from overmind.storage.models import MemoryRecord, ProjectRecord, utc_now
 
@@ -29,6 +37,7 @@ class DailyReport:
         projects = self.db.list_projects()
         memories = self.db.list_memories(limit=10000)
         scores = self.db.list_routing_scores()
+        verification_state = build_verification_state_index(projects, memories, self.artifacts_dir)
 
         report: dict[str, object] = {
             "generated_at": utc_now(),
@@ -36,13 +45,13 @@ class DailyReport:
         }
 
         report["portfolio"] = self._portfolio_summary(projects, memories)
-        report["verification_coverage"] = self._verification_coverage(projects, memories)
+        report["verification_coverage"] = self._verification_coverage(projects, memories, verification_state)
         report["regressions"] = self._regression_alerts(memories)
         report["runner_performance"] = self._runner_performance(scores)
         report["memory_health"] = self._memory_health(memories)
-        report["priority_queue"] = self._priority_queue(projects, memories)
+        report["priority_queue"] = self._priority_queue(projects, memories, verification_state)
         report["daily_targets"] = self._daily_targets(report)
-        report["benchmark"] = self._benchmark_tracking(projects, memories, scores)
+        report["benchmark"] = self._benchmark_tracking(projects, memories, scores, verification_state)
         report["session_mining"] = self._session_mining_summary()
 
         return report
@@ -75,9 +84,12 @@ class DailyReport:
         for p in projects:
             by_type[p.project_type] = by_type.get(p.project_type, 0) + 1
             by_risk[p.risk_profile] = by_risk.get(p.risk_profile, 0) + 1
+        identity_groups = build_project_identity_groups(projects)
 
         return {
             "total_projects": len(projects),
+            "distinct_project_identities": len(identity_groups),
+            "duplicate_variants": max(0, len(projects) - len(identity_groups)),
             "by_type": by_type,
             "by_risk": by_risk,
             "with_advanced_math": sum(1 for p in projects if p.has_advanced_math),
@@ -86,24 +98,42 @@ class DailyReport:
             "git_repos": sum(1 for p in projects if p.is_git_repo),
         }
 
-    def _verification_coverage(self, projects: list[ProjectRecord], memories: list[MemoryRecord]) -> dict[str, object]:
-        verified_ids = set()
-        for m in memories:
-            if m.memory_type in ("project_learning", "audit_snapshot"):
-                verified_ids.add(m.scope)
+    def _verification_coverage(
+        self,
+        projects: list[ProjectRecord],
+        memories: list[MemoryRecord],
+        verification_state: dict[str, dict[str, str]] | None = None,
+    ) -> dict[str, object]:
+        verification_state = verification_state or self._memory_only_verification_state(projects, memories)
+        groups = build_project_identity_groups(projects)
+        testable_groups = {
+            identity: group for identity, group in groups.items() if any(project.test_commands for project in group)
+        }
+        verified_identities = {
+            identity for identity in testable_groups if is_verified_identity(identity, verification_state)
+        }
 
-        testable = [p for p in projects if p.test_commands]
-        high_risk_unverified = [
-            {"name": p.name, "id": p.project_id, "risk": p.risk_profile, "math_score": p.advanced_math_score}
-            for p in projects
-            if p.project_id not in verified_ids and p.risk_profile in ("high", "medium_high") and p.test_commands
-        ]
+        high_risk_unverified = []
+        for identity, group in testable_groups.items():
+            project = select_representative_project(group)
+            if is_verified_identity(identity, verification_state):
+                continue
+            if project.risk_profile not in ("high", "medium_high"):
+                continue
+            high_risk_unverified.append(
+                {
+                    "name": project.name,
+                    "id": project.project_id,
+                    "risk": project.risk_profile,
+                    "math_score": project.advanced_math_score,
+                }
+            )
         high_risk_unverified.sort(key=lambda x: x["math_score"], reverse=True)
 
         return {
-            "verified_count": len(verified_ids),
-            "total_testable": len(testable),
-            "coverage_percent": round(len(verified_ids) / max(len(testable), 1) * 100, 1),
+            "verified_count": len(verified_identities),
+            "total_testable": len(testable_groups),
+            "coverage_percent": round(len(verified_identities) / max(len(testable_groups), 1) * 100, 1),
             "high_risk_unverified_count": len(high_risk_unverified),
             "high_risk_unverified_top10": high_risk_unverified[:10],
         }
@@ -160,33 +190,31 @@ class DailyReport:
             "heuristics_count": by_type.get("heuristic", 0),
         }
 
-    def _priority_queue(self, projects: list[ProjectRecord], memories: list[MemoryRecord]) -> list[dict[str, object]]:
+    def _priority_queue(
+        self,
+        projects: list[ProjectRecord],
+        memories: list[MemoryRecord],
+        verification_state: dict[str, dict[str, str]] | None = None,
+    ) -> list[dict[str, object]]:
         """Generate a priority-ordered list of projects to verify next."""
-        verified_ids = {m.scope for m in memories if m.memory_type in ("project_learning", "audit_snapshot")}
+        verification_state = verification_state or self._memory_only_verification_state(projects, memories)
+        groups = build_project_identity_groups(projects)
 
         candidates = []
-        for p in projects:
-            if p.project_id in verified_ids:
+        for identity, group in groups.items():
+            project = select_representative_project(group)
+            if is_verified_identity(identity, verification_state):
                 continue
-            if not p.test_commands:
+            if not project.test_commands:
                 continue
-            score = 0
-            if p.risk_profile == "high":
-                score += 10
-            elif p.risk_profile == "medium_high":
-                score += 5
-            score += min(p.advanced_math_score, 10)
-            if p.has_oracle_benchmarks:
-                score += 3
-            if p.has_validation_history:
-                score += 2
+            score = project_priority_score(project)
             candidates.append({
-                "name": p.name,
-                "project_id": p.project_id,
-                "risk": p.risk_profile,
-                "math_score": p.advanced_math_score,
+                "name": project.name,
+                "project_id": project.project_id,
+                "risk": project.risk_profile,
+                "math_score": project.advanced_math_score,
                 "priority_score": score,
-                "test_cmd": p.test_commands[0][:80] if p.test_commands else None,
+                "test_cmd": project.test_commands[0][:80] if project.test_commands else None,
             })
 
         candidates.sort(key=lambda x: x["priority_score"], reverse=True)
@@ -219,13 +247,25 @@ class DailyReport:
             "actions": targets,
         }
 
-    def _benchmark_tracking(self, projects, memories, scores) -> dict[str, object]:
+    def _benchmark_tracking(
+        self,
+        projects,
+        memories,
+        scores,
+        verification_state: dict[str, dict[str, str]] | None = None,
+    ) -> dict[str, object]:
         """Track benchmark metrics over time for proof of improvement."""
-        verified_ids = {m.scope for m in memories if m.memory_type in ("project_learning", "audit_snapshot")}
+        verification_state = verification_state or self._memory_only_verification_state(projects, memories)
+        groups = build_project_identity_groups(projects)
+        verified_ids = {
+            identity
+            for identity, group in groups.items()
+            if any(project.test_commands for project in group) and is_verified_identity(identity, verification_state)
+        }
         regression_ids = {m.scope for m in memories if m.memory_type == "regression"}
         heuristic_count = sum(1 for m in memories if m.memory_type == "heuristic")
 
-        total_testable = sum(1 for p in projects if p.test_commands)
+        total_testable = sum(1 for group in groups.values() if any(project.test_commands for project in group))
         coverage = len(verified_ids) / max(total_testable, 1)
 
         total_wins = sum(s.get("wins", 0) for s in scores)
@@ -243,6 +283,25 @@ class DailyReport:
             "overall_pass_rate": round(overall_pass_rate * 100, 1),
             "total_verifications": total_wins + total_losses,
         }
+
+    def _memory_only_verification_state(
+        self,
+        projects: list[ProjectRecord],
+        memories: list[MemoryRecord],
+    ) -> dict[str, dict[str, str]]:
+        state: dict[str, dict[str, str]] = {}
+        for memory in memories:
+            if memory.memory_type == "project_learning":
+                state[project_identity_key(project_id=memory.scope)] = {
+                    "status": "verified",
+                    "timestamp": memory.updated_at or memory.created_at,
+                }
+            elif memory.memory_type == "regression":
+                state[project_identity_key(project_id=memory.scope)] = {
+                    "status": "failed",
+                    "timestamp": memory.updated_at or memory.created_at,
+                }
+        return state
 
     def _session_mining_summary(self) -> dict[str, object]:
         """Run session mining and return summary."""

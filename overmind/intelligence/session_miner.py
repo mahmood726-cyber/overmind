@@ -12,10 +12,10 @@ from __future__ import annotations
 import json
 import re
 from collections import Counter
-from pathlib import Path
+from pathlib import Path, PureWindowsPath
 
 from overmind.storage.db import StateDatabase
-from overmind.storage.models import MemoryRecord, utc_now
+from overmind.storage.models import MemoryRecord, slugify, utc_now
 
 SESSIONS_DIR = Path.home() / ".claude" / "projects" / "C--Users-user"
 
@@ -28,12 +28,28 @@ SUCCESS_PATTERNS = re.compile(
     re.IGNORECASE,
 )
 COMMAND_PATTERNS = re.compile(r"python\s+-m\s+pytest|npm\s+(?:run\s+)?test|Rscript|node\s+-c|git\s+")
+WINDOWS_PATH_PATTERN = re.compile(r"[A-Za-z]:\\[^\n\r\"<>|]+")
+GENERIC_SEGMENTS = {
+    "users",
+    "user",
+    "downloads",
+    "desktop",
+    "documents",
+    "appdata",
+    "local",
+    "roaming",
+    "onedrive",
+    "one drive - nhs",
+    "index",
+    "plan",
+}
 
 
 class SessionMiner:
     def __init__(self, db: StateDatabase, sessions_dir: Path | None = None) -> None:
         self.db = db
         self.sessions_dir = sessions_dir or SESSIONS_DIR
+        self.known_projects = self._known_project_names()
 
     def mine_all(self, max_sessions: int = 50) -> dict[str, object]:
         """Mine recent session transcripts for patterns."""
@@ -130,9 +146,7 @@ class SessionMiner:
                 stats["total_messages"] += 1
                 content = message.get("content", "")
                 if isinstance(content, str):
-                    # Extract project references
-                    for match in re.finditer(r"C:\\[\w\\-]+", content):
-                        project_name = match.group().split("\\")[-1]
+                    for project_name in self._extract_project_references(content):
                         stats["projects_worked_on"][project_name] += 1
 
             elif msg_type == "assistant" or message.get("role") == "assistant":
@@ -160,6 +174,37 @@ class SessionMiner:
                 for block in message["content"]:
                     if isinstance(block, dict) and block.get("type") == "tool_use":
                         stats["tool_uses"] += 1
+
+    def _known_project_names(self) -> dict[str, str]:
+        known: dict[str, str] = {}
+        for project in self.db.list_projects():
+            known.setdefault(project.name.lower(), project.name)
+            known.setdefault(slugify(project.name), project.name)
+            known.setdefault(Path(project.root_path).name.lower(), project.name)
+        return known
+
+    def _extract_project_references(self, content: str) -> list[str]:
+        matches: set[str] = set()
+        for raw_path in WINDOWS_PATH_PATTERN.findall(content):
+            resolved = self._resolve_project_from_path(raw_path.rstrip(".,:;)]}\"'"))
+            if resolved:
+                matches.add(resolved)
+        return sorted(matches)
+
+    def _resolve_project_from_path(self, raw_path: str) -> str | None:
+        path = PureWindowsPath(raw_path)
+        parts = [part for part in path.parts if part not in {path.drive, "\\"}]
+        if not parts:
+            return None
+
+        for segment in parts:
+            lowered = segment.lower()
+            if lowered in GENERIC_SEGMENTS:
+                continue
+            resolved = self.known_projects.get(lowered) or self.known_projects.get(slugify(segment))
+            if resolved:
+                return resolved
+        return None
 
     def _generate_insights(self, stats: dict) -> list[dict[str, object]]:
         insights = []

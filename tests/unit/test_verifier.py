@@ -44,11 +44,14 @@ def test_verifier_reuses_identical_test_command_for_multiple_checks(tmp_path):
             "deterministic_fixture_tests",
             "edge_case_tests",
         ],
+        trace_id="trace-verify",
     )
 
-    result = VerificationEngine(tmp_path / "artifacts").run(task, project)
+    artifacts_dir = tmp_path / "artifacts"
+    result = VerificationEngine(artifacts_dir).run(task, project)
 
     assert result.success is True
+    assert result.trace_id == "trace-verify"
     assert counter_file.read_text() == "1"
     assert set(result.completed_checks) == {
         "relevant_tests",
@@ -57,6 +60,7 @@ def test_verifier_reuses_identical_test_command_for_multiple_checks(tmp_path):
         "edge_case_tests",
     }
     assert any("reused verification evidence" in detail for detail in result.details)
+    assert (artifacts_dir / "trace-verify_task-verify_relevant_tests_1.log").exists()
 
 
 def test_verifier_routes_numeric_checks_to_distinct_validation_command_and_reuses_per_command(tmp_path):
@@ -136,3 +140,128 @@ def test_verifier_routes_numeric_checks_to_distinct_validation_command_and_reuse
         "reused verification evidence from numeric_regression command=" in detail
         for detail in result.details
     )
+
+
+def test_verifier_blocks_disallowed_command_prefix(tmp_path):
+    project = ProjectRecord(
+        project_id="blocked-project",
+        name="Blocked Project",
+        root_path=str(tmp_path),
+        project_type="python_tool",
+        stack=["python"],
+        test_commands=["git status"],
+    )
+    task = TaskRecord(
+        task_id="task-blocked",
+        project_id=project.project_id,
+        title="Verify blocked project",
+        task_type="verification",
+        source="test",
+        priority=0.9,
+        risk="medium",
+        expected_runtime_min=1,
+        expected_context_cost="low",
+        required_verification=["relevant_tests"],
+    )
+
+    result = VerificationEngine(tmp_path / "artifacts").run(task, project)
+
+    assert result.success is False
+    assert any("Blocked: command prefix not allowlisted" in detail for detail in result.details)
+
+
+def test_verifier_runs_unquoted_absolute_python_command(tmp_path):
+    script_path = tmp_path / "ok.py"
+    script_path.write_text("print('ok')\n", encoding="utf-8")
+
+    project = ProjectRecord(
+        project_id="absolute-python-project",
+        name="Absolute Python Project",
+        root_path=str(tmp_path),
+        project_type="python_tool",
+        stack=["python"],
+        test_commands=[f"{sys.executable} {script_path}"],
+    )
+    task = TaskRecord(
+        task_id="task-absolute-python",
+        project_id=project.project_id,
+        title="Verify absolute python path command",
+        task_type="verification",
+        source="test",
+        priority=0.9,
+        risk="medium",
+        expected_runtime_min=1,
+        expected_context_cost="low",
+        required_verification=["relevant_tests"],
+    )
+
+    result = VerificationEngine(tmp_path / "artifacts").run(task, project)
+
+    assert result.success is True
+    assert "relevant_tests" in result.completed_checks
+
+
+def test_verifier_blocks_shell_wrapper_chaining(tmp_path):
+    script_path = tmp_path / "safe.cmd"
+    script_path.write_text("@echo off\r\necho ok\r\n", encoding="utf-8")
+
+    project = ProjectRecord(
+        project_id="wrapper-block-project",
+        name="Wrapper Block Project",
+        root_path=str(tmp_path),
+        project_type="python_tool",
+        stack=["python"],
+        test_commands=[f'cmd /c "{script_path}" && del /s /q C:\\*'],
+    )
+    task = TaskRecord(
+        task_id="task-wrapper-block",
+        project_id=project.project_id,
+        title="Reject chained cmd wrapper",
+        task_type="verification",
+        source="test",
+        priority=0.9,
+        risk="medium",
+        expected_runtime_min=1,
+        expected_context_cost="low",
+        required_verification=["relevant_tests"],
+    )
+
+    result = VerificationEngine(tmp_path / "artifacts").run(task, project)
+
+    assert result.success is False
+    assert any("unsafe shell control operator" in detail for detail in result.details)
+
+
+def test_verifier_decodes_utf8_subprocess_output_on_windows(tmp_path):
+    script_path = tmp_path / "utf8_probe.py"
+    script_path.write_text(
+        "import sys\n"
+        "sys.stdout.buffer.write(b'\\xc5\\x8f verification ok\\n')\n",
+        encoding="utf-8",
+    )
+
+    project = ProjectRecord(
+        project_id="utf8-project",
+        name="UTF8 Project",
+        root_path=str(tmp_path),
+        project_type="python_tool",
+        stack=["python"],
+        test_commands=[f'"{sys.executable}" "{script_path}"'],
+    )
+    task = TaskRecord(
+        task_id="task-utf8-output",
+        project_id=project.project_id,
+        title="Verify UTF-8 subprocess output",
+        task_type="verification",
+        source="test",
+        priority=0.9,
+        risk="medium",
+        expected_runtime_min=1,
+        expected_context_cost="low",
+        required_verification=["relevant_tests"],
+    )
+
+    result = VerificationEngine(tmp_path / "artifacts").run(task, project)
+
+    assert result.success is True
+    assert "relevant_tests" in result.completed_checks

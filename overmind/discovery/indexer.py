@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 import json
+from pathlib import Path
 
 from overmind.config import AppConfig
 from overmind.discovery.project_scanner import ProjectScanner
@@ -19,6 +20,11 @@ class ProjectIndexer:
 
     def incremental_refresh(self, focus_project_id: str | None = None) -> list[ProjectRecord]:
         cache = self._load_cache()
+        if focus_project_id:
+            focused_records = self._focused_refresh(focus_project_id, cache)
+            if focused_records is not None:
+                return focused_records
+
         next_cache: dict[str, object] = {"cache_version": CACHE_VERSION, "projects": {}}
         records: list[ProjectRecord] = []
 
@@ -42,6 +48,56 @@ class ProjectIndexer:
 
         self._save_cache(next_cache)
         return records
+
+    def _focused_refresh(
+        self,
+        focus_project_id: str,
+        cache: dict[str, object],
+    ) -> list[ProjectRecord] | None:
+        cached_projects = cache.get("projects", {}) if isinstance(cache, dict) else {}
+        cache_entry: dict[str, object] | None = None
+        root: Path | None = None
+
+        if isinstance(cached_projects, dict):
+            for root_key, entry in cached_projects.items():
+                if not isinstance(entry, dict):
+                    continue
+                record = entry.get("record", {})
+                if isinstance(record, dict) and record.get("project_id") == focus_project_id:
+                    root = Path(root_key)
+                    cache_entry = entry
+                    break
+
+        if root is None:
+            project = self.db.get_project(focus_project_id)
+            if project is not None:
+                root = Path(project.root_path)
+
+        if root is None or not root.exists():
+            return None
+
+        signature = self.scanner.compute_signature(root)
+        if cache_entry and cache_entry.get("signature") == signature:
+            cached_record = cache_entry.get("record", {})
+            if not isinstance(cached_record, dict):
+                return None
+            record = ProjectRecord(**cached_record)
+        else:
+            record = self.scanner.scan_project(root)
+
+        if record.project_id != focus_project_id:
+            return None
+
+        next_cache = cache if isinstance(cache, dict) else {}
+        next_cache["cache_version"] = CACHE_VERSION
+        next_cache.setdefault("projects", {})
+        next_cache["projects"][str(root)] = {
+            "signature": signature,
+            "record": record.to_dict(),
+        }
+        self._save_cache(next_cache)
+        self.db.upsert_project(record)
+        return [record]
 
     def _load_cache(self) -> dict[str, object]:
         if not self.cache_path.exists():
