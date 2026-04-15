@@ -23,10 +23,19 @@ class Arbitrator:
         verdicts = {r.verdict for r in non_skip}
 
         if verdicts == {"PASS"}:
-            # Downgrade to PASS if numerical witness was expected but skipped (no baseline)
+            # Tier-3 projects (high-risk + math ≥10) get a numerical witness.
+            # If the numerical witness SKIPPED because the baseline file was
+            # missing, the project is NOT release-verified — downgrade to
+            # UNVERIFIED (distinct from plain PASS / CERTIFIED / SKIP).
+            # Per testing.md: "A numerical witness SKIP because the baseline
+            # is missing is not a release pass and does not justify promoting
+            # the project status."
             numerical_skipped = any(r.witness_type == "numerical" for r in skipped)
             if numerical_skipped:
-                return "PASS", f"{len(non_skip)}/{len(non_skip)} witnesses PASS (numerical skipped — no baseline)"
+                return "UNVERIFIED", (
+                    f"{len(non_skip)}/{len(non_skip)} witnesses PASS but numerical "
+                    f"witness SKIPPED (baseline missing) — NOT a release pass"
+                )
             return "CERTIFIED", f"{len(non_skip)}/{len(non_skip)} witnesses agree PASS"
 
         if verdicts == {"FAIL"}:

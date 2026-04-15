@@ -372,6 +372,7 @@ def _run_verification(db: StateDatabase, args: argparse.Namespace, run_start: da
     rejected = 0
     failed = 0
     single_pass = 0  # single-witness PASS (not CERTIFIED)
+    unverified = 0   # tier-3 with missing numerical baseline (was miscounted as PASS before 2026-04-15)
 
     date_str = run_start.strftime("%Y-%m-%d")
     bundles_dir = REPORT_DIR / "bundles" / date_str
@@ -436,11 +437,14 @@ def _run_verification(db: StateDatabase, args: argparse.Namespace, run_start: da
             rejected += 1
         elif verdict == "FAIL":
             failed += 1
+        elif verdict == "UNVERIFIED":
+            # Tier-3 with missing numerical baseline — explicitly NOT a pass.
+            unverified += 1
         elif verdict in ("PASS", "SKIP"):
             # Single-witness pass (arbitrator returned PASS because only 1 non-skip witness)
             single_pass += 1
 
-        # Update Q-router (success = CERTIFIED or PASS)
+        # Update Q-router (success = CERTIFIED or PASS; UNVERIFIED is NOT success)
         success = verdict in ("CERTIFIED", "PASS")
         q_router.record("claude", "verification", success)
 
@@ -462,7 +466,8 @@ def _run_verification(db: StateDatabase, args: argparse.Namespace, run_start: da
         )
         audit_loop.evaluate(proj.project_id, vr, tick=tick)
 
-        # Save memory for non-certified projects only
+        # Save memory for non-passing projects (includes UNVERIFIED so the
+        # missing-baseline case is surfaced in nightly memory for triage)
         if verdict not in ("CERTIFIED", "PASS"):
             detail_text = bundle.arbitration_reason
             memory_store.save(MemoryRecord(
@@ -804,6 +809,7 @@ def _run_verification(db: StateDatabase, args: argparse.Namespace, run_start: da
         "rejected": rejected,
         "failed": failed,
         "single_pass": single_pass,
+        "unverified": unverified,
         "total_time_seconds": round(total_time, 1),
         "dream": {
             "merges": dream["merges"],
@@ -852,7 +858,7 @@ def _run_verification(db: StateDatabase, args: argparse.Namespace, run_start: da
     md_lines = [
         f"# Nightly Verification Report - {date_str}",
         "",
-        f"**{certified}/{n + skipped_cached} CERTIFIED** ({skipped_cached} cached) | {failed} FAIL | {rejected} REJECT | {single_pass} single-witness (PASS)",
+        f"**{certified}/{n + skipped_cached} CERTIFIED** ({skipped_cached} cached) | {failed} FAIL | {rejected} REJECT | {single_pass} single-witness (PASS) | {unverified} UNVERIFIED",
         "",
         "```mermaid",
         "pie title Nightly Verdicts",
@@ -861,6 +867,8 @@ def _run_verification(db: StateDatabase, args: argparse.Namespace, run_start: da
         md_lines.append(f'    "CERTIFIED" : {certified}')
     if single_pass:
         md_lines.append(f'    "PASS" : {single_pass}')
+    if unverified:
+        md_lines.append(f'    "UNVERIFIED" : {unverified}')
     if rejected:
         md_lines.append(f'    "REJECT" : {rejected}')
     if failed:
@@ -916,6 +924,27 @@ def _run_verification(db: StateDatabase, args: argparse.Namespace, run_start: da
             md_lines.append(
                 f"| {r['project'].name} | {r['project'].risk_profile} | "
                 f"{r['project'].advanced_math_score} | {r['elapsed']:.1f}s |"
+            )
+        md_lines.append("")
+
+    # UNVERIFIED section (tier-3 with missing numerical baseline — NOT a release pass)
+    unverified_rows = [r for r in results if r["bundle"].verdict == "UNVERIFIED"]
+    if unverified_rows:
+        md_lines.extend([
+            "## Unverified (Missing Numerical Baseline)",
+            "",
+            "_Tier-3 projects where test + smoke PASSED but the numerical witness SKIPPED"
+            " because the baseline file is missing. Per `testing.md`: NOT a release pass._",
+            "",
+            "| Project | Risk | Math | Witnesses | Reason |",
+            "|---------|------|------|-----------|--------|",
+        ])
+        for r in unverified_rows:
+            b = r["bundle"]
+            witnesses = ", ".join(f"{w.witness_type}={w.verdict}" for w in b.witness_results)
+            md_lines.append(
+                f"| {r['project'].name} | {r['project'].risk_profile} | "
+                f"{r['project'].advanced_math_score} | {witnesses} | {b.arbitration_reason} |"
             )
         md_lines.append("")
 
@@ -1023,7 +1052,7 @@ def _run_verification(db: StateDatabase, args: argparse.Namespace, run_start: da
     print()
     print("=" * 60)
     print("NIGHTLY VERIFICATION COMPLETE")
-    print(f"  {certified}/{n} CERTIFIED | {failed} FAIL | {rejected} REJECT | {single_pass} PASS")
+    print(f"  {certified}/{n} CERTIFIED | {failed} FAIL | {rejected} REJECT | {single_pass} PASS | {unverified} UNVERIFIED")
     print(f"  Total time: {total_time:.0f}s")
     print(f"  Report: {md_path}")
     print(f"  Bundles: {bundles_dir}")
