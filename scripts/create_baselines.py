@@ -1,8 +1,17 @@
 """Generate numerical baselines for Overmind's NumericalWitness.
 
+<!-- sentinel:skip-file — project-path registry, absolute paths are the config data -->
+
 Creates baseline JSON files in data/baselines/{project_id}.json.
 Each baseline contains a command, expected values, and tolerance.
 The NumericalWitness runs the command, parses JSON output, and compares.
+
+This file is effectively a registry of canonical project locations on
+Mahmood's machine — the absolute paths ARE the configuration data, not
+leaks of deployment paths. Would ideally be a JSON registry but is kept
+as inline Python for ergonomic `probe` string literals. Sentinel's
+skip-file marker prevents it from flagging this as a hardcoded-path
+violation.
 
 Usage:
     python scripts/create_baselines.py              # Create all baselines

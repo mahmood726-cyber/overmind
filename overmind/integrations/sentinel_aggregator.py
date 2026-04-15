@@ -30,7 +30,11 @@ from pathlib import Path
 from typing import Callable, Iterable
 
 # Append, not insert-0, so real overmind imports don't get shadowed.
-_DEFAULT_DISCOVER_IMPORT_ROOT = "C:/Users/user"
+# Resolves via Path.home() (cross-platform); env var override for CI/testing.
+import os as _os
+_DEFAULT_DISCOVER_IMPORT_ROOT = _os.environ.get(
+    "OVERMIND_DISCOVER_IMPORT_ROOT", str(Path.home())
+)
 
 _RX_BLOCK = re.compile(r"^## \[BLOCK\] (\S+)", re.MULTILINE)
 _RX_WARN = re.compile(r"^## \[WARN\] (\S+)", re.MULTILINE)

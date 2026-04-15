@@ -214,9 +214,9 @@ class PolicyGuard:
         When `project_root` is provided, path-scoped destructive rules
         (rm_rf_broad, cmd_rmdir_broad, etc.) are downgraded from `block` to
         `warn` if the target path is clearly inside the project root. A path
-        like `./build` inside a repo is a normal operation; `/home/user` from
-        the same agent is not. Rules targeting drive roots or `/` are always
-        kept at their original severity.
+        like `./build` inside a repo is a normal operation; `/home/<user>`
+        from the same agent is not. Rules targeting drive roots or `/` are
+        always kept at their original severity.
         """
         violations: list[PolicyViolation] = []
         root_resolved: Path | None = None
