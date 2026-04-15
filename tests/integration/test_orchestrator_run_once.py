@@ -9,6 +9,27 @@ from overmind.verification.llm_judge import LLMJudge, StubBackend
 from overmind.storage.models import InsightRecord, ProjectRecord, RunnerRecord, TaskRecord, VerificationResult
 
 
+def _run_until_completed(orchestrator, task_id, *, max_iterations=6, settle=0.5):
+    """Run the orchestrator until the named task reaches COMPLETED or we give up.
+
+    Replaces the earlier 2-call pattern, which raced on Windows when
+    subprocess startup took longer than settle_seconds (flaky in ~20-30%
+    of full-suite runs due to cumulative CPU/disk load from preceding tests
+    spawning their own subprocesses). With max_iterations=6 and settle=0.5,
+    we give the runner up to ~3s to produce COMPLETED output — in isolation
+    it normally finishes in one iteration.
+    """
+    assignments = []
+    saved_task = None
+    for _ in range(max_iterations):
+        result = orchestrator.run_once(settle_seconds=settle)
+        assignments.extend(result["assignments"])
+        saved_task = orchestrator.db.get_task(task_id)
+        if saved_task is not None and saved_task.status == "COMPLETED":
+            break
+    return assignments, saved_task
+
+
 def _write_minimal_config(config_dir: Path, data_dir: Path) -> AppConfig:
     config_dir.mkdir()
     data_dir.mkdir()
@@ -241,13 +262,7 @@ def test_orchestrator_completes_task_with_dummy_runner(tmp_path):
         orchestrator.db.upsert_project(project)
         orchestrator.db.upsert_task(task)
 
-        result = orchestrator.run_once(settle_seconds=0.5)
-        assignments = list(result["assignments"])
-        saved_task = orchestrator.db.get_task(task.task_id)
-        if saved_task is not None and saved_task.status != "COMPLETED":
-            result = orchestrator.run_once(settle_seconds=0.5)
-            assignments.extend(result["assignments"])
-            saved_task = orchestrator.db.get_task(task.task_id)
+        assignments, saved_task = _run_until_completed(orchestrator, task.task_id)
 
         assert assignments
         assert saved_task is not None
@@ -651,13 +666,7 @@ def test_orchestrator_completes_task_with_one_shot_stdin_runner(tmp_path):
         orchestrator.db.upsert_project(project)
         orchestrator.db.upsert_task(task)
 
-        result = orchestrator.run_once(settle_seconds=0.5)
-        assignments = list(result["assignments"])
-        saved_task = orchestrator.db.get_task(task.task_id)
-        if saved_task is not None and saved_task.status != "COMPLETED":
-            result = orchestrator.run_once(settle_seconds=0.5)
-            assignments.extend(result["assignments"])
-            saved_task = orchestrator.db.get_task(task.task_id)
+        assignments, saved_task = _run_until_completed(orchestrator, task.task_id)
 
         assert assignments
         assert saved_task is not None
@@ -751,13 +760,7 @@ def test_orchestrator_rewrites_bare_codex_command_to_exec_mode(tmp_path):
         orchestrator.db.upsert_project(project)
         orchestrator.db.upsert_task(task)
 
-        result = orchestrator.run_once(settle_seconds=0.5)
-        assignments = list(result["assignments"])
-        saved_task = orchestrator.db.get_task(task.task_id)
-        if saved_task is not None and saved_task.status != "COMPLETED":
-            result = orchestrator.run_once(settle_seconds=0.5)
-            assignments.extend(result["assignments"])
-            saved_task = orchestrator.db.get_task(task.task_id)
+        assignments, saved_task = _run_until_completed(orchestrator, task.task_id)
 
         assert assignments
         assert saved_task is not None
@@ -835,13 +838,16 @@ def test_orchestrator_marks_task_failed_when_verify_command_fails(tmp_path):
         orchestrator.db.upsert_project(project)
         orchestrator.db.upsert_task(task)
 
-        result = orchestrator.run_once(settle_seconds=0.5)
-        assignments = list(result["assignments"])
-        saved_task = orchestrator.db.get_task(task.task_id)
-        if saved_task is not None and saved_task.status not in {"FAILED", "COMPLETED"}:
+        # Bounded retry loop — same anti-flake rationale as _run_until_completed.
+        # Terminal states here are FAILED or COMPLETED (verify_command exits 1).
+        assignments = []
+        saved_task = None
+        for _ in range(6):
             result = orchestrator.run_once(settle_seconds=0.5)
             assignments.extend(result["assignments"])
             saved_task = orchestrator.db.get_task(task.task_id)
+            if saved_task is not None and saved_task.status in {"FAILED", "COMPLETED"}:
+                break
 
         regressions = orchestrator.db.list_memories(scope=project.project_id, memory_type="regression", limit=10)
         project_learnings = orchestrator.db.list_memories(scope=project.project_id, memory_type="project_learning", limit=10)
