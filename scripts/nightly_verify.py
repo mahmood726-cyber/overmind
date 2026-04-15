@@ -73,6 +73,7 @@ SKIP_PROJECTS = {
 
 
 from overmind.integrations.sentinel_aggregator import collect as _collect_sentinel
+from overmind.integrations.bypass_log_aggregator import collect as _collect_bypass
 
 
 def collect_sentinel_findings() -> dict:
@@ -82,6 +83,16 @@ def collect_sentinel_findings() -> dict:
     can refer to it without importing the integration module directly.
     """
     return _collect_sentinel()
+
+
+def collect_bypass_findings(window_days: int = 7) -> dict:
+    """Thin wrapper around bypass_log_aggregator.collect.
+
+    Surfaces repeat Sentinel bypassers in the nightly report so enforcement
+    can't go silently dark. Fails soft — a missing log is normal (nobody
+    has bypassed yet).
+    """
+    return _collect_bypass(window_days=window_days)
 
 
 def parse_args() -> argparse.Namespace:
@@ -823,6 +834,13 @@ def _run_verification(db: StateDatabase, args: argparse.Namespace, run_start: da
     except Exception as e:
         report["sentinel"] = {"error": f"aggregation crashed: {type(e).__name__}: {e}"}
 
+    # Surface last 7 days of Sentinel bypass events. Empty = enforcement
+    # healthy; nonzero = someone bypassed and may have shipped a real violation.
+    try:
+        report["bypass"] = collect_bypass_findings(window_days=7)
+    except Exception as e:
+        report["bypass"] = {"error": f"bypass aggregation crashed: {type(e).__name__}: {e}"}
+
     # Write JSON report
     REPORT_DIR.mkdir(parents=True, exist_ok=True)
 
@@ -964,6 +982,32 @@ def _run_verification(db: StateDatabase, args: argparse.Namespace, run_start: da
         ])
         for r in sentinel.get("top_rules", [])[:10]:
             md_lines.append(f"| `{r['rule_id']}` | {r['count']} |")
+        md_lines.append("")
+
+    # Sentinel bypass log — surface repeat bypassers so enforcement can't
+    # silently go dark. Empty log = healthy (rendered only if nonzero).
+    bypass = report.get("bypass") or {}
+    if bypass.get("error"):
+        md_lines.extend([
+            "## Sentinel Bypass Log",
+            "",
+            f"_Aggregation error: {bypass['error']}_",
+            "",
+        ])
+    elif bypass.get("total_bypasses", 0) > 0:
+        window = bypass.get("window_days", 7)
+        total = bypass["total_bypasses"]
+        md_lines.extend([
+            "## Sentinel Bypass Log",
+            "",
+            f"**{total} `SENTINEL_BYPASS=1 git push` event(s) in last {window} days.** "
+            "If any repo is repeat-bypassing, enforcement is silently off for that repo.",
+            "",
+            "| Repo | Bypasses | Latest |",
+            "|------|----------|--------|",
+        ])
+        for r in bypass.get("repos", [])[:10]:
+            md_lines.append(f"| `{r['repo']}` | {r['count']} | {r['latest']} |")
         md_lines.append("")
 
     md_lines.extend([
