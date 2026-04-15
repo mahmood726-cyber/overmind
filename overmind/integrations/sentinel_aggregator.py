@@ -144,8 +144,8 @@ def collect(
         total_block += len(blocks)
         total_warn += len(warns)
 
-    repo_findings.sort(key=lambda x: (-x["block"], -x["warn"]))
-    top_rules = sorted(rule_counts.items(), key=lambda kv: -kv[1])[:10]
+    repo_findings.sort(key=lambda x: (-x["block"], -x["warn"], x["repo"]))
+    top_rules = sorted(rule_counts.items(), key=lambda kv: (-kv[1], kv[0]))[:10]
 
     return {
         "total_repos_with_findings": len(repo_findings),

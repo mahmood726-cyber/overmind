@@ -147,6 +147,51 @@ def test_collect_handles_unreadable_findings(tmp_path, monkeypatch):
     assert result["total_repos_with_findings"] == 0
 
 
+def test_collect_top_repos_deterministic_on_ties(tmp_path):
+    """P1-5: top_repos ordering must be stable across runs when (block, warn) tie.
+
+    Without a secondary key, Python's stable sort preserves discover_repos()
+    iteration order, so the nightly report churns between runs whenever FS
+    walk order differs.
+    """
+    import json as _json
+    for name in ["alpha", "beta", "gamma"]:
+        r = tmp_path / name
+        r.mkdir()
+        (r / "STUCK_FAILURES.jsonl").write_text(
+            _json.dumps({"rule_id": "R", "severity": "BLOCK"}) + "\n",
+            encoding="utf-8",
+        )
+
+    forward = [str(tmp_path / n) for n in ["alpha", "beta", "gamma"]]
+    reversed_ = [str(tmp_path / n) for n in ["gamma", "beta", "alpha"]]
+
+    result_forward = collect(discover_repos=lambda: forward)
+    result_reversed = collect(discover_repos=lambda: reversed_)
+
+    assert result_forward["top_repos"] == result_reversed["top_repos"]
+    repo_names = [r["repo"] for r in result_forward["top_repos"]]
+    assert repo_names == sorted(repo_names), "tiebreak should be repo path alphabetical"
+
+
+def test_collect_top_rules_deterministic_on_ties(tmp_path):
+    """P1-5: top_rules ordering must be stable when counts tie."""
+    import json as _json
+    for i, rule in enumerate(["rule-c", "rule-a", "rule-b"]):
+        r = tmp_path / f"repo{i}"
+        r.mkdir()
+        (r / "STUCK_FAILURES.jsonl").write_text(
+            _json.dumps({"rule_id": rule, "severity": "BLOCK"}) + "\n",
+            encoding="utf-8",
+        )
+
+    repos = [str(tmp_path / f"repo{i}") for i in range(3)]
+    result = collect(discover_repos=lambda: repos)
+    rule_ids = [r["rule_id"] for r in result["top_rules"]]
+
+    assert rule_ids == sorted(rule_ids), "tiebreak should be rule_id alphabetical"
+
+
 def test_collect_ignores_empty_stuck_failures(tmp_path):
     """A STUCK_FAILURES.md with only the header (no findings) counts as 0."""
     r1 = tmp_path / "header-only"
