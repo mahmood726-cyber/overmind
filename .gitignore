@@ -10,3 +10,14 @@ data/checkpoints/*.json
 data/artifacts/*.log
 data/logs/*
 data/cache/*.json
+
+# Session output (Sentinel / Overmind / local state)
+review-findings.md
+STUCK_FAILURES.md
+STUCK_FAILURES.jsonl
+DECISIONS.md
+PROGRESS.md
+data/state.db
+data/stability_state.json
+data/nightly_reports/latest.json
+data/nightly_reports/nightly.log
