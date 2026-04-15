@@ -1,15 +1,13 @@
 # DTA70
 
-**Last verified:** 2026-04-13 02:18 UTC | **Verdict:** FAIL (Single witness: test_suite FAIL)
-**Bundle hash:** 0fda4fe619908f84 | **Risk:** high | **Math:** 17
+**Last verified:** 2026-04-15 02:13 UTC | **Verdict:** FAIL (Preflight failed: corrupt_baseline)
+**Bundle hash:** c7e5e2376fd42c62 | **Risk:** high | **Math:** 17
 
 ## Health
 
 | Witness | Verdict | Time | Detail |
 |---------|---------|------|--------|
-| test_suite | FAIL | 0.0s | Failed to start: [WinError 2] The system cannot find the file specified |
-| smoke | SKIP | 0.0s | skipped |
-| numerical | SKIP | 0.0s | skipped |
+| preflight | FAIL | 0.0s | preflight: corrupt_baseline |
 
 ## Project
 
@@ -30,9 +28,11 @@
 | 2026-04-11 | FAIL | 1/3 | 0.0s | 1c75df3bdd9be90a |
 | 2026-04-12 | FAIL | 1/3 | 0.0s | a39ba4961d62df30 |
 | 2026-04-13 | FAIL | 1/3 | 0.0s | 0fda4fe619908f84 |
+| 2026-04-15 | FAIL | 1/1 | 0.0s | c7e5e2376fd42c62 |
 
 ## Notes
 
-Single witness: test_suite FAIL
+Preflight failed: corrupt_baseline
 
-**test_suite:** Failed to start: [WinError 2] The system cannot find the file specified
+**preflight:** preflight: corrupt_baseline
+  - baseline unreadable: Unexpected UTF-8 BOM (decode using utf-8-sig): line 1 column 1 (char 0)

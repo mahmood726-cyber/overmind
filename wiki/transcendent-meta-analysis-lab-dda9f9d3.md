@@ -1,16 +1,13 @@
 # Transcendent-Meta-Analysis-Lab
 
-**Last verified:** 2026-04-13 02:18 UTC | **Verdict:** PASS (2/2 witnesses PASS (numerical skipped — no baseline))
-**Bundle hash:** d52ebb0d8a366a22 | **Risk:** high | **Math:** 11
+**Last verified:** 2026-04-15 02:13 UTC | **Verdict:** FAIL (Preflight failed: missing_baseline)
+**Bundle hash:** 72ad9f37a2f5d3a0 | **Risk:** high | **Math:** 11
 
 ## Health
 
 | Witness | Verdict | Time | Detail |
 |---------|---------|------|--------|
-| test_suite | PASS | 2.7s | ............                                                             [100%]
- |
-| smoke | PASS | 8.3s | 8 modules imported OK |
-| numerical | SKIP | 0.0s | skipped |
+| preflight | FAIL | 0.0s | preflight: missing_baseline |
 
 ## Project
 
@@ -28,3 +25,11 @@
 | 2026-04-11 | PASS | 2/3 | 79.6s | 12925d7bfd8bbf6e |
 | 2026-04-12 | PASS | 2/3 | 12.1s | 197adb60aa64d293 |
 | 2026-04-13 | PASS | 2/3 | 11.0s | d52ebb0d8a366a22 |
+| 2026-04-15 | FAIL | 1/1 | 0.0s | 72ad9f37a2f5d3a0 |
+
+## Notes
+
+Preflight failed: missing_baseline
+
+**preflight:** preflight: missing_baseline
+  - tier-3 project has no baseline path configured

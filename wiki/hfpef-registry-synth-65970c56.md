@@ -1,16 +1,13 @@
 # hfpef_registry_synth
 
-**Last verified:** 2026-04-13 02:18 UTC | **Verdict:** PASS (Single witness: test_suite PASS)
-**Bundle hash:** 20d80f89300093ed | **Risk:** high | **Math:** 14
+**Last verified:** 2026-04-15 02:13 UTC | **Verdict:** FAIL (Preflight failed: missing_baseline)
+**Bundle hash:** 5c6316dfe9f2d27a | **Risk:** high | **Math:** 14
 
 ## Health
 
 | Witness | Verdict | Time | Detail |
 |---------|---------|------|--------|
-| test_suite | PASS | 3.8s | .                                                                        [100%]
- |
-| smoke | SKIP | 0.0s | skipped |
-| numerical | SKIP | 0.0s | skipped |
+| preflight | FAIL | 0.0s | preflight: missing_baseline |
 
 ## Project
 
@@ -31,3 +28,11 @@
 | 2026-04-11 | PASS | 1/3 | 5.4s | cad29dde4e7e70b8 |
 | 2026-04-12 | PASS | 1/3 | 6.7s | d9770049b3c9eb04 |
 | 2026-04-13 | PASS | 1/3 | 3.8s | 20d80f89300093ed |
+| 2026-04-15 | FAIL | 1/1 | 0.0s | 5c6316dfe9f2d27a |
+
+## Notes
+
+Preflight failed: missing_baseline
+
+**preflight:** preflight: missing_baseline
+  - tier-3 project has no baseline path configured

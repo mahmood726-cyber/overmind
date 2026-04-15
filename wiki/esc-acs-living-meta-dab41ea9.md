@@ -1,16 +1,13 @@
 # esc-acs-living-meta
 
-**Last verified:** 2026-04-13 02:18 UTC | **Verdict:** PASS (2/2 witnesses PASS (numerical skipped — no baseline))
-**Bundle hash:** 94ff7d9712edbfee | **Risk:** high | **Math:** 20
+**Last verified:** 2026-04-15 02:13 UTC | **Verdict:** FAIL (Preflight failed: missing_baseline)
+**Bundle hash:** cc5df3c25b0a1c7e | **Risk:** high | **Math:** 20
 
 ## Health
 
 | Witness | Verdict | Time | Detail |
 |---------|---------|------|--------|
-| test_suite | PASS | 1.5s | .                                                                        [100%]
- |
-| smoke | PASS | 0.5s | 1 modules imported OK |
-| numerical | SKIP | 0.0s | skipped |
+| preflight | FAIL | 0.0s | preflight: missing_baseline |
 
 ## Project
 
@@ -31,3 +28,11 @@
 | 2026-04-11 | PASS | 2/3 | 2.6s | d21c447f7d229930 |
 | 2026-04-12 | PASS | 2/3 | 3.6s | 65f474fe7624f0a9 |
 | 2026-04-13 | PASS | 2/3 | 1.9s | 94ff7d9712edbfee |
+| 2026-04-15 | FAIL | 1/1 | 0.0s | cc5df3c25b0a1c7e |
+
+## Notes
+
+Preflight failed: missing_baseline
+
+**preflight:** preflight: missing_baseline
+  - tier-3 project has no baseline path configured

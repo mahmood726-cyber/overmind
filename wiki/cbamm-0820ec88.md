@@ -1,15 +1,13 @@
 # Cbamm
 
-**Last verified:** 2026-04-13 02:18 UTC | **Verdict:** FAIL (Single witness: test_suite FAIL)
-**Bundle hash:** da20bbf3e28c5359 | **Risk:** high | **Math:** 17
+**Last verified:** 2026-04-15 02:13 UTC | **Verdict:** FAIL (Preflight failed: missing_baseline)
+**Bundle hash:** 9e7d9baa7db7c4f2 | **Risk:** high | **Math:** 17
 
 ## Health
 
 | Witness | Verdict | Time | Detail |
 |---------|---------|------|--------|
-| test_suite | FAIL | 0.0s | Failed to start: [WinError 2] The system cannot find the file specified |
-| smoke | SKIP | 0.0s | skipped |
-| numerical | SKIP | 0.0s | skipped |
+| preflight | FAIL | 0.0s | preflight: missing_baseline |
 
 ## Project
 
@@ -30,9 +28,11 @@
 | 2026-04-11 | FAIL | 1/3 | 0.0s | 04ce8a42b2f91751 |
 | 2026-04-12 | FAIL | 1/3 | 0.0s | 6ed13107badf89e2 |
 | 2026-04-13 | FAIL | 1/3 | 0.0s | da20bbf3e28c5359 |
+| 2026-04-15 | FAIL | 1/1 | 0.0s | 9e7d9baa7db7c4f2 |
 
 ## Notes
 
-Single witness: test_suite FAIL
+Preflight failed: missing_baseline
 
-**test_suite:** Failed to start: [WinError 2] The system cannot find the file specified
+**preflight:** preflight: missing_baseline
+  - tier-3 project has no baseline path configured

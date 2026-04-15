@@ -1,16 +1,13 @@
 # advanced-nma-pooling
 
-**Last verified:** 2026-04-13 02:18 UTC | **Verdict:** REJECT (Witnesses disagree: test_suite, smoke PASS vs numerical FAIL)
-**Bundle hash:** 67030363e12da07b | **Risk:** high | **Math:** 20
+**Last verified:** 2026-04-15 02:13 UTC | **Verdict:** FAIL (Hard timeout (300s) — process killed)
+**Bundle hash:** 76c47acd327ef4bc | **Risk:** high | **Math:** 20
 
 ## Health
 
 | Witness | Verdict | Time | Detail |
 |---------|---------|------|--------|
-| test_suite | PASS | 1.8s | .                                                                        [100%]
- |
-| smoke | PASS | 3.8s | 10 modules imported OK |
-| numerical | FAIL | 0.0s | Failed to start: [WinError 2] The system cannot find the file specified |
+| test_suite | FAIL | 300.0s | Project hung — killed after 300s |
 
 ## Project
 
@@ -31,9 +28,10 @@
 | 2026-04-11 | REJECT | 3/3 | 11.4s | d22a47059eb1ef8c |
 | 2026-04-12 | REJECT | 3/3 | 12.1s | b84340037aafe220 |
 | 2026-04-13 | REJECT | 3/3 | 5.5s | 67030363e12da07b |
+| 2026-04-15 | FAIL | 1/1 | 300.0s | 76c47acd327ef4bc |
 
 ## Notes
 
-Witnesses disagree: test_suite, smoke PASS vs numerical FAIL
+Hard timeout (300s) — process killed
 
-**numerical:** Failed to start: [WinError 2] The system cannot find the file specified
+**test_suite:** Project hung — killed after 300s

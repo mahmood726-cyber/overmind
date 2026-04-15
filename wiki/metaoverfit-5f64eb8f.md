@@ -1,13 +1,13 @@
 # metaoverfit
 
-**Last verified:** 2026-04-13 02:18 UTC | **Verdict:** FAIL (Single witness: test_suite FAIL)
-**Bundle hash:** 20b883e9a1bd2870 | **Risk:** high | **Math:** 6
+**Last verified:** 2026-04-15 02:13 UTC | **Verdict:** FAIL (Single witness: test_suite FAIL)
+**Bundle hash:** 71f5354119e433bd | **Risk:** high | **Math:** 6
 
 ## Health
 
 | Witness | Verdict | Time | Detail |
 |---------|---------|------|--------|
-| test_suite | FAIL | 0.0s | Failed to start: [WinError 2] The system cannot find the file specified |
+| test_suite | FAIL | 3.9s | Error: Test failures |
 | smoke | SKIP | 0.0s | skipped |
 
 ## Project
@@ -28,9 +28,12 @@
 | 2026-04-11 | FAIL | 1/2 | 0.0s | 1818690d2635debb |
 | 2026-04-12 | FAIL | 1/2 | 0.0s | 7ddcbf6785dc5a8f |
 | 2026-04-13 | FAIL | 1/2 | 0.0s | 20b883e9a1bd2870 |
+| 2026-04-15 | FAIL | 1/2 | 3.9s | 71f5354119e433bd |
 
 ## Notes
 
 Single witness: test_suite FAIL
 
-**test_suite:** Failed to start: [WinError 2] The system cannot find the file specified
+**test_suite:** Error: Test failures
+Execution halted
+

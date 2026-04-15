@@ -1,15 +1,13 @@
 # rmstnma
 
-**Last verified:** 2026-04-13 02:18 UTC | **Verdict:** FAIL (Single witness: test_suite FAIL)
-**Bundle hash:** 98a08bae6d7ffb3e | **Risk:** high | **Math:** 15
+**Last verified:** 2026-04-15 02:13 UTC | **Verdict:** FAIL (Preflight failed: missing_baseline)
+**Bundle hash:** 8bcfac985c4e0466 | **Risk:** high | **Math:** 15
 
 ## Health
 
 | Witness | Verdict | Time | Detail |
 |---------|---------|------|--------|
-| test_suite | FAIL | 0.0s | Failed to start: [WinError 2] The system cannot find the file specified |
-| smoke | SKIP | 0.0s | skipped |
-| numerical | SKIP | 0.0s | skipped |
+| preflight | FAIL | 0.0s | preflight: missing_baseline |
 
 ## Project
 
@@ -30,9 +28,11 @@
 | 2026-04-11 | FAIL | 1/3 | 0.0s | f57d18a8d8d9c727 |
 | 2026-04-12 | FAIL | 1/3 | 0.0s | 61613fe5041b5505 |
 | 2026-04-13 | FAIL | 1/3 | 0.0s | 98a08bae6d7ffb3e |
+| 2026-04-15 | FAIL | 1/1 | 0.0s | 8bcfac985c4e0466 |
 
 ## Notes
 
-Single witness: test_suite FAIL
+Preflight failed: missing_baseline
 
-**test_suite:** Failed to start: [WinError 2] The system cannot find the file specified
+**preflight:** preflight: missing_baseline
+  - tier-3 project has no baseline path configured

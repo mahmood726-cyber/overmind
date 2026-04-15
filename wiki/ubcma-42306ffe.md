@@ -1,16 +1,16 @@
 # ubcma
 
-**Last verified:** 2026-04-13 02:18 UTC | **Verdict:** REJECT (Witnesses disagree: test_suite PASS vs numerical FAIL)
-**Bundle hash:** 1b4261b77231a1a2 | **Risk:** high | **Math:** 11
+**Last verified:** 2026-04-15 02:13 UTC | **Verdict:** CERTIFIED (3/3 witnesses agree PASS)
+**Bundle hash:** e0e7603b10907e88 | **Risk:** high | **Math:** 11
 
 ## Health
 
 | Witness | Verdict | Time | Detail |
 |---------|---------|------|--------|
-| test_suite | PASS | 3.7s | .......                                                                  [100%]
+| test_suite | PASS | 2.9s | .......                                                                  [100%]
  |
-| smoke | SKIP | 0.0s | skipped |
-| numerical | FAIL | 0.0s | Failed to start: [WinError 2] The system cannot find the file specified |
+| smoke | PASS | 40.6s | 18 modules imported OK |
+| numerical | PASS | 1.7s | 2 values within tolerance |
 
 ## Project
 
@@ -31,9 +31,4 @@
 | 2026-04-11 | REJECT | 2/3 | 6.2s | f04c2ee81d2dd3af |
 | 2026-04-12 | REJECT | 2/3 | 3.6s | 5d7d8dd479a4ec74 |
 | 2026-04-13 | REJECT | 2/3 | 3.7s | 1b4261b77231a1a2 |
-
-## Notes
-
-Witnesses disagree: test_suite PASS vs numerical FAIL
-
-**numerical:** Failed to start: [WinError 2] The system cannot find the file specified
+| 2026-04-15 | CERTIFIED | 3/3 | 45.2s | e0e7603b10907e88 |

@@ -1,16 +1,13 @@
 # CardioOracle
 
-**Last verified:** 2026-04-13 02:18 UTC | **Verdict:** REJECT (Witnesses disagree: test_suite PASS vs smoke FAIL)
-**Bundle hash:** 38c2c460dce9fd7d | **Risk:** high | **Math:** 20
+**Last verified:** 2026-04-15 02:13 UTC | **Verdict:** FAIL (Preflight failed: missing_baseline)
+**Bundle hash:** 2b34b95bf5dc7a23 | **Risk:** high | **Math:** 20
 
 ## Health
 
 | Witness | Verdict | Time | Detail |
 |---------|---------|------|--------|
-| test_suite | PASS | 8.1s | ..............................                                           [100%]
- |
-| smoke | FAIL | 17.1s | debug_test: Verifier [0x2eee9a+2baa] |
-| numerical | SKIP | 0.0s | skipped |
+| preflight | FAIL | 0.0s | preflight: missing_baseline |
 
 ## Project
 
@@ -31,13 +28,11 @@
 | 2026-04-11 | FAIL | 1/1 | 300.0s | 86e3651b3b90bf0f |
 | 2026-04-12 | FAIL | 1/1 | 300.0s | bb641ab77c157aba |
 | 2026-04-13 | REJECT | 2/3 | 25.2s | 38c2c460dce9fd7d |
+| 2026-04-15 | FAIL | 1/1 | 0.0s | 2b34b95bf5dc7a23 |
 
 ## Notes
 
-Witnesses disagree: test_suite PASS vs smoke FAIL
+Preflight failed: missing_baseline
 
-**smoke:** debug_test: Verifier [0x2eee9a+2baa]
-	KERNEL32!BaseThreadInitThunk [0x75d85d49+19]
-	ntdll!RtlInitializeExceptionChain [0x770dd83b+6b]
-	ntdll!RtlGetAppContainerNamedObjectPath [0x770dd7c1+231]
-	(No sym
+**preflight:** preflight: missing_baseline
+  - tier-3 project has no baseline path configured

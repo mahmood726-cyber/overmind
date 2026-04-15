@@ -1,15 +1,13 @@
 # Dataextractor
 
-**Last verified:** 2026-04-13 02:18 UTC | **Verdict:** FAIL (All witnesses FAIL: test_suite, smoke)
-**Bundle hash:** f7b5c77bc491a363 | **Risk:** high | **Math:** 18
+**Last verified:** 2026-04-15 02:13 UTC | **Verdict:** FAIL (Preflight failed: missing_baseline)
+**Bundle hash:** 44121cac422e4788 | **Risk:** high | **Math:** 18
 
 ## Health
 
 | Witness | Verdict | Time | Detail |
 |---------|---------|------|--------|
-| test_suite | FAIL | 0.0s | Failed to start: [WinError 2] The system cannot find the file specified |
-| smoke | FAIL | 24.1s | expand_validation: ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ |
-| numerical | SKIP | 0.0s | skipped |
+| preflight | FAIL | 0.0s | preflight: missing_baseline |
 
 ## Project
 
@@ -29,12 +27,11 @@
 | 2026-04-11 | FAIL | 1/1 | 300.0s | dd8f7aab6f57f167 |
 | 2026-04-12 | FAIL | 2/3 | 34.6s | 91418e1d77c44552 |
 | 2026-04-13 | FAIL | 2/3 | 24.1s | f7b5c77bc491a363 |
+| 2026-04-15 | FAIL | 1/1 | 0.0s | 44121cac422e4788 |
 
 ## Notes
 
-All witnesses FAIL: test_suite, smoke
+Preflight failed: missing_baseline
 
-**test_suite:** Failed to start: [WinError 2] The system cannot find the file specified
-
-**smoke:** expand_validation: ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-FileNotFoundError: [Errno 2] No such file or directory: 'C:\\Users\\user\\Downloads\\Dataextractor\\validat
+**preflight:** preflight: missing_baseline
+  - tier-3 project has no baseline path configured

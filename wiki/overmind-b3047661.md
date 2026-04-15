@@ -1,16 +1,13 @@
 # overmind
 
-**Last verified:** 2026-04-13 02:18 UTC | **Verdict:** PASS (2/2 witnesses PASS (numerical skipped — no baseline))
-**Bundle hash:** 68c1906e89253205 | **Risk:** high | **Math:** 20
+**Last verified:** 2026-04-15 02:13 UTC | **Verdict:** FAIL (Preflight failed: missing_baseline)
+**Bundle hash:** 12ad64cacd4a014a | **Risk:** high | **Math:** 20
 
 ## Health
 
 | Witness | Verdict | Time | Detail |
 |---------|---------|------|--------|
-| test_suite | PASS | 9.8s | .........                                                                [100%]
- |
-| smoke | PASS | 1.5s | 5 modules imported OK |
-| numerical | SKIP | 0.0s | skipped |
+| preflight | FAIL | 0.0s | preflight: missing_baseline |
 
 ## Project
 
@@ -29,3 +26,11 @@
 | 2026-04-11 | PASS | 2/3 | 10.0s | 65ba56cfb88eced6 |
 | 2026-04-12 | PASS | 2/3 | 13.2s | 5bf854af43bca141 |
 | 2026-04-13 | PASS | 2/3 | 11.3s | 68c1906e89253205 |
+| 2026-04-15 | FAIL | 1/1 | 0.0s | 12ad64cacd4a014a |
+
+## Notes
+
+Preflight failed: missing_baseline
+
+**preflight:** preflight: missing_baseline
+  - tier-3 project has no baseline path configured

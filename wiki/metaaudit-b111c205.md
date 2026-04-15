@@ -1,15 +1,15 @@
 # MetaAudit
 
-**Last verified:** 2026-04-13 02:18 UTC | **Verdict:** REJECT (Witnesses disagree: test_suite PASS vs smoke FAIL)
-**Bundle hash:** 401211baad54ea2c | **Risk:** high | **Math:** 7
+**Last verified:** 2026-04-15 02:13 UTC | **Verdict:** CERTIFIED (2/2 witnesses agree PASS)
+**Bundle hash:** 247df60d5237ff32 | **Risk:** high | **Math:** 7
 
 ## Health
 
 | Witness | Verdict | Time | Detail |
 |---------|---------|------|--------|
-| test_suite | PASS | 4.3s | ============================= test session starts =============================
+| test_suite | PASS | 2.9s | ============================= test session starts =============================
  |
-| smoke | FAIL | 28.0s | sensitivity_analysis: import timed out |
+| smoke | PASS | 29.0s | 24 modules imported OK |
 
 ## Project
 
@@ -29,9 +29,4 @@
 | 2026-04-11 | REJECT | 2/2 | 35.5s | dff95858408704ca |
 | 2026-04-12 | REJECT | 2/2 | 25.6s | 06e6812eae342ee1 |
 | 2026-04-13 | REJECT | 2/2 | 32.3s | 401211baad54ea2c |
-
-## Notes
-
-Witnesses disagree: test_suite PASS vs smoke FAIL
-
-**smoke:** sensitivity_analysis: import timed out
+| 2026-04-15 | CERTIFIED | 2/2 | 31.9s | 247df60d5237ff32 |

@@ -1,16 +1,13 @@
 # rct-extractor-v2
 
-**Last verified:** 2026-04-13 02:18 UTC | **Verdict:** PASS (2/2 witnesses PASS (numerical skipped — no baseline))
-**Bundle hash:** 2e65c96b562ffffb | **Risk:** high | **Math:** 15
+**Last verified:** 2026-04-15 02:13 UTC | **Verdict:** FAIL (Preflight failed: missing_baseline)
+**Bundle hash:** d3520d4d93497fb1 | **Risk:** high | **Math:** 15
 
 ## Health
 
 | Witness | Verdict | Time | Detail |
 |---------|---------|------|--------|
-| test_suite | PASS | 6.4s | %]
-tests/test_ctg_validation.py::TestCTGScraperStructures::test_ctg_study_creati |
-| smoke | PASS | 0.9s | 2 modules imported OK |
-| numerical | SKIP | 0.0s | skipped |
+| preflight | FAIL | 0.0s | preflight: missing_baseline |
 
 ## Project
 
@@ -31,3 +28,11 @@ tests/test_ctg_validation.py::TestCTGScraperStructures::test_ctg_study_creati |
 | 2026-04-11 | PASS | 2/3 | 8.1s | 1c670d3294f559b2 |
 | 2026-04-12 | PASS | 2/3 | 12.8s | 3a4c7f8776a98cf5 |
 | 2026-04-13 | PASS | 2/3 | 7.3s | 2e65c96b562ffffb |
+| 2026-04-15 | FAIL | 1/1 | 0.0s | d3520d4d93497fb1 |
+
+## Notes
+
+Preflight failed: missing_baseline
+
+**preflight:** preflight: missing_baseline
+  - tier-3 project has no baseline path configured

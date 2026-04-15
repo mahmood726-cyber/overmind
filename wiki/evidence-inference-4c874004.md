@@ -1,15 +1,13 @@
 # evidence-inference
 
-**Last verified:** 2026-04-13 02:18 UTC | **Verdict:** FAIL (All witnesses FAIL: test_suite, smoke)
-**Bundle hash:** 2b87e12a4464cb07 | **Risk:** high | **Math:** 18
+**Last verified:** 2026-04-15 02:13 UTC | **Verdict:** FAIL (Preflight failed: missing_baseline)
+**Bundle hash:** 790ea6cffbff7a6d | **Risk:** high | **Math:** 18
 
 ## Health
 
 | Witness | Verdict | Time | Detail |
 |---------|---------|------|--------|
-| test_suite | FAIL | 1.3s |  |
-| smoke | FAIL | 6.5s | verify_span_quality: ntences, gen_exact_evid_array |
-| numerical | SKIP | 0.0s | skipped |
+| preflight | FAIL | 0.0s | preflight: missing_baseline |
 
 ## Project
 
@@ -30,12 +28,11 @@
 | 2026-04-11 | FAIL | 2/3 | 11.8s | 780701fc4151a1a5 |
 | 2026-04-12 | FAIL | 2/3 | 19.0s | 05c008f6387187ba |
 | 2026-04-13 | FAIL | 2/3 | 7.8s | 2b87e12a4464cb07 |
+| 2026-04-15 | FAIL | 1/1 | 0.0s | 790ea6cffbff7a6d |
 
 ## Notes
 
-All witnesses FAIL: test_suite, smoke
+Preflight failed: missing_baseline
 
-**smoke:** verify_span_quality: ntences, gen_exact_evid_array
-  File "C:\Projects\evidence-inference\evidence_inference\preprocess\sentence_split.py", line 8, in <module>
-    import spacy
-ModuleNotFoundError: No
+**preflight:** preflight: missing_baseline
+  - tier-3 project has no baseline path configured

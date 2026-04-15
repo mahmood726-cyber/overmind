@@ -1,16 +1,13 @@
 # ipd_qma_project
 
-**Last verified:** 2026-04-13 02:18 UTC | **Verdict:** REJECT (Witnesses disagree: test_suite PASS vs smoke FAIL)
-**Bundle hash:** 285ada80d04c4164 | **Risk:** high | **Math:** 15
+**Last verified:** 2026-04-15 02:13 UTC | **Verdict:** FAIL (Preflight failed: missing_baseline)
+**Bundle hash:** 146682c83e99b67f | **Risk:** high | **Math:** 15
 
 ## Health
 
 | Witness | Verdict | Time | Detail |
 |---------|---------|------|--------|
-| test_suite | PASS | 5.3s | ..........................................s.................             [100%]
- |
-| smoke | FAIL | 23.9s | ipd_qma_ml: ost recent call last): |
-| numerical | SKIP | 0.0s | skipped |
+| preflight | FAIL | 0.0s | preflight: missing_baseline |
 
 ## Project
 
@@ -31,15 +28,11 @@
 | 2026-04-11 | REJECT | 2/3 | 37.2s | 7002f899c032f483 |
 | 2026-04-12 | REJECT | 2/3 | 60.9s | 2bbfb88d9b045c93 |
 | 2026-04-13 | REJECT | 2/3 | 29.3s | 285ada80d04c4164 |
+| 2026-04-15 | FAIL | 1/1 | 0.0s | 146682c83e99b67f |
 
 ## Notes
 
-Witnesses disagree: test_suite PASS vs smoke FAIL
+Preflight failed: missing_baseline
 
-**smoke:** ipd_qma_ml: ost recent call last):
-  File "<string>", line 1, in <module>
-    import ipd_qma_ml
-  File "C:\Projects\ipd_qma_project\ipd_qma_ml.py", line 1
-    .asarray(treatment)
-    ^
-SyntaxError: in
+**preflight:** preflight: missing_baseline
+  - tier-3 project has no baseline path configured

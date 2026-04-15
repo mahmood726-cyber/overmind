@@ -1,14 +1,15 @@
 # MetaRegression
 
-**Last verified:** 2026-04-13 02:18 UTC | **Verdict:** REJECT (Witnesses disagree: smoke PASS vs test_suite FAIL)
-**Bundle hash:** b4db130779ce2931 | **Risk:** medium_high | **Math:** 8
+**Last verified:** 2026-04-15 02:13 UTC | **Verdict:** PASS (Single witness: test_suite PASS)
+**Bundle hash:** 223a935e810640f4 | **Risk:** medium_high | **Math:** 8
 
 ## Health
 
 | Witness | Verdict | Time | Detail |
 |---------|---------|------|--------|
-| test_suite | FAIL | 81.9s |  |
-| smoke | PASS | 0.4s | 1 modules imported OK |
+| test_suite | PASS | 86.0s | ......................................                                   [100%]
+ |
+| smoke | SKIP | 0.0s | skipped |
 
 ## Project
 
@@ -28,7 +29,4 @@
 | 2026-04-11 | REJECT | 2/2 | 106.2s | cc49c61705eca45e |
 | 2026-04-12 | REJECT | 2/2 | 83.1s | a03ce9bb059d6886 |
 | 2026-04-13 | REJECT | 2/2 | 82.3s | b4db130779ce2931 |
-
-## Notes
-
-Witnesses disagree: smoke PASS vs test_suite FAIL
+| 2026-04-15 | PASS | 1/2 | 86.0s | 223a935e810640f4 |

@@ -1,16 +1,13 @@
 # registry_first_rct_meta
 
-**Last verified:** 2026-04-13 02:18 UTC | **Verdict:** PASS (Single witness: test_suite PASS)
-**Bundle hash:** 12027b6970fb21ad | **Risk:** high | **Math:** 10
+**Last verified:** 2026-04-15 02:13 UTC | **Verdict:** FAIL (Preflight failed: missing_baseline)
+**Bundle hash:** 761715914c32d212 | **Risk:** high | **Math:** 10
 
 ## Health
 
 | Witness | Verdict | Time | Detail |
 |---------|---------|------|--------|
-| test_suite | PASS | 2.6s | .                                                                        [100%]
- |
-| smoke | SKIP | 0.0s | skipped |
-| numerical | SKIP | 0.0s | skipped |
+| preflight | FAIL | 0.0s | preflight: missing_baseline |
 
 ## Project
 
@@ -30,3 +27,11 @@
 | 2026-04-11 | FAIL | 1/3 | 4.5s | 74db024f76fb5e75 |
 | 2026-04-12 | PASS | 1/3 | 2.5s | ab800d0ac7f6198e |
 | 2026-04-13 | PASS | 1/3 | 2.6s | 12027b6970fb21ad |
+| 2026-04-15 | FAIL | 1/1 | 0.0s | 761715914c32d212 |
+
+## Notes
+
+Preflight failed: missing_baseline
+
+**preflight:** preflight: missing_baseline
+  - tier-3 project has no baseline path configured

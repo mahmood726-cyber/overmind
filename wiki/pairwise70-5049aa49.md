@@ -1,15 +1,13 @@
 # Pairwise70
 
-**Last verified:** 2026-04-13 02:18 UTC | **Verdict:** FAIL (All witnesses FAIL: test_suite, smoke)
-**Bundle hash:** bb3fc48447c5dedc | **Risk:** high | **Math:** 15
+**Last verified:** 2026-04-15 02:13 UTC | **Verdict:** FAIL (Preflight failed: missing_baseline)
+**Bundle hash:** 2d779ebe57f08f5a | **Risk:** high | **Math:** 15
 
 ## Health
 
 | Witness | Verdict | Time | Detail |
 |---------|---------|------|--------|
-| test_suite | FAIL | 120.0s | Timed out after 120s |
-| smoke | FAIL | 1.3s | truthcert.setup: usage: -c [global_opts] cmd1 [cmd1_opts] [cmd2 [cmd2_opts] ...] |
-| numerical | SKIP | 0.0s | skipped |
+| preflight | FAIL | 0.0s | preflight: missing_baseline |
 
 ## Project
 
@@ -30,16 +28,11 @@
 | 2026-04-11 | FAIL | 2/3 | 4.7s | 0b93ed9907e210c4 |
 | 2026-04-12 | FAIL | 2/3 | 6.3s | 7a3c106bea091122 |
 | 2026-04-13 | FAIL | 2/3 | 121.3s | bb3fc48447c5dedc |
+| 2026-04-15 | FAIL | 1/1 | 0.0s | 2d779ebe57f08f5a |
 
 ## Notes
 
-All witnesses FAIL: test_suite, smoke
+Preflight failed: missing_baseline
 
-**test_suite:** Timed out after 120s
-
-**smoke:** truthcert.setup: usage: -c [global_opts] cmd1 [cmd1_opts] [cmd2 [cmd2_opts] ...]
-   or: -c --help [cmd1 cmd2 ...]
-   or: -c --help-commands
-   or: -c cmd --help
-
-error: no commands supplied
+**preflight:** preflight: missing_baseline
+  - tier-3 project has no baseline path configured

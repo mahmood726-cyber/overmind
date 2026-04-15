@@ -1,15 +1,13 @@
 # metasprint-dose-response
 
-**Last verified:** 2026-04-13 02:18 UTC | **Verdict:** FAIL (Single witness: test_suite FAIL)
-**Bundle hash:** ebfb236089bd6e8d | **Risk:** high | **Math:** 12
+**Last verified:** 2026-04-15 02:13 UTC | **Verdict:** FAIL (Preflight failed: missing_baseline)
+**Bundle hash:** c08ff1aa06e256be | **Risk:** high | **Math:** 12
 
 ## Health
 
 | Witness | Verdict | Time | Detail |
 |---------|---------|------|--------|
-| test_suite | FAIL | 0.0s | Failed to start: [WinError 267] The directory name is invalid |
-| smoke | SKIP | 0.0s | skipped |
-| numerical | SKIP | 0.0s | skipped |
+| preflight | FAIL | 0.0s | preflight: missing_baseline |
 
 ## Project
 
@@ -29,9 +27,11 @@
 | 2026-04-11 | FAIL | 1/3 | 0.0s | 50e8493b7a02b988 |
 | 2026-04-12 | FAIL | 1/3 | 0.0s | 4112ec165d1210d1 |
 | 2026-04-13 | FAIL | 1/3 | 0.0s | ebfb236089bd6e8d |
+| 2026-04-15 | FAIL | 1/1 | 0.0s | c08ff1aa06e256be |
 
 ## Notes
 
-Single witness: test_suite FAIL
+Preflight failed: missing_baseline
 
-**test_suite:** Failed to start: [WinError 267] The directory name is invalid
+**preflight:** preflight: missing_baseline
+  - tier-3 project has no baseline path configured

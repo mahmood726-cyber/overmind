@@ -1,15 +1,13 @@
 # FATIHA_Project
 
-**Last verified:** 2026-04-13 02:18 UTC | **Verdict:** FAIL (Single witness: test_suite FAIL)
-**Bundle hash:** f24961bd5cd5b450 | **Risk:** high | **Math:** 11
+**Last verified:** 2026-04-15 02:13 UTC | **Verdict:** FAIL (Preflight failed: missing_baseline)
+**Bundle hash:** 474b86263293cb80 | **Risk:** high | **Math:** 11
 
 ## Health
 
 | Witness | Verdict | Time | Detail |
 |---------|---------|------|--------|
-| test_suite | FAIL | 0.0s | Failed to start: [WinError 2] The system cannot find the file specified |
-| smoke | SKIP | 0.0s | skipped |
-| numerical | SKIP | 0.0s | skipped |
+| preflight | FAIL | 0.0s | preflight: missing_baseline |
 
 ## Project
 
@@ -29,9 +27,11 @@
 | 2026-04-11 | FAIL | 1/3 | 0.0s | b819336353b681b5 |
 | 2026-04-12 | FAIL | 1/3 | 0.0s | b20af1445ed18b1d |
 | 2026-04-13 | FAIL | 1/3 | 0.0s | f24961bd5cd5b450 |
+| 2026-04-15 | FAIL | 1/1 | 0.0s | 474b86263293cb80 |
 
 ## Notes
 
-Single witness: test_suite FAIL
+Preflight failed: missing_baseline
 
-**test_suite:** Failed to start: [WinError 2] The system cannot find the file specified
+**preflight:** preflight: missing_baseline
+  - tier-3 project has no baseline path configured

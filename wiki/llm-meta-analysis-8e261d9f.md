@@ -1,16 +1,13 @@
 # llm-meta-analysis
 
-**Last verified:** 2026-04-13 02:18 UTC | **Verdict:** REJECT (Witnesses disagree: test_suite PASS vs smoke FAIL)
-**Bundle hash:** d43d57fdfd85436d | **Risk:** high | **Math:** 10
+**Last verified:** 2026-04-15 02:13 UTC | **Verdict:** FAIL (Preflight failed: missing_baseline)
+**Bundle hash:** 349cc2bc901925b2 | **Risk:** high | **Math:** 10
 
 ## Health
 
 | Witness | Verdict | Time | Detail |
 |---------|---------|------|--------|
-| test_suite | PASS | 1.3s | .                                                                        [100%]
- |
-| smoke | FAIL | 28.7s | evaluation.bayesian_meta_analysis: n_meta_analysis |
-| numerical | SKIP | 0.0s | skipped |
+| preflight | FAIL | 0.0s | preflight: missing_baseline |
 
 ## Project
 
@@ -31,13 +28,11 @@
 | 2026-04-11 | REJECT | 2/3 | 37.4s | 256e52d8246a772d |
 | 2026-04-12 | REJECT | 2/3 | 34.5s | 77d10392a1fa5199 |
 | 2026-04-13 | REJECT | 2/3 | 30.0s | d43d57fdfd85436d |
+| 2026-04-15 | FAIL | 1/1 | 0.0s | 349cc2bc901925b2 |
 
 ## Notes
 
-Witnesses disagree: test_suite PASS vs smoke FAIL
+Preflight failed: missing_baseline
 
-**smoke:** evaluation.bayesian_meta_analysis: n_meta_analysis
-  File "C:\Projects\llm-meta-analysis\evaluation\bayesian_meta_analysis.py", line 324
-    lors = []
-             ^
-IndentationError: unindent does no
+**preflight:** preflight: missing_baseline
+  - tier-3 project has no baseline path configured

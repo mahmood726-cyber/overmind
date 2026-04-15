@@ -1,13 +1,13 @@
 # MLMResearch
 
-**Last verified:** 2026-04-13 02:18 UTC | **Verdict:** FAIL (Single witness: test_suite FAIL)
-**Bundle hash:** b1fb2e3954328617 | **Risk:** high | **Math:** 6
+**Last verified:** 2026-04-15 02:13 UTC | **Verdict:** FAIL (Single witness: test_suite FAIL)
+**Bundle hash:** f2053a2436f3a47a | **Risk:** high | **Math:** 6
 
 ## Health
 
 | Witness | Verdict | Time | Detail |
 |---------|---------|------|--------|
-| test_suite | FAIL | 0.0s | Failed to start: [WinError 2] The system cannot find the file specified |
+| test_suite | FAIL | 0.9s | Error: Test failures |
 | smoke | SKIP | 0.0s | skipped |
 
 ## Project
@@ -28,9 +28,12 @@
 | 2026-04-11 | FAIL | 1/2 | 0.0s | 67014541c181be08 |
 | 2026-04-12 | FAIL | 1/2 | 0.0s | 76f4db98976f2ebc |
 | 2026-04-13 | FAIL | 1/2 | 0.0s | b1fb2e3954328617 |
+| 2026-04-15 | FAIL | 1/2 | 0.9s | f2053a2436f3a47a |
 
 ## Notes
 
 Single witness: test_suite FAIL
 
-**test_suite:** Failed to start: [WinError 2] The system cannot find the file specified
+**test_suite:** Error: Test failures
+Execution halted
+

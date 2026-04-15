@@ -1,16 +1,13 @@
 # repo300-ENMA-SNMA
 
-**Last verified:** 2026-04-13 02:18 UTC | **Verdict:** REJECT (Witnesses disagree: test_suite PASS vs smoke FAIL)
-**Bundle hash:** ec005732c00b1caf | **Risk:** high | **Math:** 14
+**Last verified:** 2026-04-15 02:13 UTC | **Verdict:** FAIL (Preflight failed: missing_baseline)
+**Bundle hash:** 2bfb199bb358befd | **Risk:** high | **Math:** 14
 
 ## Health
 
 | Witness | Verdict | Time | Detail |
 |---------|---------|------|--------|
-| test_suite | PASS | 1.3s | .                                                                        [100%]
- |
-| smoke | FAIL | 0.8s | R.01_data_audit_and_fix: File "<string>", line 1 |
-| numerical | SKIP | 0.0s | skipped |
+| preflight | FAIL | 0.0s | preflight: missing_baseline |
 
 ## Project
 
@@ -31,14 +28,11 @@
 | 2026-04-11 | REJECT | 2/3 | 2.6s | 3991f6cb03871ae1 |
 | 2026-04-12 | REJECT | 2/3 | 3.8s | bb431d4ecc252f68 |
 | 2026-04-13 | REJECT | 2/3 | 2.1s | ec005732c00b1caf |
+| 2026-04-15 | FAIL | 1/1 | 0.0s | 2bfb199bb358befd |
 
 ## Notes
 
-Witnesses disagree: test_suite PASS vs smoke FAIL
+Preflight failed: missing_baseline
 
-**smoke:** R.01_data_audit_and_fix: File "<string>", line 1
-    import R.01_data_audit_and_fix
-               ^
-SyntaxError: invalid decimal literal
-R.03_simulation_engine: File "<string>", line 1
-    import R.0
+**preflight:** preflight: missing_baseline
+  - tier-3 project has no baseline path configured

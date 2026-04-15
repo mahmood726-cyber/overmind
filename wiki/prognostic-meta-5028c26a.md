@@ -1,15 +1,13 @@
 # prognostic-meta
 
-**Last verified:** 2026-04-13 02:18 UTC | **Verdict:** FAIL (Single witness: test_suite FAIL)
-**Bundle hash:** af28c171b12bcfe8 | **Risk:** high | **Math:** 20
+**Last verified:** 2026-04-15 02:13 UTC | **Verdict:** FAIL (Preflight failed: missing_path)
+**Bundle hash:** 35015ba8f86138ff | **Risk:** high | **Math:** 20
 
 ## Health
 
 | Witness | Verdict | Time | Detail |
 |---------|---------|------|--------|
-| test_suite | FAIL | 0.0s | Failed to start: [WinError 267] The directory name is invalid |
-| smoke | SKIP | 0.0s | skipped |
-| numerical | SKIP | 0.0s | skipped |
+| preflight | FAIL | 0.0s | preflight: missing_path |
 
 ## Project
 
@@ -30,9 +28,11 @@
 | 2026-04-11 | FAIL | 1/3 | 0.0s | b906e05a5755fab5 |
 | 2026-04-12 | FAIL | 1/3 | 0.0s | 0388052fe50cef63 |
 | 2026-04-13 | FAIL | 1/3 | 0.0s | af28c171b12bcfe8 |
+| 2026-04-15 | FAIL | 1/1 | 0.0s | 35015ba8f86138ff |
 
 ## Notes
 
-Single witness: test_suite FAIL
+Preflight failed: missing_path
 
-**test_suite:** Failed to start: [WinError 267] The directory name is invalid
+**preflight:** preflight: missing_path
+  - root_path does not exist: C:\Projects\prognostic-meta
