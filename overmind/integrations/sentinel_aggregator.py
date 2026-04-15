@@ -6,10 +6,16 @@ nightly report. Also callable standalone:
     from overmind.integrations.sentinel_aggregator import collect
 
 Source preference (per repo):
-  1. `STUCK_FAILURES.jsonl` / `review-findings.jsonl` — canonical, schema-
-     stable. One JSON object per line. Preferred when present.
-  2. `STUCK_FAILURES.md` / `review-findings.md` — legacy fallback. Parsed
-     by regex (fragile against heading format changes).
+  1. JSONL — canonical, schema-stable. One JSON object per line. Preferred.
+  2. MD   — legacy fallback. Parsed by regex.
+
+Filename preference (per severity, within each source):
+  BLOCK: STUCK_FAILURES.{jsonl,md}   (stable across Sentinel versions)
+  WARN : sentinel-findings.{jsonl,md} (current) → review-findings.{jsonl,md} (legacy)
+
+The WARN rename avoided collision with the `/review` skill. Source of truth
+for Sentinel's output names: ``C:/sentinel/sentinel/io/paths.py``. The legacy
+names are retained here until the portfolio has been fully re-scanned.
 
 Fails soft: if `push_all_repos` isn't importable (portfolio discovery not
 set up), returns an error dict rather than raising. Nightly verify must
@@ -28,6 +34,22 @@ _DEFAULT_DISCOVER_IMPORT_ROOT = "C:/Users/user"
 
 _RX_BLOCK = re.compile(r"^## \[BLOCK\] (\S+)", re.MULTILINE)
 _RX_WARN = re.compile(r"^## \[WARN\] (\S+)", re.MULTILINE)
+
+# Filename candidates per (severity, format). Ordered preferred → legacy.
+# Keep in sync with C:\sentinel\sentinel\io\paths.py:WARN_MD/WARN_JSONL +
+# LEGACY_FILENAMES. Drift = silent WARN loss, per commit c7d225f's own bug.
+_BLOCK_JSONL_NAMES = ("STUCK_FAILURES.jsonl",)
+_BLOCK_MD_NAMES = ("STUCK_FAILURES.md",)
+_WARN_JSONL_NAMES = ("sentinel-findings.jsonl", "review-findings.jsonl")
+_WARN_MD_NAMES = ("sentinel-findings.md", "review-findings.md")
+
+
+def _first_existing(root: Path, names: Iterable[str]) -> Path | None:
+    for n in names:
+        p = root / n
+        if p.exists():
+            return p
+    return None
 
 
 def _default_discover_repos() -> list[str]:
@@ -77,19 +99,19 @@ def _read_findings_for_repo(root: Path) -> tuple[list[str], list[str], str]:
     back-compat on repos that haven't been scanned since the JSONL writer
     was introduced.
     """
-    blocks_jsonl = root / "STUCK_FAILURES.jsonl"
-    warns_jsonl = root / "review-findings.jsonl"
-    blocks_md = root / "STUCK_FAILURES.md"
-    warns_md = root / "review-findings.md"
+    blocks_jsonl = _first_existing(root, _BLOCK_JSONL_NAMES)
+    warns_jsonl = _first_existing(root, _WARN_JSONL_NAMES)
+    blocks_md = _first_existing(root, _BLOCK_MD_NAMES)
+    warns_md = _first_existing(root, _WARN_MD_NAMES)
 
-    if blocks_jsonl.exists() or warns_jsonl.exists():
-        blocks = _read_jsonl(blocks_jsonl) if blocks_jsonl.exists() else []
-        warns = _read_jsonl(warns_jsonl) if warns_jsonl.exists() else []
+    if blocks_jsonl or warns_jsonl:
+        blocks = _read_jsonl(blocks_jsonl) if blocks_jsonl else []
+        warns = _read_jsonl(warns_jsonl) if warns_jsonl else []
         return blocks, warns, "jsonl"
 
-    if blocks_md.exists() or warns_md.exists():
-        blocks = _read_md_regex(blocks_md, _RX_BLOCK) if blocks_md.exists() else []
-        warns = _read_md_regex(warns_md, _RX_WARN) if warns_md.exists() else []
+    if blocks_md or warns_md:
+        blocks = _read_md_regex(blocks_md, _RX_BLOCK) if blocks_md else []
+        warns = _read_md_regex(warns_md, _RX_WARN) if warns_md else []
         return blocks, warns, "md"
 
     return [], [], "none"

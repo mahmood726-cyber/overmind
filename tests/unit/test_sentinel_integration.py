@@ -147,6 +147,59 @@ def test_collect_handles_unreadable_findings(tmp_path, monkeypatch):
     assert result["total_repos_with_findings"] == 0
 
 
+def test_collect_reads_current_warn_filename_jsonl(tmp_path):
+    """P0-NEW: Sentinel renamed WARN output from review-findings.* to
+    sentinel-findings.* to avoid colliding with the /review skill. Aggregator
+    must read the current name or all post-rename WARN findings are lost.
+    """
+    import json as _json
+    r = tmp_path / "fresh-repo"
+    r.mkdir()
+    (r / "sentinel-findings.jsonl").write_text(
+        _json.dumps({"rule_id": "P1-current-warn", "severity": "WARN"}) + "\n",
+        encoding="utf-8",
+    )
+
+    result = collect(discover_repos=lambda: [str(r)])
+    assert result["total_warn"] == 1
+    assert "P1-current-warn" in {r["rule_id"] for r in result["top_rules"]}
+
+
+def test_collect_reads_current_warn_filename_md(tmp_path):
+    """Same as above for the MD fallback path."""
+    r = tmp_path / "fresh-repo"
+    r.mkdir()
+    (r / "sentinel-findings.md").write_text(
+        "# sentinel-findings.md\n\n## [WARN] P1-current-md\n"
+        "- **Location:** `x.py:1`\n",
+        encoding="utf-8",
+    )
+
+    result = collect(discover_repos=lambda: [str(r)])
+    assert result["total_warn"] == 1
+
+
+def test_collect_prefers_current_warn_name_over_legacy(tmp_path):
+    """Mid-migration repo has both filename variants. Current name wins —
+    legacy files are stale from before the rename."""
+    import json as _json
+    r = tmp_path / "mid-migration"
+    r.mkdir()
+    (r / "sentinel-findings.jsonl").write_text(
+        _json.dumps({"rule_id": "P1-fresh", "severity": "WARN"}) + "\n",
+        encoding="utf-8",
+    )
+    (r / "review-findings.jsonl").write_text(
+        _json.dumps({"rule_id": "P1-stale", "severity": "WARN"}) + "\n",
+        encoding="utf-8",
+    )
+
+    result = collect(discover_repos=lambda: [str(r)])
+    rule_ids = {r["rule_id"] for r in result["top_rules"]}
+    assert "P1-fresh" in rule_ids
+    assert "P1-stale" not in rule_ids
+
+
 def test_collect_top_repos_deterministic_on_ties(tmp_path):
     """P1-5: top_repos ordering must be stable across runs when (block, warn) tie.
 
