@@ -85,6 +85,64 @@ def collect_sentinel_findings() -> dict:
     return _collect_sentinel()
 
 
+def _run_portfolio_sentinel_scan() -> dict:
+    """Invoke `sentinel scan --portfolio` and summarise verdict counts.
+
+    Portfolio-scope rules (registry_drift, path_not_exist, memory_paths_resolve,
+    livingmeta_drift, agent_config_version_drift) run against the central
+    project index rather than any one repo, so this scan surfaces drift that
+    pre-push hooks never see because they fire per-repo-per-push.
+
+    Fails soft: returns an error dict if the sentinel CLI isn't available,
+    the scan crashes, or JSON parsing fails. Nightly verify must not crash
+    here.
+
+    Default project-index: C:/ProjectIndex (the canonical portfolio
+    registry); override via OVERMIND_PROJECT_INDEX env var for tests.
+    """
+    import subprocess
+    project_index = os.environ.get("OVERMIND_PROJECT_INDEX", "C:/ProjectIndex")
+    if not Path(project_index).is_dir():
+        return {"error": f"project-index not found: {project_index}"}
+    try:
+        result = subprocess.run(
+            [sys.executable, "-m", "sentinel", "scan",
+             "--portfolio", "--project-index", project_index, "--json"],
+            capture_output=True, text=True, timeout=180,
+        )
+    except (FileNotFoundError, subprocess.TimeoutExpired) as e:
+        return {"error": f"{type(e).__name__}: {e}"}
+
+    # exit 0 = clean, 1 = BLOCK findings, 2 = user error, 10 = internal
+    if result.returncode >= 2:
+        return {
+            "error": f"sentinel scan exit {result.returncode}",
+            "stderr": (result.stderr or "")[:500],
+        }
+
+    try:
+        data = json.loads(result.stdout)
+    except json.JSONDecodeError as e:
+        return {"error": f"json decode: {e}", "stdout": result.stdout[:500]}
+
+    verdicts = data.get("verdicts", [])
+    by_severity = {"BLOCK": 0, "WARN": 0, "INFO": 0}
+    by_rule: dict = {}
+    for v in verdicts:
+        sev = v.get("severity") or "UNKNOWN"
+        by_severity[sev] = by_severity.get(sev, 0) + 1
+        rid = v.get("rule_id") or "UNKNOWN"
+        by_rule[rid] = by_rule.get(rid, 0) + 1
+
+    return {
+        "total_block": by_severity.get("BLOCK", 0),
+        "total_warn": by_severity.get("WARN", 0),
+        "total_info": by_severity.get("INFO", 0),
+        "by_rule": by_rule,
+        "project_index": project_index,
+    }
+
+
 def collect_bypass_findings(window_days: int = 7) -> dict:
     """Thin wrapper around bypass_log_aggregator.collect.
 
@@ -839,6 +897,20 @@ def _run_verification(db: StateDatabase, args: argparse.Namespace, run_start: da
         report["sentinel"] = collect_sentinel_findings()
     except Exception as e:
         report["sentinel"] = {"error": f"aggregation crashed: {type(e).__name__}: {e}"}
+
+    # Run LIVE portfolio-scope Sentinel scan. Unlike collect_sentinel_findings
+    # which reads the pre-existing STUCK_FAILURES/sentinel-findings files
+    # (potentially stale if a repo hasn't been pushed recently), this actively
+    # invokes `sentinel scan --portfolio` to surface current latent state:
+    # registry drift, memory-path resolution, livingmeta drift, etc.
+    # Added 2026-04-16 late-night to close the "pre-push gaps hide latent
+    # issues between pushes" gap.
+    try:
+        report["sentinel_portfolio_live"] = _run_portfolio_sentinel_scan()
+    except Exception as e:
+        report["sentinel_portfolio_live"] = {
+            "error": f"live scan crashed: {type(e).__name__}: {e}",
+        }
 
     # Surface last 7 days of Sentinel bypass events. Empty = enforcement
     # healthy; nonzero = someone bypassed and may have shipped a real violation.
