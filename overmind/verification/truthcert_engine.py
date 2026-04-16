@@ -67,7 +67,14 @@ class TruthCertEngine:
             baseline_path=lock.baseline_path,
             tier=lock.witness_count,
         )
-        if not preflight.ready:
+        # `missing_baseline` is a missing-numerical-witness ingredient only;
+        # test_suite and smoke don't depend on it. Let the run continue; the
+        # numerical witness will emit SKIP, and the arbitrator's existing
+        # all-PASS-plus-numerical-SKIP path downgrades to UNVERIFIED. Other
+        # preflight classes (missing_path, missing_executable, missing_module,
+        # corrupt_baseline) remain fail-closed because they genuinely block
+        # witness execution or signal real breakage.
+        if not preflight.ready and preflight.failure_class != "missing_baseline":
             synthetic = WitnessResult(
                 witness_type="preflight",
                 verdict="FAIL",
