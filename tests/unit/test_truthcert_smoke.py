@@ -204,6 +204,39 @@ def test_truthcert_source_hash_skips_inaccessible_paths(tmp_path, monkeypatch):
     assert isinstance(result, str) and len(result) == 16
 
 
+def test_suite_witness_handles_non_ascii_subprocess_output(tmp_path):
+    """Regression 2026-04-16: SuiteWitness crashed with
+    `TypeError: 'NoneType' object is not subscriptable` when a test-command
+    subprocess (e.g. Rscript with testthat progress glyphs) emits bytes
+    that cp1252 can't decode. Root cause: `text=True` without an explicit
+    `encoding=` defaults to locale (cp1252 on Windows), and the reader
+    thread dies → proc.stdout/stderr become None.
+
+    Fix is to pass encoding='utf-8', errors='replace' consistently with
+    the other subprocess.run calls in this file."""
+    import sys
+    # Minimal reproducer: a Python one-liner that emits a non-ASCII glyph
+    # similar to what testthat spinners write (✔ / ✖ / ⠏ etc.)
+    script = tmp_path / "emit.py"
+    # cp1252 has undefined positions 0x81, 0x8D, 0x8F, 0x90, 0x9D — emitting
+    # any of these bytes to stdout while subprocess.run uses text=True with
+    # cp1252 default triggers the reader-thread crash that zeroes stdout/stderr.
+    script.write_text(
+        'import sys\n'
+        'sys.stdout.buffer.write(b"test output with cp1252-undefined byte: \\x8f\\n")\n'
+        'sys.stdout.buffer.flush()\n',
+        encoding="utf-8",
+    )
+    command = f'"{sys.executable}" "{script}"'
+
+    result = SuiteWitness(timeout=30).run(command, str(tmp_path))
+
+    # Must not crash. Verdict is PASS (exit 0) and stdout/stderr are strings.
+    assert result.verdict == "PASS", f"expected PASS, got {result.verdict!r}; stderr={result.stderr!r}"
+    assert isinstance(result.stdout, str)
+    assert isinstance(result.stderr, str)
+
+
 def test_suite_witness_blocks_unsafe_wrapper_command(tmp_path):
     script = tmp_path / "safe.cmd"
     script.write_text("@echo off\r\necho ok\r\n", encoding="utf-8")

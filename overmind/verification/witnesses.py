@@ -59,6 +59,7 @@ class SuiteWitness:
             proc = subprocess.run(
                 split_command(command), cwd=cwd, shell=False,
                 capture_output=True, text=True, timeout=self.timeout,
+                encoding="utf-8", errors="replace",
             )
             elapsed = time.time() - start
             verdict = "PASS" if proc.returncode == 0 else "FAIL"
@@ -112,6 +113,7 @@ class SmokeWitness:
                         ["node", "--check", target_path],
                         cwd=cwd, capture_output=True, text=True,
                         timeout=self.timeout,
+                        encoding="utf-8", errors="replace",
                     )
                 else:
                     import_target = module.split(":", 1)[1] if module.startswith("py:") else module
@@ -119,6 +121,7 @@ class SmokeWitness:
                         [PYTHON_EXE, "-c", f"import {import_target}"],
                         cwd=cwd, capture_output=True, text=True,
                         timeout=self.timeout, env=env,
+                        encoding="utf-8", errors="replace",
                     )
                 if proc.returncode != 0:
                     failures.append(f"{module}: {proc.stderr.strip()[-200:]}")
@@ -288,6 +291,7 @@ class NumericalWitness:
             proc = subprocess.run(
                 split_command(command), cwd=cwd, shell=False,
                 capture_output=True, text=True, timeout=self.timeout,
+                encoding="utf-8", errors="replace",
             )
         except subprocess.TimeoutExpired:
             return WitnessResult(
