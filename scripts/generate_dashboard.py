@@ -180,7 +180,7 @@ td {{ padding: 8px; border-bottom: 1px solid #0d1117; }}
 </div>
 
 {"".join(f'<div class="warn">CUSUM drift warning: {w}</div>' for w in cusum_warnings)}
-{"".join(f\'<div class="warn">STABILITY BREAK: {a["project"]} was stable for {a["max_streak"]} runs, now {a["last_verdict"]}</div>\' for a in (stability_alerts or []))}
+{"".join(f'<div class="warn">STABILITY BREAK: {a["project"]} was stable for {a["max_streak"]} runs, now {a["last_verdict"]}</div>' for a in (stability_alerts or []))}
 
 
 {f'<div class="section"><h2>Certified ({len(certified_projects)})</h2><table><tr><th>Project</th><th>Risk</th><th>Math</th><th>Witnesses</th><th>Time</th></tr>' + "".join(f'<tr><td>{p["name"]}</td><td>{p["risk"]}</td><td>{p["math_score"]}</td><td>{p["witness_count"]}</td><td>{p["elapsed"]:.1f}s</td></tr>' for p in certified_projects) + '</table></div>' if certified_projects else ''}
