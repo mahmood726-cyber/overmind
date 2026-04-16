@@ -95,6 +95,7 @@ def generate_html(report: dict, history: list[dict], cusum_warnings: list[str], 
     rejected = report.get("rejected", 0)
     failed = report.get("failed", 0)
     single_pass = report.get("single_pass", 0)
+    unverified = report.get("unverified", 0)
     total_time = report.get("total_time_seconds", 0)
 
     projects = report.get("projects", [])
@@ -102,6 +103,7 @@ def generate_html(report: dict, history: list[dict], cusum_warnings: list[str], 
     reject_projects = [p for p in projects if p["verdict"] == "REJECT"]
     fail_projects = [p for p in projects if p["verdict"] == "FAIL"]
     pass_projects = [p for p in projects if p["verdict"] == "PASS"]
+    unverified_projects = [p for p in projects if p["verdict"] == "UNVERIFIED"]
 
     # Trend data
     trend_dates = []
@@ -109,6 +111,7 @@ def generate_html(report: dict, history: list[dict], cusum_warnings: list[str], 
     trend_pass = []
     trend_reject = []
     trend_fail = []
+    trend_unverified = []
     for h in reversed(history[:7]):
         ts = h.get("timestamp", "")[:10]
         trend_dates.append(f'"{ts}"')
@@ -116,6 +119,7 @@ def generate_html(report: dict, history: list[dict], cusum_warnings: list[str], 
         trend_pass.append(str(h.get("single_pass", 0)))
         trend_reject.append(str(h.get("rejected", 0)))
         trend_fail.append(str(h.get("failed", 0)))
+        trend_unverified.append(str(h.get("unverified", 0)))
 
     # Dream stats
     dream = report.get("dream", {})
@@ -133,12 +137,14 @@ body {{ font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; 
 .header h1 {{ font-size: 28px; color: #fff; letter-spacing: 2px; }}
 .header .date {{ color: #8892a4; font-size: 14px; margin-top: 4px; }}
 .header .runtime {{ color: #5a6577; font-size: 12px; }}
-.grid {{ display: grid; grid-template-columns: repeat(4, 1fr); gap: 16px; margin-bottom: 32px; }}
+.grid {{ display: grid; grid-template-columns: repeat(5, 1fr); gap: 16px; margin-bottom: 32px; }}
+@media (max-width: 900px) {{ .grid {{ grid-template-columns: repeat(2, 1fr); }} }}
 .card {{ background: #131926; border-radius: 12px; padding: 20px; text-align: center; border: 1px solid #1e2a3a; }}
 .card .number {{ font-size: 42px; font-weight: 700; line-height: 1; }}
 .card .label {{ font-size: 12px; color: #8892a4; text-transform: uppercase; letter-spacing: 1px; margin-top: 6px; }}
 .certified .number {{ color: #00e676; }}
 .pass .number {{ color: #448aff; }}
+.unverified .number {{ color: #b388ff; }}
 .reject .number {{ color: #ff9100; }}
 .fail .number {{ color: #ff5252; }}
 .section {{ background: #131926; border-radius: 12px; padding: 24px; margin-bottom: 24px; border: 1px solid #1e2a3a; }}
@@ -148,6 +154,7 @@ th {{ text-align: left; color: #8892a4; font-weight: 500; padding: 8px; border-b
 td {{ padding: 8px; border-bottom: 1px solid #0d1117; }}
 .verdict-certified {{ color: #00e676; font-weight: 600; }}
 .verdict-pass {{ color: #448aff; }}
+.verdict-unverified {{ color: #b388ff; }}
 .verdict-reject {{ color: #ff9100; }}
 .verdict-fail {{ color: #ff5252; }}
 .warn {{ background: #2a1800; border: 1px solid #ff9100; border-radius: 8px; padding: 12px; margin-bottom: 8px; font-size: 13px; }}
@@ -167,6 +174,7 @@ td {{ padding: 8px; border-bottom: 1px solid #0d1117; }}
 <div class="grid">
     <div class="card certified"><div class="number">{certified}</div><div class="label">Certified</div></div>
     <div class="card pass"><div class="number">{single_pass}</div><div class="label">Pass</div></div>
+    <div class="card unverified" title="Tier-3 projects with missing numerical baseline — NOT a release pass"><div class="number">{unverified}</div><div class="label">Unverified</div></div>
     <div class="card reject"><div class="number">{rejected}</div><div class="label">Reject</div></div>
     <div class="card fail"><div class="number">{failed}</div><div class="label">Fail</div></div>
 </div>
@@ -180,6 +188,8 @@ td {{ padding: 8px; border-bottom: 1px solid #0d1117; }}
 {f'<div class="section"><h2>Needs Investigation ({len(reject_projects)})</h2><table><tr><th>Project</th><th>Risk</th><th>Reason</th><th>Time</th></tr>' + "".join(f'<tr><td>{p["name"]}</td><td>{p["risk"]}</td><td style="font-size:11px">{p["arbitration_reason"][:80]}</td><td>{p["elapsed"]:.1f}s</td></tr>' for p in reject_projects) + '</table></div>' if reject_projects else ''}
 
 {f'<div class="section"><h2>Failed ({len(fail_projects)})</h2><table><tr><th>Project</th><th>Risk</th><th>Reason</th><th>Time</th></tr>' + "".join(f'<tr><td>{p["name"]}</td><td>{p["risk"]}</td><td style="font-size:11px">{p["arbitration_reason"][:80]}</td><td>{p["elapsed"]:.1f}s</td></tr>' for p in fail_projects) + '</table></div>' if fail_projects else ''}
+
+{f'<div class="section"><h2>Unverified — Missing Numerical Baseline ({len(unverified_projects)})</h2><p style="font-size:12px;color:#8892a4;margin-bottom:12px">Tier-3 projects where test + smoke PASSED but the numerical witness SKIPPED because the baseline file is missing. <strong>NOT a release pass</strong> — restore the baseline before promoting.</p><table><tr><th>Project</th><th>Risk</th><th>Math</th><th>Reason</th><th>Time</th></tr>' + "".join(f'<tr><td>{p["name"]}</td><td>{p["risk"]}</td><td>{p["math_score"]}</td><td style="font-size:11px">{p["arbitration_reason"][:80]}</td><td>{p["elapsed"]:.1f}s</td></tr>' for p in unverified_projects) + '</table></div>' if unverified_projects else ''}
 
 {f'<div class="section"><h2>Passing ({len(pass_projects)})</h2><table><tr><th>Project</th><th>Risk</th><th>Math</th><th>Time</th></tr>' + "".join(f'<tr><td>{p["name"]}</td><td>{p["risk"]}</td><td>{p["math_score"]}</td><td>{p["elapsed"]:.1f}s</td></tr>' for p in pass_projects) + '</table></div>' if pass_projects else ''}
 
