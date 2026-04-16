@@ -96,6 +96,38 @@ def test_truthcert_engine_discovers_nested_python_packages(tmp_path):
     assert "py:evidencekit.subpkg.module" in targets
 
 
+def test_truthcert_discover_skips_build_and_dist_artifact_dirs(tmp_path):
+    """`build/` and `dist/` are PEP-517 / setuptools output directories — they
+    contain copies of the source tree that shadow the real package. Smoke
+    witness tried to import them as `build.lib.<pkg>.…` which always fails
+    with ModuleNotFoundError. Regression for advanced-nma-pooling (2026-04-16)
+    where a stale `build/lib/nma_pool/` tree from a previous editable install
+    caused smoke to FAIL every run."""
+    project_root = tmp_path / "demo"
+    # Real source
+    (project_root / "src" / "nma_pool").mkdir(parents=True)
+    (project_root / "src" / "nma_pool" / "__init__.py").write_text("", encoding="utf-8")
+    (project_root / "src" / "nma_pool" / "core.py").write_text("VALUE = 1\n", encoding="utf-8")
+    # Stale build/ artifact that mirrors the source
+    (project_root / "build" / "lib" / "nma_pool").mkdir(parents=True)
+    (project_root / "build" / "lib" / "nma_pool" / "__init__.py").write_text("", encoding="utf-8")
+    (project_root / "build" / "lib" / "nma_pool" / "core.py").write_text("VALUE = 1\n", encoding="utf-8")
+    # dist/ artifact (wheel or tarball contents unpacked)
+    (project_root / "dist" / "pkg").mkdir(parents=True)
+    (project_root / "dist" / "pkg" / "__init__.py").write_text("", encoding="utf-8")
+
+    engine = TruthCertEngine(tmp_path / "baselines")
+    targets = engine._discover_modules(str(project_root))
+
+    # Real source discovered
+    assert "py:nma_pool" in targets
+    assert "py:nma_pool.core" in targets
+    # Build/dist artifacts skipped — these would fail to import anyway
+    for t in targets:
+        assert "build.lib" not in t, f"build/ artifact leaked into smoke modules: {t}"
+        assert not t.startswith("py:dist."), f"dist/ artifact leaked into smoke modules: {t}"
+
+
 def test_truthcert_source_hash_changes_for_nested_source_file(tmp_path):
     project_root = tmp_path / "demo"
     nested_pkg = project_root / "pkg" / "subpkg"

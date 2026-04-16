@@ -169,6 +169,12 @@ class TruthCertEngine:
         "migrations",
         "backup",
         "archive",
+        # PEP-517 / setuptools output trees. They mirror the real source tree
+        # but are never importable under their literal paths
+        # (e.g. `import build.lib.nma_pool` raises ModuleNotFoundError).
+        # Regression for advanced-nma-pooling 2026-04-16.
+        "build",
+        "dist",
     }
     # Root-level files that are scripts, not importable modules.
     _SKIP_FILES = {"setup", "conftest", "manage", "run", "main", "cli", "app",
