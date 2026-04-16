@@ -6,7 +6,7 @@ Automatically discovered fix recipes from nightly verification outcomes.
 
 | Recipe | Pattern | Fix | Seen | Resolved | Confidence | Last Seen |
 |--------|---------|-----|------|----------|------------|-----------|
-| TIMEOUT:advanced-n | timed out | Check for WMI deadlock (Python 3.13), infinite loop, or slow | 9 | 1 | 17% | 2026-04-13 |
+| TIMEOUT:advanced-n | timed out | Check for WMI deadlock (Python 3.13), infinite loop, or slow | 9 | 1 | 11% | 2026-04-13 |
 
 ## Candidates (unproven)
 
@@ -23,68 +23,79 @@ SyntaxErro | Fix the syntax error in the reported file | 2 | 0 | 2026-04-08 |
 | SYNTAX_ERROR:repo300-en | ix
                ^
 SyntaxErro | Fix the syntax error in the reported file | 2 | 0 | 2026-04-13 |
+| TEST_FAILURE:metaoverfi | Error: Test failures
+Execution | Run the test suite locally with verbose output to identify w | 2 | 0 | 2026-04-15 |
 | UNKNOWN:pairwise70 | ck, subtests, tmp_path, tmp_pa | Manual investigation needed | 2 | 0 | 2026-04-10 |
-| CONFIGURATION:evidence-i | no tests ran in 0.01s | Check pytest configuration (testpaths, collect patterns) and | 1 | 0 | 2026-04-13 |
 | DEPENDENCY_ROT:cardioorac | mal_cdf, load_data)
 ImportErro | Check if shared is installed: pip install shared | 1 | 0 | 2026-04-13 |
+| DEPENDENCY_ROT:denominato | py:src.dclnma.witnesses.base: | Break the circular import by deferring the import of Witness | 1 | 0 | 2026-04-15 |
+| DEPENDENCY_ROT:io | io.loaders | Check if io.loaders is installed: pip install io.loaders | 1 | 0 | 2026-04-15 |
 | DEPENDENCY_ROT:registry-f | ============================= | Check the import chain in tests/test_meta.py and install any | 1 | 0 | 2026-04-11 |
-| MISSING_FIXTURE:ipd-meta-p | test.py': [Errno 2] No such fi | Restore or regenerate the missing file: t open file  | 1 | 0 | 2026-04-13 |
+| MISSING_FIXTURE:ipd-meta-p | test.py': [Errno 2] No such fi | Restore or regenerate the missing file: t open file | 1 | 0 | 2026-04-13 |
+| MISSING_FIXTURE:pub-bias-s | ERROR: file or directory not f | Create tests/test_smoke.py or update the test command to poi | 1 | 0 | 2026-04-15 |
 | MISSING_FIXTURE:ubcma-4230 | newline="",
     )
 FileNotFou | Restore or regenerate the missing file: , line 873, in get_h | 1 | 0 | 2026-04-08 |
-| SYNTAX_ERROR:ipd-qma-pr | ay(treatment)
-    ^
-SyntaxErro | Fix the syntax error in the reported file | 1 | 0 | 2026-04-13 |
+| SYNTAX_ERROR:metasprint | aph preparation
+ ^
+
+SyntaxErro | Fix the syntax error in the reported file | 1 | 0 | 2026-04-15 |
 | TEST_FAILURE:asreview-5 | tiple_raters_fleiss
 2 failed, | Read test output and fix failing tests | 1 | 0 | 2026-04-09 |
 | TEST_FAILURE:ctgov-sear | est_ci_bounds_valid
 20 failed, | Read test output and fix failing tests | 1 | 0 | 2026-04-09 |
 | TEST_FAILURE:globalst-5 | truthcert_integrity
 4 failed i | Read test output and fix failing tests | 1 | 0 | 2026-04-09 |
-| TIMEOUT:advanced-n | timed out | Check for WMI deadlock (Python 3.13), infinite loop, or slow | 1 | 0 | 2026-04-13 |
+| TIMEOUT:advanced-n | timed out | Check for WMI deadlock (Python 3.13), infinite loop, or slow | 1 | 0 | 2026-04-15 |
+| TIMEOUT:asreview-5 | timed out | Check for WMI deadlock (Python 3.13), infinite loop, or slow | 1 | 0 | 2026-04-15 |
+| TIMEOUT:bayesianma | timed out | Check for WMI deadlock (Python 3.13), infinite loop, or slow | 1 | 0 | 2026-04-15 |
+| TIMEOUT:cardio-ctg | timed out | Check for WMI deadlock (Python 3.13), infinite loop, or slow | 1 | 0 | 2026-04-15 |
 | TIMEOUT:cardioorac | timed out | Check for WMI deadlock (Python 3.13), infinite loop, or slow | 1 | 0 | 2026-04-10 |
+| TIMEOUT:cardioorac | timed out | Check for WMI deadlock (Python 3.13), infinite loop, or slow | 1 | 0 | 2026-04-15 |
 | TIMEOUT:cbamm-0820 | timed out | Check for WMI deadlock (Python 3.13), infinite loop, or slow | 1 | 0 | 2026-04-08 |
-| TIMEOUT:cbamm-0820 | timed out | Check for WMI deadlock (Python 3.13), infinite loop, or slow | 1 | 0 | 2026-04-13 |
+| TIMEOUT:cbamm-0820 | timed out | Check for WMI deadlock (Python 3.13), infinite loop, or slow | 1 | 0 | 2026-04-15 |
 | TIMEOUT:dataextrac | timed out | Check for WMI deadlock (Python 3.13), infinite loop, or slow | 1 | 0 | 2026-04-08 |
-| TIMEOUT:dataextrac | timed out | Check for WMI deadlock (Python 3.13), infinite loop, or slow | 1 | 0 | 2026-04-13 |
+| TIMEOUT:dataextrac | timed out | Check for WMI deadlock (Python 3.13), infinite loop, or slow | 1 | 0 | 2026-04-15 |
 | TIMEOUT:dta70-4b17 | timed out | Check for WMI deadlock (Python 3.13), infinite loop, or slow | 1 | 0 | 2026-04-08 |
-| TIMEOUT:dta70-4b17 | timed out | Check for WMI deadlock (Python 3.13), infinite loop, or slow | 1 | 0 | 2026-04-13 |
+| TIMEOUT:dta70-4b17 | timed out | Check for WMI deadlock (Python 3.13), infinite loop, or slow | 1 | 0 | 2026-04-15 |
+| TIMEOUT:esc-acs-li | timed out | Check for WMI deadlock (Python 3.13), infinite loop, or slow | 1 | 0 | 2026-04-15 |
+| TIMEOUT:evidence-i | timed out | Check for WMI deadlock (Python 3.13), infinite loop, or slow | 1 | 0 | 2026-04-15 |
+| TIMEOUT:evidenceor | timed out | Check for WMI deadlock (Python 3.13), infinite loop, or slow | 1 | 0 | 2026-04-15 |
+| TIMEOUT:experiment | timed out | Check for WMI deadlock (Python 3.13), infinite loop, or slow | 1 | 0 | 2026-04-15 |
 | TIMEOUT:fatiha-pro | timed out | Check for WMI deadlock (Python 3.13), infinite loop, or slow | 1 | 0 | 2026-04-08 |
-| TIMEOUT:fatiha-pro | timed out | Check for WMI deadlock (Python 3.13), infinite loop, or slow | 1 | 0 | 2026-04-13 |
+| TIMEOUT:fatiha-pro | timed out | Check for WMI deadlock (Python 3.13), infinite loop, or slow | 1 | 0 | 2026-04-15 |
+| TIMEOUT:globalst-5 | timed out | Check for WMI deadlock (Python 3.13), infinite loop, or slow | 1 | 0 | 2026-04-15 |
 | TIMEOUT:grma-paper | timed out | Check for WMI deadlock (Python 3.13), infinite loop, or slow | 1 | 0 | 2026-04-08 |
-| TIMEOUT:grma-paper | timed out | Check for WMI deadlock (Python 3.13), infinite loop, or slow | 1 | 0 | 2026-04-13 |
 | TIMEOUT:hfn786-583 | timed out | Check for WMI deadlock (Python 3.13), infinite loop, or slow | 1 | 0 | 2026-04-08 |
+| TIMEOUT:hfpef-regi | timed out | Check for WMI deadlock (Python 3.13), infinite loop, or slow | 1 | 0 | 2026-04-15 |
+| TIMEOUT:idea12-592 | timed out | Check for WMI deadlock (Python 3.13), infinite loop, or slow | 1 | 0 | 2026-04-15 |
+| TIMEOUT:ipd-meta-p | timed out | Check for WMI deadlock (Python 3.13), infinite loop, or slow | 1 | 0 | 2026-04-15 |
+| TIMEOUT:ipd-qma-pr | timed out | Check for WMI deadlock (Python 3.13), infinite loop, or slow | 1 | 0 | 2026-04-15 |
 | TIMEOUT:lec-phase0 | timed out | Check for WMI deadlock (Python 3.13), infinite loop, or slow | 1 | 0 | 2026-04-09 |
+| TIMEOUT:lec-phase0 | timed out | Check for WMI deadlock (Python 3.13), infinite loop, or slow | 1 | 0 | 2026-04-15 |
+| TIMEOUT:llm-meta-a | timed out | Check for WMI deadlock (Python 3.13), infinite loop, or slow | 1 | 0 | 2026-04-15 |
 | TIMEOUT:meta-ecosy | timed out | Check for WMI deadlock (Python 3.13), infinite loop, or slow | 1 | 0 | 2026-04-10 |
-| TIMEOUT:meta-ecosy | timed out | Check for WMI deadlock (Python 3.13), infinite loop, or slow | 1 | 0 | 2026-04-13 |
 | TIMEOUT:metaoverfi | timed out | Check for WMI deadlock (Python 3.13), infinite loop, or slow | 1 | 0 | 2026-04-08 |
-| TIMEOUT:metaoverfi | timed out | Check for WMI deadlock (Python 3.13), infinite loop, or slow | 1 | 0 | 2026-04-13 |
 | TIMEOUT:metasprint | timed out | Check for WMI deadlock (Python 3.13), infinite loop, or slow | 1 | 0 | 2026-04-09 |
-| TIMEOUT:metasprint | timed out | Check for WMI deadlock (Python 3.13), infinite loop, or slow | 1 | 0 | 2026-04-13 |
-| TIMEOUT:metasprint | timed out | Check for WMI deadlock (Python 3.13), infinite loop, or slow | 1 | 0 | 2026-04-13 |
+| TIMEOUT:metasprint | timed out | Check for WMI deadlock (Python 3.13), infinite loop, or slow | 1 | 0 | 2026-04-15 |
+| TIMEOUT:metasprint | timed out | Check for WMI deadlock (Python 3.13), infinite loop, or slow | 1 | 0 | 2026-04-15 |
 | TIMEOUT:mlmresearc | timed out | Check for WMI deadlock (Python 3.13), infinite loop, or slow | 1 | 0 | 2026-04-08 |
-| TIMEOUT:mlmresearc | timed out | Check for WMI deadlock (Python 3.13), infinite loop, or slow | 1 | 0 | 2026-04-13 |
+| TIMEOUT:moonshot-e | timed out | Check for WMI deadlock (Python 3.13), infinite loop, or slow | 1 | 0 | 2026-04-15 |
 | TIMEOUT:nma-a6e8ac | timed out | Check for WMI deadlock (Python 3.13), infinite loop, or slow | 1 | 0 | 2026-04-08 |
-| TIMEOUT:nma-a6e8ac | timed out | Check for WMI deadlock (Python 3.13), infinite loop, or slow | 1 | 0 | 2026-04-13 |
+| TIMEOUT:nma-a6e8ac | timed out | Check for WMI deadlock (Python 3.13), infinite loop, or slow | 1 | 0 | 2026-04-15 |
 | TIMEOUT:nma-c44d8a | timed out | Check for WMI deadlock (Python 3.13), infinite loop, or slow | 1 | 0 | 2026-04-09 |
+| TIMEOUT:overmind-b | timed out | Check for WMI deadlock (Python 3.13), infinite loop, or slow | 1 | 0 | 2026-04-15 |
+| TIMEOUT:pairwise70 | timed out | Check for WMI deadlock (Python 3.13), infinite loop, or slow | 1 | 0 | 2026-04-15 |
 | TIMEOUT:prognostic | timed out | Check for WMI deadlock (Python 3.13), infinite loop, or slow | 1 | 0 | 2026-04-10 |
-| TIMEOUT:prognostic | timed out | Check for WMI deadlock (Python 3.13), infinite loop, or slow | 1 | 0 | 2026-04-13 |
+| TIMEOUT:prognostic | timed out | Check for WMI deadlock (Python 3.13), infinite loop, or slow | 1 | 0 | 2026-04-15 |
 | TIMEOUT:pub-bias-s | timed out | Check for WMI deadlock (Python 3.13), infinite loop, or slow | 1 | 0 | 2026-04-10 |
+| TIMEOUT:rct-extrac | timed out | Check for WMI deadlock (Python 3.13), infinite loop, or slow | 1 | 0 | 2026-04-15 |
+| TIMEOUT:registry-f | timed out | Check for WMI deadlock (Python 3.13), infinite loop, or slow | 1 | 0 | 2026-04-15 |
+| TIMEOUT:repo300-en | timed out | Check for WMI deadlock (Python 3.13), infinite loop, or slow | 1 | 0 | 2026-04-15 |
 | TIMEOUT:rmstnma-18 | timed out | Check for WMI deadlock (Python 3.13), infinite loop, or slow | 1 | 0 | 2026-04-08 |
-| TIMEOUT:rmstnma-18 | timed out | Check for WMI deadlock (Python 3.13), infinite loop, or slow | 1 | 0 | 2026-04-13 |
+| TIMEOUT:rmstnma-18 | timed out | Check for WMI deadlock (Python 3.13), infinite loop, or slow | 1 | 0 | 2026-04-15 |
 | TIMEOUT:superapp-3 | timed out | Check for WMI deadlock (Python 3.13), infinite loop, or slow | 1 | 0 | 2026-04-09 |
+| TIMEOUT:transcende | timed out | Check for WMI deadlock (Python 3.13), infinite loop, or slow | 1 | 0 | 2026-04-15 |
 | TIMEOUT:truthcert- | timed out | Check for WMI deadlock (Python 3.13), infinite loop, or slow | 1 | 0 | 2026-04-08 |
-| TIMEOUT:truthcert- | timed out | Check for WMI deadlock (Python 3.13), infinite loop, or slow | 1 | 0 | 2026-04-13 |
 | TIMEOUT:ubcma-4230 | timed out | Check for WMI deadlock (Python 3.13), infinite loop, or slow | 1 | 0 | 2026-04-08 |
-| TIMEOUT:ubcma-4230 | timed out | Check for WMI deadlock (Python 3.13), infinite loop, or slow | 1 | 0 | 2026-04-13 |
 | UNKNOWN:hta-eviden | no tests ran in 2.35s | Manual investigation needed | 1 | 0 | 2026-04-09 |
-
-## Anti-Recipes (never worked — do NOT retry)
-
-| Recipe | Pattern | Seen | Resolved | Last Seen |
-|--------|---------|------|----------|-----------|
-| DEPENDENCY_ROT:llm-meta-a | .<9 lines>...
-    )
-ImportErro | 3 | 0 | 2026-04-13 |
-| TEST_FAILURE:metaregres | oderator_regression
-16 failed, | 3 | 0 | 2026-04-13 |
