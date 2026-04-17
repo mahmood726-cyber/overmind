@@ -1,13 +1,15 @@
 # rmstnma
 
-**Last verified:** 2026-04-15 02:13 UTC | **Verdict:** FAIL (Preflight failed: missing_baseline)
-**Bundle hash:** 8bcfac985c4e0466 | **Risk:** high | **Math:** 15
+**Last verified:** 2026-04-17 02:44 UTC | **Verdict:** FAIL (Single witness: test_suite FAIL)
+**Bundle hash:** e2d1e677de49ba93 | **Risk:** high | **Math:** 15
 
 ## Health
 
 | Witness | Verdict | Time | Detail |
 |---------|---------|------|--------|
-| preflight | FAIL | 0.0s | preflight: missing_baseline |
+| test_suite | FAIL | 1.2s | Error: Test failures |
+| smoke | SKIP | 0.0s | skipped |
+| numerical | SKIP | 0.0s | skipped |
 
 ## Project
 
@@ -29,10 +31,12 @@
 | 2026-04-12 | FAIL | 1/3 | 0.0s | 61613fe5041b5505 |
 | 2026-04-13 | FAIL | 1/3 | 0.0s | 98a08bae6d7ffb3e |
 | 2026-04-15 | FAIL | 1/1 | 0.0s | 8bcfac985c4e0466 |
+| 2026-04-17 | FAIL | 1/3 | 1.2s | e2d1e677de49ba93 |
 
 ## Notes
 
-Preflight failed: missing_baseline
+Single witness: test_suite FAIL
 
-**preflight:** preflight: missing_baseline
-  - tier-3 project has no baseline path configured
+**test_suite:** Error: Test failures
+Execution halted
+

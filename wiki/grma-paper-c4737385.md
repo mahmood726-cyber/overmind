@@ -1,17 +1,17 @@
 # GRMA_paper
 
-**Last verified:** 2026-04-15 02:13 UTC | **Verdict:** CERTIFIED (2/2 witnesses agree PASS)
-**Bundle hash:** a96f9d97bd29b3b4 | **Risk:** high | **Math:** 7
+**Last verified:** 2026-04-17 02:44 UTC | **Verdict:** CERTIFIED (2/2 witnesses agree PASS)
+**Bundle hash:** 31ef08aceb27ac92 | **Risk:** high | **Math:** 7
 
 ## Health
 
 | Witness | Verdict | Time | Detail |
 |---------|---------|------|--------|
-| test_suite | PASS | 1.6s | Test 1: k=3 minimum
+| test_suite | PASS | 2.3s | Test 1: k=3 minimum
   PASS: k=3 uses GRMA method
   PASS: k=3 estimate is finite
  |
-| smoke | PASS | 3.9s | 5 modules imported OK |
+| smoke | PASS | 4.6s | 5 modules imported OK |
 
 ## Project
 
@@ -32,3 +32,4 @@
 | 2026-04-12 | FAIL | 1/2 | 0.0s | 6c36cf3353d001d1 |
 | 2026-04-13 | FAIL | 1/2 | 0.0s | 8bc3a6068e267e5f |
 | 2026-04-15 | CERTIFIED | 2/2 | 5.5s | a96f9d97bd29b3b4 |
+| 2026-04-17 | CERTIFIED | 2/2 | 6.9s | 31ef08aceb27ac92 |

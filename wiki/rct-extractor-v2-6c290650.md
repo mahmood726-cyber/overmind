@@ -1,13 +1,16 @@
 # rct-extractor-v2
 
-**Last verified:** 2026-04-15 02:13 UTC | **Verdict:** FAIL (Preflight failed: missing_baseline)
-**Bundle hash:** d3520d4d93497fb1 | **Risk:** high | **Math:** 15
+**Last verified:** 2026-04-17 02:44 UTC | **Verdict:** REJECT (Witnesses disagree: test_suite PASS vs smoke FAIL)
+**Bundle hash:** 68a5cf2dd94cf90e | **Risk:** high | **Math:** 15
 
 ## Health
 
 | Witness | Verdict | Time | Detail |
 |---------|---------|------|--------|
-| preflight | FAIL | 0.0s | preflight: missing_baseline |
+| test_suite | PASS | 4.4s | dation.py::TestCTGScraper::test_scraper_has_fetch_multiple_method PASSED [ 13%]
+ |
+| smoke | FAIL | 17.5s | py:gold_data.mega.v10_batches.extract_009_final: tf-8') as f: |
+| numerical | SKIP | 0.0s | skipped |
 
 ## Project
 
@@ -29,10 +32,12 @@
 | 2026-04-12 | PASS | 2/3 | 12.8s | 3a4c7f8776a98cf5 |
 | 2026-04-13 | PASS | 2/3 | 7.3s | 2e65c96b562ffffb |
 | 2026-04-15 | FAIL | 1/1 | 0.0s | d3520d4d93497fb1 |
+| 2026-04-17 | REJECT | 2/3 | 21.9s | 68a5cf2dd94cf90e |
 
 ## Notes
 
-Preflight failed: missing_baseline
+Witnesses disagree: test_suite PASS vs smoke FAIL
 
-**preflight:** preflight: missing_baseline
-  - tier-3 project has no baseline path configured
+**smoke:** py:gold_data.mega.v10_batches.extract_009_final: tf-8') as f:
+         ~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+FileNotFoundError: [Errno 2] No such file or directory: 'C:\\Users\\user\\rct-extractor-v

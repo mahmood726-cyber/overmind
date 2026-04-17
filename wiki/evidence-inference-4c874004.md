@@ -1,13 +1,13 @@
 # evidence-inference
 
-**Last verified:** 2026-04-15 02:13 UTC | **Verdict:** FAIL (Preflight failed: missing_baseline)
-**Bundle hash:** 790ea6cffbff7a6d | **Risk:** high | **Math:** 18
+**Last verified:** 2026-04-17 02:44 UTC | **Verdict:** FAIL (Hard timeout (300s) — process killed)
+**Bundle hash:** 6b6212615f68813d | **Risk:** high | **Math:** 18
 
 ## Health
 
 | Witness | Verdict | Time | Detail |
 |---------|---------|------|--------|
-| preflight | FAIL | 0.0s | preflight: missing_baseline |
+| test_suite | FAIL | 300.0s | Project hung — killed after 300s |
 
 ## Project
 
@@ -29,10 +29,10 @@
 | 2026-04-12 | FAIL | 2/3 | 19.0s | 05c008f6387187ba |
 | 2026-04-13 | FAIL | 2/3 | 7.8s | 2b87e12a4464cb07 |
 | 2026-04-15 | FAIL | 1/1 | 0.0s | 790ea6cffbff7a6d |
+| 2026-04-17 | FAIL | 1/1 | 300.0s | 6b6212615f68813d |
 
 ## Notes
 
-Preflight failed: missing_baseline
+Hard timeout (300s) — process killed
 
-**preflight:** preflight: missing_baseline
-  - tier-3 project has no baseline path configured
+**test_suite:** Project hung — killed after 300s

@@ -1,13 +1,15 @@
 # BayesianMA
 
-**Last verified:** 2026-04-15 02:13 UTC | **Verdict:** FAIL (Preflight failed: missing_baseline)
-**Bundle hash:** b6de36229163dbd6 | **Risk:** high | **Math:** 13
+**Last verified:** 2026-04-17 02:44 UTC | **Verdict:** FAIL (Single witness: test_suite FAIL)
+**Bundle hash:** 4929fe7e9d2ae84a | **Risk:** high | **Math:** 13
 
 ## Health
 
 | Witness | Verdict | Time | Detail |
 |---------|---------|------|--------|
-| preflight | FAIL | 0.0s | preflight: missing_baseline |
+| test_suite | FAIL | 21.9s |  |
+| smoke | SKIP | 0.0s | skipped |
+| numerical | SKIP | 0.0s | skipped |
 
 ## Project
 
@@ -29,10 +31,8 @@
 | 2026-04-12 | PASS | 2/3 | 34.1s | 11a3634ee42a58de |
 | 2026-04-13 | PASS | 2/3 | 21.6s | 1b94da45891bcdb6 |
 | 2026-04-15 | FAIL | 1/1 | 0.0s | b6de36229163dbd6 |
+| 2026-04-17 | FAIL | 1/3 | 21.9s | 4929fe7e9d2ae84a |
 
 ## Notes
 
-Preflight failed: missing_baseline
-
-**preflight:** preflight: missing_baseline
-  - tier-3 project has no baseline path configured
+Single witness: test_suite FAIL

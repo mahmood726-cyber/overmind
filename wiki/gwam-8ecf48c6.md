@@ -1,15 +1,15 @@
 # GWAM
 
-**Last verified:** 2026-04-15 02:13 UTC | **Verdict:** CERTIFIED (2/2 witnesses agree PASS)
-**Bundle hash:** d935a3736e35e23e | **Risk:** high | **Math:** 7
+**Last verified:** 2026-04-17 02:44 UTC | **Verdict:** CERTIFIED (2/2 witnesses agree PASS)
+**Bundle hash:** 88b1339ef862aad7 | **Risk:** high | **Math:** 7
 
 ## Health
 
 | Witness | Verdict | Time | Detail |
 |---------|---------|------|--------|
-| test_suite | PASS | 5.9s | ...........                                                              [100%]
+| test_suite | PASS | 7.2s | ...........                                                              [100%]
  |
-| smoke | PASS | 2.0s | 2 modules imported OK |
+| smoke | PASS | 2.3s | 2 modules imported OK |
 
 ## Project
 
@@ -30,3 +30,4 @@
 | 2026-04-12 | PASS | 1/2 | 7.9s | a51af8e024ea102d |
 | 2026-04-13 | PASS | 1/2 | 11.7s | aba95b8ce034d2e5 |
 | 2026-04-15 | CERTIFIED | 2/2 | 7.9s | d935a3736e35e23e |
+| 2026-04-17 | CERTIFIED | 2/2 | 9.6s | 88b1339ef862aad7 |

@@ -1,13 +1,16 @@
 # EvidenceOracle
 
-**Last verified:** 2026-04-15 02:13 UTC | **Verdict:** FAIL (Preflight failed: missing_baseline)
-**Bundle hash:** 42e9216b2975ee2e | **Risk:** high | **Math:** 14
+**Last verified:** 2026-04-17 02:44 UTC | **Verdict:** UNVERIFIED (2/2 witnesses PASS but numerical witness SKIPPED (baseline missing) — NOT a release pass)
+**Bundle hash:** 28897f51a5d57bf8 | **Risk:** high | **Math:** 14
 
 ## Health
 
 | Witness | Verdict | Time | Detail |
 |---------|---------|------|--------|
-| preflight | FAIL | 0.0s | preflight: missing_baseline |
+| test_suite | PASS | 2.7s | ................                                                         [100%]
+ |
+| smoke | PASS | 2.9s | 2 modules imported OK |
+| numerical | SKIP | 0.0s | skipped |
 
 ## Project
 
@@ -29,10 +32,4 @@
 | 2026-04-12 | PASS | 2/3 | 11.5s | b6795019af8258d7 |
 | 2026-04-13 | PASS | 2/3 | 5.2s | 84bcafe177baa055 |
 | 2026-04-15 | FAIL | 1/1 | 0.0s | 42e9216b2975ee2e |
-
-## Notes
-
-Preflight failed: missing_baseline
-
-**preflight:** preflight: missing_baseline
-  - tier-3 project has no baseline path configured
+| 2026-04-17 | UNVERIFIED | 2/3 | 5.6s | 28897f51a5d57bf8 |

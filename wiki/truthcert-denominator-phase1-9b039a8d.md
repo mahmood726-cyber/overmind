@@ -1,15 +1,15 @@
 # truthcert-denominator-phase1
 
-**Last verified:** 2026-04-15 02:13 UTC | **Verdict:** CERTIFIED (3/3 witnesses agree PASS)
-**Bundle hash:** f6e49761ae2bd2cd | **Risk:** high | **Math:** 10
+**Last verified:** 2026-04-17 02:44 UTC | **Verdict:** CERTIFIED (3/3 witnesses agree PASS)
+**Bundle hash:** 610f13785381a203 | **Risk:** high | **Math:** 10
 
 ## Health
 
 | Witness | Verdict | Time | Detail |
 |---------|---------|------|--------|
-| test_suite | PASS | 3.2s | .                                                                        [100%]
+| test_suite | PASS | 3.6s | .                                                                        [100%]
  |
-| smoke | PASS | 10.2s | 14 modules imported OK |
+| smoke | PASS | 10.0s | 14 modules imported OK |
 | numerical | PASS | 1.2s | 5 values within tolerance |
 
 ## Project
@@ -31,3 +31,4 @@
 | 2026-04-12 | REJECT | 3/3 | 22.7s | c808f3db46ed43ae |
 | 2026-04-13 | REJECT | 3/3 | 20.9s | 875651b66d9d5623 |
 | 2026-04-15 | CERTIFIED | 3/3 | 14.6s | f6e49761ae2bd2cd |
+| 2026-04-17 | CERTIFIED | 3/3 | 14.8s | 610f13785381a203 |

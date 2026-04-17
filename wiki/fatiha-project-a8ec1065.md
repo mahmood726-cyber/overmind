@@ -1,19 +1,21 @@
 # FATIHA_Project
 
-**Last verified:** 2026-04-15 02:13 UTC | **Verdict:** FAIL (Preflight failed: missing_baseline)
-**Bundle hash:** 474b86263293cb80 | **Risk:** high | **Math:** 11
+**Last verified:** 2026-04-17 02:44 UTC | **Verdict:** FAIL (Single witness: test_suite FAIL)
+**Bundle hash:** d8fe252e0640ddfb | **Risk:** high | **Math:** 11
 
 ## Health
 
 | Witness | Verdict | Time | Detail |
 |---------|---------|------|--------|
-| preflight | FAIL | 0.0s | preflight: missing_baseline |
+| test_suite | FAIL | 3.8s | Error in h(simpleError(msg, call)) : failed to install: |
+| smoke | SKIP | 0.0s | skipped |
+| numerical | SKIP | 0.0s | skipped |
 
 ## Project
 
 - **Path:** C:\Models\FATIHA_Project
-- **Type:** hybrid_browser_analytics_app
-- **Stack:** css, html, javascript, r
+- **Type:** r_project
+- **Stack:** r
 - **Test command:** `Rscript -e "testthat::test_dir('tests/testthat')"`
 
 ## Verification History
@@ -28,10 +30,13 @@
 | 2026-04-12 | FAIL | 1/3 | 0.0s | b20af1445ed18b1d |
 | 2026-04-13 | FAIL | 1/3 | 0.0s | f24961bd5cd5b450 |
 | 2026-04-15 | FAIL | 1/1 | 0.0s | 474b86263293cb80 |
+| 2026-04-17 | FAIL | 1/3 | 3.8s | d8fe252e0640ddfb |
 
 ## Notes
 
-Preflight failed: missing_baseline
+Single witness: test_suite FAIL
 
-**preflight:** preflight: missing_baseline
-  - tier-3 project has no baseline path configured
+**test_suite:** Error in h(simpleError(msg, call)) : failed to install:
+installation of renv failed
+===========================
+ERROR: failed to lock directory 'C:/Users/user/AppData/Local/R/cache/R/renv/library/FATI

@@ -1,20 +1,23 @@
 # prognostic-meta
 
-**Last verified:** 2026-04-15 02:13 UTC | **Verdict:** FAIL (Preflight failed: missing_path)
-**Bundle hash:** 35015ba8f86138ff | **Risk:** high | **Math:** 20
+**Last verified:** 2026-04-17 02:44 UTC | **Verdict:** UNVERIFIED (2/2 witnesses PASS but numerical witness SKIPPED (baseline missing) — NOT a release pass)
+**Bundle hash:** 8b695950c93d1ab3 | **Risk:** high | **Math:** 20
 
 ## Health
 
 | Witness | Verdict | Time | Detail |
 |---------|---------|------|--------|
-| preflight | FAIL | 0.0s | preflight: missing_path |
+| test_suite | PASS | 2.0s | .....                                                                    [100%]
+ |
+| smoke | PASS | 0.5s | 2 modules imported OK |
+| numerical | SKIP | 0.0s | skipped |
 
 ## Project
 
-- **Path:** C:\Projects\prognostic-meta
+- **Path:** C:\Users\user\prognostic-meta
 - **Type:** browser_app
-- **Stack:** css, html, javascript
-- **Test command:** `python -m pytest tests/test_smoke.py -q`
+- **Stack:** python
+- **Test command:** `python -m pytest tests/ -q`
 
 ## Verification History
 
@@ -29,10 +32,4 @@
 | 2026-04-12 | FAIL | 1/3 | 0.0s | 0388052fe50cef63 |
 | 2026-04-13 | FAIL | 1/3 | 0.0s | af28c171b12bcfe8 |
 | 2026-04-15 | FAIL | 1/1 | 0.0s | 35015ba8f86138ff |
-
-## Notes
-
-Preflight failed: missing_path
-
-**preflight:** preflight: missing_path
-  - root_path does not exist: C:\Projects\prognostic-meta
+| 2026-04-17 | UNVERIFIED | 2/3 | 2.5s | 8b695950c93d1ab3 |

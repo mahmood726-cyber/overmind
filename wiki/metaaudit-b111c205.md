@@ -1,15 +1,16 @@
 # MetaAudit
 
-**Last verified:** 2026-04-15 02:13 UTC | **Verdict:** CERTIFIED (2/2 witnesses agree PASS)
-**Bundle hash:** 247df60d5237ff32 | **Risk:** high | **Math:** 7
+**Last verified:** 2026-04-17 02:44 UTC | **Verdict:** CERTIFIED (3/3 witnesses agree PASS)
+**Bundle hash:** ca3b9cad1779d267 | **Risk:** high | **Math:** 10
 
 ## Health
 
 | Witness | Verdict | Time | Detail |
 |---------|---------|------|--------|
-| test_suite | PASS | 2.9s | ============================= test session starts =============================
+| test_suite | PASS | 4.1s | ============================= test session starts =============================
  |
-| smoke | PASS | 29.0s | 24 modules imported OK |
+| smoke | PASS | 34.4s | 24 modules imported OK |
+| numerical | PASS | 2.0s | 4 values within tolerance |
 
 ## Project
 
@@ -30,3 +31,4 @@
 | 2026-04-12 | REJECT | 2/2 | 25.6s | 06e6812eae342ee1 |
 | 2026-04-13 | REJECT | 2/2 | 32.3s | 401211baad54ea2c |
 | 2026-04-15 | CERTIFIED | 2/2 | 31.9s | 247df60d5237ff32 |
+| 2026-04-17 | CERTIFIED | 3/3 | 40.5s | ca3b9cad1779d267 |

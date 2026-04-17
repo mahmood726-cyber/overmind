@@ -1,13 +1,16 @@
 # llm-meta-analysis
 
-**Last verified:** 2026-04-15 02:13 UTC | **Verdict:** FAIL (Preflight failed: missing_baseline)
-**Bundle hash:** 349cc2bc901925b2 | **Risk:** high | **Math:** 10
+**Last verified:** 2026-04-17 02:44 UTC | **Verdict:** UNVERIFIED (2/2 witnesses PASS but numerical witness SKIPPED (baseline missing) — NOT a release pass (upgraded after retry))
+**Bundle hash:** 0c5a762b767502ed | **Risk:** high | **Math:** 10
 
 ## Health
 
 | Witness | Verdict | Time | Detail |
 |---------|---------|------|--------|
-| preflight | FAIL | 0.0s | preflight: missing_baseline |
+| test_suite | PASS | 1.7s | .                                                                        [100%]
+ |
+| smoke | PASS | 60.4s | 40 modules imported OK |
+| numerical | SKIP | 0.0s | skipped |
 
 ## Project
 
@@ -29,10 +32,4 @@
 | 2026-04-12 | REJECT | 2/3 | 34.5s | 77d10392a1fa5199 |
 | 2026-04-13 | REJECT | 2/3 | 30.0s | d43d57fdfd85436d |
 | 2026-04-15 | FAIL | 1/1 | 0.0s | 349cc2bc901925b2 |
-
-## Notes
-
-Preflight failed: missing_baseline
-
-**preflight:** preflight: missing_baseline
-  - tier-3 project has no baseline path configured
+| 2026-04-17 | UNVERIFIED | 2/3 | 62.1s | 0c5a762b767502ed |

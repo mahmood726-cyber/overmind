@@ -1,13 +1,16 @@
 # lec_phase0_project
 
-**Last verified:** 2026-04-15 02:13 UTC | **Verdict:** FAIL (Preflight failed: missing_baseline)
-**Bundle hash:** 2e3c6971fe7e73cd | **Risk:** high | **Math:** 16
+**Last verified:** 2026-04-17 02:44 UTC | **Verdict:** UNVERIFIED (2/2 witnesses PASS but numerical witness SKIPPED (baseline missing) — NOT a release pass)
+**Bundle hash:** b9dd017850625024 | **Risk:** high | **Math:** 16
 
 ## Health
 
 | Witness | Verdict | Time | Detail |
 |---------|---------|------|--------|
-| preflight | FAIL | 0.0s | preflight: missing_baseline |
+| test_suite | PASS | 5.3s | ...                                                                      [100%]
+ |
+| smoke | PASS | 61.9s | 40 modules imported OK |
+| numerical | SKIP | 0.0s | skipped |
 
 ## Project
 
@@ -28,10 +31,4 @@
 | 2026-04-12 | PASS | 2/3 | 32.6s | 66133bc878ef2720 |
 | 2026-04-13 | PASS | 2/3 | 16.4s | 14c3d6aad9a0f75d |
 | 2026-04-15 | FAIL | 1/1 | 0.0s | 2e3c6971fe7e73cd |
-
-## Notes
-
-Preflight failed: missing_baseline
-
-**preflight:** preflight: missing_baseline
-  - tier-3 project has no baseline path configured
+| 2026-04-17 | UNVERIFIED | 2/3 | 67.2s | b9dd017850625024 |

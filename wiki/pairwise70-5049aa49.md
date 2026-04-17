@@ -1,13 +1,15 @@
 # Pairwise70
 
-**Last verified:** 2026-04-15 02:13 UTC | **Verdict:** FAIL (Preflight failed: missing_baseline)
-**Bundle hash:** 2d779ebe57f08f5a | **Risk:** high | **Math:** 15
+**Last verified:** 2026-04-17 02:44 UTC | **Verdict:** REJECT (Witnesses disagree: smoke PASS vs test_suite FAIL)
+**Bundle hash:** b8d110e4193a3169 | **Risk:** high | **Math:** 15
 
 ## Health
 
 | Witness | Verdict | Time | Detail |
 |---------|---------|------|--------|
-| preflight | FAIL | 0.0s | preflight: missing_baseline |
+| test_suite | FAIL | 120.0s | Timed out after 120s |
+| smoke | PASS | 16.1s | 36 modules imported OK |
+| numerical | SKIP | 0.0s | skipped |
 
 ## Project
 
@@ -29,10 +31,10 @@
 | 2026-04-12 | FAIL | 2/3 | 6.3s | 7a3c106bea091122 |
 | 2026-04-13 | FAIL | 2/3 | 121.3s | bb3fc48447c5dedc |
 | 2026-04-15 | FAIL | 1/1 | 0.0s | 2d779ebe57f08f5a |
+| 2026-04-17 | REJECT | 2/3 | 136.2s | b8d110e4193a3169 |
 
 ## Notes
 
-Preflight failed: missing_baseline
+Witnesses disagree: smoke PASS vs test_suite FAIL
 
-**preflight:** preflight: missing_baseline
-  - tier-3 project has no baseline path configured
+**test_suite:** Timed out after 120s

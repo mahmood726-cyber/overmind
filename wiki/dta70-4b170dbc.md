@@ -1,13 +1,15 @@
 # DTA70
 
-**Last verified:** 2026-04-15 02:13 UTC | **Verdict:** FAIL (Preflight failed: corrupt_baseline)
-**Bundle hash:** c7e5e2376fd42c62 | **Risk:** high | **Math:** 17
+**Last verified:** 2026-04-17 02:44 UTC | **Verdict:** REJECT (Witnesses disagree: smoke PASS vs test_suite FAIL)
+**Bundle hash:** 435a506375aa87c1 | **Risk:** high | **Math:** 17
 
 ## Health
 
 | Witness | Verdict | Time | Detail |
 |---------|---------|------|--------|
-| preflight | FAIL | 0.0s | preflight: corrupt_baseline |
+| test_suite | FAIL | 1.0s | Error: Test failures |
+| smoke | PASS | 0.1s | 1 modules imported OK |
+| numerical | SKIP | 0.0s | skipped |
 
 ## Project
 
@@ -29,10 +31,12 @@
 | 2026-04-12 | FAIL | 1/3 | 0.0s | a39ba4961d62df30 |
 | 2026-04-13 | FAIL | 1/3 | 0.0s | 0fda4fe619908f84 |
 | 2026-04-15 | FAIL | 1/1 | 0.0s | c7e5e2376fd42c62 |
+| 2026-04-17 | REJECT | 2/3 | 1.1s | 435a506375aa87c1 |
 
 ## Notes
 
-Preflight failed: corrupt_baseline
+Witnesses disagree: smoke PASS vs test_suite FAIL
 
-**preflight:** preflight: corrupt_baseline
-  - baseline unreadable: Unexpected UTF-8 BOM (decode using utf-8-sig): line 1 column 1 (char 0)
+**test_suite:** Error: Test failures
+Execution halted
+

@@ -1,13 +1,16 @@
 # asreview_5star
 
-**Last verified:** 2026-04-15 02:13 UTC | **Verdict:** FAIL (Preflight failed: missing_baseline)
-**Bundle hash:** 105a87067f408d33 | **Risk:** high | **Math:** 12
+**Last verified:** 2026-04-17 02:44 UTC | **Verdict:** UNVERIFIED (2/2 witnesses PASS but numerical witness SKIPPED (baseline missing) — NOT a release pass)
+**Bundle hash:** 618213db62a51e2a | **Risk:** high | **Math:** 12
 
 ## Health
 
 | Witness | Verdict | Time | Detail |
 |---------|---------|------|--------|
-| preflight | FAIL | 0.0s | preflight: missing_baseline |
+| test_suite | PASS | 2.9s | .........                                                                [100%]
+ |
+| smoke | PASS | 11.3s | 8 modules imported OK |
+| numerical | SKIP | 0.0s | skipped |
 
 ## Project
 
@@ -28,10 +31,4 @@
 | 2026-04-12 | PASS | 2/3 | 15.5s | 3bc83a48fa0c0b85 |
 | 2026-04-13 | PASS | 2/3 | 8.1s | 8f3463143bab3db8 |
 | 2026-04-15 | FAIL | 1/1 | 0.0s | 105a87067f408d33 |
-
-## Notes
-
-Preflight failed: missing_baseline
-
-**preflight:** preflight: missing_baseline
-  - tier-3 project has no baseline path configured
+| 2026-04-17 | UNVERIFIED | 2/3 | 14.2s | 618213db62a51e2a |

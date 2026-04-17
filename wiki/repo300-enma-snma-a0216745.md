@@ -1,13 +1,16 @@
 # repo300-ENMA-SNMA
 
-**Last verified:** 2026-04-15 02:13 UTC | **Verdict:** FAIL (Preflight failed: missing_baseline)
-**Bundle hash:** 2bfb199bb358befd | **Risk:** high | **Math:** 14
+**Last verified:** 2026-04-17 02:44 UTC | **Verdict:** PASS (Single witness: test_suite PASS)
+**Bundle hash:** 8658e856ec1e9681 | **Risk:** high | **Math:** 14
 
 ## Health
 
 | Witness | Verdict | Time | Detail |
 |---------|---------|------|--------|
-| preflight | FAIL | 0.0s | preflight: missing_baseline |
+| test_suite | PASS | 1.8s | .                                                                        [100%]
+ |
+| smoke | SKIP | 0.0s | skipped |
+| numerical | SKIP | 0.0s | skipped |
 
 ## Project
 
@@ -29,10 +32,4 @@
 | 2026-04-12 | REJECT | 2/3 | 3.8s | bb431d4ecc252f68 |
 | 2026-04-13 | REJECT | 2/3 | 2.1s | ec005732c00b1caf |
 | 2026-04-15 | FAIL | 1/1 | 0.0s | 2bfb199bb358befd |
-
-## Notes
-
-Preflight failed: missing_baseline
-
-**preflight:** preflight: missing_baseline
-  - tier-3 project has no baseline path configured
+| 2026-04-17 | PASS | 1/3 | 1.8s | 8658e856ec1e9681 |

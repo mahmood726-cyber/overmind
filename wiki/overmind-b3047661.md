@@ -1,20 +1,23 @@
 # overmind
 
-**Last verified:** 2026-04-15 02:13 UTC | **Verdict:** FAIL (Preflight failed: missing_baseline)
-**Bundle hash:** 12ad64cacd4a014a | **Risk:** high | **Math:** 20
+**Last verified:** 2026-04-17 02:44 UTC | **Verdict:** UNVERIFIED (2/2 witnesses PASS but numerical witness SKIPPED (baseline missing) — NOT a release pass)
+**Bundle hash:** f1558df6090e34c2 | **Risk:** high | **Math:** 20
 
 ## Health
 
 | Witness | Verdict | Time | Detail |
 |---------|---------|------|--------|
-| preflight | FAIL | 0.0s | preflight: missing_baseline |
+| test_suite | PASS | 2.4s | ...........                                                              [100%]
+ |
+| smoke | PASS | 6.3s | 40 modules imported OK |
+| numerical | SKIP | 0.0s | skipped |
 
 ## Project
 
 - **Path:** C:\overmind
 - **Type:** python_tool
 - **Stack:** python
-- **Test command:** `python -m pytest tests/integration/test_orchestrator_run_once.py -q`
+- **Test command:** `python -m pytest tests/unit/test_truthcert_smoke.py -q`
 
 ## Verification History
 
@@ -27,10 +30,4 @@
 | 2026-04-12 | PASS | 2/3 | 13.2s | 5bf854af43bca141 |
 | 2026-04-13 | PASS | 2/3 | 11.3s | 68c1906e89253205 |
 | 2026-04-15 | FAIL | 1/1 | 0.0s | 12ad64cacd4a014a |
-
-## Notes
-
-Preflight failed: missing_baseline
-
-**preflight:** preflight: missing_baseline
-  - tier-3 project has no baseline path configured
+| 2026-04-17 | UNVERIFIED | 2/3 | 8.6s | f1558df6090e34c2 |

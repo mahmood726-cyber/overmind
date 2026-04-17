@@ -1,13 +1,16 @@
 # metasprint-dose-response
 
-**Last verified:** 2026-04-15 02:13 UTC | **Verdict:** FAIL (Preflight failed: missing_baseline)
-**Bundle hash:** c08ff1aa06e256be | **Risk:** high | **Math:** 12
+**Last verified:** 2026-04-17 02:44 UTC | **Verdict:** PASS (Single witness: test_suite PASS)
+**Bundle hash:** c2548e9daac4702e | **Risk:** high | **Math:** 12
 
 ## Health
 
 | Witness | Verdict | Time | Detail |
 |---------|---------|------|--------|
-| preflight | FAIL | 0.0s | preflight: missing_baseline |
+| test_suite | PASS | 10.0s | smeta::test_r_validation_suite PASSED [ 80%]
+test_dose_response_models.py::TestE |
+| smoke | SKIP | 0.0s | skipped |
+| numerical | SKIP | 0.0s | skipped |
 
 ## Project
 
@@ -28,10 +31,4 @@
 | 2026-04-12 | FAIL | 1/3 | 0.0s | 4112ec165d1210d1 |
 | 2026-04-13 | FAIL | 1/3 | 0.0s | ebfb236089bd6e8d |
 | 2026-04-15 | FAIL | 1/1 | 0.0s | c08ff1aa06e256be |
-
-## Notes
-
-Preflight failed: missing_baseline
-
-**preflight:** preflight: missing_baseline
-  - tier-3 project has no baseline path configured
+| 2026-04-17 | PASS | 1/3 | 10.0s | c2548e9daac4702e |

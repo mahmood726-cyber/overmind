@@ -1,13 +1,15 @@
 # Dataextractor
 
-**Last verified:** 2026-04-15 02:13 UTC | **Verdict:** FAIL (Preflight failed: missing_baseline)
-**Bundle hash:** 44121cac422e4788 | **Risk:** high | **Math:** 18
+**Last verified:** 2026-04-17 02:44 UTC | **Verdict:** FAIL (All witnesses FAIL: test_suite, smoke)
+**Bundle hash:** 3df2500392caa5d9 | **Risk:** high | **Math:** 18
 
 ## Health
 
 | Witness | Verdict | Time | Detail |
 |---------|---------|------|--------|
-| preflight | FAIL | 0.0s | preflight: missing_baseline |
+| test_suite | FAIL | 2.9s | npm notice |
+| smoke | FAIL | 15.2s | py:expand_validation: ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ |
+| numerical | SKIP | 0.0s | skipped |
 
 ## Project
 
@@ -28,10 +30,17 @@
 | 2026-04-12 | FAIL | 2/3 | 34.6s | 91418e1d77c44552 |
 | 2026-04-13 | FAIL | 2/3 | 24.1s | f7b5c77bc491a363 |
 | 2026-04-15 | FAIL | 1/1 | 0.0s | 44121cac422e4788 |
+| 2026-04-17 | FAIL | 2/3 | 18.1s | 3df2500392caa5d9 |
 
 ## Notes
 
-Preflight failed: missing_baseline
+All witnesses FAIL: test_suite, smoke
 
-**preflight:** preflight: missing_baseline
-  - tier-3 project has no baseline path configured
+**test_suite:** npm notice
+npm notice New major version of npm available! 10.9.3 -> 11.12.1
+npm notice Changelog: https://github.com/npm/cli/releases/tag/v11.12.1
+npm notice To update run: npm install -g npm@11.12.1
+
+
+**smoke:** py:expand_validation: ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+FileNotFoundError: [Errno 2] No such file or directory: 'C:\\Users\\user\\Downloads\\Dataextractor\\vali

@@ -1,13 +1,15 @@
 # Cbamm
 
-**Last verified:** 2026-04-15 02:13 UTC | **Verdict:** FAIL (Preflight failed: missing_baseline)
-**Bundle hash:** 9e7d9baa7db7c4f2 | **Risk:** high | **Math:** 17
+**Last verified:** 2026-04-17 02:44 UTC | **Verdict:** FAIL (Single witness: test_suite FAIL)
+**Bundle hash:** efaf94fe26fa020d | **Risk:** high | **Math:** 17
 
 ## Health
 
 | Witness | Verdict | Time | Detail |
 |---------|---------|------|--------|
-| preflight | FAIL | 0.0s | preflight: missing_baseline |
+| test_suite | FAIL | 2.9s | Error: Test failures |
+| smoke | SKIP | 0.0s | skipped |
+| numerical | SKIP | 0.0s | skipped |
 
 ## Project
 
@@ -29,10 +31,12 @@
 | 2026-04-12 | FAIL | 1/3 | 0.0s | 6ed13107badf89e2 |
 | 2026-04-13 | FAIL | 1/3 | 0.0s | da20bbf3e28c5359 |
 | 2026-04-15 | FAIL | 1/1 | 0.0s | 9e7d9baa7db7c4f2 |
+| 2026-04-17 | FAIL | 1/3 | 2.9s | efaf94fe26fa020d |
 
 ## Notes
 
-Preflight failed: missing_baseline
+Single witness: test_suite FAIL
 
-**preflight:** preflight: missing_baseline
-  - tier-3 project has no baseline path configured
+**test_suite:** Error: Test failures
+Execution halted
+

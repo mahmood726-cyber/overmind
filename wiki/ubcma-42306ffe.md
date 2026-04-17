@@ -1,16 +1,16 @@
 # ubcma
 
-**Last verified:** 2026-04-15 02:13 UTC | **Verdict:** CERTIFIED (3/3 witnesses agree PASS)
-**Bundle hash:** e0e7603b10907e88 | **Risk:** high | **Math:** 11
+**Last verified:** 2026-04-17 02:44 UTC | **Verdict:** CERTIFIED (3/3 witnesses agree PASS)
+**Bundle hash:** a99200c4e7b5f812 | **Risk:** high | **Math:** 11
 
 ## Health
 
 | Witness | Verdict | Time | Detail |
 |---------|---------|------|--------|
-| test_suite | PASS | 2.9s | .......                                                                  [100%]
+| test_suite | PASS | 3.6s | .......                                                                  [100%]
  |
-| smoke | PASS | 40.6s | 18 modules imported OK |
-| numerical | PASS | 1.7s | 2 values within tolerance |
+| smoke | PASS | 37.5s | 18 modules imported OK |
+| numerical | PASS | 1.8s | 2 values within tolerance |
 
 ## Project
 
@@ -32,3 +32,4 @@
 | 2026-04-12 | REJECT | 2/3 | 3.6s | 5d7d8dd479a4ec74 |
 | 2026-04-13 | REJECT | 2/3 | 3.7s | 1b4261b77231a1a2 |
 | 2026-04-15 | CERTIFIED | 3/3 | 45.2s | e0e7603b10907e88 |
+| 2026-04-17 | CERTIFIED | 3/3 | 42.9s | a99200c4e7b5f812 |

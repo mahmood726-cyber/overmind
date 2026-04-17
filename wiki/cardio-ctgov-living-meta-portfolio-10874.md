@@ -1,13 +1,16 @@
 # cardio-ctgov-living-meta-portfolio
 
-**Last verified:** 2026-04-15 02:13 UTC | **Verdict:** FAIL (Preflight failed: missing_baseline)
-**Bundle hash:** d607ae8466e12875 | **Risk:** high | **Math:** 10
+**Last verified:** 2026-04-17 02:44 UTC | **Verdict:** PASS (Single witness: test_suite PASS)
+**Bundle hash:** b3a6837cee2e24dc | **Risk:** high | **Math:** 10
 
 ## Health
 
 | Witness | Verdict | Time | Detail |
 |---------|---------|------|--------|
-| preflight | FAIL | 0.0s | preflight: missing_baseline |
+| test_suite | PASS | 1.7s | .                                                                        [100%]
+ |
+| smoke | SKIP | 0.0s | skipped |
+| numerical | SKIP | 0.0s | skipped |
 
 ## Project
 
@@ -29,10 +32,4 @@
 | 2026-04-12 | PASS | 1/3 | 1.8s | 35878c8bedb1a7ae |
 | 2026-04-13 | PASS | 1/3 | 1.4s | 438634430915159b |
 | 2026-04-15 | FAIL | 1/1 | 0.0s | d607ae8466e12875 |
-
-## Notes
-
-Preflight failed: missing_baseline
-
-**preflight:** preflight: missing_baseline
-  - tier-3 project has no baseline path configured
+| 2026-04-17 | PASS | 1/3 | 1.7s | b3a6837cee2e24dc |

@@ -1,13 +1,13 @@
 # Denominator_Calibrated_Living_NMA
 
-**Last verified:** 2026-04-15 02:13 UTC | **Verdict:** REJECT (Witnesses disagree: test_suite PASS vs smoke FAIL)
-**Bundle hash:** b545a6bbd5c440c7 | **Risk:** high | **Math:** 8
+**Last verified:** 2026-04-17 02:44 UTC | **Verdict:** REJECT (Witnesses disagree: test_suite PASS vs smoke FAIL)
+**Bundle hash:** c7746d9a19c31e97 | **Risk:** high | **Math:** 8
 
 ## Health
 
 | Witness | Verdict | Time | Detail |
 |---------|---------|------|--------|
-| test_suite | PASS | 1.3s | ........                                                           [100%]
+| test_suite | PASS | 2.1s | ........                                                           [100%]
 8 pass |
 | smoke | FAIL | 1.7s | py:src.dclnma.witnesses.base: rt name 'WitnessContext' from partially initialize |
 
@@ -30,6 +30,7 @@
 | 2026-04-12 | PASS | 1/2 | 2.0s | 00aea3833e8fc566 |
 | 2026-04-13 | PASS | 1/2 | 2.0s | 756373b48b333aea |
 | 2026-04-15 | REJECT | 2/2 | 3.0s | b545a6bbd5c440c7 |
+| 2026-04-17 | REJECT | 2/2 | 3.7s | c7746d9a19c31e97 |
 
 ## Notes
 

@@ -1,13 +1,16 @@
 # esc-acs-living-meta
 
-**Last verified:** 2026-04-15 02:13 UTC | **Verdict:** FAIL (Preflight failed: missing_baseline)
-**Bundle hash:** cc5df3c25b0a1c7e | **Risk:** high | **Math:** 20
+**Last verified:** 2026-04-17 02:44 UTC | **Verdict:** UNVERIFIED (2/2 witnesses PASS but numerical witness SKIPPED (baseline missing) — NOT a release pass)
+**Bundle hash:** 4a4580105d5b36e1 | **Risk:** high | **Math:** 20
 
 ## Health
 
 | Witness | Verdict | Time | Detail |
 |---------|---------|------|--------|
-| preflight | FAIL | 0.0s | preflight: missing_baseline |
+| test_suite | PASS | 1.7s | .                                                                        [100%]
+ |
+| smoke | PASS | 1.4s | 20 modules imported OK |
+| numerical | SKIP | 0.0s | skipped |
 
 ## Project
 
@@ -29,10 +32,4 @@
 | 2026-04-12 | PASS | 2/3 | 3.6s | 65f474fe7624f0a9 |
 | 2026-04-13 | PASS | 2/3 | 1.9s | 94ff7d9712edbfee |
 | 2026-04-15 | FAIL | 1/1 | 0.0s | cc5df3c25b0a1c7e |
-
-## Notes
-
-Preflight failed: missing_baseline
-
-**preflight:** preflight: missing_baseline
-  - tier-3 project has no baseline path configured
+| 2026-04-17 | UNVERIFIED | 2/3 | 3.1s | 4a4580105d5b36e1 |

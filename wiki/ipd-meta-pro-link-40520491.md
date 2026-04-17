@@ -1,13 +1,16 @@
 # ipd-meta-pro-link
 
-**Last verified:** 2026-04-15 02:13 UTC | **Verdict:** FAIL (Preflight failed: missing_baseline)
-**Bundle hash:** 90d9738193edf762 | **Risk:** high | **Math:** 20
+**Last verified:** 2026-04-17 02:44 UTC | **Verdict:** PASS (Single witness: test_suite PASS)
+**Bundle hash:** 759d10b074dfced5 | **Risk:** high | **Math:** 20
 
 ## Health
 
 | Witness | Verdict | Time | Detail |
 |---------|---------|------|--------|
-| preflight | FAIL | 0.0s | preflight: missing_baseline |
+| test_suite | PASS | 16.6s | ======================================================================
+IPD Meta- |
+| smoke | SKIP | 0.0s | skipped |
+| numerical | SKIP | 0.0s | skipped |
 
 ## Project
 
@@ -29,10 +32,4 @@
 | 2026-04-12 | FAIL | 1/3 | 0.2s | 1f883ed33a69f96d |
 | 2026-04-13 | FAIL | 1/3 | 0.1s | 6a2d1c5fafb75b79 |
 | 2026-04-15 | FAIL | 1/1 | 0.0s | 90d9738193edf762 |
-
-## Notes
-
-Preflight failed: missing_baseline
-
-**preflight:** preflight: missing_baseline
-  - tier-3 project has no baseline path configured
+| 2026-04-17 | PASS | 1/3 | 16.6s | 759d10b074dfced5 |

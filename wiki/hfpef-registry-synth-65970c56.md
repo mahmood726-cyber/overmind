@@ -1,13 +1,16 @@
 # hfpef_registry_synth
 
-**Last verified:** 2026-04-15 02:13 UTC | **Verdict:** FAIL (Preflight failed: missing_baseline)
-**Bundle hash:** 5c6316dfe9f2d27a | **Risk:** high | **Math:** 14
+**Last verified:** 2026-04-17 02:44 UTC | **Verdict:** UNVERIFIED (2/2 witnesses PASS but numerical witness SKIPPED (baseline missing) — NOT a release pass)
+**Bundle hash:** 8062423f0caf8d34 | **Risk:** high | **Math:** 14
 
 ## Health
 
 | Witness | Verdict | Time | Detail |
 |---------|---------|------|--------|
-| preflight | FAIL | 0.0s | preflight: missing_baseline |
+| test_suite | PASS | 4.1s | .                                                                        [100%]
+ |
+| smoke | PASS | 26.0s | 40 modules imported OK |
+| numerical | SKIP | 0.0s | skipped |
 
 ## Project
 
@@ -29,10 +32,4 @@
 | 2026-04-12 | PASS | 1/3 | 6.7s | d9770049b3c9eb04 |
 | 2026-04-13 | PASS | 1/3 | 3.8s | 20d80f89300093ed |
 | 2026-04-15 | FAIL | 1/1 | 0.0s | 5c6316dfe9f2d27a |
-
-## Notes
-
-Preflight failed: missing_baseline
-
-**preflight:** preflight: missing_baseline
-  - tier-3 project has no baseline path configured
+| 2026-04-17 | UNVERIFIED | 2/3 | 30.1s | 8062423f0caf8d34 |

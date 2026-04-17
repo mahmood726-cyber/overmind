@@ -1,13 +1,16 @@
 # globalst
 
-**Last verified:** 2026-04-15 02:13 UTC | **Verdict:** FAIL (Preflight failed: missing_baseline)
-**Bundle hash:** 43a9ae93f81d7ae3 | **Risk:** high | **Math:** 14
+**Last verified:** 2026-04-17 02:44 UTC | **Verdict:** UNVERIFIED (2/2 witnesses PASS but numerical witness SKIPPED (baseline missing) — NOT a release pass)
+**Bundle hash:** 648e304fee8d1584 | **Risk:** high | **Math:** 14
 
 ## Health
 
 | Witness | Verdict | Time | Detail |
 |---------|---------|------|--------|
-| preflight | FAIL | 0.0s | preflight: missing_baseline |
+| test_suite | PASS | 1.7s | ....                                                                     [100%]
+ |
+| smoke | PASS | 11.1s | 5 modules imported OK |
+| numerical | SKIP | 0.0s | skipped |
 
 ## Project
 
@@ -26,10 +29,4 @@
 | 2026-04-12 | PASS | 2/3 | 13.6s | 8b4c1f68f99be69e |
 | 2026-04-13 | PASS | 2/3 | 7.6s | a9e6102aa58cd10e |
 | 2026-04-15 | FAIL | 1/1 | 0.0s | 43a9ae93f81d7ae3 |
-
-## Notes
-
-Preflight failed: missing_baseline
-
-**preflight:** preflight: missing_baseline
-  - tier-3 project has no baseline path configured
+| 2026-04-17 | UNVERIFIED | 2/3 | 12.8s | 648e304fee8d1584 |

@@ -1,13 +1,15 @@
 # NMA
 
-**Last verified:** 2026-04-15 02:13 UTC | **Verdict:** FAIL (Preflight failed: missing_baseline)
-**Bundle hash:** 4d396748f318932a | **Risk:** high | **Math:** 11
+**Last verified:** 2026-04-17 02:44 UTC | **Verdict:** FAIL (Single witness: test_suite FAIL)
+**Bundle hash:** 629218936a8088be | **Risk:** high | **Math:** 11
 
 ## Health
 
 | Witness | Verdict | Time | Detail |
 |---------|---------|------|--------|
-| preflight | FAIL | 0.0s | preflight: missing_baseline |
+| test_suite | FAIL | 1.0s | Error: Test failures |
+| smoke | SKIP | 0.0s | skipped |
+| numerical | SKIP | 0.0s | skipped |
 
 ## Project
 
@@ -28,10 +30,12 @@
 | 2026-04-12 | FAIL | 1/3 | 0.0s | 4a58c497a0848d4d |
 | 2026-04-13 | FAIL | 1/3 | 0.0s | 74e05d3b9fb9166e |
 | 2026-04-15 | FAIL | 1/1 | 0.0s | 4d396748f318932a |
+| 2026-04-17 | FAIL | 1/3 | 1.0s | 629218936a8088be |
 
 ## Notes
 
-Preflight failed: missing_baseline
+Single witness: test_suite FAIL
 
-**preflight:** preflight: missing_baseline
-  - tier-3 project has no baseline path configured
+**test_suite:** Error: Test failures
+Execution halted
+
