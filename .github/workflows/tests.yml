@@ -26,12 +26,13 @@ jobs:
         # used). Sentinel's CI stays on ubuntu+windows because Sentinel
         # is genuinely cross-platform.
         os: [windows-latest]
-        # Overmind tests use Path.is_file(follow_symlinks=...) which
-        # was added in Python 3.13 (not 3.12 — common confusion). On
-        # 3.12 the monkeypatched test raises TypeError. Pinning to
-        # 3.13 keeps CI honest about real support; loosen once the
-        # test is rewritten to os.stat(follow_symlinks=...).
-        python-version: ["3.13"]
+        # Overmind is Windows-portfolio-first. ubuntu tests require
+        # rewriting ~5 Windows-path-assuming tests (subprocess_utils,
+        # guidance_parser, etc.) and is a separate task. Python 3.11+
+        # now works thanks to os.stat patch rewrite in
+        # test_truthcert_smoke (was 3.13-only via Path.is_file
+        # kwarg).
+        python-version: ["3.11", "3.12", "3.13"]
 
     steps:
       - uses: actions/checkout@v4

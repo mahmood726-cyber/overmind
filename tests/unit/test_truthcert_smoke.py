@@ -189,14 +189,25 @@ def test_truthcert_source_hash_skips_inaccessible_paths(tmp_path, monkeypatch):
     poison = venv / "lib64"
     poison.write_text("placeholder\n", encoding="utf-8")
 
-    real_is_file = Path.is_file
+    # Patch at os.stat rather than Path.is_file. `Path.is_file` internally
+    # calls os.stat(self, follow_symlinks=True). os.stat has accepted the
+    # follow_symlinks kwarg since Python 3.3, while Path.is_file only
+    # accepted it from 3.13 onward — patching there broke the test on
+    # 3.11/3.12 runners.
+    import os
+    real_stat = os.stat
 
-    def flaky_is_file(self, *, follow_symlinks=True):
-        if self.name == "lib64" and ".venv" in self.parts:
+    def flaky_stat(path, *, follow_symlinks=True):
+        path_str = os.fspath(path)
+        # Match the OneDrive placeholder that caused WinError 1920:
+        # a "lib64" file inside a .venv directory.
+        sep = os.sep
+        needle = f"{sep}.venv{sep}lib64"
+        if path_str.endswith(needle) or path_str.endswith(".venv/lib64"):
             raise OSError(1920, "The file cannot be accessed by the system")
-        return real_is_file(self, follow_symlinks=follow_symlinks)
+        return real_stat(path, follow_symlinks=follow_symlinks)
 
-    monkeypatch.setattr(Path, "is_file", flaky_is_file)
+    monkeypatch.setattr(os, "stat", flaky_stat)
 
     engine = TruthCertEngine(tmp_path / "baselines")
     result = engine._hash_source_files(str(project_root))
