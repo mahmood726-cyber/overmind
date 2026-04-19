@@ -1,0 +1,45 @@
+name: tests
+
+on:
+  push:
+    branches: [master]
+  pull_request:
+    branches: [master]
+
+jobs:
+  unit:
+    # Unit tests only. Integration + e2e tests depend on local-only
+    # portfolio paths (C:/Projects/..., C:/Users/user/.claude/...) and
+    # full Claude Code / shell environment, neither of which exists on
+    # a fresh GitHub Actions runner. Promote to include integration
+    # once the test fixtures are portable.
+    runs-on: ${{ matrix.os }}
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [ubuntu-latest, windows-latest]
+        python-version: ["3.11", "3.12", "3.13"]
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up Python ${{ matrix.python-version }}
+        uses: actions/setup-python@v5
+        with:
+          python-version: ${{ matrix.python-version }}
+
+      - name: Configure git (tests create local repos)
+        run: |
+          git config --global user.email "ci@overmind.test"
+          git config --global user.name "Overmind CI"
+
+      - name: Install
+        run: |
+          python -m pip install --upgrade pip
+          pip install -e ".[dev]"
+
+      - name: CLI smoke test
+        run: overmind --help
+
+      - name: Run unit tests
+        run: python -m pytest tests/unit --tb=short --timeout=60 -q
