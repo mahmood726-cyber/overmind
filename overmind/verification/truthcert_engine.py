@@ -10,6 +10,7 @@ from overmind.verification.cert_bundle import Arbitrator, CertBundle
 from overmind.verification.failure_taxonomy import classify_bundle
 from overmind.verification.preflight import PreflightChecker
 from overmind.verification.scope_lock import ScopeLock, WitnessResult, compute_tier
+from overmind.verification.numerical_continuity import NumericalContinuityWitness
 from overmind.verification.witnesses import (
     NumericalWitness,
     SmokeWitness,
@@ -30,6 +31,11 @@ class TruthCertEngine:
         self.test_suite_witness = SuiteWitness(timeout=test_timeout)
         self.smoke_witness = SmokeWitness(timeout=smoke_timeout)
         self.numerical_witness = NumericalWitness(timeout=numerical_timeout)
+        # Added 2026-04-19: scientific-content integrity witness. Runs
+        # MissionCritical baseline / provenance checks. SKIPs when
+        # mission_critical isn't installed (non-disruptive); FAILs when
+        # a baseline has drifted or a provenance entry is unverified.
+        self.numerical_continuity_witness = NumericalContinuityWitness()
         self.arbitrator = Arbitrator()
         self.preflight = PreflightChecker()
 
@@ -123,6 +129,13 @@ class TruthCertEngine:
                     stdout="", stderr="No baseline file", elapsed=0.0,
                 ))
 
+        # Witness 4: scientific-content integrity (tier 3). Independent
+        # of the numerical witness: baseline drift + provenance coverage
+        # (via MissionCritical). SKIPs gracefully when mc isn't installed
+        # or when the project hasn't adopted baseline.json / provenance.json.
+        if lock.witness_count >= 3:
+            results.append(self.numerical_continuity_witness.run(lock.project_path))
+
         verdict, reason = self.arbitrator.arbitrate(results)
 
         # Single retry for REJECT: re-run failing witness once to filter transient flakes
@@ -136,6 +149,8 @@ class TruthCertEngine:
                     retry = self.smoke_witness.run(list(lock.smoke_modules), lock.project_path)
                 elif orig.witness_type == "numerical" and lock.baseline_path:
                     retry = self.numerical_witness.run(lock.baseline_path, lock.project_path)
+                elif orig.witness_type == "numerical_continuity":
+                    retry = self.numerical_continuity_witness.run(lock.project_path)
                 else:
                     continue
                 if retry.verdict == "PASS":
