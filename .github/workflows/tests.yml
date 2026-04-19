@@ -9,10 +9,10 @@ on:
 jobs:
   unit:
     # Unit tests only. Integration + e2e tests depend on local-only
-    # portfolio paths (C:/Projects/..., C:/Users/user/.claude/...) and
-    # full Claude Code / shell environment, neither of which exists on
-    # a fresh GitHub Actions runner. Promote to include integration
-    # once the test fixtures are portable.
+    # portfolio paths and a full Claude Code / shell environment,
+    # neither of which exists on a fresh GitHub Actions runner.
+    # Promote to include integration once the test fixtures are
+    # portable.
     runs-on: ${{ matrix.os }}
     strategy:
       fail-fast: false
