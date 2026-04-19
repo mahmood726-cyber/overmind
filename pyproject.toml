@@ -7,7 +7,7 @@ name = "overmind"
 version = "3.1.0"
 description = "Local evidence-first orchestration for terminal coding agents."
 readme = "README.md"
-requires-python = ">=3.11"
+requires-python = ">=3.12"
 dependencies = [
   "psutil>=5.9",
   "PyYAML>=6.0",
