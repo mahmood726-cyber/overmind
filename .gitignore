@@ -21,6 +21,7 @@ data/state.db
 data/stability_state.json
 data/nightly_reports/latest.json
 data/nightly_reports/nightly.log
+data/nightly_reports/nightly_*.log
 data/nightly_reports/nightly_*.json
 data/nightly_reports/nightly_*.md
 data/nightly_reports/bundles/
