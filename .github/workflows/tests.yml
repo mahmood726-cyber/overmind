@@ -26,10 +26,12 @@ jobs:
         # used). Sentinel's CI stays on ubuntu+windows because Sentinel
         # is genuinely cross-platform.
         os: [windows-latest]
-        # Overmind code uses Path.is_file(follow_symlinks=...) which is
-        # 3.12+ (raises TypeError on 3.11). pyproject.toml now declares
-        # requires-python = ">=3.12" to match.
-        python-version: ["3.12", "3.13"]
+        # Overmind tests use Path.is_file(follow_symlinks=...) which
+        # was added in Python 3.13 (not 3.12 — common confusion). On
+        # 3.12 the monkeypatched test raises TypeError. Pinning to
+        # 3.13 keeps CI honest about real support; loosen once the
+        # test is rewritten to os.stat(follow_symlinks=...).
+        python-version: ["3.13"]
 
     steps:
       - uses: actions/checkout@v4
