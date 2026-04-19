@@ -11,12 +11,10 @@ import threading
 from dataclasses import dataclass
 from pathlib import Path
 
-from selenium import webdriver
-from selenium.common.exceptions import TimeoutException
-from selenium.webdriver.common.by import By
-from selenium.webdriver.edge.options import Options
-from selenium.webdriver.support import expected_conditions as EC
-from selenium.webdriver.support.ui import WebDriverWait
+# selenium is imported lazily inside functions that need it. This lets
+# pure helpers (filter_console_logs, parse_pass_rate) be imported and
+# unit-tested in environments where selenium isn't installed (e.g. the
+# GitHub Actions runner, which only has base dev deps).
 
 PASS_RATE_PATTERNS = (
     re.compile(r"Pass Rate:\s*([0-9]+(?:\.[0-9]+)?)%", re.IGNORECASE),
@@ -106,6 +104,17 @@ def run_browser_check(
     min_pass_rate: float | None,
     ignore_console_patterns: list[str],
 ) -> BrowserCheckResult:
+    # Lazy-import selenium only when a browser check is actually
+    # executed. This keeps the module importable in environments
+    # where selenium isn't installed (CI unit tests for the pure
+    # helpers above).
+    from selenium import webdriver
+    from selenium.common.exceptions import TimeoutException
+    from selenium.webdriver.common.by import By
+    from selenium.webdriver.edge.options import Options
+    from selenium.webdriver.support import expected_conditions as EC
+    from selenium.webdriver.support.ui import WebDriverWait
+
     project_root = project_root.resolve()
     options = Options()
     options.add_argument("--headless=new")
