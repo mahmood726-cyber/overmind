@@ -7,12 +7,12 @@ on:
     branches: [master]
 
 jobs:
-  unit:
-    # Unit tests only. Integration + e2e tests depend on local-only
-    # portfolio paths and a full Claude Code / shell environment,
-    # neither of which exists on a fresh GitHub Actions runner.
-    # Promote to include integration once the test fixtures are
-    # portable.
+  unit-and-integration:
+    # Unit tests always run. Integration tests under tests/integration/
+    # are portable (tmp_path only, no portfolio-local paths) so they
+    # run on every runner too. The e2e suite (tests/e2e_full_test.py)
+    # still depends on a full Claude Code / shell environment and
+    # stays local-only.
     runs-on: ${{ matrix.os }}
     strategy:
       fail-fast: false
@@ -43,3 +43,6 @@ jobs:
 
       - name: Run unit tests
         run: python -m pytest tests/unit --tb=short --timeout=60 -q
+
+      - name: Run integration tests
+        run: python -m pytest tests/integration --tb=short --timeout=120 -q
