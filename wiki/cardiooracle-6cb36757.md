@@ -1,15 +1,15 @@
 # CardioOracle
 
-**Last verified:** 2026-04-17 02:44 UTC | **Verdict:** UNVERIFIED (2/2 witnesses PASS but numerical witness SKIPPED (baseline missing) — NOT a release pass)
-**Bundle hash:** b185aed706d560ef | **Risk:** high | **Math:** 20
+**Last verified:** 2026-04-19 02:36 UTC | **Verdict:** UNVERIFIED (2/2 witnesses PASS but numerical witness SKIPPED (baseline missing) — NOT a release pass)
+**Bundle hash:** c4052c56dba7996e | **Risk:** high | **Math:** 20
 
 ## Health
 
 | Witness | Verdict | Time | Detail |
 |---------|---------|------|--------|
-| test_suite | PASS | 17.6s | ..............................                                           [100%]
+| test_suite | PASS | 14.1s | ..............................                                           [100%]
  |
-| smoke | PASS | 6.5s | 12 modules imported OK |
+| smoke | PASS | 6.7s | 12 modules imported OK |
 | numerical | SKIP | 0.0s | skipped |
 
 ## Project
@@ -23,7 +23,6 @@
 
 | Date | Verdict | Witnesses | Time | Hash |
 |------|---------|-----------|------|------|
-| 2026-04-08 | FAIL | 1/1 | 300.0s | ec4b2ac9d0d4cecc |
 | 2026-04-08 | FAIL | 1/1 | 300.0s | 2322da815c19e7a0 |
 | 2026-04-08 | FAIL | 1/1 | 300.0s | fa8c05ade29db7b1 |
 | 2026-04-09 | FAIL | 1/1 | 300.0s | 4d06987293db7f8a |
@@ -33,3 +32,4 @@
 | 2026-04-13 | REJECT | 2/3 | 25.2s | 38c2c460dce9fd7d |
 | 2026-04-15 | FAIL | 1/1 | 0.0s | 2b34b95bf5dc7a23 |
 | 2026-04-17 | UNVERIFIED | 2/3 | 24.1s | b185aed706d560ef |
+| 2026-04-19 | UNVERIFIED | 2/3 | 20.8s | c4052c56dba7996e |

@@ -1,15 +1,15 @@
 # rct-extractor-v2
 
-**Last verified:** 2026-04-17 02:44 UTC | **Verdict:** REJECT (Witnesses disagree: test_suite PASS vs smoke FAIL)
-**Bundle hash:** 68a5cf2dd94cf90e | **Risk:** high | **Math:** 15
+**Last verified:** 2026-04-19 02:36 UTC | **Verdict:** REJECT (Witnesses disagree: test_suite PASS vs smoke FAIL)
+**Bundle hash:** ad2aa38135d5390b | **Risk:** high | **Math:** 15
 
 ## Health
 
 | Witness | Verdict | Time | Detail |
 |---------|---------|------|--------|
-| test_suite | PASS | 4.4s | dation.py::TestCTGScraper::test_scraper_has_fetch_multiple_method PASSED [ 13%]
- |
-| smoke | FAIL | 17.5s | py:gold_data.mega.v10_batches.extract_009_final: tf-8') as f: |
+| test_suite | PASS | 4.2s | est_ctg_validation.py::TestCTGValidator::test_values_match_zero PASSED [ 13%]
+te |
+| smoke | FAIL | 17.8s | py:gold_data.mega.v10_pdf_results.extract_batch_052:   File "C:\Projects\rct-ext |
 | numerical | SKIP | 0.0s | skipped |
 
 ## Project
@@ -23,7 +23,6 @@
 
 | Date | Verdict | Witnesses | Time | Hash |
 |------|---------|-----------|------|------|
-| 2026-04-08 | PASS | 2/3 | 17.5s | 60929a85f8603698 |
 | 2026-04-08 | PASS | 2/3 | 11.2s | 22708e19c3947096 |
 | 2026-04-08 | PASS | 2/3 | 18.6s | 0d36ad1cebc18b18 |
 | 2026-04-09 | PASS | 2/3 | 17.6s | a07fb82e3d85f341 |
@@ -33,11 +32,12 @@
 | 2026-04-13 | PASS | 2/3 | 7.3s | 2e65c96b562ffffb |
 | 2026-04-15 | FAIL | 1/1 | 0.0s | d3520d4d93497fb1 |
 | 2026-04-17 | REJECT | 2/3 | 21.9s | 68a5cf2dd94cf90e |
+| 2026-04-19 | REJECT | 2/3 | 22.0s | ad2aa38135d5390b |
 
 ## Notes
 
 Witnesses disagree: test_suite PASS vs smoke FAIL
 
-**smoke:** py:gold_data.mega.v10_batches.extract_009_final: tf-8') as f:
-         ~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-FileNotFoundError: [Errno 2] No such file or directory: 'C:\\Users\\user\\rct-extractor-v
+**smoke:** py:gold_data.mega.v10_pdf_results.extract_batch_052:   File "C:\Projects\rct-extractor-v2\gold_data\mega\v10_pdf_results\extract_batch_052.py", line 7, in <module>
+    pdf_path = sys.argv[1]
+         

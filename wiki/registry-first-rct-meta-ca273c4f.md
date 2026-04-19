@@ -1,15 +1,15 @@
 # registry_first_rct_meta
 
-**Last verified:** 2026-04-17 02:44 UTC | **Verdict:** UNVERIFIED (2/2 witnesses PASS but numerical witness SKIPPED (baseline missing) — NOT a release pass)
-**Bundle hash:** 8387e349c0a5dcb6 | **Risk:** high | **Math:** 10
+**Last verified:** 2026-04-19 02:36 UTC | **Verdict:** UNVERIFIED (2/2 witnesses PASS but numerical witness SKIPPED (baseline missing) — NOT a release pass)
+**Bundle hash:** cbb60e19b83b4eca | **Risk:** high | **Math:** 10
 
 ## Health
 
 | Witness | Verdict | Time | Detail |
 |---------|---------|------|--------|
-| test_suite | PASS | 2.3s | .                                                                        [100%]
+| test_suite | PASS | 2.2s | .                                                                        [100%]
  |
-| smoke | PASS | 17.9s | 40 modules imported OK |
+| smoke | PASS | 16.4s | 40 modules imported OK |
 | numerical | SKIP | 0.0s | skipped |
 
 ## Project
@@ -32,3 +32,4 @@
 | 2026-04-13 | PASS | 1/3 | 2.6s | 12027b6970fb21ad |
 | 2026-04-15 | FAIL | 1/1 | 0.0s | 761715914c32d212 |
 | 2026-04-17 | UNVERIFIED | 2/3 | 20.2s | 8387e349c0a5dcb6 |
+| 2026-04-19 | UNVERIFIED | 2/3 | 18.6s | cbb60e19b83b4eca |

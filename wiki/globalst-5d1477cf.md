@@ -1,15 +1,15 @@
 # globalst
 
-**Last verified:** 2026-04-17 02:44 UTC | **Verdict:** UNVERIFIED (2/2 witnesses PASS but numerical witness SKIPPED (baseline missing) — NOT a release pass)
-**Bundle hash:** 648e304fee8d1584 | **Risk:** high | **Math:** 14
+**Last verified:** 2026-04-19 02:36 UTC | **Verdict:** UNVERIFIED (2/2 witnesses PASS but numerical witness SKIPPED (baseline missing) — NOT a release pass)
+**Bundle hash:** 7e782ab0f775a081 | **Risk:** high | **Math:** 14
 
 ## Health
 
 | Witness | Verdict | Time | Detail |
 |---------|---------|------|--------|
-| test_suite | PASS | 1.7s | ....                                                                     [100%]
+| test_suite | PASS | 1.6s | ....                                                                     [100%]
  |
-| smoke | PASS | 11.1s | 5 modules imported OK |
+| smoke | PASS | 10.2s | 5 modules imported OK |
 | numerical | SKIP | 0.0s | skipped |
 
 ## Project
@@ -30,3 +30,4 @@
 | 2026-04-13 | PASS | 2/3 | 7.6s | a9e6102aa58cd10e |
 | 2026-04-15 | FAIL | 1/1 | 0.0s | 43a9ae93f81d7ae3 |
 | 2026-04-17 | UNVERIFIED | 2/3 | 12.8s | 648e304fee8d1584 |
+| 2026-04-19 | UNVERIFIED | 2/3 | 11.8s | 7e782ab0f775a081 |

@@ -1,13 +1,13 @@
 # FATIHA_Project
 
-**Last verified:** 2026-04-17 02:44 UTC | **Verdict:** FAIL (Single witness: test_suite FAIL)
-**Bundle hash:** d8fe252e0640ddfb | **Risk:** high | **Math:** 11
+**Last verified:** 2026-04-19 02:36 UTC | **Verdict:** FAIL (Single witness: test_suite FAIL)
+**Bundle hash:** f7cac7a14aa14267 | **Risk:** high | **Math:** 11
 
 ## Health
 
 | Witness | Verdict | Time | Detail |
 |---------|---------|------|--------|
-| test_suite | FAIL | 3.8s | Error in h(simpleError(msg, call)) : failed to install: |
+| test_suite | FAIL | 3.6s | Error in h(simpleError(msg, call)) : failed to install: |
 | smoke | SKIP | 0.0s | skipped |
 | numerical | SKIP | 0.0s | skipped |
 
@@ -16,7 +16,7 @@
 - **Path:** C:\Models\FATIHA_Project
 - **Type:** r_project
 - **Stack:** r
-- **Test command:** `Rscript -e "testthat::test_dir('tests/testthat')"`
+- **Test command:** `Rscript -e "devtools::test()"`
 
 ## Verification History
 
@@ -31,6 +31,7 @@
 | 2026-04-13 | FAIL | 1/3 | 0.0s | f24961bd5cd5b450 |
 | 2026-04-15 | FAIL | 1/1 | 0.0s | 474b86263293cb80 |
 | 2026-04-17 | FAIL | 1/3 | 3.8s | d8fe252e0640ddfb |
+| 2026-04-19 | FAIL | 1/3 | 3.6s | f7cac7a14aa14267 |
 
 ## Notes
 

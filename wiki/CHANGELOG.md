@@ -1,5 +1,22 @@
 # Overmind Wiki Changelog
 
+## 2026-04-19
+
+**Verified:** 50 | **Certified:** 12 | **Rejected:** 6 | **Failed:** 7
+
+### Changes from last night
+- esc-acs-living-meta: UNVERIFIED -> REJECT
+- user: FAIL -> REJECT
+- NMA: FAIL -> PASS
+- llm-meta-analysis: UNVERIFIED -> REJECT
+
+### New projects verified
+- DTA70
+- Pairwise70
+- rmstnma
+- Cbamm
+
+
 ## 2026-04-17
 
 **Verified:** 50 | **Certified:** 12 | **Rejected:** 5 | **Failed:** 9

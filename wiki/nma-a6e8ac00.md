@@ -1,13 +1,15 @@
 # NMA
 
-**Last verified:** 2026-04-17 02:44 UTC | **Verdict:** FAIL (Single witness: test_suite FAIL)
-**Bundle hash:** 629218936a8088be | **Risk:** high | **Math:** 11
+**Last verified:** 2026-04-19 02:36 UTC | **Verdict:** PASS (Single witness: test_suite PASS)
+**Bundle hash:** a69ee28bff1931ed | **Risk:** high | **Math:** 11
 
 ## Health
 
 | Witness | Verdict | Time | Detail |
 |---------|---------|------|--------|
-| test_suite | FAIL | 1.0s | Error: Test failures |
+| test_suite | PASS | 2.2s | ✔ | F W  S  OK | Context
+
+⠏ |          0 | basic                                 |
 | smoke | SKIP | 0.0s | skipped |
 | numerical | SKIP | 0.0s | skipped |
 
@@ -16,7 +18,7 @@
 - **Path:** C:\Projects\NMA
 - **Type:** r_project
 - **Stack:** r
-- **Test command:** `Rscript -e "testthat::test_dir('tests/testthat')"`
+- **Test command:** `Rscript -e "devtools::test()"`
 
 ## Verification History
 
@@ -31,11 +33,4 @@
 | 2026-04-13 | FAIL | 1/3 | 0.0s | 74e05d3b9fb9166e |
 | 2026-04-15 | FAIL | 1/1 | 0.0s | 4d396748f318932a |
 | 2026-04-17 | FAIL | 1/3 | 1.0s | 629218936a8088be |
-
-## Notes
-
-Single witness: test_suite FAIL
-
-**test_suite:** Error: Test failures
-Execution halted
-
+| 2026-04-19 | PASS | 1/3 | 2.2s | a69ee28bff1931ed |

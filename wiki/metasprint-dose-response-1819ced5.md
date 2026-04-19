@@ -1,14 +1,14 @@
 # metasprint-dose-response
 
-**Last verified:** 2026-04-17 02:44 UTC | **Verdict:** PASS (Single witness: test_suite PASS)
-**Bundle hash:** c2548e9daac4702e | **Risk:** high | **Math:** 12
+**Last verified:** 2026-04-19 02:36 UTC | **Verdict:** PASS (Single witness: test_suite PASS)
+**Bundle hash:** 81264a68584aceff | **Risk:** high | **Math:** 12
 
 ## Health
 
 | Witness | Verdict | Time | Detail |
 |---------|---------|------|--------|
-| test_suite | PASS | 10.0s | smeta::test_r_validation_suite PASSED [ 80%]
-test_dose_response_models.py::TestE |
+| test_suite | PASS | 10.8s | diction_interval_k2_edge PASSED [ 81%]
+test_dose_response_models.py::TestCoverag |
 | smoke | SKIP | 0.0s | skipped |
 | numerical | SKIP | 0.0s | skipped |
 
@@ -32,3 +32,4 @@ test_dose_response_models.py::TestE |
 | 2026-04-13 | FAIL | 1/3 | 0.0s | ebfb236089bd6e8d |
 | 2026-04-15 | FAIL | 1/1 | 0.0s | c08ff1aa06e256be |
 | 2026-04-17 | PASS | 1/3 | 10.0s | c2548e9daac4702e |
+| 2026-04-19 | PASS | 1/3 | 10.8s | 81264a68584aceff |
