@@ -17,7 +17,15 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        os: [ubuntu-latest, windows-latest]
+        # Overmind is a Windows-portfolio verifier by design — many tests
+        # hardcode Windows path separators, PowerShell command validation,
+        # and Windows absolute-path regexes. Matrix narrowed to Windows to
+        # match the real deployment target. A cross-platform CI would need
+        # per-test skipif markers on ~a dozen tests and would still leave
+        # Overmind's actual runtime unverified on Linux (where it isn't
+        # used). Sentinel's CI stays on ubuntu+windows because Sentinel
+        # is genuinely cross-platform.
+        os: [windows-latest]
         python-version: ["3.11", "3.12", "3.13"]
 
     steps:
