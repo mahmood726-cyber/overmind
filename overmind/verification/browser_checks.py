@@ -114,7 +114,11 @@ def run_browser_check(
     options.set_capability("goog:loggingPrefs", {"browser": "ALL"})
 
     with serve_directory(project_root) as port:
-        url = f"http://127.0.0.1:{port}/{page.replace('\\', '/')}"
+        # Pre-compute the replacement outside the f-string — backslashes
+        # inside f-string expression parts are only legal on Python 3.12+
+        # (PEP 701). Keeping this 3.11-compatible.
+        rel_page = page.replace("\\", "/")
+        url = f"http://127.0.0.1:{port}/{rel_page}"
         driver = webdriver.Edge(options=options)
         try:
             driver.get(url)
