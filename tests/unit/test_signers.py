@@ -185,3 +185,18 @@ def test_select_signer_auto_ed25519_broken_path_fails_closed(monkeypatch, tmp_pa
     monkeypatch.setenv(ENV_HMAC_KEY, "would-be-fallback")
     with pytest.raises((FileNotFoundError, OSError)):
         select_signer()
+
+
+def test_select_signer_auto_ed25519_malformed_file_fails_closed(monkeypatch, tmp_path: Path):
+    """Review P2-R2: sibling to the broken-path test. If the key file EXISTS
+    but contains junk (wrong length, not PEM), Ed25519PrivateKey raises
+    ValueError — also not RuntimeError, so also propagates. Must NOT silently
+    downgrade to HMAC. Covers the 'file exists but is garbage' config bug
+    separately from 'file doesn't exist'."""
+    bogus = tmp_path / "bogus_key"
+    bogus.write_bytes(b"\x00" * 100)  # 100 bytes — not 32, not a PEM envelope
+    monkeypatch.delenv(ENV_METHOD, raising=False)
+    monkeypatch.setenv(ENV_ED25519_KEY, str(bogus))
+    monkeypatch.setenv(ENV_HMAC_KEY, "would-be-fallback")
+    with pytest.raises(ValueError):
+        select_signer()

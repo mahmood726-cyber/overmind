@@ -6,9 +6,11 @@ Three signing methods, selected per-environment:
      key signs, public key verifies. No shared secret to leak. Works
      offline and in scheduled tasks. Signs a SHA-256 hash of the
      canonical payload.
-  2. HMAC-SHA256              — legacy. Kept for backward compat.
-     Symmetric; same key to sign + verify. Suitable for single-user
-     closed-loop use only. Deprecated in v0.3 roadmap.
+  2. HMAC-SHA256              — legacy. Retained for legacy bundle
+     verification; Ed25519 is the preferred default. Symmetric; same
+     key to sign + verify. Suitable for single-user closed-loop use
+     only. (Review P2-R3: no v0.3 removal is planned — archived
+     HMAC-signed bundles must remain verifiable indefinitely.)
 
      SECURITY NOTE (review P2-7): because HMAC is symmetric, every
      verifier inherits the sign capability. In other words, a read-only
