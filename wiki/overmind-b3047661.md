@@ -1,16 +1,17 @@
 # overmind
 
-**Last verified:** 2026-04-19 02:36 UTC | **Verdict:** UNVERIFIED (2/2 witnesses PASS but numerical witness SKIPPED (baseline missing) — NOT a release pass)
-**Bundle hash:** fc4f91f1634ee545 | **Risk:** high | **Math:** 20
+**Last verified:** 2026-04-20 02:42 UTC | **Verdict:** UNVERIFIED (3/3 witnesses PASS but numerical witness SKIPPED (baseline missing) — NOT a release pass)
+**Bundle hash:** bdb6ff09dc2fda95 | **Risk:** high | **Math:** 20
 
 ## Health
 
 | Witness | Verdict | Time | Detail |
 |---------|---------|------|--------|
-| test_suite | PASS | 2.6s | ...........                                                              [100%]
+| test_suite | PASS | 2.3s | ...........                                                              [100%]
  |
-| smoke | PASS | 6.1s | 40 modules imported OK |
+| smoke | PASS | 5.8s | 40 modules imported OK |
 | numerical | SKIP | 0.0s | skipped |
+| numerical_continuity | PASS | 0.0s | numerical continuity: baseline + provenance checks OK |
 
 ## Project
 
@@ -32,3 +33,4 @@
 | 2026-04-15 | FAIL | 1/1 | 0.0s | 12ad64cacd4a014a |
 | 2026-04-17 | UNVERIFIED | 2/3 | 8.6s | f1558df6090e34c2 |
 | 2026-04-19 | UNVERIFIED | 2/3 | 8.8s | fc4f91f1634ee545 |
+| 2026-04-20 | UNVERIFIED | 3/4 | 8.1s | bdb6ff09dc2fda95 |

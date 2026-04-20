@@ -1,16 +1,13 @@
 # user
 
-**Last verified:** 2026-04-19 02:36 UTC | **Verdict:** REJECT (Witnesses disagree: test_suite PASS vs smoke FAIL)
-**Bundle hash:** 659993633edf0a0f | **Risk:** high | **Math:** 14
+**Last verified:** 2026-04-20 02:42 UTC | **Verdict:** FAIL (Hard timeout (300s) — process killed)
+**Bundle hash:** f3270bff602be8b8 | **Risk:** high | **Math:** 14
 
 ## Health
 
 | Witness | Verdict | Time | Detail |
 |---------|---------|------|--------|
-| test_suite | PASS | 1.8s | .                                                                        [100%]
- |
-| smoke | FAIL | 9.1s | py:AppData.Local.Programs.Python.Python313.Lib.asyncio.unix_events: rograms\Pyth |
-| numerical | SKIP | 0.0s | skipped |
+| test_suite | FAIL | 300.0s | Project hung — killed after 300s |
 
 ## Project
 
@@ -25,10 +22,10 @@
 |------|---------|-----------|------|------|
 | 2026-04-17 | FAIL | 1/1 | 300.0s | 1055f3b1a5c66332 |
 | 2026-04-19 | REJECT | 2/3 | 10.9s | 659993633edf0a0f |
+| 2026-04-20 | FAIL | 1/1 | 300.0s | f3270bff602be8b8 |
 
 ## Notes
 
-Witnesses disagree: test_suite PASS vs smoke FAIL
+Hard timeout (300s) — process killed
 
-**smoke:** py:AppData.Local.Programs.Python.Python313.Lib.asyncio.unix_events: rograms\Python\Python313\Lib\asyncio\unix_events.py", line 40, in <module>
-    raise ImportError('Signals are not really supported o
+**test_suite:** Project hung — killed after 300s

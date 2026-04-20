@@ -1,7 +1,7 @@
 # esc-acs-living-meta
 
-**Last verified:** 2026-04-19 02:36 UTC | **Verdict:** REJECT (Witnesses disagree: smoke PASS vs test_suite FAIL)
-**Bundle hash:** 02b78c5a6f679e9f | **Risk:** high | **Math:** 20
+**Last verified:** 2026-04-20 02:42 UTC | **Verdict:** REJECT (Witnesses disagree: smoke, numerical_continuity PASS vs test_suite FAIL)
+**Bundle hash:** c9b72c16114b5060 | **Risk:** high | **Math:** 20
 
 ## Health
 
@@ -10,6 +10,7 @@
 | test_suite | FAIL | 2.0s |  |
 | smoke | PASS | 1.5s | 20 modules imported OK |
 | numerical | SKIP | 0.0s | skipped |
+| numerical_continuity | PASS | 0.0s | numerical continuity: baseline + provenance checks OK |
 
 ## Project
 
@@ -22,7 +23,6 @@
 
 | Date | Verdict | Witnesses | Time | Hash |
 |------|---------|-----------|------|------|
-| 2026-04-08 | PASS | 2/3 | 1.8s | 885247172322b0b8 |
 | 2026-04-08 | PASS | 2/3 | 1.7s | 3488e7ac65ea7433 |
 | 2026-04-09 | PASS | 2/3 | 2.8s | 6e062743741c0ce5 |
 | 2026-04-10 | PASS | 2/3 | 2.2s | 737c04521f4f98dc |
@@ -32,7 +32,8 @@
 | 2026-04-15 | FAIL | 1/1 | 0.0s | cc5df3c25b0a1c7e |
 | 2026-04-17 | UNVERIFIED | 2/3 | 3.1s | 4a4580105d5b36e1 |
 | 2026-04-19 | REJECT | 2/3 | 3.4s | 02b78c5a6f679e9f |
+| 2026-04-20 | REJECT | 3/4 | 3.5s | c9b72c16114b5060 |
 
 ## Notes
 
-Witnesses disagree: smoke PASS vs test_suite FAIL
+Witnesses disagree: smoke, numerical_continuity PASS vs test_suite FAIL

@@ -1,16 +1,17 @@
 # repo300-ENMA-SNMA
 
-**Last verified:** 2026-04-19 02:36 UTC | **Verdict:** PASS (Single witness: test_suite PASS)
-**Bundle hash:** 61b67b8940a673c8 | **Risk:** high | **Math:** 14
+**Last verified:** 2026-04-20 02:42 UTC | **Verdict:** UNVERIFIED (2/2 witnesses PASS but numerical witness SKIPPED (baseline missing) — NOT a release pass)
+**Bundle hash:** e3770f70ced8e0ca | **Risk:** high | **Math:** 14
 
 ## Health
 
 | Witness | Verdict | Time | Detail |
 |---------|---------|------|--------|
-| test_suite | PASS | 1.7s | .                                                                        [100%]
+| test_suite | PASS | 1.8s | .                                                                        [100%]
  |
 | smoke | SKIP | 0.0s | skipped |
 | numerical | SKIP | 0.0s | skipped |
+| numerical_continuity | PASS | 0.0s | numerical continuity: baseline + provenance checks OK |
 
 ## Project
 
@@ -23,7 +24,6 @@
 
 | Date | Verdict | Witnesses | Time | Hash |
 |------|---------|-----------|------|------|
-| 2026-04-08 | REJECT | 2/3 | 3.4s | c916fce545b72e8f |
 | 2026-04-08 | REJECT | 2/3 | 6.1s | fdd92540adc3644c |
 | 2026-04-09 | REJECT | 2/3 | 4.2s | d8c7b57cd398bafe |
 | 2026-04-10 | REJECT | 2/3 | 2.9s | f7b7c23c62f0c6bc |
@@ -33,3 +33,4 @@
 | 2026-04-15 | FAIL | 1/1 | 0.0s | 2bfb199bb358befd |
 | 2026-04-17 | PASS | 1/3 | 1.8s | 8658e856ec1e9681 |
 | 2026-04-19 | PASS | 1/3 | 1.7s | 61b67b8940a673c8 |
+| 2026-04-20 | UNVERIFIED | 2/4 | 1.8s | e3770f70ced8e0ca |

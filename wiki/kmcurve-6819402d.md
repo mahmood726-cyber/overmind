@@ -1,16 +1,17 @@
 # KMcurve
 
-**Last verified:** 2026-04-19 02:36 UTC | **Verdict:** REJECT (Witnesses disagree: test_suite PASS vs smoke FAIL)
-**Bundle hash:** a74f0618548d2349 | **Risk:** high | **Math:** 20
+**Last verified:** 2026-04-20 02:42 UTC | **Verdict:** REJECT (Witnesses disagree: test_suite, numerical_continuity PASS vs smoke FAIL)
+**Bundle hash:** 769f32531e931f7b | **Risk:** high | **Math:** 20
 
 ## Health
 
 | Witness | Verdict | Time | Detail |
 |---------|---------|------|--------|
-| test_suite | PASS | 10.0s | ....                                                                     [100%]
+| test_suite | PASS | 12.4s | ....                                                                     [100%]
  |
-| smoke | FAIL | 58.4s | py:extract_and_validate_curves: rves.py", line 22, in <module> |
+| smoke | FAIL | 64.4s | py:extract_and_validate_curves: rves.py", line 22, in <module> |
 | numerical | SKIP | 0.0s | skipped |
+| numerical_continuity | PASS | 0.0s | numerical continuity: baseline + provenance checks OK |
 
 ## Project
 
@@ -25,10 +26,11 @@
 |------|---------|-----------|------|------|
 | 2026-04-17 | REJECT | 2/3 | 66.4s | 851110bc8c6779c1 |
 | 2026-04-19 | REJECT | 2/3 | 68.4s | a74f0618548d2349 |
+| 2026-04-20 | REJECT | 3/4 | 76.8s | 769f32531e931f7b |
 
 ## Notes
 
-Witnesses disagree: test_suite PASS vs smoke FAIL
+Witnesses disagree: test_suite, numerical_continuity PASS vs smoke FAIL
 
 **smoke:** py:extract_and_validate_curves: rves.py", line 22, in <module>
     from batch_processor import process_pdf

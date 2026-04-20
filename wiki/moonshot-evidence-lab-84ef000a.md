@@ -1,16 +1,17 @@
 # moonshot-evidence-lab
 
-**Last verified:** 2026-04-19 02:36 UTC | **Verdict:** UNVERIFIED (2/2 witnesses PASS but numerical witness SKIPPED (baseline missing) — NOT a release pass)
-**Bundle hash:** 3edfd2a16d796449 | **Risk:** high | **Math:** 11
+**Last verified:** 2026-04-20 02:42 UTC | **Verdict:** UNVERIFIED (3/3 witnesses PASS but numerical witness SKIPPED (baseline missing) — NOT a release pass)
+**Bundle hash:** 74599c026b418ded | **Risk:** high | **Math:** 11
 
 ## Health
 
 | Witness | Verdict | Time | Detail |
 |---------|---------|------|--------|
-| test_suite | PASS | 1.9s | ...........                                                              [100%]
+| test_suite | PASS | 2.0s | ...........                                                              [100%]
  |
-| smoke | PASS | 2.5s | 19 modules imported OK |
+| smoke | PASS | 2.6s | 19 modules imported OK |
 | numerical | SKIP | 0.0s | skipped |
+| numerical_continuity | PASS | 0.0s | numerical continuity: baseline + provenance checks OK |
 
 ## Project
 
@@ -31,3 +32,4 @@
 | 2026-04-15 | FAIL | 1/1 | 0.0s | 4f8c59ff116d8489 |
 | 2026-04-17 | UNVERIFIED | 2/3 | 4.8s | 2e9c064240a0499a |
 | 2026-04-19 | UNVERIFIED | 2/3 | 4.4s | 3edfd2a16d796449 |
+| 2026-04-20 | UNVERIFIED | 3/4 | 4.7s | 74599c026b418ded |

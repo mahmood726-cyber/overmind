@@ -1,15 +1,15 @@
 # ctgov-search-strategies
 
-**Last verified:** 2026-04-19 02:36 UTC | **Verdict:** CERTIFIED (2/2 witnesses agree PASS)
-**Bundle hash:** 67cc639d353b8661 | **Risk:** high | **Math:** 7
+**Last verified:** 2026-04-20 02:42 UTC | **Verdict:** CERTIFIED (2/2 witnesses agree PASS)
+**Bundle hash:** 512158da7d1d9278 | **Risk:** high | **Math:** 7
 
 ## Health
 
 | Witness | Verdict | Time | Detail |
 |---------|---------|------|--------|
-| test_suite | PASS | 7.8s | _search.py                    110    110     0%   6-175
+| test_suite | PASS | 5.9s | _search.py                    110    110     0%   6-175
 enhanced_strategy.py     |
-| smoke | PASS | 11.6s | 40 modules imported OK |
+| smoke | PASS | 12.6s | 40 modules imported OK |
 
 ## Project
 
@@ -22,7 +22,6 @@ enhanced_strategy.py     |
 
 | Date | Verdict | Witnesses | Time | Hash |
 |------|---------|-----------|------|------|
-| 2026-04-08 | REJECT | 2/2 | 20.9s | b10da6704b62307a |
 | 2026-04-08 | REJECT | 2/2 | 14.2s | c8a3562791de4445 |
 | 2026-04-08 | REJECT | 2/2 | 33.1s | 9adc19b2fb479203 |
 | 2026-04-10 | CERTIFIED | 2/2 | 19.1s | 2613a5c9290963ea |
@@ -32,3 +31,4 @@ enhanced_strategy.py     |
 | 2026-04-15 | CERTIFIED | 2/2 | 16.4s | 25ffa71963fa19b5 |
 | 2026-04-17 | CERTIFIED | 2/2 | 18.4s | dbc950ebada82f0b |
 | 2026-04-19 | CERTIFIED | 2/2 | 19.4s | 67cc639d353b8661 |
+| 2026-04-20 | CERTIFIED | 2/2 | 18.6s | 512158da7d1d9278 |

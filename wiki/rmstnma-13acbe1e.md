@@ -1,16 +1,17 @@
 # rmstnma
 
-**Last verified:** 2026-04-19 02:36 UTC | **Verdict:** PASS (Single witness: test_suite PASS)
-**Bundle hash:** 3639b9a88d9e4cd1 | **Risk:** high | **Math:** 15
+**Last verified:** 2026-04-20 02:42 UTC | **Verdict:** UNVERIFIED (2/2 witnesses PASS but numerical witness SKIPPED (baseline missing) — NOT a release pass)
+**Bundle hash:** 9f0efda093227f38 | **Risk:** high | **Math:** 15
 
 ## Health
 
 | Witness | Verdict | Time | Detail |
 |---------|---------|------|--------|
-| test_suite | PASS | 6.5s |       └─tidyselect:::call_expand_dots(expr, context_mask$.__current__.)
+| test_suite | PASS | 7.1s |       └─tidyselect:::call_expand_dots(expr, context_mask$.__current__.)
  13. │   |
 | smoke | SKIP | 0.0s | skipped |
 | numerical | SKIP | 0.0s | skipped |
+| numerical_continuity | PASS | 0.0s | numerical continuity: baseline + provenance checks OK |
 
 ## Project
 
@@ -24,3 +25,4 @@
 | Date | Verdict | Witnesses | Time | Hash |
 |------|---------|-----------|------|------|
 | 2026-04-19 | PASS | 1/3 | 6.5s | 3639b9a88d9e4cd1 |
+| 2026-04-20 | UNVERIFIED | 2/4 | 7.1s | 9f0efda093227f38 |

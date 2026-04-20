@@ -1,15 +1,15 @@
 # Denominator_Calibrated_Living_NMA
 
-**Last verified:** 2026-04-19 02:36 UTC | **Verdict:** REJECT (Witnesses disagree: test_suite PASS vs smoke FAIL)
-**Bundle hash:** 8d5627b90006c54b | **Risk:** high | **Math:** 8
+**Last verified:** 2026-04-20 02:42 UTC | **Verdict:** REJECT (Witnesses disagree: test_suite PASS vs smoke FAIL)
+**Bundle hash:** 3a4f34d588118abe | **Risk:** high | **Math:** 8
 
 ## Health
 
 | Witness | Verdict | Time | Detail |
 |---------|---------|------|--------|
-| test_suite | PASS | 1.8s | ........                                                           [100%]
+| test_suite | PASS | 2.2s | ........                                                           [100%]
 8 pass |
-| smoke | FAIL | 1.6s | py:src.dclnma.witnesses.base: rt name 'WitnessContext' from partially initialize |
+| smoke | FAIL | 1.7s | py:src.dclnma.witnesses.base: rt name 'WitnessContext' from partially initialize |
 
 ## Project
 
@@ -22,7 +22,6 @@
 
 | Date | Verdict | Witnesses | Time | Hash |
 |------|---------|-----------|------|------|
-| 2026-04-08 | PASS | 1/2 | 3.5s | c2ff2f48d354a0b0 |
 | 2026-04-08 | PASS | 1/2 | 3.4s | 13255426320da027 |
 | 2026-04-08 | PASS | 1/2 | 4.0s | 07ca5aa65eba3d3d |
 | 2026-04-10 | PASS | 1/2 | 2.3s | 81077f9a8176f527 |
@@ -32,6 +31,7 @@
 | 2026-04-15 | REJECT | 2/2 | 3.0s | b545a6bbd5c440c7 |
 | 2026-04-17 | REJECT | 2/2 | 3.7s | c7746d9a19c31e97 |
 | 2026-04-19 | REJECT | 2/2 | 3.5s | 8d5627b90006c54b |
+| 2026-04-20 | REJECT | 2/2 | 3.8s | 3a4f34d588118abe |
 
 ## Notes
 
