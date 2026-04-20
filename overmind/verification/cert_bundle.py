@@ -1,55 +1,58 @@
-"""Arbitrator (fail-closed verdict logic) and CertBundle (output with hash + HMAC signature).
+"""Arbitrator (fail-closed verdict logic) and CertBundle (signed verification output).
 
-Signing model (per `lessons.md#cryptography--signing-learned-2026-04-14`):
-  - `bundle_hash` is a truncated SHA256 over the canonical payload. It is an
-    integrity / cache key (used by nightly_verify.py to detect unchanged
-    inputs and skip re-verification). NOT a signature.
-  - `bundle_signature` is HMAC-SHA256 over the same canonical payload, keyed
-    from the `TRUTHCERT_HMAC_KEY` env variable. Verifies authenticity:
-    a third party that mutates a bundle JSON on disk cannot recompute the
-    signature without the key.
+Signing model (per `lessons.md#cryptography--signing-learned-2026-04-14` +
+ROADMAP.md#1 landing 2026-04-18):
 
-Key sourcing rules (failure modes encoded in lessons.md):
-  - Key MUST come from env or a gitignored file, NEVER from the bundle itself.
-  - If env var is not set: signature is left empty and a warning is logged.
-    The bundle is still usable (caches still work via bundle_hash) but is
-    NOT release-grade. Production callers should set the env var.
-  - Verification uses `hmac.compare_digest` (constant-time).
+  - `bundle_hash` is a truncated SHA256 over the canonical payload. Integrity /
+    cache key only (nightly_verify.py uses it to skip unchanged inputs). NOT
+    a signature.
+  - `bundle_signature` + `signature_method` (+ `signature_public_key` for
+    asymmetric methods) together form the authenticity proof. A third party
+    that mutates a bundle JSON on disk cannot recompute the signature without
+    the appropriate key material.
+
+Signer selection is delegated to `overmind.verification.signers.select_signer()`,
+which picks among: ed25519 (preferred default, local keypair, no shared secret),
+HMAC-SHA256 (legacy, TRUTHCERT_HMAC_KEY), sigstore (OIDC keyless, CI / release
+only), or UnsignedSigner (dev fallback). See `signers.py` for precedence rules.
+
+Backward compatibility:
+  - Bundles on disk from pre-signers days have `bundle_signature` (HMAC hex)
+    and NO `signature_method` field. `verify_signature()` treats an empty
+    method with a non-empty signature as legacy HMAC.
+  - The `_HMAC_ENV_VAR` constant is kept as an alias for test imports that
+    predate the refactor.
 """
 from __future__ import annotations
 
 import hashlib
-import hmac
 import json
 import logging
-import os
 from dataclasses import dataclass
 
 from overmind.verification.scope_lock import ScopeLock, WitnessResult
+from overmind.verification.signers import (
+    ENV_HMAC_KEY as _HMAC_ENV_VAR,
+    SignResult,
+    UnsignedSigner,
+    select_signer,
+    verify_result,
+)
 
 
 _log = logging.getLogger(__name__)
-_HMAC_ENV_VAR = "TRUTHCERT_HMAC_KEY"
-_warned_missing_key = False  # only warn once per process
+_warned_missing_signer = False  # only warn once per process
 
 
-def _get_hmac_key() -> bytes | None:
-    """Return key bytes from env var, or None if unset."""
-    val = os.environ.get(_HMAC_ENV_VAR, "")
-    if not val:
-        return None
-    return val.encode("utf-8")
-
-
-def _warn_once_missing_key() -> None:
-    global _warned_missing_key
-    if not _warned_missing_key:
+def _warn_once_unsigned() -> None:
+    global _warned_missing_signer
+    if not _warned_missing_signer:
         _log.warning(
-            "%s not set; cert bundles will be unsigned. Set this env var "
-            "before any release-grade verification.",
-            _HMAC_ENV_VAR,
+            "No signer configured (OVERMIND_ED25519_KEY / TRUTHCERT_HMAC_KEY / "
+            "SIGSTORE_ID_TOKEN); cert bundles will be unsigned. Set one before "
+            "any release-grade verification."
         )
-        _warned_missing_key = True
+        _warned_missing_signer = True
 
 
 class Arbitrator:
@@ -103,19 +106,23 @@ class CertBundle:
     arbitration_reason: str
     timestamp: str
     bundle_hash: str = ""
-    bundle_signature: str = ""  # HMAC-SHA256, empty if TRUTHCERT_HMAC_KEY unset
+    bundle_signature: str = ""
+    signature_method: str = ""       # "hmac" | "ed25519" | "sigstore" | "none" | ""
+    signature_public_key: str = ""   # base64 for ed25519; cert PEM for sigstore; empty otherwise
     failure_class: str | None = None  # from failure_taxonomy; None when CERTIFIED/PASS
 
     def __post_init__(self) -> None:
         if not self.bundle_hash:
             self.bundle_hash = self._compute_hash()
-        if not self.bundle_signature:
-            self.bundle_signature = self._compute_signature()
+        # Only sign if nothing is already set — allows deserialized bundles to
+        # keep their stored signature.method.public_key triple untouched.
+        if not self.bundle_signature and not self.signature_method:
+            self._sign()
 
     def _canonical_payload(self) -> bytes:
-        # failure_class is excluded so a nightly re-classifying an existing
-        # bundle's failure category doesn't invalidate prior hashes/signatures.
-        # bundle_signature is also excluded (chicken-and-egg).
+        # Excluded fields: bundle_hash + bundle_signature + signature_method +
+        # signature_public_key (chicken-and-egg on sign), and failure_class
+        # (nightly may re-classify without invalidating the signature).
         payload = {
             "project_id": self.project_id,
             "scope_lock": _frozen_to_dict(self.scope_lock),
@@ -129,31 +136,40 @@ class CertBundle:
     def _compute_hash(self) -> str:
         return hashlib.sha256(self._canonical_payload()).hexdigest()[:16]
 
-    def _compute_signature(self) -> str:
-        """Return HMAC-SHA256 hex over the canonical payload, or '' if no key.
+    def _sign(self) -> None:
+        """Populate bundle_signature + signature_method + signature_public_key.
 
-        Empty signature is non-fatal (dev mode); production callers must set
-        TRUTHCERT_HMAC_KEY and verify_signature() before trusting a bundle.
+        Dev-mode fallback: if no signer is configured, leave all three empty
+        (matches pre-2026-04-18 dev behavior — the bundle is still usable
+        for cache-skip via bundle_hash, but verify_signature() returns False).
         """
-        key = _get_hmac_key()
-        if key is None:
-            _warn_once_missing_key()
-            return ""
-        return hmac.new(key, self._canonical_payload(), hashlib.sha256).hexdigest()
+        signer = select_signer()
+        if isinstance(signer, UnsignedSigner):
+            _warn_once_unsigned()
+            return
+        result = signer.sign(self._canonical_payload())
+        self.bundle_signature = result.signature
+        self.signature_method = result.method
+        self.signature_public_key = result.public_key
 
     def verify_signature(self) -> bool:
-        """Constant-time HMAC verification.
+        """Constant-time signature verification against the current payload.
 
-        Returns True iff the bundle's stored signature matches a freshly
-        computed HMAC over its current payload. Returns False if the key
-        is missing OR if the signature is empty OR if it doesn't match.
+        Returns True iff the stored signature matches. Dispatches on
+        signature_method. Legacy bundles with no method recorded are
+        treated as HMAC (pre-2026-04-18 default).
+
         Callers that require a signed bundle MUST treat False as failure.
         """
-        key = _get_hmac_key()
-        if key is None or not self.bundle_signature:
+        if not self.bundle_signature:
             return False
-        expected = hmac.new(key, self._canonical_payload(), hashlib.sha256).hexdigest()
-        return hmac.compare_digest(expected, self.bundle_signature)
+        method = self.signature_method or "hmac"  # legacy default
+        result = SignResult(
+            method=method,
+            signature=self.bundle_signature,
+            public_key=self.signature_public_key,
+        )
+        return verify_result(self._canonical_payload(), result)
 
     def to_dict(self) -> dict:
         return {
@@ -165,6 +181,8 @@ class CertBundle:
             "timestamp": self.timestamp,
             "bundle_hash": self.bundle_hash,
             "bundle_signature": self.bundle_signature,
+            "signature_method": self.signature_method,
+            "signature_public_key": self.signature_public_key,
             "failure_class": self.failure_class,
         }
 
