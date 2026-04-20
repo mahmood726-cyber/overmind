@@ -41,7 +41,11 @@ from overmind.verification.signers import (
 
 
 _log = logging.getLogger(__name__)
-_warned_missing_signer = False  # only warn once per process
+# Module-level "warned once" flag. Not thread-safe by design — nightly_verify
+# and the on-demand CLI both run sequentially. If this module ever moves
+# into a multi-threaded producer (e.g. parallel portfolio verification),
+# replace with `threading.Lock` + `bool` or an `atomic_flag`. Review P2-6.
+_warned_missing_signer = False
 
 
 def _warn_once_unsigned() -> None:

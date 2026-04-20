@@ -9,6 +9,13 @@ Three signing methods, selected per-environment:
   2. HMAC-SHA256              — legacy. Kept for backward compat.
      Symmetric; same key to sign + verify. Suitable for single-user
      closed-loop use only. Deprecated in v0.3 roadmap.
+
+     SECURITY NOTE (review P2-7): because HMAC is symmetric, every
+     verifier inherits the sign capability. In other words, a read-only
+     attacker who reads a verifier's env gets both verify AND forge.
+     Ed25519 doesn't have this property — verifiers only need the
+     public key. Prefer Ed25519 for any deployment where the verifier
+     environment is more exposed than the signer environment.
   3. Sigstore (OIDC keyless)  — for CI / release attestation. Requires
      an OIDC identity token (GitHub Actions id-token, or manually
      fetched). Not viable for headless Windows Task Scheduler without
@@ -288,19 +295,35 @@ def select_signer() -> Signer:
     if method == "none":
         return UnsignedSigner()
 
-    # Auto mode
+    # Auto mode — method-selection precedence is Ed25519 > HMAC > Sigstore.
+    #
+    # A set-but-broken primary config (e.g. OVERMIND_ED25519_KEY points at a
+    # missing file, or sigstore is selected without the package installed)
+    # FAILS CLOSED — we do NOT silently drop to HMAC. Rationale: the
+    # 2026-04-19 security review's "policy says signed, reality ships X"
+    # failure mode. A broken-but-set primary is an operator bug that should
+    # surface loudly, not be masked by a weaker method the user didn't pick.
+    #
+    # The only caught exception is `RuntimeError` from missing optional
+    # dependencies (cryptography, sigstore packages) — those are install-time
+    # issues distinct from bad config. FileNotFoundError / OSError on a typo'd
+    # key path propagate by design.
     if os.environ.get(ENV_ED25519_KEY):
         try:
             return _build_ed25519_or_fail()
         except RuntimeError as e:
-            _log.warning("ed25519 signer unavailable (%s); falling back", e)
+            _log.warning(
+                "ed25519 dependency missing (%s); trying HMAC/sigstore", e,
+            )
     if os.environ.get(ENV_HMAC_KEY):
         return _build_hmac_or_fail()
     if os.environ.get(ENV_SIGSTORE_TOKEN):
         try:
             return _build_sigstore_or_fail()
         except RuntimeError as e:
-            _log.warning("sigstore signer unavailable (%s); falling back", e)
+            _log.warning(
+                "sigstore dependency missing (%s); using UnsignedSigner", e,
+            )
 
     _log.warning(
         "No signing key configured (OVERMIND_ED25519_KEY / TRUTHCERT_HMAC_KEY "

@@ -171,3 +171,17 @@ def test_select_signer_explicit_sigstore_missing_token_raises(monkeypatch):
     monkeypatch.delenv(ENV_SIGSTORE_TOKEN, raising=False)
     with pytest.raises(RuntimeError, match=ENV_SIGSTORE_TOKEN):
         select_signer()
+
+
+def test_select_signer_auto_ed25519_broken_path_fails_closed(monkeypatch, tmp_path: Path):
+    """Review P1-1: a set-but-broken OVERMIND_ED25519_KEY must FAIL CLOSED
+    with FileNotFoundError, NOT silently fall back to HMAC. Rationale:
+    silent downgrade-from-Ed25519-to-HMAC is the exact 'policy says signed,
+    reality ships X' failure mode the 2026-04-19 security review flagged.
+    A broken primary-method config is an operator bug that must surface,
+    not be masked by a weaker backup."""
+    monkeypatch.delenv(ENV_METHOD, raising=False)
+    monkeypatch.setenv(ENV_ED25519_KEY, str(tmp_path / "nonexistent_key"))
+    monkeypatch.setenv(ENV_HMAC_KEY, "would-be-fallback")
+    with pytest.raises((FileNotFoundError, OSError)):
+        select_signer()
