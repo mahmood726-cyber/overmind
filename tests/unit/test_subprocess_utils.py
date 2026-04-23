@@ -35,6 +35,17 @@ def test_split_command_resolves_windows_cmd_shims(monkeypatch):
     assert parts == [r"C:\Program Files\nodejs\npm.CMD", "run", "test"]
 
 
+def test_split_command_raises_on_malformed_quoting():
+    command = '"C:\\Program Files\\Python\\python.exe" -c "print(1)'
+
+    try:
+        split_command(command)
+    except ValueError as exc:
+        assert "command could not be parsed" in str(exc)
+    else:
+        raise AssertionError("Expected split_command to fail closed on malformed quoting")
+
+
 def test_numerical_witness_runs_unquoted_absolute_python_command(tmp_path):
     probe = tmp_path / "probe.py"
     probe.write_text(
@@ -86,6 +97,17 @@ def test_validate_command_prefix_allows_repo_local_powershell_script(tmp_path):
 
     assert valid is True
     assert detail is None
+
+
+def test_validate_command_prefix_blocks_unparseable_command():
+    valid, detail = validate_command_prefix_with_detail(
+        '"C:\\Program Files\\Python\\python.exe" -c "print(1)',
+        cwd="C:\\overmind",
+    )
+
+    assert valid is False
+    assert detail is not None
+    assert "could not be parsed" in detail
 
 
 def test_safe_subprocess_env_strips_inheritance_vectors(monkeypatch):

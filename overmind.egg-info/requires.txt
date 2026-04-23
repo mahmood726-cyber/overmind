@@ -3,3 +3,7 @@ PyYAML>=6.0
 
 [dev]
 pytest>=8.0
+pytest-timeout>=2.0
+
+[embeddings]
+sentence-transformers>=2.2

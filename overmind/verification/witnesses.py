@@ -75,7 +75,7 @@ class SuiteWitness:
                 stdout="", stderr=f"Timed out after {self.timeout}s",
                 elapsed=round(time.time() - start, 2),
             )
-        except OSError as exc:
+        except (OSError, ValueError) as exc:
             return WitnessResult(
                 witness_type="test_suite", verdict="FAIL", exit_code=-1,
                 stdout="", stderr=f"Failed to start: {exc}",
@@ -196,7 +196,7 @@ class NumericalWitness:
                 capture_output=True, text=True, timeout=self.timeout,
                 encoding="utf-8", errors="replace",
             )
-        except (subprocess.TimeoutExpired, OSError) as exc:
+        except (subprocess.TimeoutExpired, OSError, ValueError) as exc:
             return WitnessResult(
                 witness_type="numerical", verdict="SKIP", exit_code=-1,
                 stdout="", stderr=f"Probe failed: {exc}",
@@ -299,7 +299,7 @@ class NumericalWitness:
                 stdout="", stderr=f"Baseline command timed out after {self.timeout}s",
                 elapsed=round(time.time() - start, 2),
             )
-        except OSError as exc:
+        except (OSError, ValueError) as exc:
             return WitnessResult(
                 witness_type="numerical", verdict="FAIL", exit_code=-1,
                 stdout="", stderr=f"Failed to start: {exc}",
@@ -428,7 +428,7 @@ class DeterminismWitness:
                     stdout="", stderr=f"Run {run_idx + 1} timed out after {self.timeout}s",
                     elapsed=round(time.time() - start, 2),
                 )
-            except OSError as exc:
+            except (OSError, ValueError) as exc:
                 return WitnessResult(
                     witness_type="determinism", verdict="FAIL", exit_code=-1,
                     stdout="", stderr=f"Run {run_idx + 1} failed to start: {exc}",
@@ -588,7 +588,7 @@ class RegressionWitness:
                 capture_output=True, text=True, timeout=self.timeout,
                 encoding="utf-8", errors="replace",
             )
-        except (subprocess.TimeoutExpired, OSError) as exc:
+        except (subprocess.TimeoutExpired, OSError, ValueError) as exc:
             return subprocess.CompletedProcess(
                 args=command, returncode=-1, stdout="",
                 stderr=f"test run failed: {exc}",

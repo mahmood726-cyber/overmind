@@ -6,6 +6,7 @@ from pathlib import Path
 from overmind.config import AppConfig
 from overmind.core.orchestrator import Orchestrator
 from overmind.verification.llm_judge import LLMJudge, StubBackend
+from overmind.verification.trajectory_scorer import TrajectoryScore
 from overmind.storage.models import InsightRecord, ProjectRecord, RunnerRecord, TaskRecord, VerificationResult
 
 
@@ -193,6 +194,56 @@ def test_completion_gates_block_disallowed_verify_command(tmp_path):
         orchestrator.close()
 
 
+def test_completion_gates_block_unparseable_verify_command(tmp_path):
+    config = _write_minimal_config(tmp_path / "config", tmp_path / "data")
+    project_root = tmp_path / "project"
+    project_root.mkdir()
+    orchestrator = Orchestrator(config)
+    try:
+        project = ProjectRecord(
+            project_id="verify-parse-project",
+            name="Verify Parse Project",
+            root_path=str(project_root),
+            project_type="python_tool",
+            stack=["python"],
+        )
+        task = TaskRecord(
+            task_id="verify-parse-task",
+            project_id=project.project_id,
+            title="Block malformed verify command",
+            task_type="verification",
+            source="test",
+            priority=0.9,
+            risk="medium",
+            expected_runtime_min=1,
+            expected_context_cost="low",
+            required_verification=["relevant_tests"],
+            verify_command=f'"{sys.executable}" -c "print(1)',
+        )
+        verification_result = VerificationResult(
+            task_id=task.task_id,
+            success=True,
+            required_checks=["relevant_tests"],
+            completed_checks=["relevant_tests"],
+            skipped_checks=[],
+            details=["relevant_tests: exit=0 command=pytest"],
+        )
+
+        final_result = orchestrator._apply_completion_gates(
+            task=task,
+            project=project,
+            verification_result=verification_result,
+            transcript_lines=["tests passed"],
+            include_judge=False,
+        )
+
+        assert final_result.success is False
+        assert "verify_command" in final_result.skipped_checks
+        assert any("could not be parsed" in detail for detail in final_result.details)
+    finally:
+        orchestrator.close()
+
+
 def test_orchestrator_completes_task_with_dummy_runner(tmp_path):
     config_dir = tmp_path / "config"
     data_dir = tmp_path / "data"
@@ -268,6 +319,95 @@ def test_orchestrator_completes_task_with_dummy_runner(tmp_path):
         assert saved_task is not None
         assert saved_task.status == "COMPLETED"
         assert saved_task.verification_summary
+    finally:
+        orchestrator.close()
+
+
+def test_orchestrator_consumes_skip_verify_fast_path(tmp_path):
+    config_dir = tmp_path / "config"
+    data_dir = tmp_path / "data"
+    project_root = tmp_path / "project"
+    runner_script = tmp_path / "dummy_runner.py"
+    config_dir.mkdir()
+    data_dir.mkdir()
+    project_root.mkdir()
+
+    runner_script.write_text(
+        "import sys\n"
+        "sys.stdin.readline()\n"
+        "print('COMMAND: inspect task', flush=True)\n"
+        "print('build passed', flush=True)\n"
+        "print('tests passed', flush=True)\n",
+        encoding="utf-8",
+    )
+
+    (config_dir / "roots.yaml").write_text(
+        f'scan_roots:\n  - "{project_root.as_posix()}"\nscan_rules:\n  include_git_repos: true\n  include_non_git_apps: true\n  incremental_scan: true\n  max_depth: 2\nguidance_filenames:\n  - "README.md"\n',
+        encoding="utf-8",
+    )
+    (config_dir / "runners.yaml").write_text(
+        "runners:\n"
+        f"  - runner_id: dummy_runner\n"
+        "    type: codex\n"
+        "    mode: terminal\n"
+        f"    command: '\"{Path(sys.executable).as_posix()}\" \"{runner_script.as_posix()}\"'\n"
+        "    environment: windows\n",
+        encoding="utf-8",
+    )
+    (config_dir / "policies.yaml").write_text(
+        "concurrency:\n  default_active_sessions: 1\n  max_active_sessions: 1\n  degraded_sessions: 1\n"
+        "  scale_up_cpu_below: 100\n  scale_down_cpu_above: 100\n  scale_down_ram_above: 100\n  scale_down_swap_above_mb: 999999\n"
+        "limits:\n  idle_timeout_min: 10\n  summary_trigger_output_lines: 400\n"
+        "routing:\n  codex:\n    strengths: ['tests']\n"
+        "risk_policy: {}\n",
+        encoding="utf-8",
+    )
+    (config_dir / "projects_ignore.yaml").write_text("ignored_directories: []\nignored_file_suffixes: []\n", encoding="utf-8")
+    (config_dir / "verification_profiles.yaml").write_text("profiles: {}\n", encoding="utf-8")
+
+    config = AppConfig.from_directory(config_dir=config_dir, data_dir=data_dir, db_path=data_dir / "state.db")
+    orchestrator = Orchestrator(config)
+    try:
+        project = ProjectRecord(
+            project_id="skip-verify-project",
+            name="Skip Verify Project",
+            root_path=str(project_root),
+            project_type="browser_app",
+            stack=["html", "javascript", "css"],
+            build_commands=[f'"{sys.executable}" -c "print(\'build ok\')"'],
+            test_commands=[f'"{sys.executable}" -c "print(\'test ok\')"'],
+        )
+        task = TaskRecord(
+            task_id="task-skip-verify",
+            project_id=project.project_id,
+            title="Use trajectory fast path",
+            task_type="verification",
+            source="test",
+            priority=0.9,
+            risk="medium",
+            expected_runtime_min=1,
+            expected_context_cost="low",
+            required_verification=["build", "relevant_tests"],
+        )
+        orchestrator.db.upsert_project(project)
+        orchestrator.db.upsert_task(task)
+        orchestrator.trajectory_scorer.score = lambda evidence, transcript_lines=None: TrajectoryScore(
+            completion_probability=0.95,
+            signals={"tests_passed": 0.35, "build_passed": 0.1},
+            recommendation="skip_verify",
+        )
+
+        def _unexpected_verifier_run(*args, **kwargs):
+            raise AssertionError("verifier.run should not be called on skip_verify")
+
+        orchestrator.verifier.run = _unexpected_verifier_run
+
+        assignments, saved_task = _run_until_completed(orchestrator, task.task_id)
+
+        assert assignments
+        assert saved_task is not None
+        assert saved_task.status == "COMPLETED"
+        assert any("trajectory_fast_path" in line for line in saved_task.verification_summary)
     finally:
         orchestrator.close()
 

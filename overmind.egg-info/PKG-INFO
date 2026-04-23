@@ -1,6 +1,6 @@
 Metadata-Version: 2.4
 Name: overmind
-Version: 3.0.0
+Version: 3.1.0
 Summary: Local evidence-first orchestration for terminal coding agents.
 Requires-Python: >=3.11
 Description-Content-Type: text/markdown
@@ -8,6 +8,9 @@ Requires-Dist: psutil>=5.9
 Requires-Dist: PyYAML>=6.0
 Provides-Extra: dev
 Requires-Dist: pytest>=8.0; extra == "dev"
+Requires-Dist: pytest-timeout>=2.0; extra == "dev"
+Provides-Extra: embeddings
+Requires-Dist: sentence-transformers>=2.2; extra == "embeddings"
 
 # OVERMIND v1
 

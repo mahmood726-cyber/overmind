@@ -111,5 +111,5 @@ class VerificationEngine:
                 except subprocess.TimeoutExpired:
                     stdout, stderr = "", ""
                 return -1, stdout, f"Command timed out after {self.verification_timeout}s"
-        except OSError as exc:
+        except (OSError, ValueError) as exc:
             return -1, "", f"Failed to start command: {exc}"

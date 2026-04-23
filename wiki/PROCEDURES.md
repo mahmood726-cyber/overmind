@@ -6,7 +6,7 @@ Automatically discovered fix recipes from nightly verification outcomes.
 
 | Recipe | Pattern | Fix | Seen | Resolved | Confidence | Last Seen |
 |--------|---------|-----|------|----------|------------|-----------|
-| TIMEOUT:advanced-n | timed out | Check for WMI deadlock (Python 3.13), infinite loop, or slow | 13 | 1 | 9% | 2026-04-19 |
+| TIMEOUT:advanced-n | timed out | Check for WMI deadlock (Python 3.13), infinite loop, or slow | 14 | 1 | 8% | 2026-04-20 |
 
 ## Candidates (unproven)
 
@@ -14,8 +14,6 @@ Automatically discovered fix recipes from nightly verification outcomes.
 |--------|---------|-----|------|----------|-----------|
 | CONFIGURATION:evidence-i | no tests ran in 0.03s | Check pytest configuration (testpaths, test file naming, col | 2 | 0 | 2026-04-11 |
 | CONFIGURATION:idea12-592 | validation.run_quick_validatio | Verify column names in validation.run_quick_validation match | 2 | 0 | 2026-04-13 |
-| DEPENDENCY_ROT:kmcurve-68 | import process_pdf
-ImportErro | Check if the missing module is installed: pip install the mi | 2 | 0 | 2026-04-19 |
 | DEPENDENCY_ROT:statistical_framework | statistical_framework | Check if statistical_framework is installed: pip install sta | 2 | 0 | 2026-04-08 |
 | MISSING_FIXTURE:pairwise70 | ck, subtests, tmp_path, tmp_pa | Check test for unregistered fixture parameters and ensure re | 2 | 0 | 2026-04-12 |
 | SYNTAX_ERROR:ipd-qma-pr | e 418
@@ -25,12 +23,12 @@ SyntaxErro | Fix the syntax error in the reported file | 2 | 0 | 2026-04-08 |
 | SYNTAX_ERROR:repo300-en | ix
                ^
 SyntaxErro | Fix the syntax error in the reported file | 2 | 0 | 2026-04-13 |
-| TEST_FAILURE:dataextrac | OMPLETE: 82 passed, 2 failed
-S | Read test output and fix failing tests | 2 | 0 | 2026-04-19 |
-| TEST_FAILURE:fatiha-pro | nstalling renv  ... FAILED | Read test output and fix failing tests | 2 | 0 | 2026-04-19 |
+| TEST_FAILURE:esc-acs-li | Error: assert 15...
+1 failed i | Read test output and fix failing tests | 2 | 0 | 2026-04-20 |
 | UNKNOWN:pairwise70 | ck, subtests, tmp_path, tmp_pa | Manual investigation needed | 2 | 0 | 2026-04-10 |
 | DEPENDENCY_ROT:cardioorac | mal_cdf, load_data)
 ImportErro | Check if shared is installed: pip install shared | 1 | 0 | 2026-04-13 |
+| DEPENDENCY_ROT:denominato | py:src.dclnma.witnesses.base: | Break circular import by moving WitnessContext to a separate | 1 | 0 | 2026-04-20 |
 | DEPENDENCY_ROT:io | io.loaders | Check if io.loaders is installed: pip install io.loaders | 1 | 0 | 2026-04-15 |
 | DEPENDENCY_ROT:registry-f | ============================= | Check the import chain in tests/test_meta.py and install any | 1 | 0 | 2026-04-11 |
 | DEPENDENCY_ROT:user-ecc0a | <module>
@@ -48,12 +46,10 @@ SyntaxErro | Fix the syntax error in the reported file | 1 | 0 | 2026-04-15 |
 2 failed, | Read test output and fix failing tests | 1 | 0 | 2026-04-09 |
 | TEST_FAILURE:bayesianma | 0_r_code - Asser...
 7 failed, | Read test output and fix failing tests | 1 | 0 | 2026-04-17 |
-| TEST_FAILURE:bayesianma | effect_type_changes
-5 failed, | Read test output and fix failing tests | 1 | 0 | 2026-04-19 |
+| TEST_FAILURE:bayesianma | ort_content_visible
+9 failed, | Read test output and fix failing tests | 1 | 0 | 2026-04-20 |
 | TEST_FAILURE:ctgov-sear | est_ci_bounds_valid
 20 failed, | Read test output and fix failing tests | 1 | 0 | 2026-04-09 |
-| TEST_FAILURE:esc-acs-li | Error: assert 15...
-1 failed i | Read test output and fix failing tests | 1 | 0 | 2026-04-19 |
 | TEST_FAILURE:globalst-5 | truthcert_integrity
 4 failed i | Read test output and fix failing tests | 1 | 0 | 2026-04-09 |
 | TIMEOUT:asreview-5 | timed out | Check for WMI deadlock (Python 3.13), infinite loop, or slow | 1 | 0 | 2026-04-15 |
@@ -62,11 +58,12 @@ SyntaxErro | Fix the syntax error in the reported file | 1 | 0 | 2026-04-15 |
 | TIMEOUT:cardioorac | timed out | Check for WMI deadlock (Python 3.13), infinite loop, or slow | 1 | 0 | 2026-04-10 |
 | TIMEOUT:cbamm-0820 | timed out | Check for WMI deadlock (Python 3.13), infinite loop, or slow | 1 | 0 | 2026-04-08 |
 | TIMEOUT:cbamm-c5df | timed out | Check for WMI deadlock (Python 3.13), infinite loop, or slow | 1 | 0 | 2026-04-19 |
+| TIMEOUT:cbamm-c5df | timed out | Check for WMI deadlock (Python 3.13), infinite loop, or slow | 1 | 0 | 2026-04-20 |
 | TIMEOUT:dataextrac | timed out | Check for WMI deadlock (Python 3.13), infinite loop, or slow | 1 | 0 | 2026-04-08 |
 | TIMEOUT:dta70-4b17 | timed out | Check for WMI deadlock (Python 3.13), infinite loop, or slow | 1 | 0 | 2026-04-08 |
 | TIMEOUT:esc-acs-li | timed out | Check for WMI deadlock (Python 3.13), infinite loop, or slow | 1 | 0 | 2026-04-15 |
 | TIMEOUT:evidence-i | timed out | Check for WMI deadlock (Python 3.13), infinite loop, or slow | 1 | 0 | 2026-04-15 |
-| TIMEOUT:evidence-i | timed out | Check for WMI deadlock (Python 3.13), infinite loop, or slow | 1 | 0 | 2026-04-19 |
+| TIMEOUT:evidence-i | timed out | Check for WMI deadlock (Python 3.13), infinite loop, or slow | 1 | 0 | 2026-04-20 |
 | TIMEOUT:evidenceor | timed out | Check for WMI deadlock (Python 3.13), infinite loop, or slow | 1 | 0 | 2026-04-15 |
 | TIMEOUT:experiment | timed out | Check for WMI deadlock (Python 3.13), infinite loop, or slow | 1 | 0 | 2026-04-15 |
 | TIMEOUT:fatiha-pro | timed out | Check for WMI deadlock (Python 3.13), infinite loop, or slow | 1 | 0 | 2026-04-08 |
@@ -75,7 +72,7 @@ SyntaxErro | Fix the syntax error in the reported file | 1 | 0 | 2026-04-15 |
 | TIMEOUT:hfn786-583 | timed out | Check for WMI deadlock (Python 3.13), infinite loop, or slow | 1 | 0 | 2026-04-08 |
 | TIMEOUT:hfpef-regi | timed out | Check for WMI deadlock (Python 3.13), infinite loop, or slow | 1 | 0 | 2026-04-15 |
 | TIMEOUT:html-apps- | timed out | Check for WMI deadlock (Python 3.13), infinite loop, or slow | 1 | 0 | 2026-04-17 |
-| TIMEOUT:html-apps- | timed out | Check for WMI deadlock (Python 3.13), infinite loop, or slow | 1 | 0 | 2026-04-19 |
+| TIMEOUT:html-apps- | timed out | Check for WMI deadlock (Python 3.13), infinite loop, or slow | 1 | 0 | 2026-04-20 |
 | TIMEOUT:idea12-592 | timed out | Check for WMI deadlock (Python 3.13), infinite loop, or slow | 1 | 0 | 2026-04-15 |
 | TIMEOUT:ipd-meta-p | timed out | Check for WMI deadlock (Python 3.13), infinite loop, or slow | 1 | 0 | 2026-04-15 |
 | TIMEOUT:ipd-qma-pr | timed out | Check for WMI deadlock (Python 3.13), infinite loop, or slow | 1 | 0 | 2026-04-15 |
@@ -90,7 +87,7 @@ SyntaxErro | Fix the syntax error in the reported file | 1 | 0 | 2026-04-15 |
 | TIMEOUT:nma-c44d8a | timed out | Check for WMI deadlock (Python 3.13), infinite loop, or slow | 1 | 0 | 2026-04-09 |
 | TIMEOUT:overmind-b | timed out | Check for WMI deadlock (Python 3.13), infinite loop, or slow | 1 | 0 | 2026-04-15 |
 | TIMEOUT:pairwise70 | timed out | Check for WMI deadlock (Python 3.13), infinite loop, or slow | 1 | 0 | 2026-04-15 |
-| TIMEOUT:pairwise70 | timed out | Check for WMI deadlock (Python 3.13), infinite loop, or slow | 1 | 0 | 2026-04-19 |
+| TIMEOUT:pairwise70 | timed out | Check for WMI deadlock (Python 3.13), infinite loop, or slow | 1 | 0 | 2026-04-20 |
 | TIMEOUT:prognostic | timed out | Check for WMI deadlock (Python 3.13), infinite loop, or slow | 1 | 0 | 2026-04-10 |
 | TIMEOUT:pub-bias-s | timed out | Check for WMI deadlock (Python 3.13), infinite loop, or slow | 1 | 0 | 2026-04-10 |
 | TIMEOUT:rct-extrac | timed out | Check for WMI deadlock (Python 3.13), infinite loop, or slow | 1 | 0 | 2026-04-15 |
@@ -102,10 +99,15 @@ SyntaxErro | Fix the syntax error in the reported file | 1 | 0 | 2026-04-15 |
 | TIMEOUT:truthcert- | timed out | Check for WMI deadlock (Python 3.13), infinite loop, or slow | 1 | 0 | 2026-04-08 |
 | TIMEOUT:ubcma-4230 | timed out | Check for WMI deadlock (Python 3.13), infinite loop, or slow | 1 | 0 | 2026-04-08 |
 | TIMEOUT:user-ecc0a | timed out | Check for WMI deadlock (Python 3.13), infinite loop, or slow | 1 | 0 | 2026-04-17 |
+| TIMEOUT:user-ecc0a | timed out | Check for WMI deadlock (Python 3.13), infinite loop, or slow | 1 | 0 | 2026-04-20 |
 | UNKNOWN:hta-eviden | no tests ran in 2.35s | Manual investigation needed | 1 | 0 | 2026-04-09 |
 
 ## Anti-Recipes (never worked — do NOT retry)
 
 | Recipe | Pattern | Seen | Resolved | Last Seen |
 |--------|---------|------|----------|-----------|
-| DEPENDENCY_ROT:denominato | py:src.dclnma.witnesses.base: | 3 | 0 | 2026-04-19 |
+| DEPENDENCY_ROT:kmcurve-68 | import process_pdf
+ImportErro | 3 | 0 | 2026-04-20 |
+| TEST_FAILURE:dataextrac | OMPLETE: 82 passed, 2 failed
+S | 3 | 0 | 2026-04-20 |
+| TEST_FAILURE:fatiha-pro | nstalling renv  ... FAILED | 3 | 0 | 2026-04-20 |

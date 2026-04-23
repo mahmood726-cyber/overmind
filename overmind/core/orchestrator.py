@@ -274,7 +274,10 @@ class Orchestrator:
                         last_error="project missing from index",
                     )
                     continue
-                result = self.verifier.run(task, project)
+                if trajectory.recommendation == "skip_verify":
+                    result = self._trajectory_fast_path_result(task, trajectory)
+                else:
+                    result = self.verifier.run(task, project)
                 final_result = self._apply_completion_gates(
                     task=task,
                     project=project,
@@ -823,6 +826,29 @@ class Orchestrator:
         passed, _detail = self._run_verify_command_with_detail(task, project)
         return passed
 
+    def _trajectory_fast_path_result(self, task: TaskRecord, trajectory) -> VerificationResult:
+        detail = (
+            "trajectory_fast_path: "
+            f"completion_probability={trajectory.completion_probability:.3f} "
+            f"recommendation={trajectory.recommendation} "
+            "skipped explicit verifier.run"
+        )
+        if trajectory.signals:
+            positive_signals = [
+                name for name, weight in trajectory.signals.items() if weight > 0
+            ]
+            if positive_signals:
+                detail += f" signals={', '.join(positive_signals)}"
+        return VerificationResult(
+            task_id=task.task_id,
+            trace_id=task.trace_id or task.task_id,
+            success=True,
+            required_checks=["trajectory_fast_path"],
+            completed_checks=["trajectory_fast_path"],
+            skipped_checks=[],
+            details=[detail],
+        )
+
     def _run_verify_command_with_detail(self, task: TaskRecord, project: ProjectRecord) -> tuple[bool, str]:
         if not task.verify_command:
             return True, "verify_command: not configured"
@@ -865,7 +891,7 @@ class Orchestrator:
                 except subprocess.TimeoutExpired:
                     pass
                 return False, f"verify_command: timed out after {timeout}s command={command}"
-        except OSError as exc:
+        except (OSError, ValueError) as exc:
             return False, f"verify_command: failed to start ({exc}) command={command}"
 
     def dream(self, dry_run: bool = False) -> dict[str, object]:

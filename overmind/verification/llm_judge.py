@@ -67,7 +67,7 @@ class SubprocessBackend:
                 timeout=self.timeout,
             )
             return result.stdout.strip()
-        except (subprocess.TimeoutExpired, OSError) as exc:
+        except (subprocess.TimeoutExpired, OSError, ValueError) as exc:
             return f"JUDGE_ERROR: {exc}"
 
 

@@ -120,8 +120,8 @@ def _should_use_windows_split(command: str) -> bool:
 def _split_for_validation(command: str) -> list[str]:
     try:
         return shlex.split(command, posix=False)
-    except ValueError:
-        return command.split()
+    except ValueError as exc:
+        raise ValueError(f"command could not be parsed: {exc}") from exc
 
 
 def _resolve_windows_executable(parts: list[str]) -> list[str]:
@@ -153,8 +153,8 @@ def split_command(command: str) -> list[str]:
             return _resolve_windows_executable(parts)
         return _resolve_windows_executable(shlex.split(command))
     except ValueError as exc:
-        logger.warning("shlex.split failed for %r: %s; using basic split", command[:80], exc)
-        return _resolve_windows_executable(command.split())
+        logger.warning("shlex.split failed for %r: %s; blocking malformed command", command[:80], exc)
+        raise ValueError(f"command could not be parsed: {exc}") from exc
 
 
 def _normalized_executable(token: str) -> str:
@@ -212,7 +212,10 @@ def validate_command_prefix_with_detail(
     cwd: str | Path | None = None,
 ) -> tuple[bool, str | None]:
     """Check that a command starts with an allowlisted executable."""
-    parts = _split_for_validation(command)
+    try:
+        parts = _split_for_validation(command)
+    except ValueError as exc:
+        return False, f"Blocked: {exc}"
     if not parts:
         return False, "Blocked: empty command"
 
