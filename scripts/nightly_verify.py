@@ -74,6 +74,8 @@ SKIP_PROJECTS = {
     "pairwise70-900619fe",                                    # path missing on disk (Models/Pairwise70) — superseded by Pairwise70 corpus living in MetaAudit subdirs
     "html-apps-6eaac579",                                     # the HTML-apps scan root is a directory of standalone single-file HTML demos, not a single project — discovery picked it up wrongly; 300s timeout because no coherent test surface
     "user-ecc0a382",                                          # the home-directory scan root is NOT a project — 300s timeout on whatever heuristic test command was inferred from dotfiles
+    # Added 2026-04-25 (env-bound REJECT cleanup):
+    "fatiha-project-a8ec1065",                                # renv bootstrap fails: 'unzip' had status 3 (unzip.exe not in PATH on this machine). Genuinely environmental — R is installed but the renv autoloader needs a working unzip to fetch and install renv 1.1.5 on first run. Either add unzip to PATH or pre-install the renv R-package in the user library; see CHANGELOG note for details.
 }  # Projects that consistently hang during verification OR whose source path is missing OR whose source is broken enough to need dedicated repair
 
 
