@@ -1,7 +1,7 @@
 # Cbamm
 
-**Last verified:** 2026-04-20 02:42 UTC | **Verdict:** FAIL (Preflight failed: missing_path)
-**Bundle hash:** 9828c8e0e3b5a1c3 | **Risk:** high | **Math:** 10
+**Last verified:** 2026-04-25 02:49 UTC | **Verdict:** FAIL (Preflight failed: missing_path)
+**Bundle hash:** 5145046bc526c3b6 | **Risk:** high | **Math:** 10
 
 ## Health
 
@@ -22,6 +22,7 @@
 |------|---------|-----------|------|------|
 | 2026-04-19 | FAIL | 1/1 | 0.0s | 78d9f236e98029bd |
 | 2026-04-20 | FAIL | 1/1 | 0.0s | 9828c8e0e3b5a1c3 |
+| 2026-04-25 | FAIL | 1/1 | 0.0s | 5145046bc526c3b6 |
 
 ## Notes
 

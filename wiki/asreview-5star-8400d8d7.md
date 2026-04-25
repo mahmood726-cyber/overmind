@@ -1,15 +1,15 @@
 # asreview_5star
 
-**Last verified:** 2026-04-20 02:42 UTC | **Verdict:** UNVERIFIED (3/3 witnesses PASS but numerical witness SKIPPED (baseline missing) — NOT a release pass)
-**Bundle hash:** 6d533335d3b0608e | **Risk:** high | **Math:** 12
+**Last verified:** 2026-04-25 02:49 UTC | **Verdict:** UNVERIFIED (3/3 witnesses PASS but numerical witness SKIPPED (baseline missing) — NOT a release pass)
+**Bundle hash:** edc9a2d57c24e847 | **Risk:** high | **Math:** 12
 
 ## Health
 
 | Witness | Verdict | Time | Detail |
 |---------|---------|------|--------|
-| test_suite | PASS | 2.7s | .........                                                                [100%]
+| test_suite | PASS | 6.2s | .........                                                                [100%]
  |
-| smoke | PASS | 11.4s | 8 modules imported OK |
+| smoke | PASS | 13.0s | 8 modules imported OK |
 | numerical | SKIP | 0.0s | skipped |
 | numerical_continuity | PASS | 0.0s | numerical continuity: baseline + provenance checks OK |
 
@@ -24,7 +24,6 @@
 
 | Date | Verdict | Witnesses | Time | Hash |
 |------|---------|-----------|------|------|
-| 2026-04-08 | REJECT | 2/3 | 14.5s | 366d7868d76d0971 |
 | 2026-04-08 | REJECT | 2/3 | 24.9s | a28d1ba0058f85b0 |
 | 2026-04-10 | PASS | 2/3 | 10.6s | 77a86b3876494a8c |
 | 2026-04-11 | PASS | 2/3 | 13.8s | f10f12840274b1b5 |
@@ -34,3 +33,4 @@
 | 2026-04-17 | UNVERIFIED | 2/3 | 14.2s | 618213db62a51e2a |
 | 2026-04-19 | UNVERIFIED | 2/3 | 13.3s | e7f550a1c7663956 |
 | 2026-04-20 | UNVERIFIED | 3/4 | 14.1s | 6d533335d3b0608e |
+| 2026-04-25 | UNVERIFIED | 3/4 | 19.2s | edc9a2d57c24e847 |

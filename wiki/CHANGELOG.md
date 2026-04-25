@@ -1,5 +1,13 @@
 # Overmind Wiki Changelog
 
+## 2026-04-25
+
+**Verified:** 50 | **Certified:** 12 | **Rejected:** 8 | **Failed:** 5
+
+### Changes from last night
+- llm-meta-analysis: UNVERIFIED -> REJECT
+
+
 ## 2026-04-20
 
 **Verified:** 50 | **Certified:** 12 | **Rejected:** 7 | **Failed:** 5

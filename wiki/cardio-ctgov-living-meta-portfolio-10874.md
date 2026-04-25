@@ -1,13 +1,13 @@
 # cardio-ctgov-living-meta-portfolio
 
-**Last verified:** 2026-04-20 02:42 UTC | **Verdict:** UNVERIFIED (2/2 witnesses PASS but numerical witness SKIPPED (baseline missing) — NOT a release pass)
-**Bundle hash:** 165210970577d086 | **Risk:** high | **Math:** 10
+**Last verified:** 2026-04-25 02:49 UTC | **Verdict:** UNVERIFIED (2/2 witnesses PASS but numerical witness SKIPPED (baseline missing) — NOT a release pass)
+**Bundle hash:** 981a78d91b02b9cf | **Risk:** high | **Math:** 10
 
 ## Health
 
 | Witness | Verdict | Time | Detail |
 |---------|---------|------|--------|
-| test_suite | PASS | 1.7s | .                                                                        [100%]
+| test_suite | PASS | 2.5s | .                                                                        [100%]
  |
 | smoke | SKIP | 0.0s | skipped |
 | numerical | SKIP | 0.0s | skipped |
@@ -24,7 +24,6 @@
 
 | Date | Verdict | Witnesses | Time | Hash |
 |------|---------|-----------|------|------|
-| 2026-04-08 | PASS | 1/3 | 6.2s | 130ac906a74af15d |
 | 2026-04-09 | PASS | 1/3 | 6.2s | 501b60e64ef3b2cb |
 | 2026-04-10 | PASS | 1/3 | 3.4s | 78ac383ae21a5b42 |
 | 2026-04-11 | PASS | 1/3 | 2.5s | 0e018b3d16991984 |
@@ -34,3 +33,4 @@
 | 2026-04-17 | PASS | 1/3 | 1.7s | b3a6837cee2e24dc |
 | 2026-04-19 | PASS | 1/3 | 1.6s | 6dd961d4e401f9cb |
 | 2026-04-20 | UNVERIFIED | 2/4 | 1.7s | 165210970577d086 |
+| 2026-04-25 | UNVERIFIED | 2/4 | 2.5s | 981a78d91b02b9cf |

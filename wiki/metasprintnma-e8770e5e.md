@@ -1,13 +1,13 @@
 # metasprintnma
 
-**Last verified:** 2026-04-20 02:42 UTC | **Verdict:** UNVERIFIED (2/2 witnesses PASS but numerical witness SKIPPED (baseline missing) — NOT a release pass)
-**Bundle hash:** d91f9c4c691bd4c8 | **Risk:** high | **Math:** 10
+**Last verified:** 2026-04-25 02:49 UTC | **Verdict:** UNVERIFIED (2/2 witnesses PASS but numerical witness SKIPPED (baseline missing) — NOT a release pass)
+**Bundle hash:** 1706a6071f59c0da | **Risk:** high | **Math:** 10
 
 ## Health
 
 | Witness | Verdict | Time | Detail |
 |---------|---------|------|--------|
-| test_suite | PASS | 94.5s | 
+| test_suite | PASS | 95.6s | 
 ============================================================
   MetaSprint NMA — |
 | smoke | SKIP | 0.0s | skipped |
@@ -25,7 +25,6 @@
 
 | Date | Verdict | Witnesses | Time | Hash |
 |------|---------|-----------|------|------|
-| 2026-04-08 | PASS | 2/3 | 107.9s | 99ec0985ac5b83c0 |
 | 2026-04-08 | FAIL | 2/3 | 139.0s | 70d598ee8a452dc6 |
 | 2026-04-10 | FAIL | 1/3 | 0.0s | be818fafeba56b74 |
 | 2026-04-11 | FAIL | 1/3 | 0.0s | 4c89518789193dc6 |
@@ -35,3 +34,4 @@
 | 2026-04-17 | PASS | 1/3 | 94.2s | a6985484cafdc34d |
 | 2026-04-19 | PASS | 1/3 | 95.9s | f43985cd6e6f3735 |
 | 2026-04-20 | UNVERIFIED | 2/4 | 94.6s | d91f9c4c691bd4c8 |
+| 2026-04-25 | UNVERIFIED | 2/4 | 95.7s | 1706a6071f59c0da |

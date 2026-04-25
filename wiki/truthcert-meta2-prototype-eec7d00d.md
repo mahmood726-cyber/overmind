@@ -1,15 +1,15 @@
 # truthcert-meta2-prototype
 
-**Last verified:** 2026-04-20 02:42 UTC | **Verdict:** CERTIFIED (2/2 witnesses agree PASS)
-**Bundle hash:** a87f396437026f60 | **Risk:** high | **Math:** 8
+**Last verified:** 2026-04-25 02:49 UTC | **Verdict:** CERTIFIED (2/2 witnesses agree PASS)
+**Bundle hash:** f1699d0024f3e40c | **Risk:** high | **Math:** 8
 
 ## Health
 
 | Witness | Verdict | Time | Detail |
 |---------|---------|------|--------|
-| test_suite | PASS | 4.2s | .                                                                        [100%]
+| test_suite | PASS | 5.5s | .                                                                        [100%]
  |
-| smoke | PASS | 15.9s | 23 modules imported OK |
+| smoke | PASS | 20.4s | 23 modules imported OK |
 
 ## Project
 
@@ -22,7 +22,6 @@
 
 | Date | Verdict | Witnesses | Time | Hash |
 |------|---------|-----------|------|------|
-| 2026-04-08 | CERTIFIED | 2/2 | 35.0s | 784989dcfcd832f6 |
 | 2026-04-08 | REJECT | 2/2 | 93.0s | be92b083728eb7ec |
 | 2026-04-10 | CERTIFIED | 2/2 | 32.7s | 8c43c93ba6de979b |
 | 2026-04-11 | CERTIFIED | 2/2 | 37.7s | 4cf1f239bec19b66 |
@@ -32,3 +31,4 @@
 | 2026-04-17 | CERTIFIED | 2/2 | 20.1s | 248ffd069f1aa4ac |
 | 2026-04-19 | CERTIFIED | 2/2 | 19.1s | 0f75557e64799ad6 |
 | 2026-04-20 | CERTIFIED | 2/2 | 20.1s | a87f396437026f60 |
+| 2026-04-25 | CERTIFIED | 2/2 | 25.9s | f1699d0024f3e40c |

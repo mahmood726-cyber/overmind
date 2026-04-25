@@ -1,15 +1,15 @@
 # hfpef_registry_calibration
 
-**Last verified:** 2026-04-20 02:42 UTC | **Verdict:** CERTIFIED (2/2 witnesses agree PASS)
-**Bundle hash:** 367b5edc095d4f74 | **Risk:** high | **Math:** 6
+**Last verified:** 2026-04-25 02:49 UTC | **Verdict:** CERTIFIED (2/2 witnesses agree PASS)
+**Bundle hash:** eb1b540aad04e809 | **Risk:** high | **Math:** 6
 
 ## Health
 
 | Witness | Verdict | Time | Detail |
 |---------|---------|------|--------|
-| test_suite | PASS | 2.6s | .                                                                        [100%]
+| test_suite | PASS | 3.5s | .                                                                        [100%]
  |
-| smoke | PASS | 20.6s | 36 modules imported OK |
+| smoke | PASS | 26.0s | 36 modules imported OK |
 
 ## Project
 
@@ -22,7 +22,6 @@
 
 | Date | Verdict | Witnesses | Time | Hash |
 |------|---------|-----------|------|------|
-| 2026-04-08 | REJECT | 2/2 | 6.7s | 0d4c593a914f472f |
 | 2026-04-08 | REJECT | 2/2 | 7.6s | c51ebe4913953e3e |
 | 2026-04-10 | PASS | 1/2 | 3.3s | 399585afbf4e75ff |
 | 2026-04-11 | PASS | 1/2 | 3.5s | 91e2146198886a43 |
@@ -32,3 +31,4 @@
 | 2026-04-17 | CERTIFIED | 2/2 | 23.7s | 65cf6396764f71c0 |
 | 2026-04-19 | CERTIFIED | 2/2 | 22.2s | 5d6f4c68442430c5 |
 | 2026-04-20 | CERTIFIED | 2/2 | 23.2s | 367b5edc095d4f74 |
+| 2026-04-25 | CERTIFIED | 2/2 | 29.5s | eb1b540aad04e809 |

@@ -1,7 +1,7 @@
 # Pairwise70
 
-**Last verified:** 2026-04-20 02:42 UTC | **Verdict:** FAIL (Preflight failed: missing_path)
-**Bundle hash:** d0df448f221ec9ba | **Risk:** high | **Math:** 15
+**Last verified:** 2026-04-25 02:49 UTC | **Verdict:** FAIL (Preflight failed: missing_path)
+**Bundle hash:** 7e8ef31f2dd76417 | **Risk:** high | **Math:** 15
 
 ## Health
 
@@ -22,6 +22,7 @@
 |------|---------|-----------|------|------|
 | 2026-04-19 | FAIL | 1/1 | 0.0s | d5fe68d81d3dff96 |
 | 2026-04-20 | FAIL | 1/1 | 0.0s | d0df448f221ec9ba |
+| 2026-04-25 | FAIL | 1/1 | 0.0s | 7e8ef31f2dd76417 |
 
 ## Notes
 

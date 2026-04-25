@@ -1,15 +1,15 @@
 # hfpef_registry_synth
 
-**Last verified:** 2026-04-20 02:42 UTC | **Verdict:** UNVERIFIED (3/3 witnesses PASS but numerical witness SKIPPED (baseline missing) — NOT a release pass)
-**Bundle hash:** 4f973a17a70d6dc0 | **Risk:** high | **Math:** 14
+**Last verified:** 2026-04-25 02:49 UTC | **Verdict:** UNVERIFIED (3/3 witnesses PASS but numerical witness SKIPPED (baseline missing) — NOT a release pass)
+**Bundle hash:** 96d8dd29fb796c6f | **Risk:** high | **Math:** 14
 
 ## Health
 
 | Witness | Verdict | Time | Detail |
 |---------|---------|------|--------|
-| test_suite | PASS | 4.3s | .                                                                        [100%]
+| test_suite | PASS | 6.4s | .                                                                        [100%]
  |
-| smoke | PASS | 25.4s | 40 modules imported OK |
+| smoke | PASS | 32.4s | 40 modules imported OK |
 | numerical | SKIP | 0.0s | skipped |
 | numerical_continuity | PASS | 0.0s | numerical continuity: baseline + provenance checks OK |
 
@@ -24,7 +24,6 @@
 
 | Date | Verdict | Witnesses | Time | Hash |
 |------|---------|-----------|------|------|
-| 2026-04-08 | PASS | 2/3 | 11.6s | c3e6dfb03975b1fd |
 | 2026-04-09 | PASS | 1/3 | 7.6s | f7369cec2d8b5550 |
 | 2026-04-10 | PASS | 1/3 | 5.7s | 3ff6ff10d63a497e |
 | 2026-04-11 | PASS | 1/3 | 5.4s | cad29dde4e7e70b8 |
@@ -34,3 +33,4 @@
 | 2026-04-17 | UNVERIFIED | 2/3 | 30.1s | 8062423f0caf8d34 |
 | 2026-04-19 | UNVERIFIED | 2/3 | 28.6s | 2add3201209f7001 |
 | 2026-04-20 | UNVERIFIED | 3/4 | 29.7s | 4f973a17a70d6dc0 |
+| 2026-04-25 | UNVERIFIED | 3/4 | 38.8s | 96d8dd29fb796c6f |
