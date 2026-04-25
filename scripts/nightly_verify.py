@@ -69,6 +69,11 @@ SKIP_PROJECTS = {
     # they need remote APIs or heavy model downloads to import. Smoke now
     # PASS across 40 discovered modules.
     "new-app-a051eaea",                                       # registered test_command is a Selenium suite requiring a dev server on port 3005 + 82 Edge driver lifecycles — always times out. Real test surface is `npm run test` (vitest) which has 16 statistical-accuracy FAILs against R metafor (PM/SJ/HE estimators, prediction interval ordering). Needs dedicated stats-parity session.
+    # Added 2026-04-25 after audit of nightly 2026-04-25 FAILs (5 FAILs, all systemic-not-code):
+    "cbamm-c5df0bd2",                                         # path missing on disk (Archive/Stale-Projects/Cbamm) — already archived, registry not yet reconciled
+    "pairwise70-900619fe",                                    # path missing on disk (Models/Pairwise70) — superseded by Pairwise70 corpus living in MetaAudit subdirs
+    "html-apps-6eaac579",                                     # the HTML-apps scan root is a directory of standalone single-file HTML demos, not a single project — discovery picked it up wrongly; 300s timeout because no coherent test surface
+    "user-ecc0a382",                                          # the home-directory scan root is NOT a project — 300s timeout on whatever heuristic test command was inferred from dotfiles
 }  # Projects that consistently hang during verification OR whose source path is missing OR whose source is broken enough to need dedicated repair
 
 
