@@ -1,28 +1,25 @@
 # Cbamm
 
-**Last verified:** 2026-04-17 02:44 UTC | **Verdict:** FAIL (Single witness: test_suite FAIL)
-**Bundle hash:** efaf94fe26fa020d | **Risk:** high | **Math:** 17
+**Last verified:** 2026-04-26 02:40 UTC | **Verdict:** FAIL (Hard timeout (300s) — process killed)
+**Bundle hash:** d1a67298032085cb | **Risk:** high | **Math:** 17
 
 ## Health
 
 | Witness | Verdict | Time | Detail |
 |---------|---------|------|--------|
-| test_suite | FAIL | 2.9s | Error: Test failures |
-| smoke | SKIP | 0.0s | skipped |
-| numerical | SKIP | 0.0s | skipped |
+| test_suite | FAIL | 300.0s | Project hung — killed after 300s |
 
 ## Project
 
 - **Path:** C:\Users\user\OneDrive - NHS\Documents\Cbamm
 - **Type:** r_project
 - **Stack:** r
-- **Test command:** `Rscript -e "testthat::test_dir('tests/testthat')"`
+- **Test command:** `Rscript -e "devtools::test()"`
 
 ## Verification History
 
 | Date | Verdict | Witnesses | Time | Hash |
 |------|---------|-----------|------|------|
-| 2026-04-08 | FAIL | 1/3 | 0.0s | e58bcabab87a8d01 |
 | 2026-04-08 | FAIL | 1/3 | 0.0s | ef10cbc27bfbd49b |
 | 2026-04-08 | FAIL | 1/3 | 0.0s | 1f74f9b9c654330c |
 | 2026-04-09 | FAIL | 1/3 | 0.0s | ee80b62e09bb0957 |
@@ -32,11 +29,10 @@
 | 2026-04-13 | FAIL | 1/3 | 0.0s | da20bbf3e28c5359 |
 | 2026-04-15 | FAIL | 1/1 | 0.0s | 9e7d9baa7db7c4f2 |
 | 2026-04-17 | FAIL | 1/3 | 2.9s | efaf94fe26fa020d |
+| 2026-04-26 | FAIL | 1/1 | 300.0s | d1a67298032085cb |
 
 ## Notes
 
-Single witness: test_suite FAIL
+Hard timeout (300s) — process killed
 
-**test_suite:** Error: Test failures
-Execution halted
-
+**test_suite:** Project hung — killed after 300s

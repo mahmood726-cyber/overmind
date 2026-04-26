@@ -1,15 +1,15 @@
 # four_limb_synthesis
 
-**Last verified:** 2026-04-15 02:13 UTC | **Verdict:** REJECT (Witnesses disagree: test_suite PASS vs smoke FAIL)
-**Bundle hash:** 616a69b51445ca67 | **Risk:** high | **Math:** 2
+**Last verified:** 2026-04-26 02:40 UTC | **Verdict:** REJECT (Witnesses disagree: test_suite PASS vs smoke FAIL)
+**Bundle hash:** 9dddeaee666dfa3a | **Risk:** high | **Math:** 2
 
 ## Health
 
 | Witness | Verdict | Time | Detail |
 |---------|---------|------|--------|
-| test_suite | PASS | 2.5s | ...........                                                              [100%]
+| test_suite | PASS | 5.3s | ...........                                                              [100%]
  |
-| smoke | FAIL | 16.4s | py:io.loaders: Traceback (most recent call last): |
+| smoke | FAIL | 26.4s | py:io.loaders: Traceback (most recent call last): |
 
 ## Project
 
@@ -27,6 +27,7 @@
 | 2026-04-12 | CERTIFIED | 2/2 | 11.4s | dff202b64ac3b783 |
 | 2026-04-13 | CERTIFIED | 2/2 | 11.3s | 5c318522845c260a |
 | 2026-04-15 | REJECT | 2/2 | 18.9s | 616a69b51445ca67 |
+| 2026-04-26 | REJECT | 2/2 | 31.7s | 9dddeaee666dfa3a |
 
 ## Notes
 

@@ -1,15 +1,16 @@
 # Pairwise70
 
-**Last verified:** 2026-04-17 02:44 UTC | **Verdict:** REJECT (Witnesses disagree: smoke PASS vs test_suite FAIL)
-**Bundle hash:** b8d110e4193a3169 | **Risk:** high | **Math:** 15
+**Last verified:** 2026-04-26 02:40 UTC | **Verdict:** REJECT (Witnesses disagree: smoke, numerical_continuity PASS vs test_suite FAIL)
+**Bundle hash:** 408a79b9bf5ff6e1 | **Risk:** high | **Math:** 15
 
 ## Health
 
 | Witness | Verdict | Time | Detail |
 |---------|---------|------|--------|
 | test_suite | FAIL | 120.0s | Timed out after 120s |
-| smoke | PASS | 16.1s | 36 modules imported OK |
+| smoke | PASS | 22.7s | 36 modules imported OK |
 | numerical | SKIP | 0.0s | skipped |
+| numerical_continuity | PASS | 0.0s | numerical continuity: baseline + provenance checks OK |
 
 ## Project
 
@@ -22,7 +23,6 @@
 
 | Date | Verdict | Witnesses | Time | Hash |
 |------|---------|-----------|------|------|
-| 2026-04-08 | FAIL | 2/3 | 6.3s | 6dba2b874dbfe913 |
 | 2026-04-08 | FAIL | 2/3 | 3.5s | 8fb12b4c5515efbe |
 | 2026-04-08 | FAIL | 2/3 | 8.2s | cec8002373305161 |
 | 2026-04-09 | FAIL | 2/3 | 7.2s | a0fe00bcca841c59 |
@@ -32,9 +32,10 @@
 | 2026-04-13 | FAIL | 2/3 | 121.3s | bb3fc48447c5dedc |
 | 2026-04-15 | FAIL | 1/1 | 0.0s | 2d779ebe57f08f5a |
 | 2026-04-17 | REJECT | 2/3 | 136.2s | b8d110e4193a3169 |
+| 2026-04-26 | REJECT | 3/4 | 142.7s | 408a79b9bf5ff6e1 |
 
 ## Notes
 
-Witnesses disagree: smoke PASS vs test_suite FAIL
+Witnesses disagree: smoke, numerical_continuity PASS vs test_suite FAIL
 
 **test_suite:** Timed out after 120s

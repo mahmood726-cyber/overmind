@@ -1,15 +1,15 @@
 # Transcendent-Meta-Analysis-Lab
 
-**Last verified:** 2026-04-25 02:49 UTC | **Verdict:** UNVERIFIED (3/3 witnesses PASS but numerical witness SKIPPED (baseline missing) — NOT a release pass)
-**Bundle hash:** 4aa177fdd4a3a959 | **Risk:** high | **Math:** 11
+**Last verified:** 2026-04-26 02:40 UTC | **Verdict:** UNVERIFIED (3/3 witnesses PASS but numerical witness SKIPPED (baseline missing) — NOT a release pass)
+**Bundle hash:** c7daee2b671eda14 | **Risk:** high | **Math:** 11
 
 ## Health
 
 | Witness | Verdict | Time | Detail |
 |---------|---------|------|--------|
-| test_suite | PASS | 3.9s | ............                                                             [100%]
+| test_suite | PASS | 4.4s | ............                                                             [100%]
  |
-| smoke | PASS | 9.2s | 10 modules imported OK |
+| smoke | PASS | 9.9s | 10 modules imported OK |
 | numerical | SKIP | 0.0s | skipped |
 | numerical_continuity | PASS | 0.0s | numerical continuity: baseline + provenance checks OK |
 
@@ -24,7 +24,6 @@
 
 | Date | Verdict | Witnesses | Time | Hash |
 |------|---------|-----------|------|------|
-| 2026-04-09 | PASS | 2/3 | 56.1s | 7a45550b01f0280b |
 | 2026-04-10 | PASS | 2/3 | 16.4s | 26e19385584602c4 |
 | 2026-04-11 | PASS | 2/3 | 79.6s | 12925d7bfd8bbf6e |
 | 2026-04-12 | PASS | 2/3 | 12.1s | 197adb60aa64d293 |
@@ -34,3 +33,4 @@
 | 2026-04-19 | UNVERIFIED | 2/3 | 9.3s | 395447450deb94bb |
 | 2026-04-20 | UNVERIFIED | 3/4 | 9.9s | 19c6fc7a0cb30a70 |
 | 2026-04-25 | UNVERIFIED | 3/4 | 13.0s | 4aa177fdd4a3a959 |
+| 2026-04-26 | UNVERIFIED | 3/4 | 14.3s | c7daee2b671eda14 |

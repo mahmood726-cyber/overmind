@@ -1,15 +1,15 @@
 # Denominator_Calibrated_Living_NMA
 
-**Last verified:** 2026-04-25 02:49 UTC | **Verdict:** REJECT (Witnesses disagree: test_suite PASS vs smoke FAIL)
-**Bundle hash:** 82272f97d5dde536 | **Risk:** high | **Math:** 8
+**Last verified:** 2026-04-26 02:40 UTC | **Verdict:** CERTIFIED (2/2 witnesses agree PASS)
+**Bundle hash:** 648047dda48c5658 | **Risk:** high | **Math:** 8
 
 ## Health
 
 | Witness | Verdict | Time | Detail |
 |---------|---------|------|--------|
-| test_suite | PASS | 3.2s | ........                                                           [100%]
+| test_suite | PASS | 3.3s | ........                                                           [100%]
 8 pass |
-| smoke | FAIL | 2.2s | py:src.dclnma.witnesses.base: rt name 'WitnessContext' from partially initialize |
+| smoke | PASS | 2.4s | 16 modules imported OK |
 
 ## Project
 
@@ -22,7 +22,6 @@
 
 | Date | Verdict | Witnesses | Time | Hash |
 |------|---------|-----------|------|------|
-| 2026-04-08 | PASS | 1/2 | 4.0s | 07ca5aa65eba3d3d |
 | 2026-04-10 | PASS | 1/2 | 2.3s | 81077f9a8176f527 |
 | 2026-04-11 | PASS | 1/2 | 2.2s | 4bda2c605c4c29d9 |
 | 2026-04-12 | PASS | 1/2 | 2.0s | 00aea3833e8fc566 |
@@ -32,9 +31,4 @@
 | 2026-04-19 | REJECT | 2/2 | 3.5s | 8d5627b90006c54b |
 | 2026-04-20 | REJECT | 2/2 | 3.8s | 3a4f34d588118abe |
 | 2026-04-25 | REJECT | 2/2 | 5.4s | 82272f97d5dde536 |
-
-## Notes
-
-Witnesses disagree: test_suite PASS vs smoke FAIL
-
-**smoke:** py:src.dclnma.witnesses.base: rt name 'WitnessContext' from partially initialized module 'src.dclnma.witnesses.base' (most likely due to a circular import) (C:\Models\Denominator_Calibrated_Living_NMA
+| 2026-04-26 | CERTIFIED | 2/2 | 5.7s | 648047dda48c5658 |

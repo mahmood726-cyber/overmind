@@ -1,16 +1,17 @@
 # BayesianMA
 
-**Last verified:** 2026-04-25 02:49 UTC | **Verdict:** REJECT (Witnesses disagree: numerical_continuity PASS vs test_suite FAIL)
-**Bundle hash:** 02cb81be9c290dd6 | **Risk:** high | **Math:** 13
+**Last verified:** 2026-04-26 02:40 UTC | **Verdict:** UNVERIFIED (2/2 witnesses PASS but numerical witness SKIPPED (baseline missing) — NOT a release pass)
+**Bundle hash:** c82fa2f279175676 | **Risk:** high | **Math:** 13
 
 ## Health
 
 | Witness | Verdict | Time | Detail |
 |---------|---------|------|--------|
-| test_suite | FAIL | 24.5s |  |
+| test_suite | PASS | 23.7s | ...................................                                      [100%]
+ |
 | smoke | SKIP | 0.0s | skipped |
 | numerical | SKIP | 0.0s | skipped |
-| numerical_continuity | PASS | 0.1s | numerical continuity: baseline + provenance checks OK |
+| numerical_continuity | PASS | 0.0s | numerical continuity: baseline + provenance checks OK |
 
 ## Project
 
@@ -23,7 +24,6 @@
 
 | Date | Verdict | Witnesses | Time | Hash |
 |------|---------|-----------|------|------|
-| 2026-04-09 | PASS | 2/3 | 26.6s | 6d6ac3f23b00ac62 |
 | 2026-04-10 | REJECT | 2/3 | 120.5s | d9eb3bfd311f56ae |
 | 2026-04-11 | PASS | 2/3 | 51.6s | 0b192f996240fb65 |
 | 2026-04-12 | PASS | 2/3 | 34.1s | 11a3634ee42a58de |
@@ -33,7 +33,4 @@
 | 2026-04-19 | FAIL | 1/3 | 23.2s | 3ef2145b4c46b869 |
 | 2026-04-20 | REJECT | 2/4 | 22.7s | e28959b89fa582ad |
 | 2026-04-25 | REJECT | 2/4 | 24.5s | 02cb81be9c290dd6 |
-
-## Notes
-
-Witnesses disagree: numerical_continuity PASS vs test_suite FAIL
+| 2026-04-26 | UNVERIFIED | 2/4 | 23.7s | c82fa2f279175676 |

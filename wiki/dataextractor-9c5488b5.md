@@ -1,14 +1,17 @@
 # Dataextractor
 
-**Last verified:** 2026-04-25 02:49 UTC | **Verdict:** REJECT (Witnesses disagree: numerical_continuity PASS vs test_suite, smoke FAIL)
-**Bundle hash:** 7ce2c192d60211e9 | **Risk:** high | **Math:** 18
+**Last verified:** 2026-04-26 02:40 UTC | **Verdict:** REJECT (Witnesses disagree: test_suite, numerical_continuity PASS vs smoke FAIL)
+**Bundle hash:** 9c77ec239663c384 | **Risk:** high | **Math:** 18
 
 ## Health
 
 | Witness | Verdict | Time | Detail |
 |---------|---------|------|--------|
-| test_suite | FAIL | 2.1s |  |
-| smoke | FAIL | 18.6s | py:expand_validation: ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ |
+| test_suite | PASS | 1.6s | 
+  ✓ R code includes rma()
+  ✓ R code includes forest()
+  ✓ R code includes funn |
+| smoke | FAIL | 15.6s | py:expand_validation: ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ |
 | numerical | SKIP | 0.0s | skipped |
 | numerical_continuity | PASS | 0.0s | numerical continuity: baseline + provenance checks OK |
 
@@ -23,7 +26,6 @@
 
 | Date | Verdict | Witnesses | Time | Hash |
 |------|---------|-----------|------|------|
-| 2026-04-08 | FAIL | 2/3 | 28.7s | d5197921767ced4f |
 | 2026-04-10 | FAIL | 2/3 | 25.4s | 43e8719d5bed9926 |
 | 2026-04-11 | FAIL | 1/1 | 300.0s | dd8f7aab6f57f167 |
 | 2026-04-12 | FAIL | 2/3 | 34.6s | 91418e1d77c44552 |
@@ -33,10 +35,11 @@
 | 2026-04-19 | FAIL | 2/3 | 17.2s | 274b93cfd8b27691 |
 | 2026-04-20 | REJECT | 3/4 | 16.4s | 34f97199caa73b1e |
 | 2026-04-25 | REJECT | 3/4 | 20.8s | 7ce2c192d60211e9 |
+| 2026-04-26 | REJECT | 3/4 | 17.2s | 9c77ec239663c384 |
 
 ## Notes
 
-Witnesses disagree: numerical_continuity PASS vs test_suite, smoke FAIL
+Witnesses disagree: test_suite, numerical_continuity PASS vs smoke FAIL
 
 **smoke:** py:expand_validation: ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 FileNotFoundError: [Errno 2] No such file or directory: 'C:\\Users\\user\\Downloads\\Dataextractor\\vali

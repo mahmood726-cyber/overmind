@@ -1,7 +1,7 @@
 # evidence-inference
 
-**Last verified:** 2026-04-25 02:49 UTC | **Verdict:** FAIL (Hard timeout (300s) — process killed)
-**Bundle hash:** fd8a2dc6e818d9f2 | **Risk:** high | **Math:** 18
+**Last verified:** 2026-04-26 02:40 UTC | **Verdict:** FAIL (Hard timeout (300s) — process killed)
+**Bundle hash:** e7b819017ef85e08 | **Risk:** high | **Math:** 18
 
 ## Health
 
@@ -20,7 +20,6 @@
 
 | Date | Verdict | Witnesses | Time | Hash |
 |------|---------|-----------|------|------|
-| 2026-04-09 | FAIL | 2/3 | 19.3s | ae432e2476454929 |
 | 2026-04-10 | FAIL | 2/3 | 14.0s | aaefe93e90029d88 |
 | 2026-04-11 | FAIL | 2/3 | 11.8s | 780701fc4151a1a5 |
 | 2026-04-12 | FAIL | 2/3 | 19.0s | 05c008f6387187ba |
@@ -30,6 +29,7 @@
 | 2026-04-19 | FAIL | 1/1 | 300.0s | 0e9de4c8059b2deb |
 | 2026-04-20 | FAIL | 1/1 | 300.0s | e2a7694b412d6d0c |
 | 2026-04-25 | FAIL | 1/1 | 300.0s | fd8a2dc6e818d9f2 |
+| 2026-04-26 | FAIL | 1/1 | 300.0s | e7b819017ef85e08 |
 
 ## Notes
 

@@ -1,15 +1,15 @@
 # moonshot-evidence-lab
 
-**Last verified:** 2026-04-25 02:49 UTC | **Verdict:** UNVERIFIED (3/3 witnesses PASS but numerical witness SKIPPED (baseline missing) — NOT a release pass)
-**Bundle hash:** 7141aad63a508aac | **Risk:** high | **Math:** 11
+**Last verified:** 2026-04-26 02:40 UTC | **Verdict:** UNVERIFIED (3/3 witnesses PASS but numerical witness SKIPPED (baseline missing) — NOT a release pass)
+**Bundle hash:** 80b91f6f2024dceb | **Risk:** high | **Math:** 11
 
 ## Health
 
 | Witness | Verdict | Time | Detail |
 |---------|---------|------|--------|
-| test_suite | PASS | 3.9s | ...........                                                              [100%]
+| test_suite | PASS | 3.6s | ...........                                                              [100%]
  |
-| smoke | PASS | 3.5s | 19 modules imported OK |
+| smoke | PASS | 4.0s | 19 modules imported OK |
 | numerical | SKIP | 0.0s | skipped |
 | numerical_continuity | PASS | 0.0s | numerical continuity: baseline + provenance checks OK |
 
@@ -24,7 +24,6 @@
 
 | Date | Verdict | Witnesses | Time | Hash |
 |------|---------|-----------|------|------|
-| 2026-04-09 | PASS | 2/3 | 8.2s | 366253cedfda6989 |
 | 2026-04-10 | PASS | 2/3 | 5.9s | 977328167fbe8ccc |
 | 2026-04-11 | PASS | 2/3 | 6.2s | f6e0bddd8fc850c6 |
 | 2026-04-12 | PASS | 2/3 | 5.1s | 2811177f890efd70 |
@@ -34,3 +33,4 @@
 | 2026-04-19 | UNVERIFIED | 2/3 | 4.4s | 3edfd2a16d796449 |
 | 2026-04-20 | UNVERIFIED | 3/4 | 4.7s | 74599c026b418ded |
 | 2026-04-25 | UNVERIFIED | 3/4 | 7.3s | 7141aad63a508aac |
+| 2026-04-26 | UNVERIFIED | 3/4 | 7.6s | 80b91f6f2024dceb |

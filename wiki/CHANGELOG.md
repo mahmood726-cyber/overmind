@@ -1,5 +1,19 @@
 # Overmind Wiki Changelog
 
+## 2026-04-26
+
+**Verified:** 50 | **Certified:** 15 | **Rejected:** 5 | **Failed:** 2
+
+### Changes from last night
+- KMcurve: REJECT -> UNVERIFIED
+- BayesianMA: REJECT -> UNVERIFIED
+- llm-meta-analysis: REJECT -> UNVERIFIED
+- Denominator_Calibrated_Living_NMA: REJECT -> CERTIFIED
+
+### New projects verified
+- SubmissionCockpit
+
+
 ## 2026-04-25
 
 **Verified:** 50 | **Certified:** 12 | **Rejected:** 8 | **Failed:** 5

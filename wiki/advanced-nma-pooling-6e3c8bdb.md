@@ -1,15 +1,15 @@
 # advanced-nma-pooling
 
-**Last verified:** 2026-04-25 02:49 UTC | **Verdict:** CERTIFIED (4/4 witnesses agree PASS)
-**Bundle hash:** d60b2fa2b0f6875c | **Risk:** high | **Math:** 20
+**Last verified:** 2026-04-26 02:40 UTC | **Verdict:** CERTIFIED (4/4 witnesses agree PASS)
+**Bundle hash:** 91286dfc3bde1395 | **Risk:** high | **Math:** 20
 
 ## Health
 
 | Witness | Verdict | Time | Detail |
 |---------|---------|------|--------|
-| test_suite | PASS | 9.3s | .                                                                        [100%]
+| test_suite | PASS | 7.9s | .                                                                        [100%]
  |
-| smoke | PASS | 17.9s | 40 modules imported OK |
+| smoke | PASS | 19.3s | 40 modules imported OK |
 | numerical | PASS | 0.5s | 6 values within tolerance |
 | numerical_continuity | PASS | 0.0s | numerical continuity: baseline + provenance checks OK |
 
@@ -24,7 +24,6 @@
 
 | Date | Verdict | Witnesses | Time | Hash |
 |------|---------|-----------|------|------|
-| 2026-04-08 | REJECT | 3/3 | 6.8s | f37ae72b6e5a4c62 |
 | 2026-04-10 | REJECT | 3/3 | 7.7s | 2035e3271ee3f016 |
 | 2026-04-11 | REJECT | 3/3 | 11.4s | d22a47059eb1ef8c |
 | 2026-04-12 | REJECT | 3/3 | 12.1s | b84340037aafe220 |
@@ -34,3 +33,4 @@
 | 2026-04-19 | CERTIFIED | 3/3 | 21.4s | 9208c72b1554aa49 |
 | 2026-04-20 | CERTIFIED | 4/4 | 22.5s | cb5a4143d2cad9c7 |
 | 2026-04-25 | CERTIFIED | 4/4 | 27.7s | d60b2fa2b0f6875c |
+| 2026-04-26 | CERTIFIED | 4/4 | 27.7s | 91286dfc3bde1395 |

@@ -1,15 +1,15 @@
 # llm-meta-analysis
 
-**Last verified:** 2026-04-25 02:49 UTC | **Verdict:** REJECT (Witnesses disagree: test_suite, numerical_continuity PASS vs smoke FAIL)
-**Bundle hash:** 90729ffbfefd048a | **Risk:** high | **Math:** 10
+**Last verified:** 2026-04-26 02:40 UTC | **Verdict:** UNVERIFIED (3/3 witnesses PASS but numerical witness SKIPPED (baseline missing) — NOT a release pass)
+**Bundle hash:** 80daa6f592e558f9 | **Risk:** high | **Math:** 10
 
 ## Health
 
 | Witness | Verdict | Time | Detail |
 |---------|---------|------|--------|
-| test_suite | PASS | 2.5s | .                                                                        [100%]
+| test_suite | PASS | 3.1s | .                                                                        [100%]
  |
-| smoke | FAIL | 78.3s | py:evaluation.models.gemini: import timed out |
+| smoke | PASS | 73.3s | 40 modules imported OK |
 | numerical | SKIP | 0.0s | skipped |
 | numerical_continuity | PASS | 0.0s | numerical continuity: baseline + provenance checks OK |
 
@@ -24,7 +24,6 @@
 
 | Date | Verdict | Witnesses | Time | Hash |
 |------|---------|-----------|------|------|
-| 2026-04-09 | REJECT | 2/3 | 61.8s | 63d0abb9660d11c5 |
 | 2026-04-10 | REJECT | 2/3 | 66.9s | 7095d58901b6e158 |
 | 2026-04-11 | REJECT | 2/3 | 37.4s | 256e52d8246a772d |
 | 2026-04-12 | REJECT | 2/3 | 34.5s | 77d10392a1fa5199 |
@@ -34,9 +33,4 @@
 | 2026-04-19 | REJECT | 2/3 | 63.0s | 09e384e9a30eb462 |
 | 2026-04-20 | UNVERIFIED | 3/4 | 62.9s | 8915919da5185f92 |
 | 2026-04-25 | REJECT | 3/4 | 80.9s | 90729ffbfefd048a |
-
-## Notes
-
-Witnesses disagree: test_suite, numerical_continuity PASS vs smoke FAIL
-
-**smoke:** py:evaluation.models.gemini: import timed out
+| 2026-04-26 | UNVERIFIED | 3/4 | 76.4s | 80daa6f592e558f9 |
