@@ -1,15 +1,15 @@
 # llm-meta-analysis
 
-**Last verified:** 2026-04-26 02:40 UTC | **Verdict:** UNVERIFIED (3/3 witnesses PASS but numerical witness SKIPPED (baseline missing) — NOT a release pass)
-**Bundle hash:** 80daa6f592e558f9 | **Risk:** high | **Math:** 10
+**Last verified:** 2026-04-27 02:43 UTC | **Verdict:** UNVERIFIED (3/3 witnesses PASS but numerical witness SKIPPED (baseline missing) — NOT a release pass)
+**Bundle hash:** 17f65fd289d9335f | **Risk:** high | **Math:** 10
 
 ## Health
 
 | Witness | Verdict | Time | Detail |
 |---------|---------|------|--------|
-| test_suite | PASS | 3.1s | .                                                                        [100%]
+| test_suite | PASS | 3.4s | .                                                                        [100%]
  |
-| smoke | PASS | 73.3s | 40 modules imported OK |
+| smoke | PASS | 80.2s | 40 modules imported OK |
 | numerical | SKIP | 0.0s | skipped |
 | numerical_continuity | PASS | 0.0s | numerical continuity: baseline + provenance checks OK |
 
@@ -24,7 +24,6 @@
 
 | Date | Verdict | Witnesses | Time | Hash |
 |------|---------|-----------|------|------|
-| 2026-04-10 | REJECT | 2/3 | 66.9s | 7095d58901b6e158 |
 | 2026-04-11 | REJECT | 2/3 | 37.4s | 256e52d8246a772d |
 | 2026-04-12 | REJECT | 2/3 | 34.5s | 77d10392a1fa5199 |
 | 2026-04-13 | REJECT | 2/3 | 30.0s | d43d57fdfd85436d |
@@ -34,3 +33,4 @@
 | 2026-04-20 | UNVERIFIED | 3/4 | 62.9s | 8915919da5185f92 |
 | 2026-04-25 | REJECT | 3/4 | 80.9s | 90729ffbfefd048a |
 | 2026-04-26 | UNVERIFIED | 3/4 | 76.4s | 80daa6f592e558f9 |
+| 2026-04-27 | UNVERIFIED | 3/4 | 83.6s | 17f65fd289d9335f |

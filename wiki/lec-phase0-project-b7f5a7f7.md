@@ -1,15 +1,15 @@
 # lec_phase0_project
 
-**Last verified:** 2026-04-26 02:40 UTC | **Verdict:** UNVERIFIED (3/3 witnesses PASS but numerical witness SKIPPED (baseline missing) — NOT a release pass)
-**Bundle hash:** ea13bc213983456c | **Risk:** high | **Math:** 16
+**Last verified:** 2026-04-27 02:43 UTC | **Verdict:** UNVERIFIED (3/3 witnesses PASS but numerical witness SKIPPED (baseline missing) — NOT a release pass)
+**Bundle hash:** 441612a0ae7518d8 | **Risk:** high | **Math:** 16
 
 ## Health
 
 | Witness | Verdict | Time | Detail |
 |---------|---------|------|--------|
-| test_suite | PASS | 6.6s | ...                                                                      [100%]
+| test_suite | PASS | 9.2s | ...                                                                      [100%]
  |
-| smoke | PASS | 85.5s | 40 modules imported OK |
+| smoke | PASS | 115.3s | 40 modules imported OK |
 | numerical | SKIP | 0.0s | skipped |
 | numerical_continuity | PASS | 0.0s | numerical continuity: baseline + provenance checks OK |
 
@@ -24,7 +24,6 @@
 
 | Date | Verdict | Witnesses | Time | Hash |
 |------|---------|-----------|------|------|
-| 2026-04-10 | PASS | 2/3 | 19.9s | 4b42e45b10762f54 |
 | 2026-04-11 | PASS | 2/3 | 20.5s | 3bd25b1134e8ff13 |
 | 2026-04-12 | PASS | 2/3 | 32.6s | 66133bc878ef2720 |
 | 2026-04-13 | PASS | 2/3 | 16.4s | 14c3d6aad9a0f75d |
@@ -34,3 +33,4 @@
 | 2026-04-20 | UNVERIFIED | 3/4 | 71.8s | d919ceac9a68b807 |
 | 2026-04-25 | UNVERIFIED | 3/4 | 98.6s | 72b5e1cc89b771fb |
 | 2026-04-26 | UNVERIFIED | 3/4 | 92.1s | ea13bc213983456c |
+| 2026-04-27 | UNVERIFIED | 3/4 | 124.5s | 441612a0ae7518d8 |

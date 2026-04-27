@@ -1,15 +1,15 @@
 # GWAM
 
-**Last verified:** 2026-04-26 02:40 UTC | **Verdict:** CERTIFIED (2/2 witnesses agree PASS)
-**Bundle hash:** 063816ac50087122 | **Risk:** high | **Math:** 7
+**Last verified:** 2026-04-27 02:43 UTC | **Verdict:** CERTIFIED (2/2 witnesses agree PASS)
+**Bundle hash:** 744fdcf26fa838f7 | **Risk:** high | **Math:** 7
 
 ## Health
 
 | Witness | Verdict | Time | Detail |
 |---------|---------|------|--------|
-| test_suite | PASS | 10.2s | ...........                                                              [100%]
+| test_suite | PASS | 11.2s | ...........                                                              [100%]
  |
-| smoke | PASS | 3.1s | 2 modules imported OK |
+| smoke | PASS | 3.6s | 2 modules imported OK |
 
 ## Project
 
@@ -22,7 +22,6 @@
 
 | Date | Verdict | Witnesses | Time | Hash |
 |------|---------|-----------|------|------|
-| 2026-04-10 | PASS | 1/2 | 12.8s | 6593ea33cebdfe09 |
 | 2026-04-11 | PASS | 1/2 | 20.7s | 74567fca5a787f91 |
 | 2026-04-12 | PASS | 1/2 | 7.9s | a51af8e024ea102d |
 | 2026-04-13 | PASS | 1/2 | 11.7s | aba95b8ce034d2e5 |
@@ -32,3 +31,4 @@
 | 2026-04-20 | CERTIFIED | 2/2 | 9.3s | b4ab6d8d1a3b442c |
 | 2026-04-25 | CERTIFIED | 2/2 | 12.3s | c5b6d73a3294c6b0 |
 | 2026-04-26 | CERTIFIED | 2/2 | 13.3s | 063816ac50087122 |
+| 2026-04-27 | CERTIFIED | 2/2 | 14.8s | 744fdcf26fa838f7 |
