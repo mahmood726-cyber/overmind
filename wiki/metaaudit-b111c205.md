@@ -1,16 +1,16 @@
 # MetaAudit
 
-**Last verified:** 2026-04-27 02:43 UTC | **Verdict:** CERTIFIED (4/4 witnesses agree PASS)
-**Bundle hash:** dd365e6aedb3f45c | **Risk:** high | **Math:** 10
+**Last verified:** 2026-04-28 02:42 UTC | **Verdict:** CERTIFIED (4/4 witnesses agree PASS)
+**Bundle hash:** 7eb894ed1bd9b176 | **Risk:** high | **Math:** 10
 
 ## Health
 
 | Witness | Verdict | Time | Detail |
 |---------|---------|------|--------|
-| test_suite | PASS | 6.6s | ============================= test session starts =============================
+| test_suite | PASS | 5.6s | ============================= test session starts =============================
  |
-| smoke | PASS | 50.2s | 25 modules imported OK |
-| numerical | PASS | 2.9s | 4 values within tolerance |
+| smoke | PASS | 47.8s | 25 modules imported OK |
+| numerical | PASS | 2.8s | 4 values within tolerance |
 | numerical_continuity | PASS | 0.0s | numerical continuity: baseline + provenance checks OK |
 
 ## Project
@@ -24,7 +24,6 @@
 
 | Date | Verdict | Witnesses | Time | Hash |
 |------|---------|-----------|------|------|
-| 2026-04-11 | REJECT | 2/2 | 35.5s | dff95858408704ca |
 | 2026-04-12 | REJECT | 2/2 | 25.6s | 06e6812eae342ee1 |
 | 2026-04-13 | REJECT | 2/2 | 32.3s | 401211baad54ea2c |
 | 2026-04-15 | CERTIFIED | 2/2 | 31.9s | 247df60d5237ff32 |
@@ -34,3 +33,4 @@
 | 2026-04-25 | CERTIFIED | 4/4 | 50.5s | e42d79ece75c8204 |
 | 2026-04-26 | CERTIFIED | 4/4 | 53.9s | 6e37aed10aecb352 |
 | 2026-04-27 | CERTIFIED | 4/4 | 59.7s | dd365e6aedb3f45c |
+| 2026-04-28 | CERTIFIED | 4/4 | 56.2s | 7eb894ed1bd9b176 |

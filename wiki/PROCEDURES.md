@@ -6,7 +6,7 @@ Automatically discovered fix recipes from nightly verification outcomes.
 
 | Recipe | Pattern | Fix | Seen | Resolved | Confidence | Last Seen |
 |--------|---------|-----|------|----------|------------|-----------|
-| TIMEOUT:advanced-n | timed out | Check for WMI deadlock (Python 3.13), infinite loop, or slow | 19 | 1 | 6% | 2026-04-26 |
+| TIMEOUT:advanced-n | timed out | Check for WMI deadlock (Python 3.13), infinite loop, or slow | 22 | 1 | 5% | 2026-04-27 |
 
 ## Candidates (unproven)
 
@@ -14,7 +14,6 @@ Automatically discovered fix recipes from nightly verification outcomes.
 |--------|---------|-----|------|----------|-----------|
 | CONFIGURATION:evidence-i | no tests ran in 0.03s | Check pytest configuration (testpaths, test file naming, col | 2 | 0 | 2026-04-11 |
 | CONFIGURATION:idea12-592 | validation.run_quick_validatio | Verify column names in validation.run_quick_validation match | 2 | 0 | 2026-04-13 |
-| DEPENDENCY_ROT:io | io.loaders | Check if io.loaders is installed: pip install io.loaders | 2 | 0 | 2026-04-26 |
 | DEPENDENCY_ROT:statistical_framework | statistical_framework | Check if statistical_framework is installed: pip install sta | 2 | 0 | 2026-04-08 |
 | MISSING_FIXTURE:pairwise70 | ck, subtests, tmp_path, tmp_pa | Check test for unregistered fixture parameters and ensure re | 2 | 0 | 2026-04-12 |
 | SYNTAX_ERROR:ipd-qma-pr | e 418
@@ -24,6 +23,8 @@ SyntaxErro | Fix the syntax error in the reported file | 2 | 0 | 2026-04-08 |
 | SYNTAX_ERROR:repo300-en | ix
                ^
 SyntaxErro | Fix the syntax error in the reported file | 2 | 0 | 2026-04-13 |
+| TEST_FAILURE:esc-acs-li | Error: assert 15...
+1 failed i | Read test output and fix failing tests | 2 | 0 | 2026-04-27 |
 | UNKNOWN:pairwise70 | ck, subtests, tmp_path, tmp_pa | Manual investigation needed | 2 | 0 | 2026-04-10 |
 | DEPENDENCY_ROT:cardioorac | mal_cdf, load_data)
 ImportErro | Check if shared is installed: pip install shared | 1 | 0 | 2026-04-13 |
@@ -50,8 +51,6 @@ SyntaxErro | Fix the syntax error in the reported file | 1 | 0 | 2026-04-15 |
 20 failed, | Read test output and fix failing tests | 1 | 0 | 2026-04-09 |
 | TEST_FAILURE:dataextrac | OMPLETE: 82 passed, 2 failed
 S | Read test output and fix failing tests | 1 | 0 | 2026-04-25 |
-| TEST_FAILURE:esc-acs-li | Error: assert 15...
-1 failed i | Read test output and fix failing tests | 1 | 0 | 2026-04-26 |
 | TEST_FAILURE:fatiha-pro | nstalling renv  ... FAILED | Read test output and fix failing tests | 1 | 0 | 2026-04-25 |
 | TEST_FAILURE:globalst-5 | truthcert_integrity
 4 failed i | Read test output and fix failing tests | 1 | 0 | 2026-04-09 |
@@ -60,13 +59,13 @@ S | Read test output and fix failing tests | 1 | 0 | 2026-04-25 |
 | TIMEOUT:cardio-ctg | timed out | Check for WMI deadlock (Python 3.13), infinite loop, or slow | 1 | 0 | 2026-04-15 |
 | TIMEOUT:cardioorac | timed out | Check for WMI deadlock (Python 3.13), infinite loop, or slow | 1 | 0 | 2026-04-10 |
 | TIMEOUT:cbamm-0820 | timed out | Check for WMI deadlock (Python 3.13), infinite loop, or slow | 1 | 0 | 2026-04-08 |
-| TIMEOUT:cbamm-0820 | timed out | Check for WMI deadlock (Python 3.13), infinite loop, or slow | 1 | 0 | 2026-04-26 |
+| TIMEOUT:cbamm-0820 | timed out | Check for WMI deadlock (Python 3.13), infinite loop, or slow | 1 | 0 | 2026-04-27 |
 | TIMEOUT:cbamm-c5df | timed out | Check for WMI deadlock (Python 3.13), infinite loop, or slow | 1 | 0 | 2026-04-19 |
 | TIMEOUT:dataextrac | timed out | Check for WMI deadlock (Python 3.13), infinite loop, or slow | 1 | 0 | 2026-04-08 |
 | TIMEOUT:dta70-4b17 | timed out | Check for WMI deadlock (Python 3.13), infinite loop, or slow | 1 | 0 | 2026-04-08 |
 | TIMEOUT:esc-acs-li | timed out | Check for WMI deadlock (Python 3.13), infinite loop, or slow | 1 | 0 | 2026-04-15 |
 | TIMEOUT:evidence-i | timed out | Check for WMI deadlock (Python 3.13), infinite loop, or slow | 1 | 0 | 2026-04-15 |
-| TIMEOUT:evidence-i | timed out | Check for WMI deadlock (Python 3.13), infinite loop, or slow | 1 | 0 | 2026-04-26 |
+| TIMEOUT:evidence-i | timed out | Check for WMI deadlock (Python 3.13), infinite loop, or slow | 1 | 0 | 2026-04-27 |
 | TIMEOUT:evidenceor | timed out | Check for WMI deadlock (Python 3.13), infinite loop, or slow | 1 | 0 | 2026-04-15 |
 | TIMEOUT:experiment | timed out | Check for WMI deadlock (Python 3.13), infinite loop, or slow | 1 | 0 | 2026-04-15 |
 | TIMEOUT:fatiha-pro | timed out | Check for WMI deadlock (Python 3.13), infinite loop, or slow | 1 | 0 | 2026-04-08 |
@@ -102,3 +101,9 @@ S | Read test output and fix failing tests | 1 | 0 | 2026-04-25 |
 | TIMEOUT:user-ecc0a | timed out | Check for WMI deadlock (Python 3.13), infinite loop, or slow | 1 | 0 | 2026-04-17 |
 | UNKNOWN:denominato | py:src.dclnma.witnesses.base: | Manual investigation needed | 1 | 1 | 2026-04-25 |
 | UNKNOWN:hta-eviden | no tests ran in 2.35s | Manual investigation needed | 1 | 0 | 2026-04-09 |
+
+## Anti-Recipes (never worked — do NOT retry)
+
+| Recipe | Pattern | Seen | Resolved | Last Seen |
+|--------|---------|------|----------|-----------|
+| DEPENDENCY_ROT:io | io.loaders | 3 | 0 | 2026-04-27 |

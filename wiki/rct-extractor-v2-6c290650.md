@@ -1,14 +1,15 @@
 # rct-extractor-v2
 
-**Last verified:** 2026-04-27 02:43 UTC | **Verdict:** REJECT (Witnesses disagree: test_suite, numerical_continuity PASS vs smoke FAIL)
-**Bundle hash:** bad6910d688df180 | **Risk:** high | **Math:** 15
+**Last verified:** 2026-04-28 02:42 UTC | **Verdict:** REJECT (Witnesses disagree: test_suite, numerical_continuity PASS vs smoke FAIL)
+**Bundle hash:** 0b9bdcda3383d5ed | **Risk:** high | **Math:** 15
 
 ## Health
 
 | Witness | Verdict | Time | Detail |
 |---------|---------|------|--------|
-| test_suite | PASS | 7.5s | ts/test_ctg_validation.py::TestCTGScraperStructures::test_effect_estimate_creati |
-| smoke | FAIL | 21.2s | py:gold_data.mega.v10_batches.extract_009_final: tf-8') as f: |
+| test_suite | PASS | 7.2s | ion.py::TestCTGScraper::test_empty_nct_id_returns_none PASSED [ 13%]
+tests/test_ |
+| smoke | FAIL | 20.6s | py:gold_data.mega.v10_batches.extract_009_final: tf-8') as f: |
 | numerical | SKIP | 0.0s | skipped |
 | numerical_continuity | PASS | 0.0s | numerical continuity: baseline + provenance checks OK |
 
@@ -23,7 +24,6 @@
 
 | Date | Verdict | Witnesses | Time | Hash |
 |------|---------|-----------|------|------|
-| 2026-04-11 | PASS | 2/3 | 8.1s | 1c670d3294f559b2 |
 | 2026-04-12 | PASS | 2/3 | 12.8s | 3a4c7f8776a98cf5 |
 | 2026-04-13 | PASS | 2/3 | 7.3s | 2e65c96b562ffffb |
 | 2026-04-15 | FAIL | 1/1 | 0.0s | d3520d4d93497fb1 |
@@ -33,6 +33,7 @@
 | 2026-04-25 | REJECT | 3/4 | 26.0s | c2e841eeb71f0041 |
 | 2026-04-26 | REJECT | 3/4 | 28.7s | c736d358b53b1250 |
 | 2026-04-27 | REJECT | 3/4 | 28.7s | bad6910d688df180 |
+| 2026-04-28 | REJECT | 3/4 | 27.8s | 0b9bdcda3383d5ed |
 
 ## Notes
 

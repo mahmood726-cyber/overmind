@@ -1,5 +1,14 @@
 # Overmind Wiki Changelog
 
+## 2026-04-28
+
+**Verified:** 50 | **Certified:** 15 | **Rejected:** 7 | **Failed:** 2
+
+### Changes from last night
+- idea12: UNVERIFIED -> REJECT
+- BayesianMA: UNVERIFIED -> REJECT
+
+
 ## 2026-04-27
 
 **Verified:** 50 | **Certified:** 15 | **Rejected:** 5 | **Failed:** 2

@@ -1,7 +1,7 @@
 # Cbamm
 
-**Last verified:** 2026-04-27 02:43 UTC | **Verdict:** FAIL (Hard timeout (300s) — process killed)
-**Bundle hash:** 2668cf7fc0806418 | **Risk:** high | **Math:** 17
+**Last verified:** 2026-04-28 02:42 UTC | **Verdict:** FAIL (Hard timeout (300s) — process killed)
+**Bundle hash:** 9f389d83e63d3895 | **Risk:** high | **Math:** 17
 
 ## Health
 
@@ -20,7 +20,6 @@
 
 | Date | Verdict | Witnesses | Time | Hash |
 |------|---------|-----------|------|------|
-| 2026-04-08 | FAIL | 1/3 | 0.0s | 1f74f9b9c654330c |
 | 2026-04-09 | FAIL | 1/3 | 0.0s | ee80b62e09bb0957 |
 | 2026-04-10 | FAIL | 1/3 | 0.0s | 36a137df3df2ab4e |
 | 2026-04-11 | FAIL | 1/3 | 0.0s | 04ce8a42b2f91751 |
@@ -30,6 +29,7 @@
 | 2026-04-17 | FAIL | 1/3 | 2.9s | efaf94fe26fa020d |
 | 2026-04-26 | FAIL | 1/1 | 300.0s | d1a67298032085cb |
 | 2026-04-27 | FAIL | 1/1 | 300.0s | 2668cf7fc0806418 |
+| 2026-04-28 | FAIL | 1/1 | 300.0s | 9f389d83e63d3895 |
 
 ## Notes
 

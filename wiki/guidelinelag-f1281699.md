@@ -1,15 +1,15 @@
 # GuidelineLag
 
-**Last verified:** 2026-04-27 02:43 UTC | **Verdict:** CERTIFIED (2/2 witnesses agree PASS)
-**Bundle hash:** 8c41cf35bd03c96e | **Risk:** high | **Math:** 7
+**Last verified:** 2026-04-28 02:42 UTC | **Verdict:** CERTIFIED (2/2 witnesses agree PASS)
+**Bundle hash:** 49f351b296d0f59b | **Risk:** high | **Math:** 7
 
 ## Health
 
 | Witness | Verdict | Time | Detail |
 |---------|---------|------|--------|
-| test_suite | PASS | 6.6s | .                                                                        [100%]
+| test_suite | PASS | 3.5s | s                                                                        [100%]
  |
-| smoke | PASS | 23.4s | 26 modules imported OK |
+| smoke | PASS | 22.6s | 26 modules imported OK |
 
 ## Project
 
@@ -28,3 +28,4 @@
 | 2026-04-25 | CERTIFIED | 2/2 | 25.7s | f4f138b54a77c694 |
 | 2026-04-26 | CERTIFIED | 2/2 | 27.1s | 1fb7933bf02eebcb |
 | 2026-04-27 | CERTIFIED | 2/2 | 30.0s | 8c41cf35bd03c96e |
+| 2026-04-28 | CERTIFIED | 2/2 | 26.1s | 49f351b296d0f59b |

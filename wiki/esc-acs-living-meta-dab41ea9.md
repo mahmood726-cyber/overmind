@@ -1,14 +1,14 @@
 # esc-acs-living-meta
 
-**Last verified:** 2026-04-27 02:43 UTC | **Verdict:** REJECT (Witnesses disagree: smoke, numerical_continuity PASS vs test_suite FAIL)
-**Bundle hash:** c07b6a3fefcb6a58 | **Risk:** high | **Math:** 20
+**Last verified:** 2026-04-28 02:42 UTC | **Verdict:** REJECT (Witnesses disagree: smoke, numerical_continuity PASS vs test_suite FAIL)
+**Bundle hash:** 4ffbfeda673814ae | **Risk:** high | **Math:** 20
 
 ## Health
 
 | Witness | Verdict | Time | Detail |
 |---------|---------|------|--------|
-| test_suite | FAIL | 3.8s |  |
-| smoke | PASS | 2.1s | 20 modules imported OK |
+| test_suite | FAIL | 2.6s |  |
+| smoke | PASS | 1.9s | 20 modules imported OK |
 | numerical | SKIP | 0.0s | skipped |
 | numerical_continuity | PASS | 0.0s | numerical continuity: baseline + provenance checks OK |
 
@@ -23,7 +23,6 @@
 
 | Date | Verdict | Witnesses | Time | Hash |
 |------|---------|-----------|------|------|
-| 2026-04-11 | PASS | 2/3 | 2.6s | d21c447f7d229930 |
 | 2026-04-12 | PASS | 2/3 | 3.6s | 65f474fe7624f0a9 |
 | 2026-04-13 | PASS | 2/3 | 1.9s | 94ff7d9712edbfee |
 | 2026-04-15 | FAIL | 1/1 | 0.0s | cc5df3c25b0a1c7e |
@@ -33,6 +32,7 @@
 | 2026-04-25 | REJECT | 3/4 | 4.9s | 2236fc3a9dd890d9 |
 | 2026-04-26 | REJECT | 3/4 | 5.4s | 9b9e0eeb97d7af93 |
 | 2026-04-27 | REJECT | 3/4 | 5.9s | c07b6a3fefcb6a58 |
+| 2026-04-28 | REJECT | 3/4 | 4.4s | 4ffbfeda673814ae |
 
 ## Notes
 

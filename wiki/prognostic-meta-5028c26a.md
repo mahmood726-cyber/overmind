@@ -1,15 +1,15 @@
 # prognostic-meta
 
-**Last verified:** 2026-04-27 02:43 UTC | **Verdict:** UNVERIFIED (3/3 witnesses PASS but numerical witness SKIPPED (baseline missing) — NOT a release pass)
-**Bundle hash:** ff309d2ed61a2b87 | **Risk:** high | **Math:** 20
+**Last verified:** 2026-04-28 02:42 UTC | **Verdict:** UNVERIFIED (3/3 witnesses PASS but numerical witness SKIPPED (baseline missing) — NOT a release pass)
+**Bundle hash:** ea128e8a7371958e | **Risk:** high | **Math:** 20
 
 ## Health
 
 | Witness | Verdict | Time | Detail |
 |---------|---------|------|--------|
-| test_suite | PASS | 3.8s | .....                                                                    [100%]
+| test_suite | PASS | 2.4s | .....                                                                    [100%]
  |
-| smoke | PASS | 0.7s | 2 modules imported OK |
+| smoke | PASS | 0.8s | 2 modules imported OK |
 | numerical | SKIP | 0.0s | skipped |
 | numerical_continuity | PASS | 0.0s | numerical continuity: baseline + provenance checks OK |
 
@@ -24,7 +24,6 @@
 
 | Date | Verdict | Witnesses | Time | Hash |
 |------|---------|-----------|------|------|
-| 2026-04-11 | FAIL | 1/3 | 0.0s | b906e05a5755fab5 |
 | 2026-04-12 | FAIL | 1/3 | 0.0s | 0388052fe50cef63 |
 | 2026-04-13 | FAIL | 1/3 | 0.0s | af28c171b12bcfe8 |
 | 2026-04-15 | FAIL | 1/1 | 0.0s | 35015ba8f86138ff |
@@ -34,3 +33,4 @@
 | 2026-04-25 | UNVERIFIED | 3/4 | 3.6s | 9c7c4cbcb649d248 |
 | 2026-04-26 | UNVERIFIED | 3/4 | 3.4s | b922b3d050506fc5 |
 | 2026-04-27 | UNVERIFIED | 3/4 | 4.5s | ff309d2ed61a2b87 |
+| 2026-04-28 | UNVERIFIED | 3/4 | 3.2s | ea128e8a7371958e |
