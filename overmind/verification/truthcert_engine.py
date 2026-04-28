@@ -11,6 +11,7 @@ from overmind.verification.failure_taxonomy import classify_bundle
 from overmind.verification.preflight import PreflightChecker
 from overmind.verification.scope_lock import ScopeLock, WitnessResult, compute_tier
 from overmind.verification.numerical_continuity import NumericalContinuityWitness
+from overmind.verification.semgrep_witness import SemgrepWitness
 from overmind.verification.witnesses import (
     NumericalWitness,
     SmokeWitness,
@@ -25,6 +26,7 @@ class TruthCertEngine:
         test_timeout: int = 120,
         smoke_timeout: int = 10,
         numerical_timeout: int = 30,
+        semgrep_timeout: int = 300,
     ) -> None:
         self.baselines_dir = baselines_dir
         self.baselines_dir.mkdir(parents=True, exist_ok=True)
@@ -36,6 +38,11 @@ class TruthCertEngine:
         # mission_critical isn't installed (non-disruptive); FAILs when
         # a baseline has drifted or a provenance entry is unverified.
         self.numerical_continuity_witness = NumericalContinuityWitness()
+        # Added 2026-04-28: generic OWASP / supply-chain coverage via
+        # community-maintained Semgrep rule packs. Fires at tier 2+ only
+        # (tier 1 is "low risk" by design). SKIPs gracefully when the
+        # `semgrep` binary isn't on PATH — missing tool != failed scan.
+        self.semgrep_witness = SemgrepWitness(timeout=semgrep_timeout)
         self.arbitrator = Arbitrator()
         self.preflight = PreflightChecker()
 
@@ -117,7 +124,15 @@ class TruthCertEngine:
                 list(lock.smoke_modules), lock.project_path,
             ))
 
-        # Witness 3: numerical regression (tier 3)
+        # Witness 3: generic OWASP / supply-chain (tier 2+).
+        # Tier 1 (low-risk) skips this to keep nightly fast; tier 2+ pays
+        # the security-scan cost. Semgrep SKIPs gracefully when the binary
+        # isn't installed, which prevents portfolio-wide failure cascades
+        # if the tool ever disappears from PATH.
+        if lock.witness_count >= 2:
+            results.append(self.semgrep_witness.run(lock.project_path))
+
+        # Witness 4: numerical regression (tier 3)
         if lock.witness_count >= 3:
             if lock.baseline_path:
                 results.append(self.numerical_witness.run(
@@ -129,7 +144,7 @@ class TruthCertEngine:
                     stdout="", stderr="No baseline file", elapsed=0.0,
                 ))
 
-        # Witness 4: scientific-content integrity (tier 3). Independent
+        # Witness 5: scientific-content integrity (tier 3). Independent
         # of the numerical witness: baseline drift + provenance coverage
         # (via MissionCritical). SKIPs gracefully when mc isn't installed
         # or when the project hasn't adopted baseline.json / provenance.json.
@@ -151,6 +166,11 @@ class TruthCertEngine:
                     retry = self.numerical_witness.run(lock.baseline_path, lock.project_path)
                 elif orig.witness_type == "numerical_continuity":
                     retry = self.numerical_continuity_witness.run(lock.project_path)
+                elif orig.witness_type == "semgrep":
+                    # Semgrep failures are typically real (security findings or
+                    # binary missing), but give one retry for transient OOM /
+                    # subprocess-spawn flakes — same retry policy as other witnesses.
+                    retry = self.semgrep_witness.run(lock.project_path)
                 else:
                     continue
                 if retry.verdict == "PASS":
