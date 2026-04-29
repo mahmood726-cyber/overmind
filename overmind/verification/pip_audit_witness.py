@@ -59,6 +59,7 @@ class PipAuditWitness:
         timeout: int = DEFAULT_TIMEOUT_S,
         binary: str = "pip-audit",
         requirements_candidates: Sequence[str] | None = None,
+        scan_active_env_when_no_requirements: bool = False,
     ) -> None:
         self.timeout = timeout
         self.binary = binary
@@ -67,6 +68,12 @@ class PipAuditWitness:
             if requirements_candidates is not None
             else DEFAULT_REQUIREMENTS_CANDIDATES
         )
+        # Default False (changed 2026-04-29 after canary regression):
+        # auditing the active env when a repo declares no requirements is
+        # rarely what callers want — it conflates the host system's CVEs
+        # with the repo under test, breaking the meta-verification canary
+        # and any minimal-fixture project. Opt in explicitly if needed.
+        self.scan_active_env_when_no_requirements = scan_active_env_when_no_requirements
 
     def _find_requirements(self, cwd: str) -> str | None:
         repo = Path(cwd)
@@ -86,6 +93,24 @@ class PipAuditWitness:
     def run(self, cwd: str) -> WitnessResult:
         start = time.time()
         requirements = self._find_requirements(cwd)
+        if requirements is None and not self.scan_active_env_when_no_requirements:
+            # No requirements file → SKIP (changed 2026-04-29). Active-env
+            # scanning conflates host CVEs with the repo under test and
+            # produces noise on minimal-fixture projects (canary, smoke
+            # tests). Opt in via scan_active_env_when_no_requirements=True.
+            return WitnessResult(
+                witness_type="pip_audit",
+                verdict="SKIP",
+                exit_code=0,
+                stdout="",
+                stderr=(
+                    "no requirements.txt / pyproject.toml / requirements/ "
+                    "subtree found at repo root — SKIP. Opt in via "
+                    "scan_active_env_when_no_requirements=True if you "
+                    "want to audit the host environment anyway."
+                ),
+                elapsed=round(time.time() - start, 2),
+            )
         cmd = self._build_cmd(requirements)
         try:
             proc = subprocess.run(

@@ -29,6 +29,7 @@ import hashlib
 import json
 import logging
 from dataclasses import dataclass
+from datetime import datetime, timezone
 
 from overmind.verification.scope_lock import ScopeLock, WitnessResult
 from overmind.verification.signers import (
@@ -164,6 +165,11 @@ class CertBundle:
         treated as HMAC (pre-2026-04-18 default).
 
         Callers that require a signed bundle MUST treat False as failure.
+
+        IMPORTANT: signature alone is NOT sufficient to gate decisions —
+        an attacker with a copy of an old PASS bundle can replay it
+        unchanged (HMAC stays valid). Pair with `verify_freshness()` for
+        replay protection. See lessons.md#replay-protection-2026-04-29.
         """
         if not self.bundle_signature:
             return False
@@ -174,6 +180,39 @@ class CertBundle:
             public_key=self.signature_public_key,
         )
         return verify_result(self._canonical_payload(), result)
+
+    def verify_freshness(self, max_age_seconds: int) -> bool:
+        """Check that bundle timestamp is within max_age_seconds of now (UTC).
+
+        REPLAY-PROTECTION complement to verify_signature(). HMAC/Ed25519
+        prove authenticity (this bundle was minted with the legitimate
+        key) but NOT recency (an attacker who acquired any old PASS
+        bundle can replay it as if fresh).
+
+        Returns True iff:
+          - timestamp parses as ISO-8601, AND
+          - timestamp is in the past (no future-dated bundles), AND
+          - age (now - timestamp) <= max_age_seconds.
+
+        Callers gating release/CI decisions on a bundle MUST verify
+        BOTH signature AND freshness. v6 benchmark gap #1 (2026-04-29).
+        """
+        if not self.timestamp:
+            return False
+        try:
+            ts_str = self.timestamp.replace("Z", "+00:00")
+            ts = datetime.fromisoformat(ts_str)
+        except (ValueError, AttributeError):
+            return False
+        if ts.tzinfo is None:
+            # Naive timestamp — treat as UTC.
+            ts = ts.replace(tzinfo=timezone.utc)
+        now = datetime.now(timezone.utc)
+        age_seconds = (now - ts).total_seconds()
+        if age_seconds < 0:
+            # Future-dated bundle — clock skew or forgery; reject.
+            return False
+        return age_seconds <= max_age_seconds
 
     def to_dict(self) -> dict:
         return {

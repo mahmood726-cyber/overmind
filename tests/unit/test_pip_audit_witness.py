@@ -42,10 +42,27 @@ def _mock_run(stdout: str, returncode: int = 0,
     return cp
 
 
+def _seed_requirements(tmp_path: Path) -> None:
+    """Write a minimal requirements.txt so the witness reaches its
+    subprocess-run path (without it, the witness SKIPs by design as of
+    2026-04-29 — see PipAuditWitness.scan_active_env_when_no_requirements).
+    """
+    (tmp_path / "requirements.txt").write_text("requests\n", encoding="utf-8")
+
+
+@pytest.fixture
+def repo_with_reqs(tmp_path: Path) -> Path:
+    _seed_requirements(tmp_path)
+    return tmp_path
+
+
 # ── verdict mapping ──────────────────────────────────────────────────
 
 
-def test_no_vulns_is_pass(tmp_path: Path):
+def test_no_vulns_is_pass(repo_with_reqs: Path):
+    tmp_path = repo_with_reqs
+    _no_op = None  # marker so subsequent edits anchor cleanly
+    del _no_op
     output = _fake_pip_audit_output(deps=[
         _clean_dep("requests", "2.31.0"),
         _clean_dep("numpy", "1.26.0"),
@@ -57,7 +74,8 @@ def test_no_vulns_is_pass(tmp_path: Path):
     assert "0 vulnerabilities across 2 dep(s)" in result.stdout
 
 
-def test_single_vuln_is_fail(tmp_path: Path):
+def test_single_vuln_is_fail(repo_with_reqs: Path):
+    tmp_path = repo_with_reqs
     output = _fake_pip_audit_output(deps=[
         _vuln_dep("requests", "2.0.0", ["GHSA-x84v-xcm2-53pg"]),
     ])
@@ -68,7 +86,8 @@ def test_single_vuln_is_fail(tmp_path: Path):
            "GHSA-x84v-xcm2-53pg" in result.stdout
 
 
-def test_multiple_vulns_in_summary(tmp_path: Path):
+def test_multiple_vulns_in_summary(repo_with_reqs: Path):
+    tmp_path = repo_with_reqs
     output = _fake_pip_audit_output(deps=[
         _vuln_dep("pkg-a", "1.0", ["CVE-1"]),
         _vuln_dep("pkg-b", "2.0", ["CVE-2"]),
@@ -82,7 +101,8 @@ def test_multiple_vulns_in_summary(tmp_path: Path):
     assert "pkg-b" in result.stderr
 
 
-def test_mixed_clean_and_vuln_is_fail(tmp_path: Path):
+def test_mixed_clean_and_vuln_is_fail(repo_with_reqs: Path):
+    tmp_path = repo_with_reqs
     output = _fake_pip_audit_output(deps=[
         _clean_dep("safe", "1.0"),
         _vuln_dep("unsafe", "1.0", ["CVE-X"]),
@@ -96,7 +116,8 @@ def test_mixed_clean_and_vuln_is_fail(tmp_path: Path):
 # ── graceful-degradation paths ───────────────────────────────────────
 
 
-def test_pip_audit_not_installed_is_skip(tmp_path: Path):
+def test_pip_audit_not_installed_is_skip(repo_with_reqs: Path):
+    tmp_path = repo_with_reqs
     """Same SKIP-not-FAIL pattern as SemgrepWitness, per the
     UNVERIFIED-vs-PASS lesson — missing tool != failed scan."""
     with patch("subprocess.run", side_effect=FileNotFoundError("pip-audit")):
@@ -105,7 +126,8 @@ def test_pip_audit_not_installed_is_skip(tmp_path: Path):
     assert "pip-audit" in result.stderr.lower()
 
 
-def test_timeout_is_fail(tmp_path: Path):
+def test_timeout_is_fail(repo_with_reqs: Path):
+    tmp_path = repo_with_reqs
     with patch(
         "subprocess.run",
         side_effect=subprocess.TimeoutExpired(cmd="pip-audit", timeout=180),
@@ -116,7 +138,8 @@ def test_timeout_is_fail(tmp_path: Path):
            "timeout" in result.stderr.lower()
 
 
-def test_unparseable_json_is_fail(tmp_path: Path):
+def test_unparseable_json_is_fail(repo_with_reqs: Path):
+    tmp_path = repo_with_reqs
     with patch("subprocess.run", return_value=_mock_run(
         stdout="not valid json", returncode=1, stderr="audit crashed",
     )):
@@ -124,7 +147,8 @@ def test_unparseable_json_is_fail(tmp_path: Path):
     assert result.verdict == "FAIL"
 
 
-def test_empty_dependencies_is_pass(tmp_path: Path):
+def test_empty_dependencies_is_pass(repo_with_reqs: Path):
+    tmp_path = repo_with_reqs
     """A repo with no resolvable deps returns dependencies=[] — that's
     a clean state, not an error."""
     output = _fake_pip_audit_output(deps=[])
@@ -152,9 +176,18 @@ def test_finds_requirements_txt(tmp_path: Path):
     assert "requirements.txt" in cmd
 
 
-def test_falls_back_to_active_env_when_no_requirements(tmp_path: Path):
-    """If no requirements file is present, pip-audit scans the active
-    env (no --requirement flag)."""
+def test_skips_when_no_requirements_file(tmp_path: Path):
+    """No requirements file → SKIP (changed 2026-04-29 from active-env
+    fallback). Active-env scanning conflates host CVEs with the repo
+    under test, broke the meta-verification canary at tier-2."""
+    result = PipAuditWitness().run(cwd=str(tmp_path))
+    assert result.verdict == "SKIP"
+    assert "no requirements" in result.stderr.lower()
+
+
+def test_active_env_fallback_opt_in(tmp_path: Path):
+    """Caller can opt back in to active-env scanning via
+    scan_active_env_when_no_requirements=True."""
     captured = {}
 
     def fake_run(cmd, **kwargs):
@@ -162,11 +195,12 @@ def test_falls_back_to_active_env_when_no_requirements(tmp_path: Path):
         return _mock_run(_fake_pip_audit_output(deps=[]))
 
     with patch("subprocess.run", side_effect=fake_run):
-        PipAuditWitness().run(cwd=str(tmp_path))
+        PipAuditWitness(scan_active_env_when_no_requirements=True).run(
+            cwd=str(tmp_path),
+        )
 
     cmd = captured.get("cmd", [])
     assert "--requirement" not in cmd
-    # And the summary should explain the scope clearly.
 
 
 def test_prefers_first_candidate_in_priority_order(tmp_path: Path):
@@ -193,7 +227,8 @@ def test_prefers_first_candidate_in_priority_order(tmp_path: Path):
 # ── command construction ────────────────────────────────────────────
 
 
-def test_default_command_uses_strict_and_json(tmp_path: Path):
+def test_default_command_uses_strict_and_json(repo_with_reqs: Path):
+    tmp_path = repo_with_reqs
     captured = {}
 
     def fake_run(cmd, **kwargs):
@@ -209,7 +244,8 @@ def test_default_command_uses_strict_and_json(tmp_path: Path):
     assert cmd[0] == "pip-audit"
 
 
-def test_custom_binary_path_passed_through(tmp_path: Path):
+def test_custom_binary_path_passed_through(repo_with_reqs: Path):
+    tmp_path = repo_with_reqs
     captured = {}
 
     def fake_run(cmd, **kwargs):
