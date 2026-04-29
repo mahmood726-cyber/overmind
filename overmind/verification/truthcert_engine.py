@@ -11,6 +11,7 @@ from overmind.verification.failure_taxonomy import classify_bundle
 from overmind.verification.preflight import PreflightChecker
 from overmind.verification.scope_lock import ScopeLock, WitnessResult, compute_tier
 from overmind.verification.numerical_continuity import NumericalContinuityWitness
+from overmind.verification.pip_audit_witness import PipAuditWitness
 from overmind.verification.semgrep_witness import SemgrepWitness
 from overmind.verification.witnesses import (
     NumericalWitness,
@@ -27,6 +28,7 @@ class TruthCertEngine:
         smoke_timeout: int = 10,
         numerical_timeout: int = 30,
         semgrep_timeout: int = 300,
+        pip_audit_timeout: int = 180,
     ) -> None:
         self.baselines_dir = baselines_dir
         self.baselines_dir.mkdir(parents=True, exist_ok=True)
@@ -43,6 +45,12 @@ class TruthCertEngine:
         # (tier 1 is "low risk" by design). SKIPs gracefully when the
         # `semgrep` binary isn't on PATH — missing tool != failed scan.
         self.semgrep_witness = SemgrepWitness(timeout=semgrep_timeout)
+        # Added 2026-04-29: Python dep CVE coverage via pip-audit (PyPA).
+        # Complements SemgrepWitness — Semgrep finds CODE-level vulns;
+        # pip-audit finds VERSION-level vulns (your installed requests
+        # has a known CVE fixed in a newer version). Fires at tier 2+ to
+        # match the security tier and not slow tier-1 nightly runs.
+        self.pip_audit_witness = PipAuditWitness(timeout=pip_audit_timeout)
         self.arbitrator = Arbitrator()
         self.preflight = PreflightChecker()
 
@@ -132,7 +140,13 @@ class TruthCertEngine:
         if lock.witness_count >= 2:
             results.append(self.semgrep_witness.run(lock.project_path))
 
-        # Witness 4: numerical regression (tier 3)
+        # Witness 4: Python dep CVE scan (tier 2+). Semgrep covers CODE
+        # vulns; pip-audit covers VERSION vulns. Same SKIP-on-missing
+        # graceful-degradation pattern.
+        if lock.witness_count >= 2:
+            results.append(self.pip_audit_witness.run(lock.project_path))
+
+        # Witness 5: numerical regression (tier 3)
         if lock.witness_count >= 3:
             if lock.baseline_path:
                 results.append(self.numerical_witness.run(
@@ -144,7 +158,7 @@ class TruthCertEngine:
                     stdout="", stderr="No baseline file", elapsed=0.0,
                 ))
 
-        # Witness 5: scientific-content integrity (tier 3). Independent
+        # Witness 6: scientific-content integrity (tier 3). Independent
         # of the numerical witness: baseline drift + provenance coverage
         # (via MissionCritical). SKIPs gracefully when mc isn't installed
         # or when the project hasn't adopted baseline.json / provenance.json.
@@ -171,6 +185,11 @@ class TruthCertEngine:
                     # binary missing), but give one retry for transient OOM /
                     # subprocess-spawn flakes — same retry policy as other witnesses.
                     retry = self.semgrep_witness.run(lock.project_path)
+                elif orig.witness_type == "pip_audit":
+                    # pip-audit FAILs are typically real (CVE present) but
+                    # one retry filters PyPI Advisory DB transient lookup
+                    # failures (network blips). Same retry policy.
+                    retry = self.pip_audit_witness.run(lock.project_path)
                 else:
                     continue
                 if retry.verdict == "PASS":
