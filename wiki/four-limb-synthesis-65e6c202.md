@@ -1,15 +1,17 @@
 # four_limb_synthesis
 
-**Last verified:** 2026-04-28 02:42 UTC | **Verdict:** REJECT (Witnesses disagree: test_suite PASS vs smoke FAIL)
-**Bundle hash:** af79d8ac7f8f3322 | **Risk:** high | **Math:** 2
+**Last verified:** 2026-05-03 12:38 UTC | **Verdict:** CERTIFIED (3/3 witnesses agree PASS)
+**Bundle hash:** be9a09b16b19e6ef | **Risk:** high | **Math:** 2
 
 ## Health
 
 | Witness | Verdict | Time | Detail |
 |---------|---------|------|--------|
-| test_suite | PASS | 4.9s | ...........                                                              [100%]
+| test_suite | PASS | 3.7s | ...........                                                              [100%]
  |
-| smoke | FAIL | 28.5s | py:io.loaders: Traceback (most recent call last): |
+| smoke | PASS | 25.7s | 39 modules imported OK |
+| semgrep | PASS | 13.2s | semgrep findings: ERROR=0 WARNING=0 INFO=0; engine errors=0 |
+| pip_audit | SKIP | 0.0s | skipped |
 
 ## Project
 
@@ -30,13 +32,4 @@
 | 2026-04-26 | REJECT | 2/2 | 31.7s | 9dddeaee666dfa3a |
 | 2026-04-27 | REJECT | 2/2 | 35.5s | b32dca3099a1c91f |
 | 2026-04-28 | REJECT | 2/2 | 33.4s | af79d8ac7f8f3322 |
-
-## Notes
-
-Witnesses disagree: test_suite PASS vs smoke FAIL
-
-**smoke:** py:io.loaders: Traceback (most recent call last):
-  File "<string>", line 1, in <module>
-    import io.loaders
-ModuleNotFoundError: No module named 'io.loaders'; 'io' is not a package
-js:_test_runner.
+| 2026-05-03 | CERTIFIED | 3/4 | 42.6s | be9a09b16b19e6ef |

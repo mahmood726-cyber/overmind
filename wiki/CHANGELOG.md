@@ -1,5 +1,18 @@
 # Overmind Wiki Changelog
 
+## 2026-05-03
+
+**Verified:** 11 | **Certified:** 8 | **Rejected:** 3 | **Failed:** 0
+
+### Changes from last night
+- ctgov-search-strategies: CERTIFIED -> REJECT
+- GWAM: CERTIFIED -> REJECT
+- hfpef_registry_calibration: CERTIFIED -> REJECT
+- metaoverfit: PASS -> CERTIFIED
+- MLMResearch: PASS -> CERTIFIED
+- four_limb_synthesis: REJECT -> CERTIFIED
+
+
 ## 2026-04-28
 
 **Verified:** 50 | **Certified:** 15 | **Rejected:** 7 | **Failed:** 2

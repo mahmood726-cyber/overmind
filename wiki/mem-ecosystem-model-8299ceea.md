@@ -1,16 +1,18 @@
 # mem-ecosystem-model
 
-**Last verified:** 2026-04-28 02:42 UTC | **Verdict:** CERTIFIED (2/2 witnesses agree PASS)
-**Bundle hash:** faa26dedd363b8dc | **Risk:** high | **Math:** 7
+**Last verified:** 2026-05-03 12:38 UTC | **Verdict:** CERTIFIED (4/4 witnesses agree PASS)
+**Bundle hash:** ea6fb281ccf55289 | **Risk:** high | **Math:** 7
 
 ## Health
 
 | Witness | Verdict | Time | Detail |
 |---------|---------|------|--------|
-| test_suite | PASS | 0.4s | ==============
+| test_suite | PASS | 0.3s | ==============
   [PASS] Table2 Robust-Stable: actual=728, claimed=728
   [PASS] T |
-| smoke | PASS | 9.7s | 2 modules imported OK |
+| smoke | PASS | 7.0s | 2 modules imported OK |
+| semgrep | PASS | 29.8s | semgrep findings: ERROR=0 WARNING=0 INFO=0; engine errors=0 |
+| pip_audit | PASS | 35.4s | pip-audit findings: 0 vulnerabilities across 14 dep(s); scope: requirements file |
 
 ## Project
 
@@ -30,3 +32,4 @@
 | 2026-04-26 | CERTIFIED | 2/2 | 9.2s | 388a079f78cb9bba |
 | 2026-04-27 | CERTIFIED | 2/2 | 10.5s | 90fdc56389a78c61 |
 | 2026-04-28 | CERTIFIED | 2/2 | 10.0s | faa26dedd363b8dc |
+| 2026-05-03 | CERTIFIED | 4/4 | 72.5s | ea6fb281ccf55289 |

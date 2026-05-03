@@ -6,7 +6,7 @@ Automatically discovered fix recipes from nightly verification outcomes.
 
 | Recipe | Pattern | Fix | Seen | Resolved | Confidence | Last Seen |
 |--------|---------|-----|------|----------|------------|-----------|
-| TIMEOUT:advanced-n | timed out | Check for WMI deadlock (Python 3.13), infinite loop, or slow | 22 | 1 | 5% | 2026-04-27 |
+| TIMEOUT:advanced-n | timed out | Check for WMI deadlock (Python 3.13), infinite loop, or slow | 26 | 1 | 5% | 2026-04-28 |
 
 ## Candidates (unproven)
 
@@ -23,12 +23,11 @@ SyntaxErro | Fix the syntax error in the reported file | 2 | 0 | 2026-04-08 |
 | SYNTAX_ERROR:repo300-en | ix
                ^
 SyntaxErro | Fix the syntax error in the reported file | 2 | 0 | 2026-04-13 |
-| TEST_FAILURE:esc-acs-li | Error: assert 15...
-1 failed i | Read test output and fix failing tests | 2 | 0 | 2026-04-27 |
 | UNKNOWN:pairwise70 | ck, subtests, tmp_path, tmp_pa | Manual investigation needed | 2 | 0 | 2026-04-10 |
 | DEPENDENCY_ROT:cardioorac | mal_cdf, load_data)
 ImportErro | Check if shared is installed: pip install shared | 1 | 0 | 2026-04-13 |
 | DEPENDENCY_ROT:denominato | py:src.dclnma.witnesses.base: | Break circular import by moving WitnessContext to a separate | 1 | 0 | 2026-04-20 |
+| DEPENDENCY_ROT:io | io.loaders | Check if io.loaders is installed: pip install io.loaders | 1 | 0 | 2026-04-28 |
 | DEPENDENCY_ROT:kmcurve-68 | import process_pdf
 ImportErro | Check if the missing module is installed: pip install the mi | 1 | 0 | 2026-04-25 |
 | DEPENDENCY_ROT:registry-f | ============================= | Check the import chain in tests/test_meta.py and install any | 1 | 0 | 2026-04-11 |
@@ -47,6 +46,8 @@ SyntaxErro | Fix the syntax error in the reported file | 1 | 0 | 2026-04-15 |
 2 failed, | Read test output and fix failing tests | 1 | 0 | 2026-04-09 |
 | TEST_FAILURE:bayesianma | 0_r_code - Asser...
 7 failed, | Read test output and fix failing tests | 1 | 0 | 2026-04-17 |
+| TEST_FAILURE:bayesianma | is_magnesium
+ERROR tests/test_ | Run pytest with -v on test_12 to surface the underlying erro | 1 | 0 | 2026-04-28 |
 | TEST_FAILURE:ctgov-sear | est_ci_bounds_valid
 20 failed, | Read test output and fix failing tests | 1 | 0 | 2026-04-09 |
 | TEST_FAILURE:dataextrac | OMPLETE: 82 passed, 2 failed
@@ -59,13 +60,13 @@ S | Read test output and fix failing tests | 1 | 0 | 2026-04-25 |
 | TIMEOUT:cardio-ctg | timed out | Check for WMI deadlock (Python 3.13), infinite loop, or slow | 1 | 0 | 2026-04-15 |
 | TIMEOUT:cardioorac | timed out | Check for WMI deadlock (Python 3.13), infinite loop, or slow | 1 | 0 | 2026-04-10 |
 | TIMEOUT:cbamm-0820 | timed out | Check for WMI deadlock (Python 3.13), infinite loop, or slow | 1 | 0 | 2026-04-08 |
-| TIMEOUT:cbamm-0820 | timed out | Check for WMI deadlock (Python 3.13), infinite loop, or slow | 1 | 0 | 2026-04-27 |
+| TIMEOUT:cbamm-0820 | timed out | Check for WMI deadlock (Python 3.13), infinite loop, or slow | 1 | 0 | 2026-04-28 |
 | TIMEOUT:cbamm-c5df | timed out | Check for WMI deadlock (Python 3.13), infinite loop, or slow | 1 | 0 | 2026-04-19 |
 | TIMEOUT:dataextrac | timed out | Check for WMI deadlock (Python 3.13), infinite loop, or slow | 1 | 0 | 2026-04-08 |
 | TIMEOUT:dta70-4b17 | timed out | Check for WMI deadlock (Python 3.13), infinite loop, or slow | 1 | 0 | 2026-04-08 |
 | TIMEOUT:esc-acs-li | timed out | Check for WMI deadlock (Python 3.13), infinite loop, or slow | 1 | 0 | 2026-04-15 |
 | TIMEOUT:evidence-i | timed out | Check for WMI deadlock (Python 3.13), infinite loop, or slow | 1 | 0 | 2026-04-15 |
-| TIMEOUT:evidence-i | timed out | Check for WMI deadlock (Python 3.13), infinite loop, or slow | 1 | 0 | 2026-04-27 |
+| TIMEOUT:evidence-i | timed out | Check for WMI deadlock (Python 3.13), infinite loop, or slow | 1 | 0 | 2026-04-28 |
 | TIMEOUT:evidenceor | timed out | Check for WMI deadlock (Python 3.13), infinite loop, or slow | 1 | 0 | 2026-04-15 |
 | TIMEOUT:experiment | timed out | Check for WMI deadlock (Python 3.13), infinite loop, or slow | 1 | 0 | 2026-04-15 |
 | TIMEOUT:fatiha-pro | timed out | Check for WMI deadlock (Python 3.13), infinite loop, or slow | 1 | 0 | 2026-04-08 |
@@ -106,4 +107,5 @@ S | Read test output and fix failing tests | 1 | 0 | 2026-04-25 |
 
 | Recipe | Pattern | Seen | Resolved | Last Seen |
 |--------|---------|------|----------|-----------|
-| DEPENDENCY_ROT:io | io.loaders | 3 | 0 | 2026-04-27 |
+| TEST_FAILURE:esc-acs-li | Error: assert 15...
+1 failed i | 3 | 0 | 2026-04-28 |

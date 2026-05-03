@@ -1,15 +1,17 @@
 # meta-paradigm-shift
 
-**Last verified:** 2026-04-28 02:42 UTC | **Verdict:** CERTIFIED (2/2 witnesses agree PASS)
-**Bundle hash:** 5e67e39ccf7c9221 | **Risk:** high | **Math:** 5
+**Last verified:** 2026-05-03 12:38 UTC | **Verdict:** CERTIFIED (3/3 witnesses agree PASS)
+**Bundle hash:** 2e2185869cd92a02 | **Risk:** high | **Math:** 5
 
 ## Health
 
 | Witness | Verdict | Time | Detail |
 |---------|---------|------|--------|
-| test_suite | PASS | 3.5s | ...                                                                      [100%]
+| test_suite | PASS | 2.7s | ...                                                                      [100%]
  |
-| smoke | PASS | 3.6s | 11 modules imported OK |
+| smoke | PASS | 3.2s | 11 modules imported OK |
+| semgrep | PASS | 29.9s | semgrep findings: ERROR=0 WARNING=0 INFO=0; engine errors=0 |
+| pip_audit | SKIP | 0.0s | skipped |
 
 ## Project
 
@@ -28,3 +30,4 @@
 | 2026-04-26 | CERTIFIED | 2/2 | 7.2s | 47ab4e0539d41811 |
 | 2026-04-27 | CERTIFIED | 2/2 | 8.6s | 043a6399286298d7 |
 | 2026-04-28 | CERTIFIED | 2/2 | 7.1s | 5e67e39ccf7c9221 |
+| 2026-05-03 | CERTIFIED | 3/4 | 35.8s | 2e2185869cd92a02 |

@@ -1,16 +1,18 @@
 # MLMResearch
 
-**Last verified:** 2026-04-28 02:42 UTC | **Verdict:** PASS (Single witness: test_suite PASS)
-**Bundle hash:** 66ac2be66b04c0ac | **Risk:** high | **Math:** 6
+**Last verified:** 2026-05-03 12:38 UTC | **Verdict:** CERTIFIED (2/2 witnesses agree PASS)
+**Bundle hash:** 9a27f0f250d928a5 | **Risk:** high | **Math:** 6
 
 ## Health
 
 | Witness | Verdict | Time | Detail |
 |---------|---------|------|--------|
-| test_suite | PASS | 4.6s | ✔ | F W  S  OK | Context
+| test_suite | PASS | 3.5s | ✔ | F W  S  OK | Context
 
 ⠏ |          0 | adaptive_rve                          |
 | smoke | SKIP | 0.0s | skipped |
+| semgrep | PASS | 12.2s | semgrep findings: ERROR=0 WARNING=0 INFO=0; engine errors=0 |
+| pip_audit | SKIP | 0.0s | skipped |
 
 ## Project
 
@@ -30,3 +32,4 @@
 | 2026-04-26 | PASS | 1/2 | 4.2s | 2fc17f287c67ae8a |
 | 2026-04-27 | PASS | 1/2 | 4.7s | 79adaa7d765c5b86 |
 | 2026-04-28 | PASS | 1/2 | 4.6s | 66ac2be66b04c0ac |
+| 2026-05-03 | CERTIFIED | 2/4 | 15.7s | 9a27f0f250d928a5 |
