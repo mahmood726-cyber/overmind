@@ -13,7 +13,11 @@ if not primary:
     print('build failed', flush=True)
     sys.exit(1)
 print(f'COMMAND: {primary}', flush=True)
-result = subprocess.run(primary, shell=True, text=True, capture_output=True)
+result = subprocess.run(primary, shell=True, text=True, capture_output=True)  # nosemgrep: python.lang.security.audit.subprocess-shell-true.subprocess-shell-true
+# Smoke fixture: `primary` is read from a tightly controlled internal prompt
+# stdin (not network-exposed). shell=True is intentional — the fixture
+# emulates "run whatever PRIMARY COMMAND the prompt names" for end-to-end
+# testing of the smoke-witness pipeline.
 if result.stdout:
     print(result.stdout.rstrip(), flush=True)
 if result.stderr:

@@ -258,6 +258,12 @@ class TruthCertEngine:
                    # LLM-meta-analysis subsystem and cascade on one
                    # missing dependency.
                    "integrated_meta_analysis", "integrated_meta_analysis_v2",
+                   # Dataextractor one-shot data-expansion / model-comparison
+                   # scripts that do file I/O and model downloads at module
+                   # import time. Not importable modules; the smoke witness
+                   # was hanging on these even after their target files had
+                   # been moved out of the repo.
+                   "expand_validation", "zs_compare",
                    }
     # Prefixes that strongly signal an entry-point script rather than a module.
     _SKIP_FILE_PREFIXES = ("run_", "debug_", "script_", "entrypoint_", "probe_")

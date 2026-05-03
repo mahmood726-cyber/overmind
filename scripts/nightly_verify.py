@@ -71,7 +71,13 @@ SKIP_PROJECTS = {
     "new-app-a051eaea",                                       # registered test_command is a Selenium suite requiring a dev server on port 3005 + 82 Edge driver lifecycles — always times out. Real test surface is `npm run test` (vitest) which has 16 statistical-accuracy FAILs against R metafor (PM/SJ/HE estimators, prediction interval ordering). Needs dedicated stats-parity session.
     # Added 2026-04-25 after audit of nightly 2026-04-25 FAILs (5 FAILs, all systemic-not-code):
     "cbamm-c5df0bd2",                                         # path missing on disk (Archive/Stale-Projects/Cbamm) — already archived, registry not yet reconciled
+    "cbamm-c0fea32f",                                         # archived dup (Archive/Stale-Projects/CBAMM_CLEAN_COMPLETE/...)
+    "cbamm-0820ec88",                                         # OneDrive/Documents/Cbamm — same Cbamm via OneDrive sync; R devtools test command times out
     "pairwise70-900619fe",                                    # path missing on disk (Models/Pairwise70) — superseded by Pairwise70 corpus living in MetaAudit subdirs
+    "pairwise70-4020df78",                                    # Projects/Pairwise70 — selenium_comprehensive_test.py hangs the witness (Selenium driver lifecycle); not a code regression
+    "pairwise70-5049aa49",                                    # OneDrive/Documents/Pairwise70 — same selenium hang via OneDrive copy
+    "pairwise70-results-v2-fa19e3ac",                         # data/Research-Archives/Pairwise70_Results_v2 — archive snapshot, not active code
+    "pairwise70-results-v2-23d13a6c",                         # OneDrive/Documents/Pairwise70_Results_v2 — same archive via OneDrive
     "html-apps-6eaac579",                                     # the HTML-apps scan root is a directory of standalone single-file HTML demos, not a single project — discovery picked it up wrongly; 300s timeout because no coherent test surface
     "user-ecc0a382",                                          # the home-directory scan root is NOT a project — 300s timeout on whatever heuristic test command was inferred from dotfiles
     # Added 2026-04-25 (env-bound REJECT cleanup):
@@ -112,8 +118,11 @@ def _run_portfolio_sentinel_scan() -> dict:
     if not Path(project_index).is_dir():
         return {"error": f"project-index not found: {project_index}"}
     try:
+        # OVERMIND_PROJECT_INDEX is an internal-tooling env var sourced from the
+        # operator's shell, not from any network surface. List-arg form,
+        # shell=False — no shell injection vector.
         result = subprocess.run(
-            [sys.executable, "-m", "sentinel", "scan",
+            [sys.executable, "-m", "sentinel", "scan",  # nosemgrep: python.lang.security.audit.dangerous-subprocess-use-tainted-env-args.dangerous-subprocess-use-tainted-env-args
              "--portfolio", "--project-index", project_index, "--json"],
             capture_output=True, text=True, timeout=180,
         )
@@ -164,7 +173,14 @@ def parse_args() -> argparse.Namespace:
     parser = argparse.ArgumentParser(description="Overmind Nightly Verifier")
     parser.add_argument("--dry-run", action="store_true", help="Show plan without executing")
     parser.add_argument("--limit", type=int, default=50, help="Max projects to verify (default 50)")
-    parser.add_argument("--timeout", type=int, default=120, help="Per-project timeout in seconds (default 120)")
+    parser.add_argument("--timeout", type=int, default=120, help="Per-project test_suite witness timeout in seconds (default 120)")
+    parser.add_argument("--worker-timeout", type=int, default=900,
+                        help="Hard wall-clock kill for the witness-runner worker, "
+                             "covers ALL witnesses combined (test_suite + smoke + "
+                             "numerical_continuity + semgrep + pip_audit). Was 300 "
+                             "before pip-audit + semgrep landed; 480 was insufficient "
+                             "for projects with >2-min smoke/test commands. Default "
+                             "900 gives ~3 min slack past worst-case combined budget.")
     parser.add_argument("--min-risk", choices=["medium", "medium_high", "high"], default="medium",
                         help="Minimum risk profile to verify (default medium)")
     parser.add_argument("--create-baselines", action="store_true",
@@ -211,7 +227,7 @@ def _verify_worker(baselines_dir, test_timeout, project_dict, result_queue):
         result_queue.put(("error", str(exc)))
 
 
-def _verify_with_timeout(engine, proj, timeout=300):
+def _verify_with_timeout(engine, proj, timeout=900):
     """Run engine.verify in a separate process with a hard timeout.
 
     If the process hangs, it gets killed after `timeout` seconds.
@@ -487,7 +503,7 @@ def _run_verification(db: StateDatabase, args: argparse.Namespace, run_start: da
         print(f"[{i}/{len(projects)}] {proj.name}...", end=" ", flush=True)
         start = time.time()
         # Per-project wall-clock timeout using multiprocessing (can kill hung subprocesses)
-        bundle = _verify_with_timeout(engine, proj, timeout=300)
+        bundle = _verify_with_timeout(engine, proj, timeout=args.worker_timeout)
         elapsed = time.time() - start
 
         results.append({"project": proj, "bundle": bundle, "elapsed": elapsed})
