@@ -2,6 +2,15 @@
 
 ## 2026-05-04
 
+**Verified:** 2 | **Certified:** 2 | **Rejected:** 0 | **Failed:** 0
+
+### Changes from last night
+- NMA: UNVERIFIED -> CERTIFIED
+- pub-bias-simulation: FAIL -> CERTIFIED
+
+
+## 2026-05-04
+
 **Verified:** 1 | **Certified:** 0 | **Rejected:** 1 | **Failed:** 0
 
 

@@ -25,6 +25,7 @@ SyntaxErro | Fix the syntax error in the reported file | 2 | 0 | 2026-04-08 |
 SyntaxErro | Fix the syntax error in the reported file | 2 | 0 | 2026-04-13 |
 | UNKNOWN:finrenone- | s\user\AppData\Local\Programs\ | Manual investigation needed | 2 | 0 | 2026-05-04 |
 | UNKNOWN:pairwise70 | ck, subtests, tmp_path, tmp_pa | Manual investigation needed | 2 | 0 | 2026-04-10 |
+| DEPENDENCY_ROT:browser_runtime | browser_runtime | Check if browser_runtime is installed: pip install browser_r | 1 | 0 | 2026-05-04 |
 | DEPENDENCY_ROT:cardioorac | mal_cdf, load_data)
 ImportErro | Check if shared is installed: pip install shared | 1 | 0 | 2026-04-13 |
 | DEPENDENCY_ROT:denominato | py:src.dclnma.witnesses.base: | Break circular import by moving WitnessContext to a separate | 1 | 0 | 2026-04-20 |

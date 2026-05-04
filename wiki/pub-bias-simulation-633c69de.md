@@ -1,14 +1,17 @@
 # pub-bias-simulation
 
-**Last verified:** 2026-04-15 02:13 UTC | **Verdict:** FAIL (Single witness: test_suite FAIL)
-**Bundle hash:** 23d74c9929ad21ea | **Risk:** medium_high | **Math:** 8
+**Last verified:** 2026-05-04 21:08 UTC | **Verdict:** CERTIFIED (2/2 witnesses agree PASS)
+**Bundle hash:** 0492db50ce64d052 | **Risk:** medium_high | **Math:** 8
 
 ## Health
 
 | Witness | Verdict | Time | Detail |
 |---------|---------|------|--------|
-| test_suite | FAIL | 1.0s | ERROR: file or directory not found: tests/test_smoke.py |
+| test_suite | PASS | 2.4s | ...                                                                      [100%]
+ |
 | smoke | SKIP | 0.0s | skipped |
+| semgrep | PASS | 17.7s | semgrep findings: ERROR=0 WARNING=0 INFO=0; engine errors=0 |
+| pip_audit | SKIP | 0.0s | skipped |
 
 ## Project
 
@@ -27,11 +30,4 @@
 | 2026-04-10 | FAIL | 1/2 | 0.0s | 1f7e175fcd9af14d |
 | 2026-04-11 | FAIL | 1/2 | 0.0s | e1d31d01f125d805 |
 | 2026-04-15 | FAIL | 1/2 | 1.0s | 23d74c9929ad21ea |
-
-## Notes
-
-Single witness: test_suite FAIL
-
-**test_suite:** ERROR: file or directory not found: tests/test_smoke.py
-
-
+| 2026-05-04 | CERTIFIED | 2/4 | 20.2s | 0492db50ce64d052 |
