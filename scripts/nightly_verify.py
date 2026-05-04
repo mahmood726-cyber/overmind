@@ -62,7 +62,9 @@ SKIP_PROJECTS = {
     "metasprint-dta-5dffce53",                                # smoke import hangs (30K-line app)
     "lec-phase0-bundle-a2c59fad",                             # test suite hangs
     "hta-evidence-integrity-suite-dc1fe6c7",                  # test suite hangs (7946s last run)
-    "meta-ecosystem-model-3d6353ab",                          # path genuinely absent (drive-wide search + reconcile_counts 2026-04-14)
+    # meta-ecosystem-model-3d6353ab UNSKIPPED 2026-05-04: path is present at
+    # C:\Models\Meta_Ecosystem_Model and `python tests/verify_manuscript_numbers.py`
+    # passes 109/109 in 5s. The 2026-04-14 "genuinely absent" note is stale.
     # ipd-qma-project-b5694da4 REPAIRED 2026-04-14: 8 files + truncated
     # ipd_qma_ml.py header reconstructed, all 4 .py files compile, smoke
     # PASS, tests 59/1-skipped. Project also requires a probe script
@@ -88,7 +90,11 @@ SKIP_PROJECTS = {
     "html-apps-6eaac579",                                     # the HTML-apps scan root is a directory of standalone single-file HTML demos, not a single project — discovery picked it up wrongly; 300s timeout because no coherent test surface
     "user-ecc0a382",                                          # the home-directory scan root is NOT a project — 300s timeout on whatever heuristic test command was inferred from dotfiles
     # Added 2026-04-25 (env-bound REJECT cleanup):
-    "fatiha-project-a8ec1065",                                # renv bootstrap fails: 'unzip' had status 3 (unzip.exe not in PATH on this machine). Genuinely environmental — R is installed but the renv autoloader needs a working unzip to fetch and install renv 1.1.5 on first run. Either add unzip to PATH or pre-install the renv R-package in the user library; see CHANGELOG note for details.
+    # fatiha-project-a8ec1065 UNSKIPPED 2026-05-04: renv 1.1.5 is now installed
+    # locally + testthat + shiny + 60-package renv.lock snapshot, AND the
+    # tests/testthat/setup.R fix (FATIHA_Project@8b7c7be) loads the SYNTHESIS
+    # package via pkgload before testthat runs. Verified locally:
+    # `Rscript -e "testthat::test_dir('tests/testthat')"` → 82 passed.
 }  # Projects that consistently hang during verification OR whose source path is missing OR whose source is broken enough to need dedicated repair
 
 
@@ -514,10 +520,14 @@ def _run_verification(db: StateDatabase, args: argparse.Namespace, run_start: da
     bundles_dir = REPORT_DIR / "bundles" / date_str
     bundles_dir.mkdir(parents=True, exist_ok=True)
 
+    # When --projects-from-file is set, the operator explicitly wants these
+    # projects re-bundled now; bypass both crash-resume and hash-skip caches.
+    force_rerun = paths_filter is not None
+
     # Crash-resume: load progress from any interrupted run tonight
     progress_path = REPORT_DIR / f".progress_{date_str}.json"
     completed_ids: set[str] = set()
-    if progress_path.exists():
+    if progress_path.exists() and not force_rerun:
         try:
             completed_ids = set(json.loads(progress_path.read_text(encoding="utf-8")).keys())
             print(f"Resuming: {len(completed_ids)} projects already verified tonight")
@@ -526,17 +536,18 @@ def _run_verification(db: StateDatabase, args: argparse.Namespace, run_start: da
 
     # Hash-skip: load only the most recent date's bundles (not all historical)
     yesterday_bundles: dict[str, dict] = {}
-    bundle_dirs = sorted((REPORT_DIR / "bundles").glob("*/"), reverse=True)
-    latest_bundle_dir = bundle_dirs[0] if bundle_dirs else None
-    if latest_bundle_dir and latest_bundle_dir.name != date_str:
-        for bundle_file in latest_bundle_dir.glob("*.json"):
-            try:
-                b = json.loads(bundle_file.read_text(encoding="utf-8"))
-                pid = b.get("project_id", "")
-                if pid and b.get("verdict") == "CERTIFIED":
-                    yesterday_bundles[pid] = b
-            except Exception:
-                pass
+    if not force_rerun:
+        bundle_dirs = sorted((REPORT_DIR / "bundles").glob("*/"), reverse=True)
+        latest_bundle_dir = bundle_dirs[0] if bundle_dirs else None
+        if latest_bundle_dir and latest_bundle_dir.name != date_str:
+            for bundle_file in latest_bundle_dir.glob("*.json"):
+                try:
+                    b = json.loads(bundle_file.read_text(encoding="utf-8"))
+                    pid = b.get("project_id", "")
+                    if pid and b.get("verdict") == "CERTIFIED":
+                        yesterday_bundles[pid] = b
+                except Exception:
+                    pass
     skipped_cached = 0
 
     for i, proj in enumerate(projects, 1):

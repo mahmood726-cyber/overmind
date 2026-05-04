@@ -1,0 +1,9 @@
+# Final sweep 2026-05-04: re-bundle projects with fixes shipped this session.
+# All previously SKIP_PROJECTS-skipped or FAIL/REJECT entries that have
+# in-session repairs.
+C:\Models\FATIHA_Project
+C:\Models\Meta_Ecosystem_Model
+C:\Projects\pub-bias-simulation
+C:\Projects\arac
+C:\Projects\Finrenone
+C:\Projects\NMA
