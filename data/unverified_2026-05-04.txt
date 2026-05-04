@@ -1,0 +1,24 @@
+# Stale-UNVERIFIED paths from agent-records/unverified-recheck-2026-05-04.md
+# All 21 paths pass pytest as of 2026-05-04. This file is the input to:
+#   python scripts/nightly_verify.py --projects-from-file data/unverified_2026-05-04.txt
+C:\Models\CardioOracle
+C:\Models\EvidenceForecast
+C:\Models\EvidenceOracle
+C:\Projects\asreview_5star
+C:\Projects\cardio-ctgov-living-meta-portfolio
+C:\Projects\DTA70
+C:\Projects\esc-acs-living-meta
+C:\Projects\experimental-meta-analysis
+C:\Projects\globalst
+C:\Projects\hfpef_registry_synth
+C:\Projects\ipd_qma_project
+C:\Projects\lec_phase0_project
+C:\Projects\llm-meta-analysis
+C:\Projects\metasprint-dose-response
+C:\Projects\metasprintnma
+C:\Projects\NMA
+C:\Projects\registry_first_rct_meta
+C:\Projects\repo300-ENMA-SNMA
+C:\Projects\rmstnma
+C:\Projects\Transcendent-Meta-Analysis-Lab
+C:\Users\user\prognostic-meta

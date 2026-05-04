@@ -19,8 +19,13 @@ import time
 from datetime import datetime, UTC
 from pathlib import Path
 
-# Fix Python 3.13 + Windows WMI deadlock BEFORE any scipy/numpy import
-if sys.platform == "win32":
+# Fix Python 3.13 + Windows WMI deadlock BEFORE any scipy/numpy import.
+# Skip both monkey-patches when running under pytest:
+#   - faulthandler.dump_traceback_later(exit=True) kills the test run after 60 min
+#   - platform._wmi_query=lambda *a,**k: "" returns the wrong shape for Py3.13's
+#     _win32_ver, which raises ValueError when hypothesis or other test deps call
+#     platform.system().
+if sys.platform == "win32" and "pytest" not in sys.modules:
     try:
         import faulthandler
         faulthandler.dump_traceback_later(3600, exit=True)  # safety net: kill if hung >60min
@@ -31,8 +36,10 @@ if sys.platform == "win32":
     except Exception:
         pass
 
-# Fix Windows cp1252 stdout
-if sys.platform == "win32":
+# Fix Windows cp1252 stdout — but ONLY when invoked as a script.
+# Re-wrapping sys.stdout at import time corrupts pytest's capture tmpfile
+# (lessons.md: "Module-level sys.stdout reassignment kills pytest capture").
+if sys.platform == "win32" and "pytest" not in sys.modules:
     sys.stdout = io.TextIOWrapper(sys.stdout.buffer, encoding="utf-8", errors="replace")
     sys.stderr = io.TextIOWrapper(sys.stderr.buffer, encoding="utf-8", errors="replace")
 
@@ -185,11 +192,49 @@ def parse_args() -> argparse.Namespace:
                         help="Minimum risk profile to verify (default medium)")
     parser.add_argument("--create-baselines", action="store_true",
                         help="Create numerical baselines for tier-3 projects (future work)")
+    parser.add_argument("--projects-from-file", type=Path, default=None, metavar="PATH",
+                        help="File of project paths (one per line) to verify. Bypasses "
+                             "--min-risk and --limit so an operator can re-bundle a "
+                             "specific set of paths (e.g. stale-UNVERIFIED projects) "
+                             "without waiting for the natural risk-sorted cadence. "
+                             "Lines starting with '#' and blank lines are ignored.")
     return parser.parse_args()
 
 
-def select_projects(db: StateDatabase, min_risk: str, limit: int) -> list:
-    """Select projects with test commands, sorted by risk and math score."""
+def _normalize_path(p) -> str:
+    """Canonicalize a path for filter comparison: lowercase, forward-slash, no trailing sep."""
+    import os
+    s = os.path.normpath(str(p)).replace("\\", "/").rstrip("/").lower()
+    return s
+
+
+def load_paths_filter(path) -> set[str]:
+    """Read a paths file (one path per line) and return the normalized set.
+
+    Skips blank lines and lines starting with '#'. Whitespace is stripped.
+    Raises FileNotFoundError if the file is missing.
+    """
+    p = Path(path)
+    if not p.is_file():
+        raise FileNotFoundError(f"--projects-from-file: {p}")
+    out: set[str] = set()
+    for raw in p.read_text(encoding="utf-8").splitlines():
+        line = raw.strip()
+        if not line or line.startswith("#"):
+            continue
+        out.add(_normalize_path(line))
+    return out
+
+
+def select_projects(db: StateDatabase, min_risk: str, limit: int,
+                    paths_filter: set[str] | None = None) -> list:
+    """Select projects with test commands, sorted by risk and math score.
+
+    When paths_filter is provided, only projects whose normalized root_path
+    is in the set are considered, and the min_risk floor is bypassed (the
+    operator's explicit list wins). The limit still applies, so callers
+    that want all matching projects should pass a generous limit.
+    """
     risk_order = {"high": 0, "medium_high": 1, "medium": 2}
     min_rank = risk_order.get(min_risk, 2)
 
@@ -201,9 +246,15 @@ def select_projects(db: StateDatabase, min_risk: str, limit: int) -> list:
             continue
         if not p.test_commands:
             continue
-        rank = risk_order.get(p.risk_profile, 3)
-        if rank > min_rank:
-            continue
+        if paths_filter is not None:
+            if _normalize_path(p.root_path) not in paths_filter:
+                continue
+            # Operator-supplied list overrides the min_risk floor.
+            rank = risk_order.get(p.risk_profile, 3)
+        else:
+            rank = risk_order.get(p.risk_profile, 3)
+            if rank > min_rank:
+                continue
         # Deduplicate by name (same project at different paths)
         if p.name.lower() in seen_names:
             continue
@@ -434,7 +485,11 @@ def _run_verification(db: StateDatabase, args: argparse.Namespace, run_start: da
     dream_engine = DreamEngine(db)
     audit_loop = AuditLoop(db)
 
-    projects = select_projects(db, args.min_risk, args.limit)
+    paths_filter = None
+    if args.projects_from_file is not None:
+        paths_filter = load_paths_filter(args.projects_from_file)
+        print(f"Loaded {len(paths_filter)} target paths from {args.projects_from_file}")
+    projects = select_projects(db, args.min_risk, args.limit, paths_filter=paths_filter)
     print(f"Selected {len(projects)} projects for verification")
     print()
 
