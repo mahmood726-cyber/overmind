@@ -1,0 +1,16 @@
+{
+  "command": "Rscript C:/Projects/rmstnma/probe.R",
+  "values": {
+    "n_studies": 3,
+    "n_treatments": 3,
+    "n_rows": 112,
+    "time_min": 0,
+    "time_max": 35.88,
+    "surv_min": 0.257,
+    "surv_max": 1,
+    "n_treatment_levels": 3
+  },
+  "tolerance": 1e-6,
+  "project_path": "C:\\Projects\\rmstnma",
+  "created_by": "manual (R-side probe)"
+}

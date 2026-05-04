@@ -1,0 +1,3 @@
+C:\Projects\NMA
+C:\Projects\pub-bias-simulation
+C:\Projects\metasprint-autopilot

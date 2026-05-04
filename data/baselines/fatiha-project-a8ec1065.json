@@ -1,0 +1,15 @@
+{
+  "command": "Rscript C:/Models/FATIHA_Project/probe.R",
+  "values": {
+    "k": 20,
+    "estimate": 0.755757,
+    "yi_mean": 0.528325,
+    "yi_sd": 0.194533,
+    "vi_mean": 0.045013,
+    "weights_sum": 1,
+    "density_mean": 0.678956
+  },
+  "tolerance": 1e-6,
+  "project_path": "C:\\Models\\FATIHA_Project",
+  "created_by": "manual (R-side probe)"
+}

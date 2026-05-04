@@ -1,0 +1,16 @@
+{
+  "command": "Rscript C:/Projects/DTA70/probe.R",
+  "values": {
+    "n_studies": 3,
+    "total_TP": 135,
+    "total_FN": 15,
+    "total_FP": 30,
+    "total_TN": 270,
+    "sens_pooled": 0.9,
+    "spec_pooled": 0.9,
+    "averaged": false
+  },
+  "tolerance": 1e-6,
+  "project_path": "C:\\Projects\\DTA70",
+  "created_by": "manual (R-side probe)"
+}

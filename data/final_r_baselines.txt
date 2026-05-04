@@ -1,0 +1,7 @@
+# Re-bundle 4 R packages with new R-side numerical baselines + metasprint
+# (now unskipped after batch smoke fix).
+C:\Projects\NMA
+C:\Projects\DTA70
+C:\Models\FATIHA_Project
+C:\Projects\rmstnma
+C:\Projects\metasprint-autopilot

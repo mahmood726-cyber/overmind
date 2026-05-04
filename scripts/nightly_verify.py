@@ -64,16 +64,12 @@ SKIP_PROJECTS = {
     # FAILs because two OTHER modules (truthcert1_work/update_forest_plot.py
     # and validation/check_4_recent_high_quality_metas.py) read hardcoded
     # files at import time → FileNotFoundError. Per-module wrapping needed.
-    # 2026-05-04: progressive smoke-witness fixes shipped at
-    # metasprint-autopilot@ca56f95 (pipeline package init) and @ab78f15
-    # (sys.exit guards on 2 one-shot scripts). All 5 OTHER witnesses now
-    # PASS. Smoke still FAILs because the project has 40 smoke modules,
-    # many of which are one-shot scripts under truthcert1_work/ and
-    # validation/ with module-level side effects (file reads, sibling
-    # imports) — whack-a-mole pattern. Proper fix is a batch refactor:
-    # add `if __name__ != "__main__": sys.exit(0)` to every one-shot
-    # script in those dirs.
-    "metasprint-autopilot-747b492b",                          # smoke: 5/6 witnesses PASS, smoke FAILs on next module after each fix (whack-a-mole). Need batch sys.exit guard across truthcert1_work/ + validation/ one-shot scripts.
+    # metasprint-autopilot-747b492b UNSKIPPED 2026-05-04 (final-final): batch
+    # fix shipped at metasprint-autopilot@3748cb4 — path-injecting __init__.py
+    # in 4 namespace dirs (validation/, truthcert1_work/, .../tools/,
+    # .../PLOS_ONE_Submission/) plus `if __name__ != "__main__": sys.exit(0)`
+    # guards on 11 standalone Selenium/orchestrator scripts. All 40 smoke
+    # modules now import clean.
     "superapp-3b1c175f",                                      # npm test hangs (Jest config)
     "metasprint-dta-5dffce53",                                # smoke import hangs (30K-line app)
     "lec-phase0-bundle-a2c59fad",                             # test suite hangs

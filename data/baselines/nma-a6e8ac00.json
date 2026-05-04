@@ -1,0 +1,17 @@
+{
+  "command": "Rscript C:/Projects/NMA/probe.R",
+  "values": {
+    "K": 4,
+    "J": 6,
+    "n_treatments": 4,
+    "S_mean": -0.400543,
+    "S_sd": 0.581832,
+    "S_min": -1.229215,
+    "S_max": 0.007973,
+    "se_S_mean": 0.1,
+    "T_observed": 3
+  },
+  "tolerance": 1e-6,
+  "project_path": "C:\\Projects\\NMA",
+  "created_by": "manual (R-side probe)"
+}
