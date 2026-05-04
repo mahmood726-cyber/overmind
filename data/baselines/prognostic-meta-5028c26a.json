@@ -1,0 +1,19 @@
+{
+  "command": "C:\\Users\\user\\AppData\\Local\\Programs\\Python\\Python313\\python.exe C:\\overmind\\data\\baseline_probes\\probe_prognostic-meta.py",
+  "values": {
+    "fe_mu": 0.093327,
+    "fe_se": 0.01814,
+    "re_mu": 0.101871,
+    "re_se": 0.024311,
+    "re_tau2": 0.001162,
+    "re_q": 6.670247,
+    "re_df": 4,
+    "smith_logit_0_85": 1.734601,
+    "smith_inv_roundtrip": 0.85,
+    "smith_se_at_0_85": 0.156863,
+    "oe_log_1_5": 0.405465
+  },
+  "tolerance": 0.0001,
+  "project_path": "C:\\Users\\user\\prognostic-meta",
+  "created_by": "create_baselines.py"
+}

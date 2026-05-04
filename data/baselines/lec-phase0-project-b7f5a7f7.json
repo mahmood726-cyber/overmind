@@ -1,0 +1,20 @@
+{
+  "command": "C:\\Users\\user\\AppData\\Local\\Programs\\Python\\Python313\\python.exe C:\\overmind\\data\\baseline_probes\\probe_lec-phase0-project.py",
+  "values": {
+    "pooled_estimate": 0.1036,
+    "pooled_ci_low": 0.0647,
+    "pooled_ci_high": 0.1659,
+    "i2": 99.4,
+    "tau2": 0.286768,
+    "q": 662.8523,
+    "df": 4,
+    "pi_low": 0.016,
+    "pi_high": 0.6716,
+    "hksj_ci_low": 0.048,
+    "hksj_ci_high": 0.2236,
+    "n_studies": 5
+  },
+  "tolerance": 0.0001,
+  "project_path": "C:\\Projects\\lec_phase0_project",
+  "created_by": "create_baselines.py"
+}
