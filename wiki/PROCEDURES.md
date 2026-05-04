@@ -32,6 +32,7 @@ ImportErro | Check if shared is installed: pip install shared | 1 | 0 | 2026-04-
 | DEPENDENCY_ROT:kmcurve-68 | import process_pdf
 ImportErro | Check if the missing module is installed: pip install the mi | 1 | 0 | 2026-04-25 |
 | DEPENDENCY_ROT:registry-f | ============================= | Check the import chain in tests/test_meta.py and install any | 1 | 0 | 2026-04-11 |
+| DEPENDENCY_ROT:selenium_12_user_advanced_journal_review | selenium_12_user_advanced_journal_review | Check if selenium_12_user_advanced_journal_review is install | 1 | 0 | 2026-05-04 |
 | DEPENDENCY_ROT:user-ecc0a | <module>
     raise ImportErro | Check if the missing module is installed: pip install the mi | 1 | 0 | 2026-04-19 |
 | MISSING_FIXTURE:ipd-meta-p | test.py': [Errno 2] No such fi | Restore or regenerate the missing file: t open file | 1 | 0 | 2026-04-13 |
