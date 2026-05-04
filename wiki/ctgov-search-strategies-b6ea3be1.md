@@ -1,17 +1,18 @@
 # ctgov-search-strategies
 
-**Last verified:** 2026-05-03 12:38 UTC | **Verdict:** REJECT (Witnesses disagree: test_suite, smoke, pip_audit PASS vs semgrep FAIL)
-**Bundle hash:** 1e63b39f7cedb825 | **Risk:** high | **Math:** 7
+**Last verified:** 2026-05-04 17:46 UTC | **Verdict:** CERTIFIED (4/4 witnesses agree PASS)
+**Bundle hash:** eda9e8abc731171f | **Risk:** high | **Math:** 7
 
 ## Health
 
 | Witness | Verdict | Time | Detail |
 |---------|---------|------|--------|
-| test_suite | PASS | 5.0s | ............................                                             [100%]
+| test_suite | PASS | 4.2s | ............................                                             [100%]
  |
-| smoke | PASS | 18.4s | 40 modules imported OK |
-| semgrep | FAIL | 60.9s | semgrep findings: ERROR=13 WARNING=7 INFO=0; engine errors=1 |
-| pip_audit | PASS | 59.2s | pip-audit findings: 0 vulnerabilities across 51 dep(s); scope: requirements file |
+| smoke | PASS | 17.7s | 40 modules imported OK |
+| semgrep | PASS | 60.6s | semgrep findings: ERROR=0 WARNING=7 INFO=0; engine errors=1
+7 advisory WARNING f |
+| pip_audit | PASS | 54.8s | pip-audit findings: 0 vulnerabilities across 52 dep(s); scope: requirements file |
 
 ## Project
 
@@ -24,7 +25,6 @@
 
 | Date | Verdict | Witnesses | Time | Hash |
 |------|---------|-----------|------|------|
-| 2026-04-13 | CERTIFIED | 2/2 | 12.6s | 43c90ae7a2559ddc |
 | 2026-04-15 | CERTIFIED | 2/2 | 16.4s | 25ffa71963fa19b5 |
 | 2026-04-17 | CERTIFIED | 2/2 | 18.4s | dbc950ebada82f0b |
 | 2026-04-19 | CERTIFIED | 2/2 | 19.4s | 67cc639d353b8661 |
@@ -34,12 +34,4 @@
 | 2026-04-27 | CERTIFIED | 2/2 | 28.6s | 2e075ee5af4ece8e |
 | 2026-04-28 | CERTIFIED | 2/2 | 23.1s | 2abc1f0b460b7654 |
 | 2026-05-03 | REJECT | 4/4 | 143.5s | 1e63b39f7cedb825 |
-
-## Notes
-
-Witnesses disagree: test_suite, smoke, pip_audit PASS vs semgrep FAIL
-
-**semgrep:** semgrep findings: ERROR=13 WARNING=7 INFO=0; engine errors=1
-blocking ERROR findings:
-  - python.lang.security.use-defused-xml.use-defused-xml  combined_search.py:15
-  - python.lang.security.use-defus
+| 2026-05-04 | CERTIFIED | 4/4 | 137.3s | eda9e8abc731171f |

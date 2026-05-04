@@ -2,6 +2,21 @@
 
 ## 2026-05-04
 
+**Verified:** 7 | **Certified:** 3 | **Rejected:** 2 | **Failed:** 2
+
+### Changes from last night
+- ctgov-search-strategies: REJECT -> CERTIFIED
+- GWAM: REJECT -> CERTIFIED
+- rct-extractor-v2: REJECT -> FAIL
+- hfpef_registry_calibration: REJECT -> CERTIFIED
+
+### New projects verified
+- Finrenone
+- arac
+
+
+## 2026-05-04
+
 **Verified:** 1 | **Certified:** 0 | **Rejected:** 0 | **Failed:** 0
 
 ### Changes from last night

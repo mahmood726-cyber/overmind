@@ -1,7 +1,7 @@
 # hfpef_registry_calibration
 
-**Last verified:** 2026-05-03 12:38 UTC | **Verdict:** REJECT (Witnesses disagree: test_suite, smoke PASS vs semgrep FAIL)
-**Bundle hash:** ff7a54387852c2fb | **Risk:** high | **Math:** 6
+**Last verified:** 2026-05-04 17:46 UTC | **Verdict:** CERTIFIED (3/3 witnesses agree PASS)
+**Bundle hash:** b013c6ce09392b2d | **Risk:** high | **Math:** 6
 
 ## Health
 
@@ -9,8 +9,9 @@
 |---------|---------|------|--------|
 | test_suite | PASS | 3.1s | .                                                                        [100%]
  |
-| smoke | PASS | 26.2s | 36 modules imported OK |
-| semgrep | FAIL | 40.8s | semgrep findings: ERROR=1 WARNING=3 INFO=0; engine errors=41 |
+| smoke | PASS | 23.6s | 36 modules imported OK |
+| semgrep | PASS | 15.0s | semgrep findings: ERROR=0 WARNING=3 INFO=0; engine errors=0
+3 advisory WARNING f |
 | pip_audit | SKIP | 0.0s | skipped |
 
 ## Project
@@ -24,7 +25,6 @@
 
 | Date | Verdict | Witnesses | Time | Hash |
 |------|---------|-----------|------|------|
-| 2026-04-13 | PASS | 1/2 | 2.5s | dbaaf63358c37293 |
 | 2026-04-15 | CERTIFIED | 2/2 | 20.3s | f4d2de5610d934e3 |
 | 2026-04-17 | CERTIFIED | 2/2 | 23.7s | 65cf6396764f71c0 |
 | 2026-04-19 | CERTIFIED | 2/2 | 22.2s | 5d6f4c68442430c5 |
@@ -34,12 +34,4 @@
 | 2026-04-27 | CERTIFIED | 2/2 | 36.1s | 627717fe7753e63c |
 | 2026-04-28 | CERTIFIED | 2/2 | 33.9s | ef43dddf91ae05ec |
 | 2026-05-03 | REJECT | 3/4 | 70.1s | ff7a54387852c2fb |
-
-## Notes
-
-Witnesses disagree: test_suite, smoke PASS vs semgrep FAIL
-
-**semgrep:** semgrep findings: ERROR=1 WARNING=3 INFO=0; engine errors=41
-blocking ERROR findings:
-  - python.lang.security.use-defused-xml.use-defused-xml  src\hfpef_calibrate\pubmed.py:6
-3 advisory WARNING findi
+| 2026-05-04 | CERTIFIED | 3/4 | 41.7s | b013c6ce09392b2d |

@@ -1,17 +1,13 @@
 # rct-extractor-v2
 
-**Last verified:** 2026-04-28 02:42 UTC | **Verdict:** REJECT (Witnesses disagree: test_suite, numerical_continuity PASS vs smoke FAIL)
-**Bundle hash:** 0b9bdcda3383d5ed | **Risk:** high | **Math:** 15
+**Last verified:** 2026-05-04 17:46 UTC | **Verdict:** FAIL (Hard timeout (900s) — process killed)
+**Bundle hash:** 40b0a3f6612bd6c1 | **Risk:** high | **Math:** 7
 
 ## Health
 
 | Witness | Verdict | Time | Detail |
 |---------|---------|------|--------|
-| test_suite | PASS | 7.2s | ion.py::TestCTGScraper::test_empty_nct_id_returns_none PASSED [ 13%]
-tests/test_ |
-| smoke | FAIL | 20.6s | py:gold_data.mega.v10_batches.extract_009_final: tf-8') as f: |
-| numerical | SKIP | 0.0s | skipped |
-| numerical_continuity | PASS | 0.0s | numerical continuity: baseline + provenance checks OK |
+| test_suite | FAIL | 900.0s | Project hung — killed after 900s |
 
 ## Project
 
@@ -24,7 +20,6 @@ tests/test_ |
 
 | Date | Verdict | Witnesses | Time | Hash |
 |------|---------|-----------|------|------|
-| 2026-04-12 | PASS | 2/3 | 12.8s | 3a4c7f8776a98cf5 |
 | 2026-04-13 | PASS | 2/3 | 7.3s | 2e65c96b562ffffb |
 | 2026-04-15 | FAIL | 1/1 | 0.0s | d3520d4d93497fb1 |
 | 2026-04-17 | REJECT | 2/3 | 21.9s | 68a5cf2dd94cf90e |
@@ -34,11 +29,10 @@ tests/test_ |
 | 2026-04-26 | REJECT | 3/4 | 28.7s | c736d358b53b1250 |
 | 2026-04-27 | REJECT | 3/4 | 28.7s | bad6910d688df180 |
 | 2026-04-28 | REJECT | 3/4 | 27.8s | 0b9bdcda3383d5ed |
+| 2026-05-04 | FAIL | 1/1 | 900.0s | 40b0a3f6612bd6c1 |
 
 ## Notes
 
-Witnesses disagree: test_suite, numerical_continuity PASS vs smoke FAIL
+Hard timeout (900s) — process killed
 
-**smoke:** py:gold_data.mega.v10_batches.extract_009_final: tf-8') as f:
-         ~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-FileNotFoundError: [Errno 2] No such file or directory: 'C:\\Users\\user\\rct-extractor-v
+**test_suite:** Project hung — killed after 900s

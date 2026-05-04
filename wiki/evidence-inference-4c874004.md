@@ -1,13 +1,13 @@
 # evidence-inference
 
-**Last verified:** 2026-04-28 02:42 UTC | **Verdict:** FAIL (Hard timeout (300s) — process killed)
-**Bundle hash:** ab9dc894a0be966e | **Risk:** high | **Math:** 18
+**Last verified:** 2026-05-04 17:46 UTC | **Verdict:** FAIL (Hard timeout (900s) — process killed)
+**Bundle hash:** aa405f637629fb04 | **Risk:** high | **Math:** 20
 
 ## Health
 
 | Witness | Verdict | Time | Detail |
 |---------|---------|------|--------|
-| test_suite | FAIL | 300.0s | Project hung — killed after 300s |
+| test_suite | FAIL | 900.0s | Project hung — killed after 900s |
 
 ## Project
 
@@ -20,7 +20,6 @@
 
 | Date | Verdict | Witnesses | Time | Hash |
 |------|---------|-----------|------|------|
-| 2026-04-12 | FAIL | 2/3 | 19.0s | 05c008f6387187ba |
 | 2026-04-13 | FAIL | 2/3 | 7.8s | 2b87e12a4464cb07 |
 | 2026-04-15 | FAIL | 1/1 | 0.0s | 790ea6cffbff7a6d |
 | 2026-04-17 | FAIL | 1/1 | 300.0s | 6b6212615f68813d |
@@ -30,9 +29,10 @@
 | 2026-04-26 | FAIL | 1/1 | 300.0s | e7b819017ef85e08 |
 | 2026-04-27 | FAIL | 1/1 | 300.0s | a8790caf764925a1 |
 | 2026-04-28 | FAIL | 1/1 | 300.0s | ab9dc894a0be966e |
+| 2026-05-04 | FAIL | 1/1 | 900.0s | aa405f637629fb04 |
 
 ## Notes
 
-Hard timeout (300s) — process killed
+Hard timeout (900s) — process killed
 
-**test_suite:** Project hung — killed after 300s
+**test_suite:** Project hung — killed after 900s
