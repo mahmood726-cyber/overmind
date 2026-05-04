@@ -23,6 +23,7 @@ SyntaxErro | Fix the syntax error in the reported file | 2 | 0 | 2026-04-08 |
 | SYNTAX_ERROR:repo300-en | ix
                ^
 SyntaxErro | Fix the syntax error in the reported file | 2 | 0 | 2026-04-13 |
+| UNKNOWN:finrenone- | s\user\AppData\Local\Programs\ | Manual investigation needed | 2 | 0 | 2026-05-04 |
 | UNKNOWN:pairwise70 | ck, subtests, tmp_path, tmp_pa | Manual investigation needed | 2 | 0 | 2026-04-10 |
 | DEPENDENCY_ROT:cardioorac | mal_cdf, load_data)
 ImportErro | Check if shared is installed: pip install shared | 1 | 0 | 2026-04-13 |
@@ -65,7 +66,6 @@ Execution | Re-run the R test suite with verbose/traceback enabled to ca | 1 | 0
 | TIMEOUT:dta70-4b17 | timed out | Check for WMI deadlock (Python 3.13), infinite loop, or slow | 1 | 0 | 2026-04-08 |
 | TIMEOUT:esc-acs-li | timed out | Check for WMI deadlock (Python 3.13), infinite loop, or slow | 1 | 0 | 2026-04-15 |
 | TIMEOUT:evidence-i | timed out | Check for WMI deadlock (Python 3.13), infinite loop, or slow | 1 | 0 | 2026-04-15 |
-| TIMEOUT:evidence-i | timed out | Check for WMI deadlock (Python 3.13), infinite loop, or slow | 1 | 0 | 2026-05-04 |
 | TIMEOUT:evidenceor | timed out | Check for WMI deadlock (Python 3.13), infinite loop, or slow | 1 | 0 | 2026-04-15 |
 | TIMEOUT:experiment | timed out | Check for WMI deadlock (Python 3.13), infinite loop, or slow | 1 | 0 | 2026-04-15 |
 | TIMEOUT:fatiha-pro | timed out | Check for WMI deadlock (Python 3.13), infinite loop, or slow | 1 | 0 | 2026-04-08 |
@@ -91,7 +91,6 @@ Execution | Re-run the R test suite with verbose/traceback enabled to ca | 1 | 0
 | TIMEOUT:prognostic | timed out | Check for WMI deadlock (Python 3.13), infinite loop, or slow | 1 | 0 | 2026-04-10 |
 | TIMEOUT:pub-bias-s | timed out | Check for WMI deadlock (Python 3.13), infinite loop, or slow | 1 | 0 | 2026-04-10 |
 | TIMEOUT:rct-extrac | timed out | Check for WMI deadlock (Python 3.13), infinite loop, or slow | 1 | 0 | 2026-04-15 |
-| TIMEOUT:rct-extrac | timed out | Check for WMI deadlock (Python 3.13), infinite loop, or slow | 1 | 0 | 2026-05-04 |
 | TIMEOUT:registry-f | timed out | Check for WMI deadlock (Python 3.13), infinite loop, or slow | 1 | 0 | 2026-04-15 |
 | TIMEOUT:repo300-en | timed out | Check for WMI deadlock (Python 3.13), infinite loop, or slow | 1 | 0 | 2026-04-15 |
 | TIMEOUT:rmstnma-18 | timed out | Check for WMI deadlock (Python 3.13), infinite loop, or slow | 1 | 0 | 2026-04-08 |
@@ -101,11 +100,4 @@ Execution | Re-run the R test suite with verbose/traceback enabled to ca | 1 | 0
 | TIMEOUT:ubcma-4230 | timed out | Check for WMI deadlock (Python 3.13), infinite loop, or slow | 1 | 0 | 2026-04-08 |
 | TIMEOUT:user-ecc0a | timed out | Check for WMI deadlock (Python 3.13), infinite loop, or slow | 1 | 0 | 2026-04-17 |
 | UNKNOWN:denominato | py:src.dclnma.witnesses.base: | Manual investigation needed | 1 | 1 | 2026-04-25 |
-| UNKNOWN:finrenone- | s\user\AppData\Local\Programs\ | Manual investigation needed | 1 | 0 | 2026-05-04 |
 | UNKNOWN:hta-eviden | no tests ran in 2.35s | Manual investigation needed | 1 | 0 | 2026-04-09 |
-
-## Anti-Recipes (never worked — do NOT retry)
-
-| Recipe | Pattern | Seen | Resolved | Last Seen |
-|--------|---------|------|----------|-----------|
-| CONFIGURATION:gwam-8ecf4 | semgrep findings: ERROR=1 WARN | 3 | 0 | 2026-05-04 |
