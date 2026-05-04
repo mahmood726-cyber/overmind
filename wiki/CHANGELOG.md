@@ -2,6 +2,16 @@
 
 ## 2026-05-04
 
+**Verified:** 5 | **Certified:** 2 | **Rejected:** 1 | **Failed:** 0
+
+### Changes from last night
+- FATIHA_Project: REJECT -> UNVERIFIED
+- arac: REJECT -> CERTIFIED
+- Meta_Ecosystem_Model: FAIL -> CERTIFIED
+
+
+## 2026-05-04
+
 **Verified:** 7 | **Certified:** 3 | **Rejected:** 2 | **Failed:** 2
 
 ### Changes from last night

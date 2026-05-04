@@ -1,20 +1,24 @@
 # Meta_Ecosystem_Model
 
-**Last verified:** 2026-04-13 02:18 UTC | **Verdict:** FAIL (Single witness: test_suite FAIL)
-**Bundle hash:** 94a773968f370874 | **Risk:** high | **Math:** 7
+**Last verified:** 2026-05-04 18:15 UTC | **Verdict:** CERTIFIED (4/4 witnesses agree PASS)
+**Bundle hash:** 73747a712902577a | **Risk:** high | **Math:** 7
 
 ## Health
 
 | Witness | Verdict | Time | Detail |
 |---------|---------|------|--------|
-| test_suite | FAIL | 0.0s | Failed to start: [WinError 267] The directory name is invalid |
-| smoke | SKIP | 0.0s | skipped |
+| test_suite | PASS | 0.2s | ==============
+  [PASS] Table2 Robust-Stable: actual=728, claimed=728
+  [PASS] T |
+| smoke | PASS | 9.2s | 2 modules imported OK |
+| semgrep | PASS | 42.0s | semgrep findings: ERROR=0 WARNING=0 INFO=0; engine errors=0 |
+| pip_audit | PASS | 55.7s | pip-audit findings: 0 vulnerabilities across 14 dep(s); scope: requirements file |
 
 ## Project
 
 - **Path:** C:\Models\Meta_Ecosystem_Model
-- **Type:** hybrid_browser_analytics_app
-- **Stack:** css, html, javascript, python, r
+- **Type:** r_project
+- **Stack:** python, r
 - **Test command:** `python tests/verify_manuscript_numbers.py`
 
 ## Verification History
@@ -28,9 +32,4 @@
 | 2026-04-11 | FAIL | 1/2 | 0.0s | 420a2a84f768934d |
 | 2026-04-12 | FAIL | 1/2 | 0.0s | 819875a7ee32006b |
 | 2026-04-13 | FAIL | 1/2 | 0.0s | 94a773968f370874 |
-
-## Notes
-
-Single witness: test_suite FAIL
-
-**test_suite:** Failed to start: [WinError 267] The directory name is invalid
+| 2026-05-04 | CERTIFIED | 4/4 | 107.1s | 73747a712902577a |
