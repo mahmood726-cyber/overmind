@@ -11,8 +11,13 @@ scan_roots:
   - "C:\\Users\\user\\Downloads"
   - "C:\\Users\\user\\Desktop"
   - "C:\\Users\\user\\Documents"
-  - "C:\\Users\\user\\OneDrive - NHS\\Documents"
-  - "C:\\Users\\user\\OneDrive\\Documents"
+  # OneDrive paths removed 2026-05-04: discovery was indexing 37 OneDrive
+  # auto-syncs as separate projects, 33 of them duplicates of canonical paths
+  # (e.g. OneDrive\Documents\DTA70 vs C:\Projects\DTA70). The 33 duplicate
+  # ProjectRecords are SKIP_PROJECTS-listed in scripts/nightly_verify.py;
+  # 4 truly-OneDrive-only ones are skipped pending a re-home decision.
+  # - "C:\\Users\\user\\OneDrive - NHS\\Documents"
+  # - "C:\\Users\\user\\OneDrive\\Documents"
   - "C:\\E156"
   - "C:\\FragilityAtlas"
   - "C:\\MetaAudit"

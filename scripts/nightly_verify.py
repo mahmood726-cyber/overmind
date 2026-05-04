@@ -95,6 +95,50 @@ SKIP_PROJECTS = {
     # tests/testthat/setup.R fix (FATIHA_Project@8b7c7be) loads the SYNTHESIS
     # package via pkgload before testthat runs. Verified locally:
     # `Rscript -e "testthat::test_dir('tests/testthat')"` → 82 passed.
+
+    # Added 2026-05-04 — OneDrive duplicates discovered en masse.
+    # `C:\Users\user\OneDrive - NHS\Documents\` was a scan root in
+    # config/roots.yaml, so 37 already-canonical projects got auto-indexed
+    # twice. Of those, 33 had a canonical sibling (in C:\Projects, C:\Models,
+    # etc.) so the OneDrive copy is redundant. The 4 truly OneDrive-only ones
+    # (mahmood011025, metaoverfit, paper7, repo300) are skipped pending a
+    # decision on whether to re-home them to canonical paths. Companion fix:
+    # OneDrive removed from config/roots.yaml so future scans won't repopulate.
+    "501mlm-6126e03d",                                        # OneDrive dup of 501MLM
+    "501mlm-submission-ae2e374e",                             # OneDrive dup of 501MLM_Submission
+    "786-miii-meta-a6d355d5",                                 # OneDrive dup of 786-MIII meta
+    "a-7bca3193",                                             # OneDrive dup of `a` (one-letter dir)
+    "area1-small-sample-analysis-1fbec3af",                   # OneDrive dup of area1_small_sample_analysis
+    "chat2-b1718ad7",                                         # OneDrive dup of chat2
+    "chat3-95d03df4",                                         # OneDrive dup of chat3
+    "chatpaper-7610d635",                                     # OneDrive dup of chatpaper
+    "claude2-2c0296b2",                                       # OneDrive dup of claude2
+    "clauderepo-a6002185",                                    # OneDrive dup of clauderepo
+    "cochranedataextractor-e1ffd99a",                         # OneDrive dup of CochraneDataExtractor
+    "decision-wasm-57802073",                                 # OneDrive dup of decision-wasm
+    "dta70-4b170dbc",                                         # OneDrive dup of DTA70 (canonical at C:\Projects\DTA70 fixed by DTA70@943a819)
+    "hfn786-58381c44",                                        # OneDrive dup of HFN786
+    "kmcurve-cf94c326",                                       # OneDrive dup of KMcurve
+    "lfa-36caf1fb",                                           # OneDrive dup of LFA
+    "lfahfn-2585f64f",                                        # OneDrive dup of LFAHFN
+    "livingmeta-watchman-amulet-6abff0f3",                    # OneDrive dup of LivingMeta_Watchman_Amulet
+    "mlmresearch-603c45f0",                                   # OneDrive dup of MLMResearch
+    "multilevelerror-8509b533",                               # OneDrive dup of Multilevelerror
+    "multivar-98711bfe",                                      # OneDrive dup of multivar
+    "nmapaper111025-1489aebd",                                # OneDrive dup of nmapaper111025
+    "pair786-75c04b41",                                       # OneDrive dup of Pair786
+    "paper-fa34cea9",                                         # OneDrive dup of Paper
+    "paper1-0c592fd8",                                        # OneDrive dup of Paper1
+    "paper2-111025-2e8eae70",                                 # OneDrive dup of Paper2.111025
+    "repo100-8f261f45",                                       # OneDrive dup of repo100
+    "rmstnma-1810584a",                                       # OneDrive dup of rmstnma (canonical at C:\Projects\rmstnma is UNVERIFIED)
+    "worldipd-c534de53",                                      # OneDrive dup of WorldIPD
+    "worldipd-private-3d6aeddf",                              # OneDrive dup of WorldIPD-private
+    # Truly OneDrive-only (no canonical sibling) — skipped pending decision:
+    "mahmood011025-5d5562d1",                                 # OneDrive-only date-named snapshot; promote to canonical or archive
+    "metaoverfit-5f64eb8f",                                   # OneDrive-only research project; promote to canonical or archive
+    "paper7-36216d64",                                        # OneDrive-only paper7 (publication-bias-related)
+    "repo300-c9dc0181",                                       # OneDrive-only 300-repo bundle
 }  # Projects that consistently hang during verification OR whose source path is missing OR whose source is broken enough to need dedicated repair
 
 
