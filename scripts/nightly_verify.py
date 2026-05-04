@@ -57,9 +57,14 @@ DATA_DIR = Path(__file__).resolve().parents[1] / "data"
 DB_PATH = DATA_DIR / "state" / "overmind.db"
 REPORT_DIR = DATA_DIR / "nightly_reports"
 SKIP_PROJECTS = {
-    # metasprint-autopilot-747b492b UNSKIPPED 2026-05-04: tests/test_ui.py 2 collected
-    # in 0.7s, smoke imports work. Earlier "scipy deadlock" note appears stale —
-    # likely fixed by Python 3.13 / scipy upgrade. Re-bundle to confirm.
+    # 2026-05-04 attempt to unskip metasprint-autopilot worked partially:
+    # metasprint-autopilot@ca56f95 fixed the pipeline/__init__.py path issue
+    # so `import pipeline.auto_cluster` works. test_suite + semgrep + pip_audit
+    # + numerical + numerical_continuity all PASS now. But smoke witness still
+    # FAILs because two OTHER modules (truthcert1_work/update_forest_plot.py
+    # and validation/check_4_recent_high_quality_metas.py) read hardcoded
+    # files at import time → FileNotFoundError. Per-module wrapping needed.
+    "metasprint-autopilot-747b492b",                          # smoke FAIL: per-import file reads in truthcert1_work/ + validation/. Wrap each in try/except OR move the reads behind a function. test_suite + 4 other witnesses now PASS.
     "superapp-3b1c175f",                                      # npm test hangs (Jest config)
     "metasprint-dta-5dffce53",                                # smoke import hangs (30K-line app)
     "lec-phase0-bundle-a2c59fad",                             # test suite hangs
@@ -148,10 +153,13 @@ SKIP_PROJECTS = {
     "metaoverfit-5f64eb8f",                                   # OneDrive-only research project; promote to canonical or archive
     "paper7-36216d64",                                        # OneDrive-only paper7 (publication-bias-related)
     "repo300-c9dc0181",                                       # OneDrive-only 300-repo bundle
-    # rct-extractor-v2-6c290650 + evidence-inference-4c874004 UNSKIPPED 2026-05-04:
-    # nightly_verify.bat now passes --worker-timeout 1800 (vs 900) so these
-    # heavy-witness projects (851 tests + 30K-line semgrep / large transformer
-    # deps tree) have headroom to complete the combined witness pipeline.
+    # 2026-05-04 follow-up: --worker-timeout 1800 attempt was NOT enough.
+    # evidence-inference still hit 1800s (combined witness budget genuinely
+    # exceeds 30 min on this machine). rct-extractor-v2 hung past the
+    # script-level 60min faulthandler. Re-skipped pending a per-project
+    # witness-timeout override (would need engine work in nightly_verify.py).
+    "rct-extractor-v2-6c290650",                              # 851 pytest tests pass standalone in 58s; combined test_suite + smoke + semgrep + pip_audit on the 30K-line repo exceeds even 1800s. Needs per-project timeout override OR witness subset selection.
+    "evidence-inference-4c874004",                            # 5 pytest tests pass standalone in 3s; combined witness pipeline (semgrep + pip_audit on a transformers/biomistral dep tree) exceeds 1800s. Same per-project timeout-override fix needed.
 }  # Projects that consistently hang during verification OR whose source path is missing OR whose source is broken enough to need dedicated repair
 
 
