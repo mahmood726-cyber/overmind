@@ -19,4 +19,8 @@ set PYTHONUTF8=1
 
 if "%OVERMIND_PYTHON%"=="" (set OVERMIND_PYTHON=C:\Users\user\AppData\Local\Programs\Python\Python313\python.exe)
 
-"%OVERMIND_PYTHON%" "%~dp0nightly_verify.py" --limit 50 --timeout 120 --min-risk medium >> "%~dp0..\data\nightly_reports\nightly.log" 2>&1
+REM --worker-timeout 1800 (was default 900): rct-extractor-v2 has 851 tests +
+REM semgrep on a 30K-line codebase, evidence-inference has a heavy deps tree.
+REM Their combined witness pipelines exceed 900s. 1800s is a ceiling, not an
+REM average — most projects still complete in <60s.
+"%OVERMIND_PYTHON%" "%~dp0nightly_verify.py" --limit 50 --timeout 120 --worker-timeout 1800 --min-risk medium >> "%~dp0..\data\nightly_reports\nightly.log" 2>&1

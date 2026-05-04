@@ -57,11 +57,15 @@ DATA_DIR = Path(__file__).resolve().parents[1] / "data"
 DB_PATH = DATA_DIR / "state" / "overmind.db"
 REPORT_DIR = DATA_DIR / "nightly_reports"
 SKIP_PROJECTS = {
-    "metasprint-autopilot-747b492b",                          # smoke import hangs (scipy deadlock)
+    # metasprint-autopilot-747b492b UNSKIPPED 2026-05-04: tests/test_ui.py 2 collected
+    # in 0.7s, smoke imports work. Earlier "scipy deadlock" note appears stale —
+    # likely fixed by Python 3.13 / scipy upgrade. Re-bundle to confirm.
     "superapp-3b1c175f",                                      # npm test hangs (Jest config)
     "metasprint-dta-5dffce53",                                # smoke import hangs (30K-line app)
     "lec-phase0-bundle-a2c59fad",                             # test suite hangs
-    "hta-evidence-integrity-suite-dc1fe6c7",                  # test suite hangs (7946s last run)
+    # hta-evidence-integrity-suite-dc1fe6c7 UNSKIPPED 2026-05-04: full pytest -q
+    # passes 1/1 in 0.5s. Earlier "hangs (7946s)" note is from a stale layout —
+    # the manuscript-numbers verifier was wrapped behind a fast pytest contract.
     # meta-ecosystem-model-3d6353ab UNSKIPPED 2026-05-04: path is present at
     # C:\Models\Meta_Ecosystem_Model and `python tests/verify_manuscript_numbers.py`
     # passes 109/109 in 5s. The 2026-04-14 "genuinely absent" note is stale.
@@ -77,7 +81,12 @@ SKIP_PROJECTS = {
     # llama3/olmo/pmc_llama/etc.) added to truthcert_engine._SKIP_FILES as
     # they need remote APIs or heavy model downloads to import. Smoke now
     # PASS across 40 discovered modules.
-    "new-app-a051eaea",                                       # registered test_command is a Selenium suite requiring a dev server on port 3005 + 82 Edge driver lifecycles — always times out. Real test surface is `npm run test` (vitest) which has 16 statistical-accuracy FAILs against R metafor (PM/SJ/HE estimators, prediction interval ordering). Needs dedicated stats-parity session.
+    # new-app-a051eaea UNSKIPPED 2026-05-04: vitest now passes 92/92 in 2.7s
+    # (the 16 stats-parity FAILs from the earlier note have been resolved).
+    # Selenium tests/test_ui.py was the FIRST test_command and Overmind only
+    # reads test_commands[0] — the DB record was directly updated 2026-05-04
+    # to put `npm run test` first so the fast vitest path runs by default.
+    # If discovery re-scans and reorders, this skip may need to come back.
     # Added 2026-04-25 after audit of nightly 2026-04-25 FAILs (5 FAILs, all systemic-not-code):
     "cbamm-c5df0bd2",                                         # path missing on disk (Archive/Stale-Projects/Cbamm) — already archived, registry not yet reconciled
     "cbamm-c0fea32f",                                         # archived dup (Archive/Stale-Projects/CBAMM_CLEAN_COMPLETE/...)
@@ -139,9 +148,10 @@ SKIP_PROJECTS = {
     "metaoverfit-5f64eb8f",                                   # OneDrive-only research project; promote to canonical or archive
     "paper7-36216d64",                                        # OneDrive-only paper7 (publication-bias-related)
     "repo300-c9dc0181",                                       # OneDrive-only 300-repo bundle
-    # Added 2026-05-04 — combined-witness budget exceeds --worker-timeout 900:
-    "rct-extractor-v2-6c290650",                              # 851 tests pass locally in 58s, but combined test_suite + smoke + semgrep + pip_audit on a 30K-line codebase exceeds 900s. Run with `--worker-timeout 1800` for a clean read.
-    "evidence-inference-4c874004",                            # 5 tests pass standalone but combined witness pipeline hangs at 900s — semgrep/pip_audit on a heavily-deps repo (transformers, evidence_inference, abstrarct, biomistral, etc.). Same `--worker-timeout 1800` recommendation.
+    # rct-extractor-v2-6c290650 + evidence-inference-4c874004 UNSKIPPED 2026-05-04:
+    # nightly_verify.bat now passes --worker-timeout 1800 (vs 900) so these
+    # heavy-witness projects (851 tests + 30K-line semgrep / large transformer
+    # deps tree) have headroom to complete the combined witness pipeline.
 }  # Projects that consistently hang during verification OR whose source path is missing OR whose source is broken enough to need dedicated repair
 
 
