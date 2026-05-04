@@ -2,6 +2,17 @@
 
 ## 2026-05-04
 
+**Verified:** 5 | **Certified:** 4 | **Rejected:** 1 | **Failed:** 0
+
+### Changes from last night
+- DTA70: UNVERIFIED -> CERTIFIED
+- rmstnma: UNVERIFIED -> CERTIFIED
+- metasprint-autopilot: REJECT -> CERTIFIED
+- FATIHA_Project: UNVERIFIED -> REJECT
+
+
+## 2026-05-04
+
 **Verified:** 2 | **Certified:** 2 | **Rejected:** 0 | **Failed:** 0
 
 ### Changes from last night
