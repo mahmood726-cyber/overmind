@@ -139,6 +139,9 @@ SKIP_PROJECTS = {
     "metaoverfit-5f64eb8f",                                   # OneDrive-only research project; promote to canonical or archive
     "paper7-36216d64",                                        # OneDrive-only paper7 (publication-bias-related)
     "repo300-c9dc0181",                                       # OneDrive-only 300-repo bundle
+    # Added 2026-05-04 — combined-witness budget exceeds --worker-timeout 900:
+    "rct-extractor-v2-6c290650",                              # 851 tests pass locally in 58s, but combined test_suite + smoke + semgrep + pip_audit on a 30K-line codebase exceeds 900s. Run with `--worker-timeout 1800` for a clean read.
+    "evidence-inference-4c874004",                            # 5 tests pass standalone but combined witness pipeline hangs at 900s — semgrep/pip_audit on a heavily-deps repo (transformers, evidence_inference, abstrarct, biomistral, etc.). Same `--worker-timeout 1800` recommendation.
 }  # Projects that consistently hang during verification OR whose source path is missing OR whose source is broken enough to need dedicated repair
 
 
