@@ -1,15 +1,17 @@
 # rmstnma
 
-**Last verified:** 2026-04-28 02:42 UTC | **Verdict:** UNVERIFIED (2/2 witnesses PASS but numerical witness SKIPPED (baseline missing) — NOT a release pass)
-**Bundle hash:** 655242f36a016408 | **Risk:** high | **Math:** 15
+**Last verified:** 2026-05-04 14:37 UTC | **Verdict:** UNVERIFIED (3/3 witnesses PASS but numerical witness SKIPPED (baseline missing) — NOT a release pass)
+**Bundle hash:** b3dc6fbd7c3f18a6 | **Risk:** high | **Math:** 15
 
 ## Health
 
 | Witness | Verdict | Time | Detail |
 |---------|---------|------|--------|
-| test_suite | PASS | 6.0s |       └─tidyselect:::call_expand_dots(expr, context_mask$.__current__.)
- 13. │   |
+| test_suite | PASS | 2.1s | ....                                                                     [100%]
+ |
 | smoke | SKIP | 0.0s | skipped |
+| semgrep | PASS | 19.1s | semgrep findings: ERROR=0 WARNING=0 INFO=0; engine errors=0 |
+| pip_audit | SKIP | 0.0s | skipped |
 | numerical | SKIP | 0.0s | skipped |
 | numerical_continuity | PASS | 0.0s | numerical continuity: baseline + provenance checks OK |
 
@@ -18,7 +20,7 @@
 - **Path:** C:\Projects\rmstnma
 - **Type:** hybrid_browser_analytics_app
 - **Stack:** css, html, javascript, r
-- **Test command:** `Rscript -e "devtools::test()"`
+- **Test command:** `python -m pytest tests/test_smoke.py -q`
 
 ## Verification History
 
@@ -30,3 +32,4 @@
 | 2026-04-26 | UNVERIFIED | 2/4 | 4.7s | 5b87200d4430a264 |
 | 2026-04-27 | UNVERIFIED | 2/4 | 4.5s | 8689d679471cc167 |
 | 2026-04-28 | UNVERIFIED | 2/4 | 6.0s | 655242f36a016408 |
+| 2026-05-04 | UNVERIFIED | 3/6 | 21.2s | b3dc6fbd7c3f18a6 |

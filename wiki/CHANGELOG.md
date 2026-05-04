@@ -1,5 +1,13 @@
 # Overmind Wiki Changelog
 
+## 2026-05-04
+
+**Verified:** 3 | **Certified:** 1 | **Rejected:** 0 | **Failed:** 0
+
+### Changes from last night
+- registry_first_rct_meta: UNVERIFIED -> CERTIFIED
+
+
 ## 2026-05-03
 
 **Verified:** 11 | **Certified:** 8 | **Rejected:** 3 | **Failed:** 0

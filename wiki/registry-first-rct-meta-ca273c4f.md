@@ -1,17 +1,17 @@
 # registry_first_rct_meta
 
-**Last verified:** 2026-04-28 02:42 UTC | **Verdict:** UNVERIFIED (3/3 witnesses PASS but numerical witness SKIPPED (baseline missing) — NOT a release pass)
-**Bundle hash:** 94e998a37495e6e7 | **Risk:** high | **Math:** 10
+**Last verified:** 2026-05-04 14:37 UTC | **Verdict:** CERTIFIED (3/3 witnesses agree PASS)
+**Bundle hash:** e5bcd8dee20f99d5 | **Risk:** high | **Math:** 7
 
 ## Health
 
 | Witness | Verdict | Time | Detail |
 |---------|---------|------|--------|
-| test_suite | PASS | 3.4s | .                                                                        [100%]
+| test_suite | PASS | 2.7s | .                                                                        [100%]
  |
-| smoke | PASS | 27.1s | 40 modules imported OK |
-| numerical | SKIP | 0.0s | skipped |
-| numerical_continuity | PASS | 0.0s | numerical continuity: baseline + provenance checks OK |
+| smoke | PASS | 22.8s | 40 modules imported OK |
+| semgrep | PASS | 16.4s | semgrep findings: ERROR=0 WARNING=0 INFO=0; engine errors=0 |
+| pip_audit | SKIP | 0.0s | skipped |
 
 ## Project
 
@@ -24,7 +24,6 @@
 
 | Date | Verdict | Witnesses | Time | Hash |
 |------|---------|-----------|------|------|
-| 2026-04-12 | PASS | 1/3 | 2.5s | ab800d0ac7f6198e |
 | 2026-04-13 | PASS | 1/3 | 2.6s | 12027b6970fb21ad |
 | 2026-04-15 | FAIL | 1/1 | 0.0s | 761715914c32d212 |
 | 2026-04-17 | UNVERIFIED | 2/3 | 20.2s | 8387e349c0a5dcb6 |
@@ -34,3 +33,4 @@
 | 2026-04-26 | UNVERIFIED | 3/4 | 27.8s | e23289f79de9a7d9 |
 | 2026-04-27 | UNVERIFIED | 3/4 | 31.1s | 7256deb3890f0992 |
 | 2026-04-28 | UNVERIFIED | 3/4 | 30.5s | 94e998a37495e6e7 |
+| 2026-05-04 | CERTIFIED | 3/4 | 41.9s | e5bcd8dee20f99d5 |
