@@ -2,6 +2,14 @@
 
 ## 2026-05-04
 
+**Verified:** 1 | **Certified:** 0 | **Rejected:** 0 | **Failed:** 0
+
+### Changes from last night
+- NMA: REJECT -> UNVERIFIED
+
+
+## 2026-05-04
+
 **Verified:** 21 | **Certified:** 1 | **Rejected:** 1 | **Failed:** 0
 
 ### Changes from last night

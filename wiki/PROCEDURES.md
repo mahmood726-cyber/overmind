@@ -54,6 +54,8 @@ S | Read test output and fix failing tests | 1 | 0 | 2026-04-25 |
 | TEST_FAILURE:fatiha-pro | nstalling renv  ... FAILED | Read test output and fix failing tests | 1 | 0 | 2026-04-25 |
 | TEST_FAILURE:globalst-5 | truthcert_integrity
 4 failed i | Read test output and fix failing tests | 1 | 0 | 2026-04-09 |
+| TEST_FAILURE:nma-a6e8ac | Error: Test failures
+Execution | Re-run the R test suite with verbose/traceback enabled to ca | 1 | 0 | 2026-05-04 |
 | TIMEOUT:asreview-5 | timed out | Check for WMI deadlock (Python 3.13), infinite loop, or slow | 1 | 0 | 2026-04-15 |
 | TIMEOUT:bayesianma | timed out | Check for WMI deadlock (Python 3.13), infinite loop, or slow | 1 | 0 | 2026-04-15 |
 | TIMEOUT:cardio-ctg | timed out | Check for WMI deadlock (Python 3.13), infinite loop, or slow | 1 | 0 | 2026-04-15 |
