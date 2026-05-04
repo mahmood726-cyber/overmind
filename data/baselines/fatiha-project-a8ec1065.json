@@ -1,5 +1,5 @@
 {
-  "command": "Rscript C:/Models/FATIHA_Project/probe.R",
+  "command": "Rscript --vanilla C:/Models/FATIHA_Project/probe.R",
   "values": {
     "k": 20,
     "estimate": 0.755757,
