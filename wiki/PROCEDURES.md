@@ -49,7 +49,6 @@ SyntaxErro | Fix the syntax error in the reported file | 1 | 0 | 2026-04-15 |
 7 failed, | Read test output and fix failing tests | 1 | 0 | 2026-04-17 |
 | TEST_FAILURE:ctgov-sear | est_ci_bounds_valid
 20 failed, | Read test output and fix failing tests | 1 | 0 | 2026-04-09 |
-| TEST_FAILURE:ctgov-sear | semgrep findings: ERROR=13 WAR | Replace stdlib xml.etree/minidom imports with defusedxml equ | 1 | 0 | 2026-05-03 |
 | TEST_FAILURE:dataextrac | OMPLETE: 82 passed, 2 failed
 S | Read test output and fix failing tests | 1 | 0 | 2026-04-25 |
 | TEST_FAILURE:fatiha-pro | nstalling renv  ... FAILED | Read test output and fix failing tests | 1 | 0 | 2026-04-25 |

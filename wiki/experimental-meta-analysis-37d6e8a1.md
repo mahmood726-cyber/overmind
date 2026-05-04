@@ -1,15 +1,17 @@
 # experimental-meta-analysis
 
-**Last verified:** 2026-04-28 02:42 UTC | **Verdict:** UNVERIFIED (3/3 witnesses PASS but numerical witness SKIPPED (baseline missing) — NOT a release pass)
-**Bundle hash:** 940dae8e3b45ca0f | **Risk:** high | **Math:** 11
+**Last verified:** 2026-05-04 15:00 UTC | **Verdict:** UNVERIFIED (5/5 witnesses PASS but numerical witness SKIPPED (baseline missing) — NOT a release pass)
+**Bundle hash:** 52a4a2896da2cc85 | **Risk:** high | **Math:** 11
 
 ## Health
 
 | Witness | Verdict | Time | Detail |
 |---------|---------|------|--------|
-| test_suite | PASS | 2.0s | Testing Experimental Meta-Analysis Framework
+| test_suite | PASS | 1.2s | Testing Experimental Meta-Analysis Framework
 =================================== |
-| smoke | PASS | 50.2s | 25 modules imported OK |
+| smoke | PASS | 35.8s | 25 modules imported OK |
+| semgrep | PASS | 15.5s | semgrep findings: ERROR=0 WARNING=0 INFO=0; engine errors=0 |
+| pip_audit | PASS | 36.5s | pip-audit findings: 0 vulnerabilities across 20 dep(s); scope: requirements file |
 | numerical | SKIP | 0.0s | skipped |
 | numerical_continuity | PASS | 0.0s | numerical continuity: baseline + provenance checks OK |
 
@@ -24,7 +26,6 @@
 
 | Date | Verdict | Witnesses | Time | Hash |
 |------|---------|-----------|------|------|
-| 2026-04-12 | PASS | 2/3 | 47.9s | dc1a985d2f953003 |
 | 2026-04-13 | PASS | 2/3 | 29.1s | 802ac900c73289bb |
 | 2026-04-15 | FAIL | 1/1 | 0.0s | 61eaa7ca9be50592 |
 | 2026-04-17 | UNVERIFIED | 2/3 | 34.9s | a36e057aab8b4a9a |
@@ -34,3 +35,4 @@
 | 2026-04-26 | UNVERIFIED | 3/4 | 50.9s | f94fff281625b4e0 |
 | 2026-04-27 | UNVERIFIED | 3/4 | 53.3s | 821c6eb32c61aaff |
 | 2026-04-28 | UNVERIFIED | 3/4 | 52.1s | 940dae8e3b45ca0f |
+| 2026-05-04 | UNVERIFIED | 5/6 | 89.1s | 52a4a2896da2cc85 |

@@ -1,15 +1,17 @@
 # metasprint-dose-response
 
-**Last verified:** 2026-04-28 02:42 UTC | **Verdict:** UNVERIFIED (2/2 witnesses PASS but numerical witness SKIPPED (baseline missing) — NOT a release pass)
-**Bundle hash:** 1f190ac919705330 | **Risk:** high | **Math:** 12
+**Last verified:** 2026-05-04 15:00 UTC | **Verdict:** UNVERIFIED (3/3 witnesses PASS but numerical witness SKIPPED (baseline missing) — NOT a release pass)
+**Bundle hash:** 9e50ae56550714b0 | **Risk:** high | **Math:** 12
 
 ## Health
 
 | Witness | Verdict | Time | Detail |
 |---------|---------|------|--------|
-| test_suite | PASS | 13.4s | estAdvancedFeatures::test_dose_egger_regression PASSED [ 81%]
-test_dose_response |
+| test_suite | PASS | 12.1s | ential_model_fit PASSED [ 80%]
+test_dose_response_models.py::TestExceedDosresmet |
 | smoke | SKIP | 0.0s | skipped |
+| semgrep | PASS | 12.3s | semgrep findings: ERROR=0 WARNING=0 INFO=0; engine errors=0 |
+| pip_audit | SKIP | 0.0s | skipped |
 | numerical | SKIP | 0.0s | skipped |
 | numerical_continuity | PASS | 0.0s | numerical continuity: baseline + provenance checks OK |
 
@@ -24,7 +26,6 @@ test_dose_response |
 
 | Date | Verdict | Witnesses | Time | Hash |
 |------|---------|-----------|------|------|
-| 2026-04-12 | FAIL | 1/3 | 0.0s | 4112ec165d1210d1 |
 | 2026-04-13 | FAIL | 1/3 | 0.0s | ebfb236089bd6e8d |
 | 2026-04-15 | FAIL | 1/1 | 0.0s | c08ff1aa06e256be |
 | 2026-04-17 | PASS | 1/3 | 10.0s | c2548e9daac4702e |
@@ -34,3 +35,4 @@ test_dose_response |
 | 2026-04-26 | UNVERIFIED | 2/4 | 12.4s | f9a31ff12032dd88 |
 | 2026-04-27 | UNVERIFIED | 2/4 | 13.1s | a75f7b396d021474 |
 | 2026-04-28 | UNVERIFIED | 2/4 | 13.4s | 1f190ac919705330 |
+| 2026-05-04 | UNVERIFIED | 3/6 | 24.5s | 9e50ae56550714b0 |

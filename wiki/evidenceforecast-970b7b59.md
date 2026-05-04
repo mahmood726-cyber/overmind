@@ -1,15 +1,18 @@
 # EvidenceForecast
 
-**Last verified:** 2026-04-28 02:42 UTC | **Verdict:** UNVERIFIED (3/3 witnesses PASS but numerical witness SKIPPED (baseline missing) — NOT a release pass)
-**Bundle hash:** 42da129d1567894f | **Risk:** high | **Math:** 14
+**Last verified:** 2026-05-04 15:00 UTC | **Verdict:** UNVERIFIED (4/4 witnesses PASS but numerical witness SKIPPED (baseline missing) — NOT a release pass)
+**Bundle hash:** a6537b0dade2fd4f | **Risk:** high | **Math:** 14
 
 ## Health
 
 | Witness | Verdict | Time | Detail |
 |---------|---------|------|--------|
-| test_suite | PASS | 7.8s | ...                                                                      [100%]
+| test_suite | PASS | 4.8s | ...                                                                      [100%]
  |
-| smoke | PASS | 12.3s | 14 modules imported OK |
+| smoke | PASS | 9.4s | 14 modules imported OK |
+| semgrep | PASS | 16.6s | semgrep findings: ERROR=0 WARNING=7 INFO=0; engine errors=0
+7 advisory WARNING f |
+| pip_audit | SKIP | 0.0s | skipped |
 | numerical | SKIP | 0.0s | skipped |
 | numerical_continuity | PASS | 0.0s | numerical continuity: baseline + provenance checks OK |
 
@@ -31,3 +34,4 @@
 | 2026-04-26 | UNVERIFIED | 3/4 | 20.1s | 303e8eac5ec0c1b5 |
 | 2026-04-27 | UNVERIFIED | 3/4 | 18.9s | e653e8c852f1e82c |
 | 2026-04-28 | UNVERIFIED | 3/4 | 20.1s | 42da129d1567894f |
+| 2026-05-04 | UNVERIFIED | 4/6 | 30.8s | a6537b0dade2fd4f |

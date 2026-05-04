@@ -1,7 +1,7 @@
 # repo300-ENMA-SNMA
 
-**Last verified:** 2026-04-28 02:42 UTC | **Verdict:** UNVERIFIED (2/2 witnesses PASS but numerical witness SKIPPED (baseline missing) — NOT a release pass)
-**Bundle hash:** 7a84eabcb636ab25 | **Risk:** high | **Math:** 14
+**Last verified:** 2026-05-04 15:00 UTC | **Verdict:** UNVERIFIED (3/3 witnesses PASS but numerical witness SKIPPED (baseline missing) — NOT a release pass)
+**Bundle hash:** 31b4b8760fea19f5 | **Risk:** high | **Math:** 14
 
 ## Health
 
@@ -10,6 +10,8 @@
 | test_suite | PASS | 2.5s | .                                                                        [100%]
  |
 | smoke | SKIP | 0.0s | skipped |
+| semgrep | PASS | 15.2s | semgrep findings: ERROR=0 WARNING=0 INFO=0; engine errors=0 |
+| pip_audit | SKIP | 0.0s | skipped |
 | numerical | SKIP | 0.0s | skipped |
 | numerical_continuity | PASS | 0.0s | numerical continuity: baseline + provenance checks OK |
 
@@ -24,7 +26,6 @@
 
 | Date | Verdict | Witnesses | Time | Hash |
 |------|---------|-----------|------|------|
-| 2026-04-12 | REJECT | 2/3 | 3.8s | bb431d4ecc252f68 |
 | 2026-04-13 | REJECT | 2/3 | 2.1s | ec005732c00b1caf |
 | 2026-04-15 | FAIL | 1/1 | 0.0s | 2bfb199bb358befd |
 | 2026-04-17 | PASS | 1/3 | 1.8s | 8658e856ec1e9681 |
@@ -34,3 +35,4 @@
 | 2026-04-26 | UNVERIFIED | 2/4 | 3.2s | 234d7f37c27cf525 |
 | 2026-04-27 | UNVERIFIED | 2/4 | 3.4s | 71059cc3d8d56087 |
 | 2026-04-28 | UNVERIFIED | 2/4 | 2.5s | 7a84eabcb636ab25 |
+| 2026-05-04 | UNVERIFIED | 3/6 | 17.7s | 31b4b8760fea19f5 |

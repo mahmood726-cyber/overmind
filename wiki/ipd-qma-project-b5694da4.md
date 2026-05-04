@@ -1,15 +1,17 @@
 # ipd_qma_project
 
-**Last verified:** 2026-04-28 02:42 UTC | **Verdict:** UNVERIFIED (3/3 witnesses PASS but numerical witness SKIPPED (baseline missing) — NOT a release pass)
-**Bundle hash:** eb8789a9ee2b3dfc | **Risk:** high | **Math:** 15
+**Last verified:** 2026-05-04 15:00 UTC | **Verdict:** UNVERIFIED (5/5 witnesses PASS but numerical witness SKIPPED (baseline missing) — NOT a release pass)
+**Bundle hash:** 3f784c3a1b9f1064 | **Risk:** high | **Math:** 15
 
 ## Health
 
 | Witness | Verdict | Time | Detail |
 |---------|---------|------|--------|
-| test_suite | PASS | 7.1s | ........s...................................................             [100%]
+| test_suite | PASS | 6.8s | .......................................s....................             [100%]
  |
-| smoke | PASS | 20.7s | 13 modules imported OK |
+| smoke | PASS | 20.2s | 13 modules imported OK |
+| semgrep | PASS | 14.7s | semgrep findings: ERROR=0 WARNING=0 INFO=0; engine errors=0 |
+| pip_audit | PASS | 55.8s | pip-audit findings: 0 vulnerabilities across 54 dep(s); scope: requirements file |
 | numerical | SKIP | 0.0s | skipped |
 | numerical_continuity | PASS | 0.0s | numerical continuity: baseline + provenance checks OK |
 
@@ -24,7 +26,6 @@
 
 | Date | Verdict | Witnesses | Time | Hash |
 |------|---------|-----------|------|------|
-| 2026-04-12 | REJECT | 2/3 | 60.9s | 2bbfb88d9b045c93 |
 | 2026-04-13 | REJECT | 2/3 | 29.3s | 285ada80d04c4164 |
 | 2026-04-15 | FAIL | 1/1 | 0.0s | 146682c83e99b67f |
 | 2026-04-17 | UNVERIFIED | 2/3 | 19.5s | 45c6f60dc8ba15af |
@@ -34,3 +35,4 @@
 | 2026-04-26 | UNVERIFIED | 3/4 | 27.7s | d99662256bf8c14d |
 | 2026-04-27 | UNVERIFIED | 3/4 | 32.4s | 284fed6d3396e49e |
 | 2026-04-28 | UNVERIFIED | 3/4 | 27.8s | eb8789a9ee2b3dfc |
+| 2026-05-04 | UNVERIFIED | 5/6 | 97.6s | 3f784c3a1b9f1064 |
