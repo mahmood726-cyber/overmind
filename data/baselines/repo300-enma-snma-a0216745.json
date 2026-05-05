@@ -1,0 +1,16 @@
+{
+  "command": "C:\\Users\\user\\AppData\\Local\\Programs\\Python\\Python313\\python.exe C:\\overmind\\data\\baseline_probes\\probe_repo300-enma-snma.py",
+  "values": {
+    "baseline_n_treatments": 5,
+    "baseline_n_studies": 30,
+    "baseline_connectivity": "dense",
+    "sparse_n_studies": 15,
+    "sparse_connectivity": "sparse",
+    "incons_magnitude": 0.3,
+    "hi_het_connectivity": "dense",
+    "star_connectivity": "star"
+  },
+  "tolerance": 1e-06,
+  "project_path": "C:\\Projects\\repo300-ENMA-SNMA",
+  "created_by": "create_baselines.py"
+}
