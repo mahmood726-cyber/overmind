@@ -1,0 +1,7 @@
+# Verify the 6 new baselines lift their projects to CERTIFIED
+C:\Projects\idea12
+C:\Projects\hfpef_registry_synth
+C:\Projects\moonshot-evidence-lab
+C:\Projects\Transcendent-Meta-Analysis-Lab
+C:\Projects\experimental-meta-analysis
+C:\Projects\asreview_5star

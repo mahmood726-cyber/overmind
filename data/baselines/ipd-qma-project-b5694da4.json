@@ -1,0 +1,22 @@
+{
+  "command": "C:\\Users\\user\\AppData\\Local\\Programs\\Python\\Python313\\python.exe C:\\overmind\\data\\baseline_probes\\probe_ipd-qma-project.py",
+  "values": {
+    "n_quantiles": 3,
+    "quantiles": [
+      0.25,
+      0.5,
+      0.75
+    ],
+    "study1_q25_eff_bc": 0.499,
+    "study1_q50_eff_bc": 0.474,
+    "study1_q75_eff_bc": 0.56,
+    "study1_slope": 0.087,
+    "study1_n_control": 200,
+    "study1_n_treatment": 200,
+    "study1_mean_diff": 0.527,
+    "study2_slope": 0.145
+  },
+  "tolerance": 0.001,
+  "project_path": "C:\\Projects\\ipd_qma_project",
+  "created_by": "create_baselines.py"
+}
