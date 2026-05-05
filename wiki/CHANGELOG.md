@@ -2,6 +2,14 @@
 
 ## 2026-05-05
 
+**Verified:** 1 | **Certified:** 0 | **Rejected:** 0 | **Failed:** 0
+
+### Changes from last night
+- Finrenone: REJECT -> UNVERIFIED
+
+
+## 2026-05-05
+
 **Verified:** 1 | **Certified:** 1 | **Rejected:** 0 | **Failed:** 0
 
 ### Changes from last night
@@ -319,42 +327,4 @@
 ## 2026-04-16
 
 **Verified:** 0 | **Certified:** 0 | **Rejected:** 0 | **Failed:** 0
-
-
-## 2026-04-15
-
-**Verified:** 50 | **Certified:** 10 | **Rejected:** 3 | **Failed:** 35
-
-### Changes from last night
-- advanced-nma-pooling: REJECT -> FAIL
-- CardioOracle: REJECT -> FAIL
-- esc-acs-living-meta: PASS -> FAIL
-- idea12: REJECT -> FAIL
-- overmind: PASS -> FAIL
-- lec_phase0_project: PASS -> FAIL
-- ipd_qma_project: REJECT -> FAIL
-- rct-extractor-v2: PASS -> FAIL
-- EvidenceOracle: PASS -> FAIL
-- globalst: PASS -> FAIL
-- hfpef_registry_synth: PASS -> FAIL
-- repo300-ENMA-SNMA: REJECT -> FAIL
-- BayesianMA: PASS -> FAIL
-- asreview_5star: PASS -> FAIL
-- experimental-meta-analysis: PASS -> FAIL
-- moonshot-evidence-lab: PASS -> FAIL
-- Transcendent-Meta-Analysis-Lab: PASS -> FAIL
-- ubcma: REJECT -> CERTIFIED
-- cardio-ctgov-living-meta-portfolio: PASS -> FAIL
-- llm-meta-analysis: REJECT -> FAIL
-- registry_first_rct_meta: PASS -> FAIL
-- truthcert-denominator-phase1: REJECT -> CERTIFIED
-- metasprint-cardio-universe: PASS -> REJECT
-- Denominator_Calibrated_Living_NMA: PASS -> REJECT
-- GRMA_paper: FAIL -> CERTIFIED
-- GWAM: PASS -> CERTIFIED
-- MetaAudit: REJECT -> CERTIFIED
-- hfpef_registry_calibration: PASS -> CERTIFIED
-- four_limb_synthesis: CERTIFIED -> REJECT
-- MetaRegression: REJECT -> PASS
-- ComponentNMA: REJECT -> PASS
 
