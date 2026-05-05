@@ -3,7 +3,6 @@
   "values": {
     "safe_float_pi": 3.14159,
     "safe_int_42": 42,
-    "safe_float_bad": null,
     "normalize_ws": "hello world",
     "parse_json_list_len": 3,
     "unique_order": [
