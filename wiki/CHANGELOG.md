@@ -1,5 +1,18 @@
 # Overmind Wiki Changelog
 
+## 2026-05-05
+
+**Verified:** 6 | **Certified:** 5 | **Rejected:** 1 | **Failed:** 0
+
+### Changes from last night
+- idea12: REJECT -> CERTIFIED
+- hfpef_registry_synth: UNVERIFIED -> REJECT
+- asreview_5star: UNVERIFIED -> CERTIFIED
+- experimental-meta-analysis: UNVERIFIED -> CERTIFIED
+- moonshot-evidence-lab: UNVERIFIED -> CERTIFIED
+- Transcendent-Meta-Analysis-Lab: UNVERIFIED -> CERTIFIED
+
+
 ## 2026-05-04
 
 **Verified:** 1 | **Certified:** 1 | **Rejected:** 0 | **Failed:** 0
@@ -437,10 +450,3 @@
 - ctgov-registry-survival
 - HFN786
 
-
-## 2026-04-08
-
-**Verified:** 1 | **Certified:** 1 | **Rejected:** 0 | **Failed:** 0
-
-### New projects verified
-- advanced-nma-pooling
