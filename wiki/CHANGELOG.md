@@ -2,6 +2,14 @@
 
 ## 2026-05-05
 
+**Verified:** 1 | **Certified:** 0 | **Rejected:** 0 | **Failed:** 1
+
+### New projects verified
+- superapp
+
+
+## 2026-05-05
+
 **Verified:** 3 | **Certified:** 0 | **Rejected:** 1 | **Failed:** 2
 
 ### Changes from last night
@@ -278,21 +286,4 @@
 - cardio-ctgov-living-meta-portfolio: PASS -> UNVERIFIED
 - llm-meta-analysis: REJECT -> UNVERIFIED
 - metasprintnma: PASS -> UNVERIFIED
-
-
-## 2026-04-19
-
-**Verified:** 50 | **Certified:** 12 | **Rejected:** 6 | **Failed:** 7
-
-### Changes from last night
-- esc-acs-living-meta: UNVERIFIED -> REJECT
-- user: FAIL -> REJECT
-- NMA: FAIL -> PASS
-- llm-meta-analysis: UNVERIFIED -> REJECT
-
-### New projects verified
-- DTA70
-- Pairwise70
-- rmstnma
-- Cbamm
 
