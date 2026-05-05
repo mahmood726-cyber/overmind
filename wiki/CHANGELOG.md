@@ -2,6 +2,14 @@
 
 ## 2026-05-05
 
+**Verified:** 1 | **Certified:** 1 | **Rejected:** 0 | **Failed:** 0
+
+### Changes from last night
+- Finrenone: UNVERIFIED -> CERTIFIED
+
+
+## 2026-05-05
+
 **Verified:** 1 | **Certified:** 0 | **Rejected:** 0 | **Failed:** 0
 
 ### Changes from last night
@@ -322,9 +330,4 @@
 - mem-ecosystem-model
 - metaoverfit
 - MLMResearch
-
-
-## 2026-04-16
-
-**Verified:** 0 | **Certified:** 0 | **Rejected:** 0 | **Failed:** 0
 
