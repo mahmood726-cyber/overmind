@@ -17,6 +17,24 @@
         "TIMEOUT",
         "timed out"
       ]
+    },
+    {
+      "skill_id": "UNKNOWN:finrenone-",
+      "failure_type": "UNKNOWN",
+      "pattern": "s\\user\\AppData\\Local\\Programs\\",
+      "description": "Fix UNKNOWN: Manual investigation needed",
+      "fix_script": "Manual investigation needed",
+      "abstract_strategy": "UNKNOWN \u2192 Manual investigation needed",
+      "confidence": 0.5,
+      "durability": 1.0,
+      "contrastive_diff": "",
+      "times_used": 0,
+      "times_succeeded": 0,
+      "created_from_recipe": "UNKNOWN:finrenone-",
+      "tags": [
+        "UNKNOWN",
+        "s\\user\\AppData\\Local"
+      ]
     }
   ]
 }

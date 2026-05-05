@@ -6,6 +6,7 @@ Automatically discovered fix recipes from nightly verification outcomes.
 
 | Recipe | Pattern | Fix | Seen | Resolved | Confidence | Last Seen |
 |--------|---------|-----|------|----------|------------|-----------|
+| UNKNOWN:finrenone- | s\user\AppData\Local\Programs\ | Manual investigation needed | 2 | 1 | 50% | 2026-05-04 |
 | TIMEOUT:advanced-n | timed out | Check for WMI deadlock (Python 3.13), infinite loop, or slow | 26 | 1 | 4% | 2026-04-28 |
 
 ## Candidates (unproven)
@@ -23,7 +24,6 @@ SyntaxErro | Fix the syntax error in the reported file | 2 | 0 | 2026-04-08 |
 | SYNTAX_ERROR:repo300-en | ix
                ^
 SyntaxErro | Fix the syntax error in the reported file | 2 | 0 | 2026-04-13 |
-| UNKNOWN:finrenone- | s\user\AppData\Local\Programs\ | Manual investigation needed | 2 | 0 | 2026-05-04 |
 | UNKNOWN:pairwise70 | ck, subtests, tmp_path, tmp_pa | Manual investigation needed | 2 | 0 | 2026-04-10 |
 | CONFIGURATION:fatiha-pro | Could not parse output as JSON | Inspect numerical witness script to ensure it emits valid JS | 1 | 0 | 2026-05-04 |
 | DEPENDENCY_ROT:browser_runtime | browser_runtime | Check if browser_runtime is installed: pip install browser_r | 1 | 0 | 2026-05-04 |

@@ -2,6 +2,14 @@
 
 ## 2026-05-05
 
+**Verified:** 3 | **Certified:** 0 | **Rejected:** 1 | **Failed:** 2
+
+### Changes from last night
+- Finrenone: CERTIFIED -> REJECT
+
+
+## 2026-05-05
+
 **Verified:** 1 | **Certified:** 1 | **Rejected:** 0 | **Failed:** 0
 
 ### Changes from last night
@@ -287,47 +295,4 @@
 - Pairwise70
 - rmstnma
 - Cbamm
-
-
-## 2026-04-17
-
-**Verified:** 50 | **Certified:** 12 | **Rejected:** 5 | **Failed:** 9
-
-### Changes from last night
-- advanced-nma-pooling: FAIL -> CERTIFIED
-- CardioOracle: FAIL -> UNVERIFIED
-- esc-acs-living-meta: FAIL -> UNVERIFIED
-- idea12: FAIL -> UNVERIFIED
-- ipd-meta-pro-link: FAIL -> PASS
-- overmind: FAIL -> UNVERIFIED
-- prognostic-meta: FAIL -> UNVERIFIED
-- DTA70: FAIL -> REJECT
-- lec_phase0_project: FAIL -> UNVERIFIED
-- ipd_qma_project: FAIL -> UNVERIFIED
-- Pairwise70: FAIL -> REJECT
-- rct-extractor-v2: FAIL -> REJECT
-- EvidenceOracle: FAIL -> UNVERIFIED
-- globalst: FAIL -> UNVERIFIED
-- hfpef_registry_synth: FAIL -> UNVERIFIED
-- repo300-ENMA-SNMA: FAIL -> PASS
-- asreview_5star: FAIL -> UNVERIFIED
-- metasprint-dose-response: FAIL -> PASS
-- experimental-meta-analysis: FAIL -> UNVERIFIED
-- moonshot-evidence-lab: FAIL -> UNVERIFIED
-- Transcendent-Meta-Analysis-Lab: FAIL -> UNVERIFIED
-- cardio-ctgov-living-meta-portfolio: FAIL -> PASS
-- llm-meta-analysis: FAIL -> UNVERIFIED
-- metasprintnma: FAIL -> PASS
-- registry_first_rct_meta: FAIL -> UNVERIFIED
-- metasprint-cardio-universe: REJECT -> CERTIFIED
-
-### New projects verified
-- KMcurve
-- HTML apps
-- EvidenceForecast
-- user
-- GuidelineLag
-- mem-ecosystem-model
-- metaoverfit
-- MLMResearch
 
