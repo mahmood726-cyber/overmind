@@ -386,21 +386,41 @@ def _verify_with_timeout(engine, proj, timeout=900):
         time.sleep(2)
 
     if worker.is_alive():
+        # Windows pipe-handle survival: worker.terminate() can't always kill
+        # child subprocesses (pytest, semgrep, pip-audit, etc.) that the
+        # worker spawned. Those children hold inherited pipe handles to
+        # result_queue, preventing the parent's eventual cleanup. Use
+        # psutil to kill the entire process tree (worker + descendants).
+        # Per lessons.md "Windows multiprocessing.terminate() can't always
+        # kill child" (2026-04-30 entry).
+        try:
+            import psutil
+            parent = psutil.Process(worker.pid)
+            children = parent.children(recursive=True)
+            for child in children:
+                try:
+                    child.kill()
+                except (psutil.NoSuchProcess, psutil.AccessDenied):
+                    pass
+            psutil.wait_procs(children, timeout=3)
+        except (psutil.NoSuchProcess, ImportError):
+            pass
+        # Now kill the worker itself; pipes are no longer held.
         worker.terminate()
-        time.sleep(3)
+        worker.join(timeout=3)
         if worker.is_alive():
             worker.kill()
-            time.sleep(1)
+            worker.join(timeout=2)
         return CertBundle(
             project_id=proj.project_id,
             scope_lock=engine.build_scope_lock(proj),
             witness_results=[WitnessResult(
                 witness_type="test_suite", verdict="FAIL", exit_code=-1,
-                stdout="", stderr=f"Project hung — killed after {timeout}s",
+                stdout="", stderr=f"Project hung — process tree killed after {timeout}s",
                 elapsed=float(timeout),
             )],
             verdict="FAIL",
-            arbitration_reason=f"Hard timeout ({timeout}s) — process killed",
+            arbitration_reason=f"Hard timeout ({timeout}s) — process tree killed",
             timestamp=utc_now(),
         )
 

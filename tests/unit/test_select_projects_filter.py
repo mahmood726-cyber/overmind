@@ -138,3 +138,19 @@ def test_project_worker_timeouts_lookup_falls_back_to_default():
     assert overrides.get("evidence-inference-4c874004") == 3600
     # unknown project_id falls back via dict.get(default)
     assert overrides.get("nonexistent-project-id", 900) == 900
+
+
+def test_verify_with_timeout_uses_psutil_kill_tree():
+    """Worker hang path must call psutil to kill descendants before terminate.
+
+    Per lessons.md 2026-04-30: Windows worker.terminate() leaves child
+    pytest/semgrep subprocesses alive when they hold inherited pipe handles
+    to the parent's result_queue. The fix is psutil.Process(pid).children
+    + child.kill() before worker.terminate().
+    """
+    import inspect
+    src = inspect.getsource(nightly_verify._verify_with_timeout)
+    # Confirm psutil tree-kill path is in the timeout branch
+    assert "psutil" in src, "expected psutil-based tree-kill in _verify_with_timeout"
+    assert "children(recursive=True)" in src, "expected recursive children() lookup"
+    assert "child.kill()" in src, "expected child.kill() call"
