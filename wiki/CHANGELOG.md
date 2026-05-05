@@ -2,6 +2,17 @@
 
 ## 2026-05-05
 
+**Verified:** 4 | **Certified:** 4 | **Rejected:** 0 | **Failed:** 0
+
+### Changes from last night
+- esc-acs-living-meta: UNVERIFIED -> CERTIFIED
+- ipd-meta-pro-link: UNVERIFIED -> CERTIFIED
+- overmind: UNVERIFIED -> CERTIFIED
+- new-app: FAIL -> CERTIFIED
+
+
+## 2026-05-05
+
 **Verified:** 2 | **Certified:** 2 | **Rejected:** 0 | **Failed:** 0
 
 ### Changes from last night
@@ -387,17 +398,4 @@
 - GRMA_paper
 - GWAM
 - Meta_Ecosystem_Model
-
-
-## 2026-04-08
-
-**Verified:** 50 | **Certified:** 4 | **Rejected:** 16 | **Failed:** 16
-
-### Changes from last night
-- metasprintnma: PASS -> FAIL
-- ubcma: FAIL -> REJECT
-- truthcert-meta2-prototype: CERTIFIED -> REJECT
-
-### New projects verified
-- overmind
 

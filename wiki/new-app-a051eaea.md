@@ -1,22 +1,30 @@
 # new-app
 
-**Last verified:** 2026-04-13 02:18 UTC | **Verdict:** FAIL (Single witness: test_suite FAIL)
-**Bundle hash:** 3a7a648c94f1948b | **Risk:** high | **Math:** 11
+**Last verified:** 2026-05-05 10:47 UTC | **Verdict:** CERTIFIED (5/5 witnesses agree PASS)
+**Bundle hash:** 7f6ab2ed8ee4b6ee | **Risk:** high | **Math:** 12
 
 ## Health
 
 | Witness | Verdict | Time | Detail |
 |---------|---------|------|--------|
-| test_suite | FAIL | 120.0s | Timed out after 120s |
-| smoke | SKIP | 0.0s | skipped |
-| numerical | SKIP | 0.0s | skipped |
+| test_suite | PASS | 6.2s | 
+> meta-analysis-platform@2.1.0 test
+> vitest run
+
+
+[7m[1m[36m RUN [39m[22m |
+| smoke | PASS | 3.4s | 37 modules imported OK |
+| semgrep | PASS | 27.6s | semgrep findings: ERROR=0 WARNING=0 INFO=0; engine errors=3 |
+| pip_audit | SKIP | 0.0s | skipped |
+| numerical | PASS | 0.1s | 9 values within tolerance |
+| numerical_continuity | PASS | 0.0s | numerical continuity: baseline + provenance checks OK |
 
 ## Project
 
 - **Path:** C:\Projects\new-app
 - **Type:** browser_app
 - **Stack:** css, html, javascript, vite
-- **Test command:** `python -m pytest tests/selenium/comprehensive_test.py -q`
+- **Test command:** `npm run test`
 
 ## Verification History
 
@@ -29,9 +37,4 @@
 | 2026-04-11 | FAIL | 1/3 | 120.1s | 3f7201a974d9c709 |
 | 2026-04-12 | FAIL | 1/3 | 120.0s | 1bbd69e62195f6ef |
 | 2026-04-13 | FAIL | 1/3 | 120.0s | 3a7a648c94f1948b |
-
-## Notes
-
-Single witness: test_suite FAIL
-
-**test_suite:** Timed out after 120s
+| 2026-05-05 | CERTIFIED | 5/6 | 37.3s | 7f6ab2ed8ee4b6ee |

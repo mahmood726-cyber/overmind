@@ -1,7 +1,7 @@
 # esc-acs-living-meta
 
-**Last verified:** 2026-05-04 15:00 UTC | **Verdict:** UNVERIFIED (4/4 witnesses PASS but numerical witness SKIPPED (baseline missing) — NOT a release pass)
-**Bundle hash:** 898c56c3ae99524c | **Risk:** high | **Math:** 20
+**Last verified:** 2026-05-05 10:47 UTC | **Verdict:** CERTIFIED (5/5 witnesses agree PASS)
+**Bundle hash:** 0bf60a27f4295be9 | **Risk:** high | **Math:** 20
 
 ## Health
 
@@ -9,10 +9,10 @@
 |---------|---------|------|--------|
 | test_suite | PASS | 2.5s | .                                                                        [100%]
  |
-| smoke | PASS | 1.5s | 20 modules imported OK |
-| semgrep | PASS | 22.5s | semgrep findings: ERROR=0 WARNING=0 INFO=0; engine errors=2 |
+| smoke | PASS | 1.6s | 20 modules imported OK |
+| semgrep | PASS | 33.7s | semgrep findings: ERROR=0 WARNING=0 INFO=0; engine errors=3 |
 | pip_audit | SKIP | 0.0s | skipped |
-| numerical | SKIP | 0.0s | skipped |
+| numerical | PASS | 0.4s | 9 values within tolerance |
 | numerical_continuity | PASS | 0.0s | numerical continuity: baseline + provenance checks OK |
 
 ## Project
@@ -26,7 +26,6 @@
 
 | Date | Verdict | Witnesses | Time | Hash |
 |------|---------|-----------|------|------|
-| 2026-04-13 | PASS | 2/3 | 1.9s | 94ff7d9712edbfee |
 | 2026-04-15 | FAIL | 1/1 | 0.0s | cc5df3c25b0a1c7e |
 | 2026-04-17 | UNVERIFIED | 2/3 | 3.1s | 4a4580105d5b36e1 |
 | 2026-04-19 | REJECT | 2/3 | 3.4s | 02b78c5a6f679e9f |
@@ -36,3 +35,4 @@
 | 2026-04-27 | REJECT | 3/4 | 5.9s | c07b6a3fefcb6a58 |
 | 2026-04-28 | REJECT | 3/4 | 4.4s | 4ffbfeda673814ae |
 | 2026-05-04 | UNVERIFIED | 4/6 | 26.4s | 898c56c3ae99524c |
+| 2026-05-05 | CERTIFIED | 5/6 | 38.2s | 0bf60a27f4295be9 |
