@@ -1,0 +1,23 @@
+{
+  "command": "node C:/Projects/Dataextractor/probe.cjs",
+  "values": {
+    "version": "5.1.0-AI-NMA-i18n",
+    "n_exports": 7,
+    "export_keys": [
+      "AIStrategies",
+      "BiasDetector",
+      "FieldPredictor",
+      "LocalAI",
+      "QualityScorer",
+      "RCTExtractor",
+      "ValidationFramework"
+    ],
+    "n_engine_keys": 18,
+    "n_methods": 16,
+    "n_object_subkeys": 1,
+    "engine_file_kb": 236
+  },
+  "tolerance": 1e-6,
+  "project_path": "C:\\Projects\\Dataextractor",
+  "created_by": "manual (node-side probe)"
+}
