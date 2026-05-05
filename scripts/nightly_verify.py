@@ -28,7 +28,12 @@ from pathlib import Path
 if sys.platform == "win32" and "pytest" not in sys.modules:
     try:
         import faulthandler
-        faulthandler.dump_traceback_later(3600, exit=True)  # safety net: kill if hung >60min
+        # Safety net: kill if the WHOLE script hangs >4 hours. Was 1 hour
+        # but per-project --worker-timeout can be 3600s (rct-extractor-v2,
+        # evidence-inference) and a targeted run with 3 such projects
+        # would exceed 1 hour even when each project succeeds. 4 hours
+        # is still a reasonable upper bound for a single targeted run.
+        faulthandler.dump_traceback_later(14400, exit=True)
     except Exception:
         pass
     try:
