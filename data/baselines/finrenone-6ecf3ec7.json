@@ -1,0 +1,13 @@
+{
+  "command": "C:\\Users\\user\\AppData\\Local\\Programs\\Python\\Python313\\python.exe C:\\overmind\\data\\baseline_probes\\probe_finrenone.py",
+  "values": {
+    "n_duplicates": 2,
+    "name_dup_count": 2,
+    "sourceUrl_dup_count": 2,
+    "pmid_dup_count": 0,
+    "phase_dup_count": 0
+  },
+  "tolerance": 1e-06,
+  "project_path": "C:\\Projects\\Finrenone",
+  "created_by": "create_baselines.py"
+}
