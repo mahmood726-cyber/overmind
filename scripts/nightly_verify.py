@@ -70,7 +70,11 @@ SKIP_PROJECTS = {
     # .../PLOS_ONE_Submission/) plus `if __name__ != "__main__": sys.exit(0)`
     # guards on 11 standalone Selenium/orchestrator scripts. All 40 smoke
     # modules now import clean.
-    "superapp-3b1c175f",                                      # npm test hangs (Jest config)
+    # superapp-3b1c175f UNSKIPPED 2026-05-05: Bayesian engine fixes shipped
+    # at superapp@56dbaff cleared the "Cannot read properties of undefined"
+    # cascade and the DIC deviance.reduce bug. jest now completes in 118s
+    # (161/178 passing); 17 remaining failures are unrelated contract gaps
+    # in bayesianModelComparison + diagnostic field-name mismatches.
     "metasprint-dta-5dffce53",                                # smoke import hangs (30K-line app)
     "lec-phase0-bundle-a2c59fad",                             # test suite hangs
     # hta-evidence-integrity-suite-dc1fe6c7 UNSKIPPED 2026-05-04: full pytest -q
