@@ -180,8 +180,12 @@ SKIP_PROJECTS = {
 # override here instead of bumping the global default (which would slow
 # every other project's worst-case ceiling). The lookup uses project_id.
 PROJECT_WORKER_TIMEOUTS: dict[str, int] = {
-    "rct-extractor-v2-6c290650": 3600,    # 851 pytest tests + 30K-line semgrep
-    "evidence-inference-4c874004": 3600,  # transformers/biomistral deps tree
+    # Both projects confirmed exceed 3600s on this machine (the bg run on
+    # 2026-05-05 killed both at exactly 3604s). 7200s gives the combined
+    # test_suite + smoke + semgrep + pip_audit + numerical pipeline more
+    # headroom. Still under the 14400s script-level faulthandler.
+    "rct-extractor-v2-6c290650": 7200,    # 851 pytest tests + 30K-line semgrep
+    "evidence-inference-4c874004": 7200,  # transformers/biomistral deps tree
 }
 
 
