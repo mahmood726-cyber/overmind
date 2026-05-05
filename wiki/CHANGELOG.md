@@ -5,6 +5,15 @@
 **Verified:** 2 | **Certified:** 2 | **Rejected:** 0 | **Failed:** 0
 
 ### Changes from last night
+- Dataextractor: REJECT -> CERTIFIED
+- repo300-ENMA-SNMA: UNVERIFIED -> CERTIFIED
+
+
+## 2026-05-05
+
+**Verified:** 2 | **Certified:** 2 | **Rejected:** 0 | **Failed:** 0
+
+### Changes from last night
 - ipd_qma_project: UNVERIFIED -> CERTIFIED
 - hfpef_registry_synth: REJECT -> CERTIFIED
 
@@ -391,12 +400,4 @@
 
 ### New projects verified
 - overmind
-
-
-## 2026-04-08
-
-**Verified:** 50 | **Certified:** 5 | **Rejected:** 14 | **Failed:** 17
-
-### Changes from last night
-- BayesianMA: FAIL -> PASS
 
