@@ -62,7 +62,18 @@ class SuiteWitness:
                 encoding="utf-8", errors="replace",
             )
             elapsed = time.time() - start
-            verdict = "PASS" if proc.returncode == 0 else "FAIL"
+            # pytest exit 5 = "no tests collected". When every test file
+            # is a CLI script that calls pytest.skip(allow_module_level=True),
+            # pytest reports the modules as skipped but ultimately finds 0
+            # tests, exiting 5. Treat that as SKIP rather than FAIL — there's
+            # nothing to test, but also nothing actively broken.
+            is_pytest = "pytest" in command.lower()
+            if proc.returncode == 0:
+                verdict = "PASS"
+            elif is_pytest and proc.returncode == 5:
+                verdict = "SKIP"
+            else:
+                verdict = "FAIL"
             return WitnessResult(
                 witness_type="test_suite", verdict=verdict,
                 exit_code=proc.returncode,
