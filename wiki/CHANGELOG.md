@@ -2,6 +2,20 @@
 
 ## 2026-05-05
 
+**Verified:** 5 | **Certified:** 5 | **Rejected:** 0 | **Failed:** 0
+
+### Changes from last night
+- EvidenceForecast: UNVERIFIED -> CERTIFIED
+- EvidenceOracle: UNVERIFIED -> CERTIFIED
+- globalst: UNVERIFIED -> CERTIFIED
+- llm-meta-analysis: UNVERIFIED -> CERTIFIED
+
+### New projects verified
+- HTA_Evidence_Integrity_Suite
+
+
+## 2026-05-05
+
 **Verified:** 1 | **Certified:** 1 | **Rejected:** 0 | **Failed:** 0
 
 ### Changes from last night
@@ -343,29 +357,4 @@
 
 ### Changes from last night
 - BayesianMA: REJECT -> PASS
-
-
-## 2026-04-10
-
-**Verified:** 50 | **Certified:** 4 | **Rejected:** 12 | **Failed:** 19
-
-### Changes from last night
-- idea12: FAIL -> REJECT
-- ipd-meta-pro-link: PASS -> FAIL
-- prognostic-meta: PASS -> FAIL
-- EvidenceOracle: REJECT -> PASS
-- globalst: FAIL -> REJECT
-- BayesianMA: PASS -> REJECT
-- asreview_5star: REJECT -> PASS
-- metasprint-dose-response: PASS -> FAIL
-- truthcert-meta2-prototype: REJECT -> CERTIFIED
-- ctgov-search-strategies: REJECT -> CERTIFIED
-- GWAM: REJECT -> PASS
-- Meta_Ecosystem_Model: CERTIFIED -> FAIL
-- hfpef_registry_calibration: REJECT -> PASS
-- pub-bias-simulation: PASS -> FAIL
-- ComponentNMA: CERTIFIED -> REJECT
-
-### New projects verified
-- four_limb_synthesis
 
