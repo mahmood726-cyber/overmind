@@ -1,0 +1,16 @@
+{
+  "command": "C:\\Users\\user\\AppData\\Local\\Programs\\Python\\Python313\\python.exe C:\\overmind\\data\\baseline_probes\\probe_metasprintnma.py",
+  "values": {
+    "size_kb": 2579.5,
+    "n_lines": 62997,
+    "n_function_def": 669,
+    "n_arrow_func": 269,
+    "n_script_tag": 1,
+    "n_div_tag": 824,
+    "n_svg_tag": 30,
+    "content_hash_16": "9d662b9cfcc3c26b"
+  },
+  "tolerance": 1e-06,
+  "project_path": "C:\\Projects\\metasprintnma",
+  "created_by": "create_baselines.py"
+}

@@ -1,0 +1,14 @@
+{
+  "command": "C:\\Users\\user\\AppData\\Local\\Programs\\Python\\Python313\\python.exe C:\\overmind\\data\\baseline_probes\\probe_cardio-ctgov-living-meta-portfolio.py",
+  "values": {
+    "size_kb": 26.3,
+    "n_lines": 569,
+    "n_function_def": 1,
+    "n_script_tag": 1,
+    "n_div_tag": 54,
+    "content_hash_16": "ef6a7f7f267d17d9"
+  },
+  "tolerance": 1e-06,
+  "project_path": "C:\\Projects\\cardio-ctgov-living-meta-portfolio",
+  "created_by": "create_baselines.py"
+}

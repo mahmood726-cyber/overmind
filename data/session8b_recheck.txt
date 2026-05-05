@@ -1,0 +1,5 @@
+C:\Projects\KMcurve
+C:\Projects\metasprintnma
+C:\Projects\metasprint-dose-response
+C:\Models\BayesianMA
+C:\Projects\cardio-ctgov-living-meta-portfolio

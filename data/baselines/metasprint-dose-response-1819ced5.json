@@ -1,0 +1,15 @@
+{
+  "command": "C:\\Users\\user\\AppData\\Local\\Programs\\Python\\Python313\\python.exe C:\\overmind\\data\\baseline_probes\\probe_metasprint-dose-response.py",
+  "values": {
+    "size_kb": 2193.8,
+    "n_lines": 51952,
+    "n_function_def": 613,
+    "n_script_tag": 1,
+    "n_div_tag": 642,
+    "n_svg_tag": 17,
+    "content_hash_16": "7ff3c9b0569175b1"
+  },
+  "tolerance": 1e-06,
+  "project_path": "C:\\Projects\\metasprint-dose-response",
+  "created_by": "create_baselines.py"
+}
