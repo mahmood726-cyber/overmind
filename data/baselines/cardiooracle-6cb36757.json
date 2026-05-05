@@ -1,0 +1,27 @@
+{
+  "command": "C:\\Users\\user\\AppData\\Local\\Programs\\Python\\Python313\\python.exe C:\\overmind\\data\\baseline_probes\\probe_cardiooracle.py",
+  "values": {
+    "n_drug_cases": 5,
+    "drug_classifications": [
+      "sglt2i",
+      "arni",
+      "other",
+      "other",
+      "antiplat"
+    ],
+    "n_endpoint_cases": 6,
+    "endpoint_classifications": [
+      "cv_death",
+      "hf_hosp",
+      "acm",
+      "mace",
+      "other",
+      "other"
+    ],
+    "drug_other_count": 2,
+    "endpoint_other_count": 2
+  },
+  "tolerance": 1e-06,
+  "project_path": "C:\\Models\\CardioOracle",
+  "created_by": "create_baselines.py"
+}
