@@ -1,0 +1,17 @@
+{
+  "command": "C:\\Users\\user\\AppData\\Local\\Programs\\Python\\Python313\\python.exe C:\\overmind\\data\\baseline_probes\\probe_hta-evidence-integrity.py",
+  "values": {
+    "n_ma": 492,
+    "adequate_count": 179,
+    "marginal_count": 120,
+    "inadequate_count": 177,
+    "critical_count": 16,
+    "iai_mean": 0.6162,
+    "iai_median": 0.5537,
+    "iai_min": 0.1686,
+    "iai_max": 1.0
+  },
+  "tolerance": 0.001,
+  "project_path": "C:\\Models\\HTA_Evidence_Integrity_Suite",
+  "created_by": "create_baselines.py"
+}

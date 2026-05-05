@@ -1,0 +1,14 @@
+{
+  "command": "C:\\Users\\user\\AppData\\Local\\Programs\\Python\\Python313\\python.exe C:\\overmind\\data\\baseline_probes\\probe_globalst.py",
+  "values": {
+    "hash_64": "0025dc0774018680bb059ee4a46cd2143cf40e9fc6c4d4df648a13d811e281c7",
+    "hash_first_16": "0025dc0774018680",
+    "hash_len": 64,
+    "ctgov_n": 1,
+    "ihme_n": 1,
+    "wb_n": 2
+  },
+  "tolerance": 1e-06,
+  "project_path": "C:\\Projects\\globalst",
+  "created_by": "create_baselines.py"
+}

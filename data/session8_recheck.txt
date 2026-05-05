@@ -1,0 +1,5 @@
+C:\Projects\globalst
+C:\Projects\llm-meta-analysis
+C:\Models\HTA_Evidence_Integrity_Suite
+C:\Models\EvidenceForecast
+C:\Models\EvidenceOracle

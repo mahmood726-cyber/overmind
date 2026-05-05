@@ -415,6 +415,182 @@ print(json.dumps({
 ''',
     },
     {
+        "project_id_prefix": "llm-meta-analysis",
+        "project_path": r"C:\Projects\llm-meta-analysis",
+        "tolerance": 1e-4,
+        "probe": '''
+import sys, json
+import numpy as np
+sys.path.insert(0, ".")
+from evaluation.statistical_framework_v2 import AdvancedMetaAnalysis
+
+# Fixed 6-study meta-analysis input
+effects   = np.array([0.30, 0.45, 0.20, 0.55, 0.35, 0.40])
+variances = np.array([0.04, 0.05, 0.03, 0.06, 0.04, 0.05])
+
+# DerSimonian-Laird with Wald CI (force off-auto for stable behaviour)
+res_dl = AdvancedMetaAnalysis.random_effects_analysis(
+    effects, variances, tau2_method="DL", ci_method="wald", prediction=False,
+)
+# REML
+res_reml = AdvancedMetaAnalysis.random_effects_analysis(
+    effects, variances, tau2_method="REML", ci_method="wald", prediction=False,
+)
+
+print(json.dumps({
+    "n_studies": len(effects),
+    "dl_pooled":  round(float(res_dl.pooled_effect), 6),
+    "dl_ci_low":  round(float(res_dl.ci.lower), 6),
+    "dl_ci_high": round(float(res_dl.ci.upper), 6),
+    "dl_tau2":    round(float(res_dl.tau_squared), 6),
+    "dl_i2":      round(float(res_dl.heterogeneity.i_squared), 4),
+    "dl_q":       round(float(res_dl.heterogeneity.q_statistic), 6),
+    "dl_z":       round(float(res_dl.z_statistic), 4),
+    "reml_pooled": round(float(res_reml.pooled_effect), 6),
+    "reml_tau2":   round(float(res_reml.tau_squared), 6),
+}))
+''',
+    },
+    {
+        "project_id_prefix": "evidenceoracle",
+        "project_path": r"C:\Models\EvidenceOracle",
+        "tolerance": 1e-6,
+        "probe": '''
+import sys, json
+sys.path.insert(0, ".")
+import importlib.util
+# assemble_features.py expects to find data files but we only need its helpers
+spec = importlib.util.spec_from_file_location("eo_features", "assemble_features.py")
+mod = importlib.util.module_from_spec(spec)
+
+# Stub heavy IO so loading the module doesn't try to open absent CSVs
+import builtins, types
+class _Skip(Exception): pass
+mod.__dict__["__name__"] = "eo_features"
+spec.loader.exec_module(mod)
+
+# compute_benford_mad on a fixed digit distribution.
+# Benford-conforming → low MAD. Uniform → higher.
+benford_like = [{"d1": d} for d in [1]*30 + [2]*18 + [3]*12 + [4]*10 + [5]*8 + [6]*7 + [7]*6 + [8]*5 + [9]*4]
+uniform_like = [{"d1": d} for d in list(range(1, 10)) * 11]
+
+mad_benford = mod.compute_benford_mad(benford_like)
+mad_uniform = mod.compute_benford_mad(uniform_like)
+
+# Empty / too-few inputs return NaN — skip emitting them (None breaks witness)
+print(json.dumps({
+    "n_benford_input": len(benford_like),
+    "n_uniform_input": len(uniform_like),
+    "mad_benford_like": round(float(mad_benford), 6),
+    "mad_uniform_like": round(float(mad_uniform), 6),
+    "uniform_higher_than_benford": bool(mad_uniform > mad_benford),
+}))
+''',
+    },
+    {
+        "project_id_prefix": "evidenceforecast",
+        "project_path": r"C:\Models\EvidenceForecast",
+        "tolerance": 1e-6,
+        "probe": '''
+import sys, json
+sys.path.insert(0, ".")
+from evidence_forecast.representativeness import compute_representativeness
+from evidence_forecast.constants import (
+    SCHEMA_VERSION, FORECAST_HORIZON_MONTHS,
+    PICO_REQUIRED_FIELDS, EFFECT_FIELDS, FLIP_FIELDS, REPRESENTATIVENESS_FIELDS,
+    CARD_TOP_LEVEL_FIELDS,
+)
+
+# Fixed normalised weights — burden-weighted overlap is deterministic
+trial_w  = {"USA": 0.50, "GBR": 0.30, "CAN": 0.20}
+burden_w = {"IND": 0.40, "USA": 0.30, "GBR": 0.20, "CAN": 0.10}
+res = compute_representativeness(trial_w, burden_w, source="aact")
+
+# Empty trial weights → degenerate path
+empty = compute_representativeness({}, burden_w)
+
+print(json.dumps({
+    "schema_version": SCHEMA_VERSION,
+    "forecast_horizon_months": FORECAST_HORIZON_MONTHS,
+    "n_pico_required": len(PICO_REQUIRED_FIELDS),
+    "n_effect_fields": len(EFFECT_FIELDS),
+    "n_flip_fields": len(FLIP_FIELDS),
+    "n_card_top_level": len(CARD_TOP_LEVEL_FIELDS),
+    "overlap_score": round(res.overlap_score, 6),
+    "trial_country_count": res.trial_country_count,
+    "burden_weighted": res.burden_weighted,
+    "source_aact": res.source,
+    "empty_overlap": empty.overlap_score,
+    "empty_source": empty.source,
+}))
+''',
+    },
+    {
+        "project_id_prefix": "globalst",
+        "project_path": r"C:\Projects\globalst",
+        "tolerance": 1e-6,
+        "probe": '''
+import sys, json
+sys.path.insert(0, "src")
+from model_stnma import generate_truthcert_hash
+from ingest_data import fetch_ct_gov_data, fetch_ihme_burden, fetch_world_bank_covariates
+
+# Pure SHA-256 over fixed JSON input
+fixed = {"trial_id": "NCT001", "intervention": "A", "control": "B",
+         "outcome": "mortality", "effect_size": 0.85, "n": 5000}
+h = generate_truthcert_hash(fixed)
+
+# Fixture-loading functions return the in-tree mock when fixtures are
+# absent. Both deterministic.
+ct = fetch_ct_gov_data()
+ih = fetch_ihme_burden()
+wb = fetch_world_bank_covariates()
+
+print(json.dumps({
+    "hash_64": h[:64],
+    "hash_first_16": h[:16],
+    "hash_len": len(h),
+    "ctgov_n": len(ct) if isinstance(ct, list) else 1,
+    "ihme_n":  len(ih) if isinstance(ih, list) else 1,
+    "wb_n":    len(wb) if isinstance(wb, list) else 1,
+}))
+''',
+    },
+    {
+        "project_id_prefix": "hta-evidence-integrity",
+        "project_path": r"C:\Models\HTA_Evidence_Integrity_Suite",
+        "tolerance": 1e-3,
+        "probe": '''
+import sys, json, csv, statistics
+from pathlib import Path
+
+# Read the canonical IAI output and emit class counts + summary stats.
+# All deterministic: the CSV is checked into the repo per the manuscript.
+ia_path = Path("analysis/output/information_adequacy/information_adequacy_FINAL.csv")
+with ia_path.open(encoding="utf-8") as f:
+    rows = list(csv.DictReader(f))
+
+iai_classes = {}
+for r in rows:
+    c = r["IAI_final_class"]
+    iai_classes[c] = iai_classes.get(c, 0) + 1
+
+iai_vals = [float(r["IAI_final"]) for r in rows if r["IAI_final"]]
+
+print(json.dumps({
+    "n_ma": len(rows),
+    "adequate_count":   iai_classes.get("Adequate", 0),
+    "marginal_count":   iai_classes.get("Marginal", 0),
+    "inadequate_count": iai_classes.get("Inadequate", 0),
+    "critical_count":   iai_classes.get("Critical", 0),
+    "iai_mean":   round(statistics.mean(iai_vals), 4),
+    "iai_median": round(statistics.median(iai_vals), 4),
+    "iai_min":    round(min(iai_vals), 4),
+    "iai_max":    round(max(iai_vals), 4),
+}))
+''',
+    },
+    {
         "project_id_prefix": "cardiooracle",
         "project_path": r"C:\Models\CardioOracle",
         "tolerance": 1e-6,

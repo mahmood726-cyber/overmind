@@ -1,0 +1,13 @@
+{
+  "command": "C:\\Users\\user\\AppData\\Local\\Programs\\Python\\Python313\\python.exe C:\\overmind\\data\\baseline_probes\\probe_evidenceoracle.py",
+  "values": {
+    "n_benford_input": 100,
+    "n_uniform_input": 99,
+    "mad_benford_like": 0.002862,
+    "mad_uniform_like": 0.059717,
+    "uniform_higher_than_benford": true
+  },
+  "tolerance": 1e-06,
+  "project_path": "C:\\Models\\EvidenceOracle",
+  "created_by": "create_baselines.py"
+}
