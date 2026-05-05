@@ -2,6 +2,18 @@
 
 ## 2026-05-05
 
+**Verified:** 5 | **Certified:** 3 | **Rejected:** 1 | **Failed:** 0
+
+### Changes from last night
+- KMcurve: UNVERIFIED -> REJECT
+- BayesianMA: REJECT -> UNVERIFIED
+- metasprint-dose-response: UNVERIFIED -> CERTIFIED
+- cardio-ctgov-living-meta-portfolio: UNVERIFIED -> CERTIFIED
+- metasprintnma: UNVERIFIED -> CERTIFIED
+
+
+## 2026-05-05
+
 **Verified:** 5 | **Certified:** 5 | **Rejected:** 0 | **Failed:** 0
 
 ### Changes from last night
@@ -349,12 +361,4 @@
 
 ### New projects verified
 - meta-paradigm-shift
-
-
-## 2026-04-11
-
-**Verified:** 50 | **Certified:** 4 | **Rejected:** 10 | **Failed:** 20
-
-### Changes from last night
-- BayesianMA: REJECT -> PASS
 
