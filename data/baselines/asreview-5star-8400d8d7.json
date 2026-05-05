@@ -1,0 +1,20 @@
+{
+  "command": "C:\\Users\\user\\AppData\\Local\\Programs\\Python\\Python313\\python.exe C:\\overmind\\data\\baseline_probes\\probe_asreview-5star.py",
+  "values": {
+    "n_studies": 5,
+    "re_dl_pooled": 0.346998,
+    "re_dl_ci_low": 0.229651,
+    "re_dl_ci_high": 0.464345,
+    "re_dl_tau2": 0.010108,
+    "re_dl_i2": 57.9723,
+    "re_dl_q": 9.517541,
+    "fe_pooled": 0.314797,
+    "het_q": 9.517541,
+    "kappa": 0.583333,
+    "kappa_ci_low": 0.066837,
+    "kappa_ci_high": 1.099829
+  },
+  "tolerance": 0.0001,
+  "project_path": "C:\\Projects\\asreview_5star",
+  "created_by": "create_baselines.py"
+}

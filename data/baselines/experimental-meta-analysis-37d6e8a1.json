@@ -1,0 +1,18 @@
+{
+  "command": "C:\\Users\\user\\AppData\\Local\\Programs\\Python\\Python313\\python.exe C:\\overmind\\data\\baseline_probes\\probe_experimental-meta-analysis.py",
+  "values": {
+    "n_studies": 6,
+    "dl_pooled": 0.350595,
+    "dl_se": 0.084515,
+    "dl_tau2": 0.0,
+    "dl_i2": 0.0,
+    "dl_q": 1.729117,
+    "reml_pooled": 0.350598,
+    "reml_tau2": 5e-06,
+    "pm_pooled": 0.350595,
+    "pm_tau2": 0.0
+  },
+  "tolerance": 0.0001,
+  "project_path": "C:\\Projects\\experimental-meta-analysis",
+  "created_by": "create_baselines.py"
+}

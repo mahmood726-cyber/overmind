@@ -415,6 +415,84 @@ print(json.dumps({
 ''',
     },
     {
+        "project_id_prefix": "asreview-5star",
+        "project_path": r"C:\Projects\asreview_5star",
+        "tolerance": 1e-4,
+        "probe": '''
+import sys, json
+sys.path.insert(0, ".")
+from asreview_5star.meta_analysis import pool_effects, eggers_test, heterogeneity_stats
+from asreview_5star.irr import cohens_kappa, fleiss_kappa
+
+# Fixed 5-study input
+effects = [0.30, 0.45, 0.20, 0.55, 0.35]
+ses     = [0.08, 0.10, 0.06, 0.12, 0.09]
+
+re_dl   = pool_effects(effects, ses, model="random", method="DL")
+fe      = pool_effects(effects, ses, model="fixed")
+
+# Egger requires SEs and effects
+egger = eggers_test(effects, ses)
+het   = heterogeneity_stats(effects, ses)
+
+# IRR — Cohen's kappa on a fixed 2-rater agreement matrix
+ck = cohens_kappa(
+    [1, 1, 0, 1, 0, 0, 1, 1, 0, 1],
+    [1, 0, 0, 1, 1, 0, 1, 1, 0, 1],
+)
+
+print(json.dumps({
+    "n_studies": len(effects),
+    "re_dl_pooled": round(float(re_dl.pooled_effect), 6),
+    "re_dl_ci_low": round(float(re_dl.ci_lower), 6),
+    "re_dl_ci_high": round(float(re_dl.ci_upper), 6),
+    "re_dl_tau2": round(float(re_dl.heterogeneity["tau_squared"]), 6),
+    "re_dl_i2": round(float(re_dl.heterogeneity["I_squared"]), 4),
+    "re_dl_q": round(float(re_dl.heterogeneity["Q"]), 6),
+    "fe_pooled": round(float(fe.pooled_effect), 6),
+    "het_q": round(float(het.get("Q") or het.get("q") or 0.0), 6) if isinstance(het, dict) else 0.0,
+    "kappa": round(float(ck.coefficient), 6),
+    "kappa_ci_low": round(float(ck.ci_lower), 6),
+    "kappa_ci_high": round(float(ck.ci_upper), 6),
+}))
+''',
+    },
+    {
+        "project_id_prefix": "experimental-meta-analysis",
+        "project_path": r"C:\Projects\experimental-meta-analysis",
+        "tolerance": 1e-4,
+        "probe": '''
+import sys, json
+import numpy as np
+sys.path.insert(0, ".")
+from core_framework import MetaAnalysisData, DerSimonianLaird, REML, PauleMandel
+
+# Fixed 6-study meta-analysis input — small enough to be deterministic
+# across scipy versions but representative of a typical pooled estimand.
+data = MetaAnalysisData(
+    effect_sizes=np.array([0.30, 0.45, 0.20, 0.55, 0.35, 0.40]),
+    variances=np.array([0.04, 0.05, 0.03, 0.06, 0.04, 0.05]),
+)
+
+dl = DerSimonianLaird().estimate(data)
+reml = REML().estimate(data)
+pm = PauleMandel().estimate(data)
+
+print(json.dumps({
+    "n_studies": data.n_studies,
+    "dl_pooled": round(float(dl.pooled_effect), 6),
+    "dl_se": round(float(dl.pooled_se), 6),
+    "dl_tau2": round(float(dl.tau2), 6),
+    "dl_i2": round(float(dl.i2), 4),
+    "dl_q": round(float(dl.q_stat), 6),
+    "reml_pooled": round(float(reml.pooled_effect), 6),
+    "reml_tau2": round(float(reml.tau2), 6),
+    "pm_pooled": round(float(pm.pooled_effect), 6),
+    "pm_tau2": round(float(pm.tau2), 6),
+}))
+''',
+    },
+    {
         "project_id_prefix": "transcendent-meta-analysis-lab",
         "project_path": r"C:\Projects\Transcendent-Meta-Analysis-Lab",
         "tolerance": 1e-4,
