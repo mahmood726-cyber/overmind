@@ -1,0 +1,17 @@
+{
+  "command": "node C:/Projects/new-app/probe.cjs",
+  "values": {
+    "n_studies": 5,
+    "re_success": true,
+    "re_pooled": 0.346686,
+    "re_se": 0.059447,
+    "re_ci_low": 0.182181,
+    "re_ci_high": 0.51119,
+    "re_q": 9.517541,
+    "fe_pooled": 0.314797,
+    "fe_se": 0.03709
+  },
+  "tolerance": 1e-6,
+  "project_path": "C:\\Projects\\new-app",
+  "created_by": "manual (node-side probe)"
+}

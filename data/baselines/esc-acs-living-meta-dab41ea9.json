@@ -1,0 +1,17 @@
+{
+  "command": "C:\\Users\\user\\AppData\\Local\\Programs\\Python\\Python313\\python.exe C:\\overmind\\data\\baseline_probes\\probe_esc-acs-living-meta.py",
+  "values": {
+    "v_select_ok": false,
+    "v_insert_ok": false,
+    "v_update_ok": false,
+    "v_drop_ok": false,
+    "v_select_drop_lit_ok": false,
+    "n_allowed_queries": 1,
+    "n_forbidden_tokens": 9,
+    "sql_out": "SELECT * FROM x WHERE a = %s AND b = %s",
+    "n_params_out": 2
+  },
+  "tolerance": 1e-06,
+  "project_path": "C:\\Projects\\esc-acs-living-meta",
+  "created_by": "create_baselines.py"
+}

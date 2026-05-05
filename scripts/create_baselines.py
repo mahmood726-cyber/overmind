@@ -415,6 +415,123 @@ print(json.dumps({
 ''',
     },
     {
+        "project_id_prefix": "esc-acs-living-meta",
+        "project_path": r"C:\Projects\esc-acs-living-meta",
+        "tolerance": 1e-6,
+        "probe": '''
+import sys, json
+sys.path.insert(0, ".")
+from aact_local_gateway import (
+    validate_sql, convert_postgres_placeholders, ALLOWED_QUERY_IDS, FORBIDDEN_SQL_TOKENS,
+)
+
+# validate_sql contract: returns (ok, reason). Several deterministic cases.
+v_select = validate_sql("SELECT * FROM studies WHERE nct_id = $1")
+v_insert = validate_sql("INSERT INTO studies VALUES ($1)")
+v_update = validate_sql("UPDATE studies SET x = $1")
+v_drop   = validate_sql("DROP TABLE studies")
+v_select_with_drop_string = validate_sql("SELECT 'drop' FROM studies")  # should pass — keyword in literal
+
+# Placeholder conversion: $1 → %s
+sql_in = "SELECT * FROM x WHERE a = $1 AND b = $2"
+sql_out, params_out = convert_postgres_placeholders(sql_in, ["foo", "bar"])
+
+print(json.dumps({
+    "v_select_ok":      v_select[0],
+    "v_insert_ok":      v_insert[0],
+    "v_update_ok":      v_update[0],
+    "v_drop_ok":        v_drop[0],
+    "v_select_drop_lit_ok": v_select_with_drop_string[0],
+    "n_allowed_queries": len(ALLOWED_QUERY_IDS),
+    "n_forbidden_tokens": len(FORBIDDEN_SQL_TOKENS),
+    "sql_out": sql_out,
+    "n_params_out": len(params_out),
+}))
+''',
+    },
+    {
+        "project_id_prefix": "ipd-meta-pro-link",
+        "project_path": r"C:\Projects\ipd-meta-pro-link",
+        "tolerance": 1e-6,
+        "probe": '''
+import sys, json, hashlib
+from pathlib import Path
+
+# Module structure invariants — counts and aggregate hash of dev/modules.
+# All deterministic given a fixed working tree.
+modules_dir = Path("dev") / "modules"
+assert modules_dir.is_dir(), f"missing {modules_dir}"
+
+files = sorted(modules_dir.iterdir(), key=lambda p: p.name)
+n_files = len(files)
+n_html  = sum(1 for f in files if f.suffix == ".html")
+n_js    = sum(1 for f in files if f.suffix == ".js")
+n_other = n_files - n_html - n_js
+total_size = sum(f.stat().st_size for f in files)
+
+# Ordered concatenation hash (changes if any module changes)
+h = hashlib.sha256()
+for f in files:
+    h.update(f.name.encode("utf-8"))
+    h.update(b"|")
+    h.update(str(f.stat().st_size).encode("ascii"))
+    h.update(b";")
+manifest_hash = h.hexdigest()[:16]
+
+print(json.dumps({
+    "n_modules": n_files,
+    "n_html": n_html,
+    "n_js": n_js,
+    "n_other": n_other,
+    "total_size_kb": round(total_size / 1024, 1),
+    "first_module": files[0].name if files else "",
+    "last_module":  files[-1].name if files else "",
+    "manifest_hash_16": manifest_hash,
+}))
+''',
+    },
+    {
+        "project_id_prefix": "overmind",
+        "project_path": r"C:\overmind",
+        "tolerance": 1e-6,
+        "probe": '''
+import sys, json
+sys.path.insert(0, ".")
+from overmind.discovery.analysis_signals import (
+    detect_analysis_signals, compute_analysis_score, analysis_rigor_level,
+    describe_analysis_signals, recommended_analysis_checks,
+)
+from overmind.verification.scope_lock import compute_tier
+
+# Fixed deterministic input — README-style description with several signals
+text = "Bayesian meta-analysis with HKSJ and DerSimonian-Laird random effects, MCMC convergence diagnostics, and bootstrap confidence intervals."
+signals = detect_analysis_signals(text)
+score = compute_analysis_score(signals, has_validation_history=True, has_oracle_benchmarks=False)
+score_high = compute_analysis_score(signals, has_validation_history=True, has_oracle_benchmarks=True, has_drift_history=True)
+labels = describe_analysis_signals(signals)
+checks = recommended_analysis_checks(signals, score=score)
+
+# Tier-derivation from risk + math
+t1 = compute_tier("high", 12)        # 3 (most risk)
+t2 = compute_tier("medium_high", 5)  # 2
+t3 = compute_tier("low", 1)          # 1
+
+print(json.dumps({
+    "n_signals": len(signals),
+    "signals": sorted(signals),
+    "score": score,
+    "score_with_oracle_drift": score_high,
+    "rigor_at_default": analysis_rigor_level(score),
+    "rigor_at_high": analysis_rigor_level(score_high),
+    "n_labels": len(labels),
+    "n_checks": len(checks),
+    "tier_high_math12": t1,
+    "tier_med_high_math5": t2,
+    "tier_low_math1": t3,
+}))
+''',
+    },
+    {
         "project_id_prefix": "repo300-enma-snma",
         "project_path": r"C:\Projects\repo300-ENMA-SNMA",
         "tolerance": 1e-6,

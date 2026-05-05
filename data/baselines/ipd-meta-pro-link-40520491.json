@@ -1,0 +1,16 @@
+{
+  "command": "C:\\Users\\user\\AppData\\Local\\Programs\\Python\\Python313\\python.exe C:\\overmind\\data\\baseline_probes\\probe_ipd-meta-pro-link.py",
+  "values": {
+    "n_modules": 42,
+    "n_html": 3,
+    "n_js": 38,
+    "n_other": 1,
+    "total_size_kb": 4156.3,
+    "first_module": "00_head.html",
+    "last_module": "manifest.json",
+    "manifest_hash_16": "ea6783e338eeca63"
+  },
+  "tolerance": 1e-06,
+  "project_path": "C:\\Projects\\ipd-meta-pro-link",
+  "created_by": "create_baselines.py"
+}
