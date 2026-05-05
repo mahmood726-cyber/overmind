@@ -44,7 +44,7 @@ ImportErro | Check if the missing module is installed: pip install the mi | 1 | 
 FileNotFou | Restore or regenerate the missing file: , line 873, in get_h | 1 | 0 | 2026-04-08 |
 | NUMERICAL_DRIFT:hfpef-regi | Numerical drift: safe_float_ba | Update baseline if intentional change, investigate if not | 1 | 0 | 2026-05-05 |
 | PLATFORM_COMPAT:kmcurve-68 | ^^^^^^^^^^^^^^^^^^^
-UnicodeEnc | Apply platform fix: use UTF-8 encoding, python not python3,  | 1 | 0 | 2026-05-05 |
+UnicodeEnc | Apply platform fix: use UTF-8 encoding, python not python3, | 1 | 0 | 2026-05-05 |
 | SYNTAX_ERROR:metasprint | aph preparation
  ^
 

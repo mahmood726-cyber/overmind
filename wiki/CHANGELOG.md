@@ -5,6 +5,14 @@
 **Verified:** 1 | **Certified:** 1 | **Rejected:** 0 | **Failed:** 0
 
 ### Changes from last night
+- BayesianMA: UNVERIFIED -> CERTIFIED
+
+
+## 2026-05-05
+
+**Verified:** 1 | **Certified:** 1 | **Rejected:** 0 | **Failed:** 0
+
+### Changes from last night
 - KMcurve: REJECT -> CERTIFIED
 
 
@@ -349,12 +357,4 @@
 - four_limb_synthesis: CERTIFIED -> REJECT
 - MetaRegression: REJECT -> PASS
 - ComponentNMA: REJECT -> PASS
-
-
-## 2026-04-13
-
-**Verified:** 50 | **Certified:** 5 | **Rejected:** 10 | **Failed:** 17
-
-### Changes from last night
-- CardioOracle: FAIL -> REJECT
 
