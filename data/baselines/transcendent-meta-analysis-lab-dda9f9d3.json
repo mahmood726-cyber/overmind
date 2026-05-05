@@ -1,0 +1,16 @@
+{
+  "command": "C:\\Users\\user\\AppData\\Local\\Programs\\Python\\Python313\\python.exe C:\\overmind\\data\\baseline_probes\\probe_transcendent-meta-analysis-lab.py",
+  "values": {
+    "exp_2": 7.389056,
+    "log_7_5": 2.014903,
+    "lse_mean_1_5": 3.842476,
+    "M_pd_diag0": 2.0,
+    "M_pd_diag1": 1.0,
+    "M_pd_off_diag": 0.99,
+    "exp_huge_clipped": 1.0142320547350045e+304,
+    "log_zero_clipped": -690.7755
+  },
+  "tolerance": 0.0001,
+  "project_path": "C:\\Projects\\Transcendent-Meta-Analysis-Lab",
+  "created_by": "create_baselines.py"
+}

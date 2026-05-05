@@ -1,0 +1,20 @@
+{
+  "command": "C:\\Users\\user\\AppData\\Local\\Programs\\Python\\Python313\\python.exe C:\\overmind\\data\\baseline_probes\\probe_moonshot-evidence-lab.py",
+  "values": {
+    "log_rr_15_100_25_100": -0.510826,
+    "log_rr_var": 0.086667,
+    "fe_pooled": 0.096778,
+    "fe_se": 0.020354,
+    "fe_ci_low": 0.056886,
+    "fe_ci_high": 0.13667,
+    "re_pooled": 0.111946,
+    "re_tau2": 0.00215,
+    "re_i2": 54.0617,
+    "re_q": 6.530495,
+    "re_k": 4,
+    "re_h": 1.475409
+  },
+  "tolerance": 0.0001,
+  "project_path": "C:\\Projects\\moonshot-evidence-lab",
+  "created_by": "create_baselines.py"
+}

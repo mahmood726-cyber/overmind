@@ -415,6 +415,171 @@ print(json.dumps({
 ''',
     },
     {
+        "project_id_prefix": "transcendent-meta-analysis-lab",
+        "project_path": r"C:\Projects\Transcendent-Meta-Analysis-Lab",
+        "tolerance": 1e-4,
+        "probe": '''
+import sys, json
+import numpy as np
+sys.path.insert(0, ".")
+from core.validation import safe_exp, safe_log, logsumexp_mean, ensure_positive_definite
+
+# Pure math (deterministic)
+e = safe_exp(2.0)
+l = safe_log(7.5)
+lse_mean = logsumexp_mean(np.array([1.0, 2.0, 3.0, 4.0, 5.0]))
+
+# Matrix conditioning — fixed 2x2
+M = np.array([[2.0, 0.99], [0.99, 1.0]])
+M_pd = ensure_positive_definite(M, epsilon=1e-8)
+
+# Edge cases
+e_huge = safe_exp(1000.0)   # clipped to exp(700)
+l_zero = safe_log(0.0)       # clipped to log(1e-300)
+
+print(json.dumps({
+    "exp_2": round(float(e), 6),
+    "log_7_5": round(float(l), 6),
+    "lse_mean_1_5": round(float(lse_mean), 6),
+    "M_pd_diag0": round(float(M_pd[0, 0]), 6),
+    "M_pd_diag1": round(float(M_pd[1, 1]), 6),
+    "M_pd_off_diag": round(float(M_pd[0, 1]), 6),
+    "exp_huge_clipped": round(float(e_huge), 0),
+    "log_zero_clipped": round(float(l_zero), 4),
+}))
+''',
+    },
+    {
+        "project_id_prefix": "moonshot-evidence-lab",
+        "project_path": r"C:\Projects\moonshot-evidence-lab",
+        "tolerance": 1e-4,
+        "probe": '''
+import sys, json
+sys.path.insert(0, ".")
+from moonshot_evidence_lab.advanced_meta import log_risk_ratio
+from moonshot_evidence_lab.meta_analysis import run_meta_analysis
+from moonshot_evidence_lab.models import StudyEffect
+
+# Pure-math: log RR with 0.5 continuity correction on a fixed 2x2
+log_rr, var = log_risk_ratio(15, 100, 25, 100)
+
+# Meta-analysis on 4 fixed StudyEffect rows
+effects = [
+    StudyEffect(study_id="S1", label="Trial-1", effect_size=0.10, variance=0.0016),
+    StudyEffect(study_id="S2", label="Trial-2", effect_size=0.15, variance=0.0025),
+    StudyEffect(study_id="S3", label="Trial-3", effect_size=0.05, variance=0.0009),
+    StudyEffect(study_id="S4", label="Trial-4", effect_size=0.20, variance=0.0036),
+]
+fe_result = run_meta_analysis(effects, model="fixed")
+re_result = run_meta_analysis(effects, model="random", tau_method="dl")
+
+print(json.dumps({
+    "log_rr_15_100_25_100": round(float(log_rr), 6),
+    "log_rr_var": round(float(var), 6),
+    "fe_pooled": round(fe_result.pooled_effect, 6),
+    "fe_se": round(fe_result.standard_error, 6),
+    "fe_ci_low": round(fe_result.ci_low, 6),
+    "fe_ci_high": round(fe_result.ci_high, 6),
+    "re_pooled": round(re_result.pooled_effect, 6),
+    "re_tau2": round(re_result.tau_squared, 6),
+    "re_i2": round(re_result.i_squared, 4),
+    "re_q": round(re_result.q, 6),
+    "re_k": re_result.k,
+    "re_h": round(re_result.h, 6),
+}))
+''',
+    },
+    {
+        "project_id_prefix": "hfpef-registry-synth",
+        "project_path": r"C:\Projects\hfpef_registry_synth",
+        "tolerance": 1e-6,
+        "probe": '''
+import sys, json
+sys.path.insert(0, "src")
+from hfpef_registry_synth.utils import safe_float, safe_int, normalize_ws, parse_json_list, unique_preserve_order
+from hfpef_registry_synth.parsing import is_hf_hosp_outcome, is_sae_outcome, parse_timeframe_months, endpoint_alignment_flags
+from hfpef_registry_synth.mapping import classify_intervention, normalize_drug_label, is_hfpef_targeted
+
+# Pure-function deterministic probes
+sf = safe_float("3.14159")
+si = safe_int("42")
+sf_bad = safe_float("not-a-number")
+ws = normalize_ws("  hello   world  ")
+jl = parse_json_list('["a", "b", "c"]')
+upo = unique_preserve_order(["x", "y", "x", "z", "y", "w"])
+
+# Domain functions
+hf = is_hf_hosp_outcome("Heart failure hospitalization or cardiovascular death")
+sae = is_sae_outcome("Serious adverse event including death")
+tf_24 = parse_timeframe_months("24 months follow-up")
+tf_2y = parse_timeframe_months("2 years")
+ef = endpoint_alignment_flags([0.50, 0.55, 0.60, 0.45], tolerance=0.2)
+
+cls = classify_intervention("empagliflozin", "drug")
+ndl = normalize_drug_label("  Empagliflozin (Jardiance)  ")
+hfpef = is_hfpef_targeted("preserved ejection fraction heart failure")
+
+print(json.dumps({
+    "safe_float_pi": round(sf, 5),
+    "safe_int_42": si,
+    "safe_float_bad": sf_bad,
+    "normalize_ws": ws,
+    "parse_json_list_len": len(jl),
+    "unique_order": upo,
+    "is_hf_hosp": hf,
+    "is_sae": sae,
+    "tf_24mo": tf_24,
+    "tf_2y": tf_2y,
+    "endpoint_align_count": sum(ef),
+    "classify_emp": cls.canonical_class if hasattr(cls, "canonical_class") else str(cls),
+    "is_hfpef": hfpef,
+}))
+''',
+    },
+    {
+        "project_id_prefix": "idea12",
+        "project_path": r"C:\Projects\idea12",
+        "tolerance": 1e-4,
+        "probe": '''
+import sys, json
+import numpy as np
+sys.path.insert(0, ".")
+from netmetareg.core.data_structure import NMAData, Study
+from netmetareg.models.frequentist_nma import FrequentistNMA
+
+# Fixed 4-study A-B-C network (from tests/test_basic.py)
+studies = [
+    Study("S1", ["A", "B"], np.array([0.5]), np.array([0.1]),  np.array([100, 100])),
+    Study("S2", ["B", "C"], np.array([0.3]), np.array([0.12]), np.array([100, 100])),
+    Study("S3", ["A", "C"], np.array([0.8]), np.array([0.15]), np.array([100, 100])),
+    Study("S4", ["A", "B"], np.array([0.6]), np.array([0.11]), np.array([100, 100])),
+]
+data = NMAData(studies, reference_treatment="A")
+
+fe = FrequentistNMA(data, random_effects=False).fit()
+re_results = FrequentistNMA(data, random_effects=True).fit()
+
+# Treatment effect for B vs A (reference) under FE and RE
+fe_B = fe.treatment_effects.set_index("treatment").loc["B", "effect"]
+fe_C = fe.treatment_effects.set_index("treatment").loc["C", "effect"]
+re_B = re_results.treatment_effects.set_index("treatment").loc["B", "effect"]
+re_C = re_results.treatment_effects.set_index("treatment").loc["C", "effect"]
+het = re_results.heterogeneity
+
+print(json.dumps({
+    "n_studies": data.n_studies,
+    "n_treatments": data.n_treatments,
+    "fe_effect_A": round(float(fe.treatment_effects.set_index("treatment").loc["A", "effect"]), 6),
+    "fe_effect_B": round(float(fe_B), 6),
+    "fe_effect_C": round(float(fe_C), 6),
+    "re_effect_B": round(float(re_B), 6),
+    "re_effect_C": round(float(re_C), 6),
+    "tau_squared": round(float(het.get("tau_squared", 0.0)), 6),
+    "I_squared":   round(float(het.get("I_squared",   0.0)), 4),
+}))
+''',
+    },
+    {
         "project_id_prefix": "lec-phase0-project",
         "project_path": r"C:\Projects\lec_phase0_project",
         "tolerance": 1e-4,

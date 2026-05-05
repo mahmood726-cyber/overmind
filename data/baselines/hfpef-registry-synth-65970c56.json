@@ -1,0 +1,26 @@
+{
+  "command": "C:\\Users\\user\\AppData\\Local\\Programs\\Python\\Python313\\python.exe C:\\overmind\\data\\baseline_probes\\probe_hfpef-registry-synth.py",
+  "values": {
+    "safe_float_pi": 3.14159,
+    "safe_int_42": 42,
+    "safe_float_bad": null,
+    "normalize_ws": "hello world",
+    "parse_json_list_len": 3,
+    "unique_order": [
+      "x",
+      "y",
+      "z",
+      "w"
+    ],
+    "is_hf_hosp": false,
+    "is_sae": true,
+    "tf_24mo": 24.0,
+    "tf_2y": 24.0,
+    "endpoint_align_count": 4,
+    "classify_emp": "ClassMatch(class_name='SGLT2 inhibitors', canonical_term='empagliflozin', confidence=100.0)",
+    "is_hfpef": true
+  },
+  "tolerance": 1e-06,
+  "project_path": "C:\\Projects\\hfpef_registry_synth",
+  "created_by": "create_baselines.py"
+}
