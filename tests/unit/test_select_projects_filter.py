@@ -122,3 +122,19 @@ def test_load_paths_filter_missing_file_raises(tmp_path):
 def test_normalize_path_collapses_case_and_slashes():
     assert nightly_verify._normalize_path(r"C:\Foo\Bar") == nightly_verify._normalize_path(r"c:/foo/bar")
     assert nightly_verify._normalize_path(r"C:\Foo\Bar\\") == nightly_verify._normalize_path(r"C:\Foo\Bar")
+
+
+def test_load_paths_filter_handles_blank_and_comment_only_file(tmp_path):
+    f = tmp_path / "paths.txt"
+    f.write_text("# only comments\n\n# nothing here\n", encoding="utf-8")
+    assert nightly_verify.load_paths_filter(f) == set()
+
+
+def test_project_worker_timeouts_lookup_falls_back_to_default():
+    """When project_id isn't in the override dict, use the CLI default."""
+    overrides = nightly_verify.PROJECT_WORKER_TIMEOUTS
+    # known-overridden projects
+    assert overrides.get("rct-extractor-v2-6c290650") == 3600
+    assert overrides.get("evidence-inference-4c874004") == 3600
+    # unknown project_id falls back via dict.get(default)
+    assert overrides.get("nonexistent-project-id", 900) == 900

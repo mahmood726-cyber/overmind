@@ -158,14 +158,22 @@ SKIP_PROJECTS = {
     "metaoverfit-5f64eb8f",                                   # OneDrive-only research project; promote to canonical or archive
     "paper7-36216d64",                                        # OneDrive-only paper7 (publication-bias-related)
     "repo300-c9dc0181",                                       # OneDrive-only 300-repo bundle
-    # 2026-05-04 follow-up: --worker-timeout 1800 attempt was NOT enough.
-    # evidence-inference still hit 1800s (combined witness budget genuinely
-    # exceeds 30 min on this machine). rct-extractor-v2 hung past the
-    # script-level 60min faulthandler. Re-skipped pending a per-project
-    # witness-timeout override (would need engine work in nightly_verify.py).
-    "rct-extractor-v2-6c290650",                              # 851 pytest tests pass standalone in 58s; combined test_suite + smoke + semgrep + pip_audit on the 30K-line repo exceeds even 1800s. Needs per-project timeout override OR witness subset selection.
-    "evidence-inference-4c874004",                            # 5 pytest tests pass standalone in 3s; combined witness pipeline (semgrep + pip_audit on a transformers/biomistral dep tree) exceeds 1800s. Same per-project timeout-override fix needed.
+    # rct-extractor-v2 + evidence-inference UNSKIPPED 2026-05-05: the
+    # per-project witness-timeout-override mechanism shipped this turn
+    # (PROJECT_WORKER_TIMEOUTS dict below). Both now have a 3600s budget
+    # so their combined witness pipeline can complete.
 }  # Projects that consistently hang during verification OR whose source path is missing OR whose source is broken enough to need dedicated repair
+
+
+# Per-project worker-timeout overrides (in seconds). For projects whose
+# combined witness pipeline (test_suite + smoke + semgrep + pip_audit +
+# numerical) genuinely exceeds the default --worker-timeout, encode the
+# override here instead of bumping the global default (which would slow
+# every other project's worst-case ceiling). The lookup uses project_id.
+PROJECT_WORKER_TIMEOUTS: dict[str, int] = {
+    "rct-extractor-v2-6c290650": 3600,    # 851 pytest tests + 30K-line semgrep
+    "evidence-inference-4c874004": 3600,  # transformers/biomistral deps tree
+}
 
 
 from overmind.integrations.sentinel_aggregator import collect as _collect_sentinel
@@ -639,7 +647,9 @@ def _run_verification(db: StateDatabase, args: argparse.Namespace, run_start: da
         print(f"[{i}/{len(projects)}] {proj.name}...", end=" ", flush=True)
         start = time.time()
         # Per-project wall-clock timeout using multiprocessing (can kill hung subprocesses)
-        bundle = _verify_with_timeout(engine, proj, timeout=args.worker_timeout)
+        # Per-project override (PROJECT_WORKER_TIMEOUTS) wins when present.
+        proj_timeout = PROJECT_WORKER_TIMEOUTS.get(proj.project_id, args.worker_timeout)
+        bundle = _verify_with_timeout(engine, proj, timeout=proj_timeout)
         elapsed = time.time() - start
 
         results.append({"project": proj, "bundle": bundle, "elapsed": elapsed})
