@@ -42,6 +42,7 @@ ImportErro | Check if the missing module is installed: pip install the mi | 1 | 
 | MISSING_FIXTURE:ubcma-4230 | newline="",
     )
 FileNotFou | Restore or regenerate the missing file: , line 873, in get_h | 1 | 0 | 2026-04-08 |
+| NUMERICAL_DRIFT:hfpef-regi | Numerical drift: safe_float_ba | Update baseline if intentional change, investigate if not | 1 | 0 | 2026-05-05 |
 | SYNTAX_ERROR:metasprint | aph preparation
  ^
 
