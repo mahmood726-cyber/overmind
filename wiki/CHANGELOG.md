@@ -2,6 +2,14 @@
 
 ## 2026-05-05
 
+**Verified:** 1 | **Certified:** 1 | **Rejected:** 0 | **Failed:** 0
+
+### Changes from last night
+- KMcurve: REJECT -> CERTIFIED
+
+
+## 2026-05-05
+
 **Verified:** 5 | **Certified:** 3 | **Rejected:** 1 | **Failed:** 0
 
 ### Changes from last night
@@ -349,16 +357,4 @@
 
 ### Changes from last night
 - CardioOracle: FAIL -> REJECT
-
-
-## 2026-04-12
-
-**Verified:** 50 | **Certified:** 5 | **Rejected:** 9 | **Failed:** 18
-
-### Changes from last night
-- globalst: REJECT -> PASS
-- registry_first_rct_meta: FAIL -> PASS
-
-### New projects verified
-- meta-paradigm-shift
 

@@ -1,18 +1,18 @@
 # KMcurve
 
-**Last verified:** 2026-05-05 11:24 UTC | **Verdict:** REJECT (Witnesses disagree: test_suite, semgrep, numerical_continuity PASS vs smoke FAIL)
-**Bundle hash:** e07b41b8e35ea7c3 | **Risk:** high | **Math:** 20
+**Last verified:** 2026-05-05 11:34 UTC | **Verdict:** CERTIFIED (5/5 witnesses agree PASS)
+**Bundle hash:** a49a71f4a78530ac | **Risk:** high | **Math:** 20
 
 ## Health
 
 | Witness | Verdict | Time | Detail |
 |---------|---------|------|--------|
-| test_suite | PASS | 10.2s | ....                                                                     [100%]
+| test_suite | PASS | 8.8s | ....                                                                     [100%]
  |
-| smoke | FAIL | 59.2s | py:analyze_augustus: s,encoding_table)[0] |
-| semgrep | PASS | 21.3s | semgrep findings: ERROR=0 WARNING=0 INFO=0; engine errors=0 |
+| smoke | PASS | 64.5s | 40 modules imported OK |
+| semgrep | PASS | 22.1s | semgrep findings: ERROR=0 WARNING=0 INFO=0; engine errors=0 |
 | pip_audit | SKIP | 0.0s | skipped |
-| numerical | SKIP | 0.0s | skipped |
+| numerical | PASS | 1.1s | 9 values within tolerance |
 | numerical_continuity | PASS | 0.0s | numerical continuity: baseline + provenance checks OK |
 
 ## Project
@@ -34,11 +34,4 @@
 | 2026-04-27 | UNVERIFIED | 3/4 | 99.5s | 46b0c6cf9bfe80a3 |
 | 2026-04-28 | UNVERIFIED | 3/4 | 90.6s | bf488203bdb3a9f6 |
 | 2026-05-05 | REJECT | 4/6 | 90.7s | e07b41b8e35ea7c3 |
-
-## Notes
-
-Witnesses disagree: test_suite, semgrep, numerical_continuity PASS vs smoke FAIL
-
-**smoke:** py:analyze_augustus: s,encoding_table)[0]
-           ~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-UnicodeEncodeError: 'charmap' codec can't encode character '\u2713' in position 0: characte
+| 2026-05-05 | CERTIFIED | 5/6 | 96.6s | a49a71f4a78530ac |
