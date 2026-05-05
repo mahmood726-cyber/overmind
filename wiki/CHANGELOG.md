@@ -2,6 +2,14 @@
 
 ## 2026-05-05
 
+**Verified:** 1 | **Certified:** 1 | **Rejected:** 0 | **Failed:** 0
+
+### Changes from last night
+- CardioOracle: UNVERIFIED -> CERTIFIED
+
+
+## 2026-05-05
+
 **Verified:** 4 | **Certified:** 4 | **Rejected:** 0 | **Failed:** 0
 
 ### Changes from last night
@@ -360,42 +368,4 @@
 
 ### New projects verified
 - four_limb_synthesis
-
-
-## 2026-04-09
-
-**Verified:** 50 | **Certified:** 3 | **Rejected:** 7 | **Failed:** 21
-
-### Changes from last night
-- ipd-meta-pro-link: REJECT -> PASS
-- registry_first_rct_meta: REJECT -> FAIL
-
-### New projects verified
-- advanced-nma-pooling
-- Dataextractor_backup_20260114_110706
-- metasprint-autopilot
-- superapp
-- Dataextractor
-- metasprintnma
-- lec_phase0_project
-- globalst
-- asreview_5star
-- metasprint-dose-response
-- FATIHA_Project
-- moonshot-evidence-lab
-- new-app
-- NMA
-- Transcendent-Meta-Analysis-Lab
-- HTA_Evidence_Integrity_Suite
-- lec_phase0_bundle
-- truthcert-denominator-phase1
-- metasprint-cardio-universe
-- metasprint-dta
-- Denominator_Calibrated_Living_NMA
-- truthcert-meta2-prototype
-- ctgov-search-strategies_backup_20260114-110157
-- ctgov-search-strategies
-- GRMA_paper
-- GWAM
-- Meta_Ecosystem_Model
 
