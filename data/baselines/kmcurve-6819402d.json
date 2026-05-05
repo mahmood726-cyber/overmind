@@ -1,0 +1,17 @@
+{
+  "command": "C:\\Users\\user\\AppData\\Local\\Programs\\Python\\Python313\\python.exe C:\\overmind\\data\\baseline_probes\\probe_kmcurve.py",
+  "values": {
+    "n_curve_points": 11,
+    "n_steps_detected": 5,
+    "first_step_time": 1.5,
+    "first_drop_mag": 0.05,
+    "total_drop": 0.5,
+    "n_nrisk_times": 4,
+    "nrisk_t0": 0.0,
+    "nrisk_t_last": 8.0,
+    "n_events": 5
+  },
+  "tolerance": 1e-06,
+  "project_path": "C:\\Projects\\KMcurve",
+  "created_by": "create_baselines.py"
+}

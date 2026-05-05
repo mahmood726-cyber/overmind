@@ -105,6 +105,11 @@ class SmokeWitness:
             pythonpath_parts.insert(0, str(src_dir))
         existing = env.get("PYTHONPATH")
         env["PYTHONPATH"] = os.pathsep.join(pythonpath_parts + ([existing] if existing else []))
+        # Force UTF-8 stdio so module-level print(emoji) doesn't crash on cp1252
+        # Windows consoles. Many research scripts print check-marks / progress
+        # icons during import; without this the import errors out spuriously.
+        env.setdefault("PYTHONIOENCODING", "utf-8")
+        env.setdefault("PYTHONUTF8", "1")
         for module in modules:
             try:
                 if module.startswith("js:"):
