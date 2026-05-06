@@ -239,8 +239,8 @@ from overmind.integrations.bypass_log_aggregator import collect as _collect_bypa
 
 # P2-4 (review-findings 2026-05-06 Security): scrub user-home paths from
 # crash/log output before writing to disk. Tracebacks routinely include
-# filenames with `C:\Users\<actual-username>\...` which is fine on the
-# author's machine but leaks if logs are shared / shipped / pasted.
+# Windows user-profile paths which are fine on the author's machine but
+# leak if logs are shared, shipped, or pasted into a bug report.
 _HOME_SCRUB_RE = re.compile(r"[A-Z]:\\Users\\[^\\\s\"']+", re.IGNORECASE)
 
 
@@ -752,8 +752,8 @@ def main() -> None:
         traceback.print_exc()
         # Write crash log to file so failures are visible the next morning.
         # Path-scrubbed (P2-4 from review-findings 2026-05-06): tracebacks
-        # routinely include `C:\Users\<actual-username>\...` which leaks if
-        # logs are shared.
+        # routinely include Windows user-profile paths which leak if logs
+        # are shared.
         crash_path = REPORT_DIR / f"crash_{run_start.strftime('%Y-%m-%d')}.log"
         REPORT_DIR.mkdir(parents=True, exist_ok=True)
         crash_path.write_text(

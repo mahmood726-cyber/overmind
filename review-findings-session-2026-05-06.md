@@ -83,7 +83,7 @@
 
 - **[P2-3]** Domain Expert: Sentinel WARN (not BLOCK) rule `P2-skip-file-inventory` listing every file carrying `sentinel:skip-file` in `sentinel-findings.md` — same audit-trail pattern as bypass.log. Pairs with [P0-8].
 
-- **[P2-4]** Security: `crash_*.log` contains `traceback.format_exc()` which can include `os.environ` snapshots, local variables. Scrub `C:\Users\<user>` → `<home>` before write.
+- **[P2-4]** Security: `crash_*.log` contains `traceback.format_exc()` which can include `os.environ` snapshots, local variables. Scrub Windows user-profile paths to `<home>` before write.
 
 - **[P2-5]** Security: `.gitignore` `data/nightly_reports/.progress_*.json` broad enough that a future contributor's `.progress_summary.json` would be silently ignored. Tighten to `.progress_20[0-9][0-9]-[0-9]*.json`.
 
