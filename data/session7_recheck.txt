@@ -1,3 +1,4 @@
+# sentinel:skip-file - operator-supplied path list for --projects-from-file
 C:\overmind
 C:\Projects\ipd-meta-pro-link
 C:\Projects\esc-acs-living-meta

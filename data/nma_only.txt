@@ -1,2 +1,2 @@
 # sentinel:skip-file - operator-supplied path list for --projects-from-file
-C:\Projects\Finrenone
+C:\Projects\NMA

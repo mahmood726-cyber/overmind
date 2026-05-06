@@ -1,3 +1,4 @@
+# sentinel:skip-file - operator-supplied path list for --projects-from-file
 # Verify the 6 new baselines lift their projects to CERTIFIED
 C:\Projects\idea12
 C:\Projects\hfpef_registry_synth

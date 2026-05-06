@@ -1,3 +1,4 @@
+# sentinel:skip-file - operator-supplied path list for --projects-from-file
 # Re-bundle 4 R packages with new R-side numerical baselines + metasprint
 # (now unskipped after batch smoke fix).
 C:\Projects\NMA

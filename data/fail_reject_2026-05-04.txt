@@ -1,0 +1,19 @@
+# sentinel:skip-file - operator-supplied path list for --projects-from-file
+# All projects with FAIL or REJECT verdict in restart-manifest.json
+# (overview.generatedAt 2026-05-04). Some may be stale — work was pushed
+# today for ctgov-search-strategies and hfpef-registry-calibration that
+# the verifier hasn't seen yet.
+C:\Projects\Finrenone
+C:\Projects\arac
+C:\Models\GWAM
+C:\Models\FATIHA_Project
+C:\Projects\ctgov-analyses\ctgov-search-strategies
+C:\Projects\new-app
+C:\Projects\hfpef_registry_calibration
+C:\Projects\metasprint-autopilot
+C:\Models\Meta_Ecosystem_Model
+C:\Projects\pub-bias-simulation
+C:\Projects\rct-extractor-v2
+C:\Models\HTA_Evidence_Integrity_Suite
+C:\Projects\superapp
+C:\Projects\evidence-inference

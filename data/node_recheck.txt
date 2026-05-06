@@ -1,2 +1,3 @@
+# sentinel:skip-file - operator-supplied path list for --projects-from-file
 C:\Projects\Dataextractor
 C:\Projects\repo300-ENMA-SNMA

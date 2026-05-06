@@ -1,2 +1,3 @@
+# sentinel:skip-file - operator-supplied path list for --projects-from-file
 C:\Projects\hfpef_registry_synth
 C:\Projects\ipd_qma_project

@@ -1,3 +1,4 @@
+# sentinel:skip-file - operator-supplied path list for --projects-from-file
 C:\Projects\NMA
 C:\Projects\pub-bias-simulation
 C:\Projects\metasprint-autopilot

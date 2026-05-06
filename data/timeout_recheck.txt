@@ -1,2 +1,3 @@
+# sentinel:skip-file - operator-supplied path list for --projects-from-file
 C:\Projects\rct-extractor-v2
 C:\Projects\evidence-inference

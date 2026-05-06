@@ -1,0 +1,9 @@
+# sentinel:skip-file - operator-supplied path list for --projects-from-file
+# Re-bundle 5 projects unskipped this turn after re-validating their
+# SKIP reasons. Plus DTA70 to lock in its testthat setup.R fix.
+C:\Models\HTA_Evidence_Integrity_Suite
+C:\Projects\metasprint-autopilot
+C:\Projects\new-app
+C:\Projects\rct-extractor-v2
+C:\Projects\evidence-inference
+C:\Projects\DTA70
