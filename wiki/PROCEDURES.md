@@ -97,11 +97,11 @@ Execution | Re-run the R test suite with verbose/traceback enabled to ca | 1 | 0
 | TIMEOUT:prognostic | timed out | Check for WMI deadlock (Python 3.13), infinite loop, or slow | 1 | 0 | 2026-04-10 |
 | TIMEOUT:pub-bias-s | timed out | Check for WMI deadlock (Python 3.13), infinite loop, or slow | 1 | 0 | 2026-04-10 |
 | TIMEOUT:rct-extrac | timed out | Check for WMI deadlock (Python 3.13), infinite loop, or slow | 1 | 0 | 2026-04-15 |
+| TIMEOUT:rct-extrac | timed out | Check for WMI deadlock (Python 3.13), infinite loop, or slow | 1 | 0 | 2026-05-06 |
 | TIMEOUT:registry-f | timed out | Check for WMI deadlock (Python 3.13), infinite loop, or slow | 1 | 0 | 2026-04-15 |
 | TIMEOUT:repo300-en | timed out | Check for WMI deadlock (Python 3.13), infinite loop, or slow | 1 | 0 | 2026-04-15 |
 | TIMEOUT:rmstnma-18 | timed out | Check for WMI deadlock (Python 3.13), infinite loop, or slow | 1 | 0 | 2026-04-08 |
 | TIMEOUT:superapp-3 | timed out | Check for WMI deadlock (Python 3.13), infinite loop, or slow | 1 | 0 | 2026-04-09 |
-| TIMEOUT:superapp-3 | timed out | Check for WMI deadlock (Python 3.13), infinite loop, or slow | 1 | 0 | 2026-05-05 |
 | TIMEOUT:transcende | timed out | Check for WMI deadlock (Python 3.13), infinite loop, or slow | 1 | 0 | 2026-04-15 |
 | TIMEOUT:truthcert- | timed out | Check for WMI deadlock (Python 3.13), infinite loop, or slow | 1 | 0 | 2026-04-08 |
 | TIMEOUT:ubcma-4230 | timed out | Check for WMI deadlock (Python 3.13), infinite loop, or slow | 1 | 0 | 2026-04-08 |

@@ -2,6 +2,14 @@
 
 ## 2026-05-06
 
+**Verified:** 1 | **Certified:** 0 | **Rejected:** 1 | **Failed:** 0
+
+### Changes from last night
+- superapp: FAIL -> REJECT
+
+
+## 2026-05-06
+
 **Verified:** 1 | **Certified:** 0 | **Rejected:** 0 | **Failed:** 1
 
 
@@ -264,12 +272,4 @@
 
 ### New projects verified
 - SubmissionCockpit
-
-
-## 2026-04-25
-
-**Verified:** 50 | **Certified:** 12 | **Rejected:** 8 | **Failed:** 5
-
-### Changes from last night
-- llm-meta-analysis: UNVERIFIED -> REJECT
 
