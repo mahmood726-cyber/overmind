@@ -1,0 +1,14 @@
+{
+  "command": "C:\\Users\\user\\AppData\\Local\\Programs\\Python\\Python313\\python.exe C:\\overmind\\data\\baseline_probes\\probe_patientma.py",
+  "values": {
+    "cdf_1.96": 0.975002,
+    "cdf_0.0": 0.5,
+    "cdf_-1.0": 0.158655,
+    "ppf_0.975": 1.960395,
+    "ppf_0.5": -0.0,
+    "ppf_0.025": -1.960395
+  },
+  "tolerance": 0.0001,
+  "project_path": "C:\\Models\\PatientMA",
+  "created_by": "create_baselines.py"
+}

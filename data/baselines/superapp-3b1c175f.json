@@ -1,0 +1,13 @@
+{
+  "command": "node C:/Projects/superapp/probe.cjs",
+  "values": {
+    "n_studies": 13,
+    "tau2_REML": 0.313243,
+    "tau2_DL": 0.308758,
+    "pet_intercept": -0.190943,
+    "peese_intercept": -0.379968
+  },
+  "tolerance": 1e-6,
+  "project_path": "C:\\Projects\\superapp",
+  "created_by": "manual (node-side probe — BCG canonical fixture)"
+}

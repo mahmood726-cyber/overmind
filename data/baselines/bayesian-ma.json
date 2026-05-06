@@ -1,0 +1,14 @@
+{
+  "command": "C:\\Users\\user\\AppData\\Local\\Programs\\Python\\Python313\\python.exe C:\\overmind\\data\\baseline_probes\\probe_bayesian-ma.py",
+  "values": {
+    "size_kb": 79.2,
+    "n_lines": 2065,
+    "n_function_def": 56,
+    "n_script_tag": 1,
+    "n_div_tag": 91,
+    "content_hash_16": "cf26cde1e3a5a7d3"
+  },
+  "tolerance": 1e-06,
+  "project_path": "C:\\Models\\BayesianMA",
+  "created_by": "create_baselines.py"
+}
