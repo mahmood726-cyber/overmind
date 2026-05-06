@@ -2,6 +2,14 @@
 
 ## 2026-05-06
 
+**Verified:** 1 | **Certified:** 1 | **Rejected:** 0 | **Failed:** 0
+
+### Changes from last night
+- superapp: UNVERIFIED -> CERTIFIED
+
+
+## 2026-05-06
+
 **Verified:** 1 | **Certified:** 0 | **Rejected:** 0 | **Failed:** 0
 
 ### Changes from last night
@@ -261,9 +269,4 @@
 ### Changes from last night
 - idea12: UNVERIFIED -> REJECT
 - BayesianMA: UNVERIFIED -> REJECT
-
-
-## 2026-04-27
-
-**Verified:** 50 | **Certified:** 15 | **Rejected:** 5 | **Failed:** 2
 
