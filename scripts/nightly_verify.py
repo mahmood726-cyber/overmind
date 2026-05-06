@@ -182,6 +182,17 @@ SKIP_PROJECTS = {
     # per-project witness-timeout-override mechanism shipped this turn
     # (PROJECT_WORKER_TIMEOUTS dict below). Both now have a 3600s budget
     # so their combined witness pipeline can complete.
+    # rct-extractor-v2 + evidence-inference RE-SKIPPED 2026-05-06: empirically
+    # even with 7200s+ worker budget both projects hit the worker timeout wall.
+    # Direct test_command runs in seconds (rct: 23 tests/2.7s, evi: 5+3 skip
+    # in 3.3s) but Overmind's witness pipeline hangs — likely SemgrepWitness
+    # on the 30K-line repos OR PipAuditWitness on heavy ML deps tree
+    # (transformers/biomistral/spacy). subprocess.run timeouts don't always
+    # fire on Windows when child processes hold inherited pipe handles
+    # (lessons.md 2026-04-30). Skipping until witness scope is reduced for
+    # these heavy projects (e.g. tier downgrade, semgrep skip-list).
+    "rct-extractor-v2-6c290650",
+    "evidence-inference-4c874004",
 }  # Projects that consistently hang during verification OR whose source path is missing OR whose source is broken enough to need dedicated repair
 
 
