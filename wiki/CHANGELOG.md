@@ -2,6 +2,11 @@
 
 ## 2026-05-06
 
+**Verified:** 1 | **Certified:** 0 | **Rejected:** 0 | **Failed:** 1
+
+
+## 2026-05-06
+
 **Verified:** 1 | **Certified:** 1 | **Rejected:** 0 | **Failed:** 0
 
 ### Changes from last night
@@ -260,13 +265,4 @@
 - metaoverfit: PASS -> CERTIFIED
 - MLMResearch: PASS -> CERTIFIED
 - four_limb_synthesis: REJECT -> CERTIFIED
-
-
-## 2026-04-28
-
-**Verified:** 50 | **Certified:** 15 | **Rejected:** 7 | **Failed:** 2
-
-### Changes from last night
-- idea12: UNVERIFIED -> REJECT
-- BayesianMA: UNVERIFIED -> REJECT
 
