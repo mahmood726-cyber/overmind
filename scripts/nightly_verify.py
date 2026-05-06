@@ -136,9 +136,9 @@ SKIP_PROJECTS = {
     # `Rscript -e "testthat::test_dir('tests/testthat')"` → 82 passed.
 
     # Added 2026-05-04 — OneDrive duplicates discovered en masse.
-    # `C:\Users\user\OneDrive - NHS\Documents\` was a scan root in
+    # The OneDrive Documents tree was a scan root in
     # config/roots.yaml, so 37 already-canonical projects got auto-indexed
-    # twice. Of those, 33 had a canonical sibling (in C:\Projects, C:\Models,
+    # twice. Of those, 33 had a canonical sibling (in <home>/Projects, <home>/Models,
     # etc.) so the OneDrive copy is redundant. The 4 truly OneDrive-only ones
     # (mahmood011025, metaoverfit, paper7, repo300) are skipped pending a
     # decision on whether to re-home them to canonical paths. Companion fix:
@@ -155,7 +155,7 @@ SKIP_PROJECTS = {
     "clauderepo-a6002185",                                    # OneDrive dup of clauderepo
     "cochranedataextractor-e1ffd99a",                         # OneDrive dup of CochraneDataExtractor
     "decision-wasm-57802073",                                 # OneDrive dup of decision-wasm
-    "dta70-4b170dbc",                                         # OneDrive dup of DTA70 (canonical at C:\Projects\DTA70 fixed by DTA70@943a819)
+    "dta70-4b170dbc",                                         # OneDrive dup of DTA70 (canonical fixed by DTA70@943a819)
     "hfn786-58381c44",                                        # OneDrive dup of HFN786
     "kmcurve-cf94c326",                                       # OneDrive dup of KMcurve
     "lfa-36caf1fb",                                           # OneDrive dup of LFA
@@ -170,7 +170,7 @@ SKIP_PROJECTS = {
     "paper1-0c592fd8",                                        # OneDrive dup of Paper1
     "paper2-111025-2e8eae70",                                 # OneDrive dup of Paper2.111025
     "repo100-8f261f45",                                       # OneDrive dup of repo100
-    "rmstnma-1810584a",                                       # OneDrive dup of rmstnma (canonical at C:\Projects\rmstnma is UNVERIFIED)
+    "rmstnma-1810584a",                                       # OneDrive dup of rmstnma (canonical is UNVERIFIED)
     "worldipd-c534de53",                                      # OneDrive dup of WorldIPD
     "worldipd-private-3d6aeddf",                              # OneDrive dup of WorldIPD-private
     # Truly OneDrive-only (no canonical sibling) — skipped pending decision:

@@ -25,5 +25,10 @@ data/nightly_reports/nightly_*.log
 data/nightly_reports/nightly_*.json
 data/nightly_reports/nightly_*.md
 data/nightly_reports/bundles/
+# Crash-resume orphans: written each project, removed on success.
+# An interrupted run leaves these behind as recovery state.
+data/nightly_reports/.progress_*.json
+# Crash logs from main()'s except-handler when a fatal crash hits.
+data/nightly_reports/crash_*.log
 sentinel-findings.md
 sentinel-findings.jsonl
