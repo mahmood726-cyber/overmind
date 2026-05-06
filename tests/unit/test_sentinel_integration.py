@@ -313,3 +313,90 @@ def test_collect_jsonl_dedup_distinguishes_lines(tmp_path):
 
     result = collect(discover_repos=lambda: [str(r)])
     assert result["total_block"] == 3
+
+
+def test_collect_jsonl_dedup_int_vs_str_line_normalized(tmp_path):
+    """P1-4 from blinded review: dedup key must coerce `line` to str so int 42
+    and str "42" collapse to the SAME bucket. Without coercion, a Sentinel
+    writer that flips int→str across versions silently re-introduces the
+    9.2x amplification the dedup was meant to prevent.
+    """
+    import json as _json
+    r = tmp_path / "repo"
+    r.mkdir()
+    entries = [
+        _json.dumps({"rule_id": "P0-x", "severity": "BLOCK", "file": "a.py", "line": 42}),
+        _json.dumps({"rule_id": "P0-x", "severity": "BLOCK", "file": "a.py", "line": "42"}),
+    ]
+    (r / "STUCK_FAILURES.jsonl").write_text("\n".join(entries) + "\n", encoding="utf-8")
+    result = collect(discover_repos=lambda: [str(r)])
+    # MUST be 1 (not 2) — int 42 and str "42" represent the same finding.
+    assert result["total_block"] == 1
+
+
+def test_collect_jsonl_dedup_missing_file_field_distinguishes_per_repo(tmp_path):
+    """P1-16 from blinded review: empty `file` must NOT collapse cross-repo.
+    Two findings from different repos with the same rule and missing file
+    coords must remain countable as 2.
+    """
+    import json as _json
+    r1 = tmp_path / "repoA"
+    r1.mkdir()
+    r2 = tmp_path / "repoB"
+    r2.mkdir()
+    no_coords = _json.dumps({"rule_id": "P0-no-coords", "severity": "BLOCK"})
+    (r1 / "STUCK_FAILURES.jsonl").write_text(no_coords + "\n", encoding="utf-8")
+    (r2 / "STUCK_FAILURES.jsonl").write_text(no_coords + "\n", encoding="utf-8")
+
+    result = collect(discover_repos=lambda: [str(r1), str(r2)])
+    # The findings are in different repos — dedup runs per-jsonl-file, so
+    # cross-repo isolation MUST be preserved.
+    assert result["total_block"] == 2
+
+
+def test_collect_jsonl_dedup_with_malformed_interleaved(tmp_path):
+    """P1-14 from blinded review: dedup composes correctly with malformed-line
+    skipping. A garbage line interleaved with duplicate findings doesn't break
+    either pass.
+    """
+    import json as _json
+    r = tmp_path / "repo"
+    r.mkdir()
+    same = _json.dumps({"rule_id": "P0-y", "severity": "BLOCK", "file": "a.py", "line": 1})
+    distinct = _json.dumps({"rule_id": "P0-y", "severity": "BLOCK", "file": "b.py", "line": 1})
+    content = "\n".join([
+        same,
+        "GARBAGE NOT JSON",
+        same,                # dup of first
+        '{"missing_rule_id": true}',
+        distinct,            # new finding
+        same,                # dup again
+        "",                  # blank
+    ]) + "\n"
+    (r / "STUCK_FAILURES.jsonl").write_text(content, encoding="utf-8")
+
+    result = collect(discover_repos=lambda: [str(r)])
+    # 2 unique findings: (P0-y, a.py, 1) and (P0-y, b.py, 1).
+    assert result["total_block"] == 2
+
+
+def test_collect_jsonl_dedup_extra_keys_ignored(tmp_path):
+    """Two entries differing only in `timestamp` or `detail` MUST dedupe — the
+    key is (rule_id, file, line); other fields are append-noise.
+    """
+    import json as _json
+    r = tmp_path / "repo"
+    r.mkdir()
+    entries = [
+        _json.dumps({"rule_id": "P0-z", "severity": "BLOCK", "file": "a.py",
+                     "line": 5, "timestamp": "2026-04-01T00:00:00Z",
+                     "detail": "first scan run"}),
+        _json.dumps({"rule_id": "P0-z", "severity": "BLOCK", "file": "a.py",
+                     "line": 5, "timestamp": "2026-05-01T00:00:00Z",
+                     "detail": "later scan run"}),
+        _json.dumps({"rule_id": "P0-z", "severity": "BLOCK", "file": "a.py",
+                     "line": 5, "timestamp": "2026-05-06T00:00:00Z"}),
+    ]
+    (r / "STUCK_FAILURES.jsonl").write_text("\n".join(entries) + "\n", encoding="utf-8")
+    result = collect(discover_repos=lambda: [str(r)])
+    assert result["total_block"] == 1

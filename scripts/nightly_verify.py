@@ -13,9 +13,12 @@ from __future__ import annotations
 import argparse
 import io
 import json
+import os
 import platform
+import re
 import sys
 import time
+from collections import Counter
 from datetime import datetime, UTC
 from pathlib import Path
 
@@ -33,6 +36,20 @@ if sys.platform == "win32" and "pytest" not in sys.modules:
         # evidence-inference) and a targeted run with 3 such projects
         # would exceed 1 hour even when each project succeeds. 4 hours
         # is still a reasonable upper bound for a single targeted run.
+        # P1-9 (review-findings 2026-05-06): redirect faulthandler output to
+        # a persistent file so the 2026-05-04-style _exit() failure mode
+        # leaves a forensic trail. Stderr alone is lost when Task Scheduler
+        # has no console to flush to.
+        try:
+            _fh_log_dir = Path(__file__).resolve().parents[1] / "data" / "nightly_reports"
+            _fh_log_dir.mkdir(parents=True, exist_ok=True)
+            _fh_log = open(
+                _fh_log_dir / f"faulthandler_{datetime.now(UTC).strftime('%Y-%m-%d')}.log",
+                "a", encoding="utf-8",
+            )
+            faulthandler.enable(file=_fh_log)
+        except Exception:
+            faulthandler.enable()  # fallback to stderr
         faulthandler.dump_traceback_later(14400, exit=True)
     except Exception:
         pass
@@ -220,6 +237,40 @@ from overmind.integrations.sentinel_aggregator import collect as _collect_sentin
 from overmind.integrations.bypass_log_aggregator import collect as _collect_bypass
 
 
+# P2-4 (review-findings 2026-05-06 Security): scrub user-home paths from
+# crash/log output before writing to disk. Tracebacks routinely include
+# filenames with `C:\Users\<actual-username>\...` which is fine on the
+# author's machine but leaks if logs are shared / shipped / pasted.
+_HOME_SCRUB_RE = re.compile(r"[A-Z]:\\Users\\[^\\\s\"']+", re.IGNORECASE)
+
+
+def _scrub_user_paths(text: str) -> str:
+    """Replace `C:\\Users\\<username>` with `<home>` for log/diagnostic output."""
+    return _HOME_SCRUB_RE.sub(r"<home>", text)
+
+
+def _atomic_write_text(path: Path, content: str, encoding: str = "utf-8") -> None:
+    """Atomic write via temp-file + os.replace.
+
+    Per the 8-persona blinded review (P0-5 Concurrency): `Path.write_text`
+    is non-atomic on Windows. Two simultaneous nightly invocations
+    (manual rerun + scheduler, or two manual reruns) tearing-write the
+    same `.progress_<date>.json` / `nightly_<date>.json` / per-project
+    bundle JSON corrupts the file. The next iteration's `json.loads`
+    raises, falls into the bare-except, and silently regresses to {}
+    or {"partial": True} — defeating the don't-clobber-canonical
+    invariant.
+
+    `os.replace` is atomic on NTFS for same-volume renames (and on POSIX
+    via rename(2)), so a reader sees either the old file or the new file,
+    never a half-written state.
+    """
+    import os as _os
+    tmp = path.with_suffix(path.suffix + ".tmp")
+    tmp.write_text(content, encoding=encoding)
+    _os.replace(tmp, path)
+
+
 def _promote_progress_to_partial_report(date_str: str) -> None:
     """Synthesize nightly_<date>.json from .progress_<date>.json + bundles/<date>/.
 
@@ -253,7 +304,6 @@ def _promote_progress_to_partial_report(date_str: str) -> None:
             progress = json.loads(progress_path.read_text(encoding="utf-8"))
         except Exception:
             return
-        from collections import Counter
         tally = Counter(progress.values())
         bundles_dir = REPORT_DIR / "bundles" / date_str
         proj_records = []
@@ -286,10 +336,23 @@ def _promote_progress_to_partial_report(date_str: str) -> None:
             "projects": proj_records,
         }
         REPORT_DIR.mkdir(parents=True, exist_ok=True)
-        json_path.write_text(json.dumps(report, indent=2), encoding="utf-8")
-    except Exception:
-        # Last-resort guard: this helper must never raise. Swallow everything.
-        pass
+        _atomic_write_text(json_path, json.dumps(report, indent=2))
+    except Exception as _exc:
+        # Last-resort guard: this helper must never raise. But swallow-silent
+        # is the "Confident-tone tool failures are invisible" lesson — if our
+        # safety net itself is broken, a future operator will only know via
+        # missing partial reports. Log to crash_<date>.log before swallowing.
+        try:
+            crash_path = REPORT_DIR / f"crash_{date_str}.log"
+            REPORT_DIR.mkdir(parents=True, exist_ok=True)
+            with crash_path.open("a", encoding="utf-8") as _fh:
+                _fh.write(_scrub_user_paths(
+                    f"[{datetime.now(UTC).isoformat()}] "
+                    f"_promote_progress_to_partial_report({date_str}) "
+                    f"swallowed {type(_exc).__name__}: {_exc!s}\n"
+                ))
+        except Exception:
+            pass  # Logging itself failing must not raise either.
 
 
 def collect_sentinel_findings() -> dict:
@@ -687,11 +750,16 @@ def main() -> None:
         print(f"\nFATAL ERROR: {exc}", file=sys.stderr)
         import traceback
         traceback.print_exc()
-        # Write crash log to file so failures are visible the next morning
+        # Write crash log to file so failures are visible the next morning.
+        # Path-scrubbed (P2-4 from review-findings 2026-05-06): tracebacks
+        # routinely include `C:\Users\<actual-username>\...` which leaks if
+        # logs are shared.
         crash_path = REPORT_DIR / f"crash_{run_start.strftime('%Y-%m-%d')}.log"
         REPORT_DIR.mkdir(parents=True, exist_ok=True)
         crash_path.write_text(
-            f"Nightly crash at {datetime.now(UTC).isoformat()}\n\n{traceback.format_exc()}",
+            _scrub_user_paths(
+                f"Nightly crash at {datetime.now(UTC).isoformat()}\n\n{traceback.format_exc()}"
+            ),
             encoding="utf-8",
         )
     finally:
@@ -699,6 +767,18 @@ def main() -> None:
 
 
 def _run_verification(db: StateDatabase, args: argparse.Namespace, run_start: datetime) -> None:
+    # P1-10 (review-findings 2026-05-06 SRE): write a started-flag file so a
+    # 03:05 health-check can distinguish "task didn't start" from "task started
+    # but hung mid-run". Cheap and atomic.
+    try:
+        REPORT_DIR.mkdir(parents=True, exist_ok=True)
+        _atomic_write_text(
+            REPORT_DIR / f"nightly_started_{run_start.strftime('%Y-%m-%d')}.flag",
+            f"started_at: {run_start.isoformat()}\npid: {os.getpid()}\n",
+        )
+    except Exception:
+        pass  # Flag file is observability, not critical path.
+
     engine = TruthCertEngine(
         baselines_dir=DATA_DIR / "baselines",
         test_timeout=args.timeout,
@@ -873,17 +953,18 @@ def _run_verification(db: StateDatabase, args: argparse.Namespace, run_start: da
                     ],
                 ))
 
-        # Save per-project bundle JSON
+        # Save per-project bundle JSON (atomic — see _atomic_write_text)
         bundle_path = bundles_dir / f"{proj.project_id[:16]}.json"
-        bundle_path.write_text(json.dumps(bundle.to_dict(), indent=2), encoding="utf-8")
+        _atomic_write_text(bundle_path, json.dumps(bundle.to_dict(), indent=2))
 
-        # Crash-resume: save progress after each project
+        # Crash-resume: save progress after each project (atomic to survive
+        # concurrent invocation, e.g. manual rerun while scheduled run mid-flight).
         try:
             progress = json.loads(progress_path.read_text(encoding="utf-8")) if progress_path.exists() else {}
         except Exception:
             progress = {}
         progress[proj.project_id] = verdict
-        progress_path.write_text(json.dumps(progress), encoding="utf-8")
+        _atomic_write_text(progress_path, json.dumps(progress))
 
         # Bulletproof: synthesize partial nightly_<date>.json from .progress.
         # Survives faulthandler.exit=True (os._exit bypasses atexit/finally).
@@ -1213,6 +1294,22 @@ def _run_verification(db: StateDatabase, args: argparse.Namespace, run_start: da
     except Exception as e:
         report["sentinel"] = {"error": f"aggregation crashed: {type(e).__name__}: {e}"}
 
+    # P1-13 (review-findings 2026-05-06): regression guard on dedup. After the
+    # 9.2x amplification fix, portfolio total_block should be ~14-18K. If the
+    # nightly suddenly reports >30K, dedup is broken (Sentinel writer schema
+    # drift, key-coercion regressed, or a real explosion in violations).
+    # Emit to stderr where the morning watchdog can grep for it.
+    BLOCK_THRESHOLD = 30000
+    _sent = report.get("sentinel") or {}
+    if isinstance(_sent, dict) and _sent.get("total_block", 0) > BLOCK_THRESHOLD:
+        msg = (
+            f"[WARN] sentinel.total_block={_sent['total_block']} > {BLOCK_THRESHOLD}. "
+            "Dedup may have regressed or violation-rate exploded — "
+            "investigate before next push."
+        )
+        print(msg, file=sys.stderr)
+        report["sentinel"]["dedup_threshold_warning"] = msg
+
     # Run LIVE portfolio-scope Sentinel scan. Unlike collect_sentinel_findings
     # which reads the pre-existing STUCK_FAILURES/sentinel-findings files
     # (potentially stale if a repo hasn't been pushed recently), this actively
@@ -1234,11 +1331,11 @@ def _run_verification(db: StateDatabase, args: argparse.Namespace, run_start: da
     except Exception as e:
         report["bypass"] = {"error": f"bypass aggregation crashed: {type(e).__name__}: {e}"}
 
-    # Write JSON report
+    # Write JSON report (atomic — see _atomic_write_text)
     REPORT_DIR.mkdir(parents=True, exist_ok=True)
 
     json_path = REPORT_DIR / f"nightly_{date_str}.json"
-    json_path.write_text(json.dumps(report, indent=2), encoding="utf-8")
+    _atomic_write_text(json_path, json.dumps(report, indent=2))
 
     # Write Markdown report
     md_path = REPORT_DIR / f"nightly_{date_str}.md"
@@ -1431,10 +1528,10 @@ def _run_verification(db: StateDatabase, args: argparse.Namespace, run_start: da
         f"{dream['memories_before']}->{dream['memories_after']} memories",
     ])
 
-    md_path.write_text("\n".join(md_lines), encoding="utf-8")
+    _atomic_write_text(md_path, "\n".join(md_lines))
 
-    # Also write latest.json for dashboard consumption
-    (REPORT_DIR / "latest.json").write_text(json.dumps(report, indent=2), encoding="utf-8")
+    # Also write latest.json for dashboard consumption (atomic)
+    _atomic_write_text(REPORT_DIR / "latest.json", json.dumps(report, indent=2))
 
     print()
     print("=" * 60)

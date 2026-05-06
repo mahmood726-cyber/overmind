@@ -101,7 +101,12 @@ def _read_jsonl(path: Path) -> list[str]:
         rid = obj.get("rule_id")
         if not rid:
             continue
-        key = (rid, obj.get("file", ""), obj.get("line", ""))
+        # Coerce `line` to str so int 42 and str "42" collapse to the SAME
+        # bucket. Without this, a Sentinel writer flipping int↔str across
+        # versions would silently re-introduce the 9.2x amplification this
+        # dedup is meant to prevent. See review-findings-session-2026-05-06.md
+        # P1-4 (Software Eng + Test Coverage + Concurrency triple-flagged).
+        key = (rid, str(obj.get("file", "")), str(obj.get("line", "")))
         if key in seen:
             continue
         seen.add(key)

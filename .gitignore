@@ -26,9 +26,17 @@ data/nightly_reports/nightly_*.json
 data/nightly_reports/nightly_*.md
 data/nightly_reports/bundles/
 # Crash-resume orphans: written each project, removed on success.
-# An interrupted run leaves these behind as recovery state.
-data/nightly_reports/.progress_*.json
-# Crash logs from main()'s except-handler when a fatal crash hits.
-data/nightly_reports/crash_*.log
+# An interrupted run leaves these behind as recovery state. Pattern is
+# narrow (date-prefixed) so a future legitimate `.progress_summary.json`
+# isn't silently ignored.
+data/nightly_reports/.progress_20[0-9][0-9]-[0-9][0-9]-[0-9][0-9].json
+# Crash logs (date-prefixed only) from main()'s except-handler.
+data/nightly_reports/crash_20[0-9][0-9]-[0-9][0-9]-[0-9][0-9].log
+data/nightly_reports/faulthandler_20[0-9][0-9]-[0-9][0-9]-[0-9][0-9].log
+# Started-flag files written at top of _run_verification (P1-10 — observability)
+data/nightly_reports/nightly_started_*.flag
+# Watchdog alert files (one per day on which an alert was raised)
+data/nightly_reports/watchdog_*.alert
+data/nightly_reports/watchdog_crash.log
 sentinel-findings.md
 sentinel-findings.jsonl
