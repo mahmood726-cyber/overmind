@@ -67,8 +67,25 @@ def _default_discover_repos() -> list[str]:
 
 
 def _read_jsonl(path: Path) -> list[str]:
-    """Extract rule_ids from a Sentinel JSONL log. Malformed lines skipped."""
+    """Extract DEDUPLICATED rule_ids from a Sentinel JSONL log.
+
+    Sentinel's JSONL files are append-only — every scan adds entries without
+    rewriting prior ones. A finding that persists across N scans appears N
+    times. The 2026-05-06 audit found 9.2x amplification in C:/overmind's
+    STUCK_FAILURES.jsonl (3,048 lines / 332 unique findings) and similar
+    ratios across the portfolio's largest repos (TruthCert-Validation-Papers,
+    E156, ProjectIndex), inflating the nightly's `total_block` from a real
+    ~14-18K to a reported ~140K.
+
+    Dedup key: (rule_id, file, line). Repo is implicit (one file = one repo).
+    Malformed lines skipped. Tuples missing rule_id are dropped.
+
+    Returns a list of rule_ids — one entry per distinct finding — so callers
+    that count by length get the actionable-finding count, not the
+    re-recorded-occurrences count.
+    """
     rule_ids: list[str] = []
+    seen: set[tuple] = set()
     try:
         text = path.read_text(encoding="utf-8", errors="replace")
     except OSError:
@@ -82,8 +99,13 @@ def _read_jsonl(path: Path) -> list[str]:
         except json.JSONDecodeError:
             continue
         rid = obj.get("rule_id")
-        if rid:
-            rule_ids.append(rid)
+        if not rid:
+            continue
+        key = (rid, obj.get("file", ""), obj.get("line", ""))
+        if key in seen:
+            continue
+        seen.add(key)
+        rule_ids.append(rid)
     return rule_ids
 
 

@@ -256,3 +256,60 @@ def test_collect_ignores_empty_stuck_failures(tmp_path):
 
     result = collect(discover_repos=lambda: [str(r1)])
     assert result["total_repos_with_findings"] == 0
+
+
+def test_collect_jsonl_dedupes_repeated_findings(tmp_path):
+    """P0: Sentinel JSONL is append-only — a finding that persists across N
+    scans appears N times. Aggregator must dedupe by (rule_id, file, line) so
+    the nightly's `total_block` reflects the actionable-finding count, not
+    the re-recorded-occurrences count.
+
+    Triggering audit (2026-05-06): Overmind's own STUCK_FAILURES.jsonl had
+    3,048 lines representing 332 unique findings (9.2x amplification). The
+    nightly's portfolio rollup reported 140,933 BLOCKs when the real
+    actionable count was ~14-18K.
+    """
+    import json as _json
+    r = tmp_path / "repo-with-recurring-findings"
+    r.mkdir()
+    # Same finding written 5 times across 5 simulated scans.
+    repeated_entry = _json.dumps({
+        "rule_id": "P0-hardcoded-local-path",
+        "severity": "BLOCK",
+        "file": "src/config.py",
+        "line": 42,
+        "timestamp": "2026-05-01T10:00:00+00:00",
+    })
+    distinct_entry = _json.dumps({
+        "rule_id": "P0-hardcoded-local-path",
+        "severity": "BLOCK",
+        "file": "src/other.py",
+        "line": 7,
+        "timestamp": "2026-05-01T10:00:00+00:00",
+    })
+    (r / "STUCK_FAILURES.jsonl").write_text(
+        "\n".join([repeated_entry] * 5 + [distinct_entry]) + "\n",
+        encoding="utf-8",
+    )
+
+    result = collect(discover_repos=lambda: [str(r)])
+    # 5 occurrences of the same (rule, file, line) plus 1 distinct finding = 2.
+    assert result["total_block"] == 2
+    rule_count = {r["rule_id"]: r["count"] for r in result["top_rules"]}
+    assert rule_count["P0-hardcoded-local-path"] == 2
+
+
+def test_collect_jsonl_dedup_distinguishes_lines(tmp_path):
+    """Same rule, same file, different line = distinct findings."""
+    import json as _json
+    r = tmp_path / "repo"
+    r.mkdir()
+    entries = [
+        _json.dumps({"rule_id": "P0-x", "severity": "BLOCK",
+                     "file": "a.py", "line": ln})
+        for ln in (10, 20, 30)
+    ]
+    (r / "STUCK_FAILURES.jsonl").write_text("\n".join(entries) + "\n", encoding="utf-8")
+
+    result = collect(discover_repos=lambda: [str(r)])
+    assert result["total_block"] == 3

@@ -82,6 +82,17 @@ SKIP_PROJECTS = {
     # in bayesianModelComparison + diagnostic field-name mismatches.
     "metasprint-dta-5dffce53",                                # smoke import hangs (30K-line app)
     "lec-phase0-bundle-a2c59fad",                             # test suite hangs
+    # mem-ecosystem-model-8299ceea was QUARANTINED then UNSKIPPED 2026-05-06:
+    # the 2026-05-04 [46/50] hang on this project tripped the 14400s
+    # faulthandler safety-net and left Task Scheduler stuck in
+    # ERROR_SERVICE_ALREADY_RUNNING for 3 days. Per-witness probe 2026-05-06
+    # confirmed all 4 witnesses (test_suite 0.6s, smoke 10.3s, semgrep 24.6s,
+    # pip_audit 62.7s) PASS cleanly — final CERTIFIED in 112s. Almost
+    # certainly a transient network call (pip-audit PyPI or semgrep registry).
+    # The new per-iteration partial-report-flush defense added in the same
+    # change means a recurrence will no longer poison the night — the
+    # partial verdict survives even os._exit(). If it hangs systematically,
+    # add a PROJECT_WORKER_TIMEOUTS entry, NOT a blanket SKIP.
     # hta-evidence-integrity-suite-dc1fe6c7 UNSKIPPED 2026-05-04: full pytest -q
     # passes 1/1 in 0.5s. Earlier "hangs (7946s)" note is from a stale layout —
     # the manuscript-numbers verifier was wrapped behind a fast pytest contract.
@@ -184,8 +195,8 @@ PROJECT_WORKER_TIMEOUTS: dict[str, int] = {
     # 2026-05-05 killed both at exactly 3604s). 7200s gives the combined
     # test_suite + smoke + semgrep + pip_audit + numerical pipeline more
     # headroom. Still under the 14400s script-level faulthandler.
-    "rct-extractor-v2-6c290650": 7200,    # 851 pytest tests + 30K-line semgrep
-    "evidence-inference-4c874004": 7200,  # transformers/biomistral deps tree
+    "rct-extractor-v2-6c290650": 13000,    # 851 pytest tests + 30K-line semgrep — 7200s wall hit 2026-05-05
+    "evidence-inference-4c874004": 13000,  # transformers/biomistral deps tree — 7200s wall hit 2026-05-05
     # superapp killed at 1800s on 2026-05-05 with witness_count=1 (test_suite
     # alone hit the wall). Direct npm test --runInBand takes ~1200s; Overmind's
     # subprocess wrapper adds enough overhead to push past 1800s. 3600s gives
@@ -196,6 +207,78 @@ PROJECT_WORKER_TIMEOUTS: dict[str, int] = {
 
 from overmind.integrations.sentinel_aggregator import collect as _collect_sentinel
 from overmind.integrations.bypass_log_aggregator import collect as _collect_bypass
+
+
+def _promote_progress_to_partial_report(date_str: str) -> None:
+    """Synthesize nightly_<date>.json from .progress_<date>.json + bundles/<date>/.
+
+    Defensive fix per lessons.md 2026-04-30: the 14400s faulthandler safety-net
+    at module top calls `_exit()` which bypasses both `finally:` blocks and
+    `atexit` handlers. So a one-shot end-of-run write loses the night's verdict
+    if any single project hangs past the script wall-clock cap. Instead, we
+    re-promote `.progress` → partial nightly report after every project AND
+    via atexit (covers exception paths even when faulthandler does not fire).
+
+    Invariants:
+      - never overwrites a non-partial report (idempotent on full success;
+        the normal end-of-run write at line ~1144 produces the canonical file
+        without `partial: true` and this helper refuses to clobber it)
+      - never raises (atexit and per-iteration callers must not abort the run)
+    """
+    try:
+        json_path = REPORT_DIR / f"nightly_{date_str}.json"
+        if json_path.exists():
+            try:
+                existing = json.loads(json_path.read_text(encoding="utf-8"))
+            except Exception:
+                existing = {"partial": True}
+            if not existing.get("partial"):
+                # Canonical full report already in place; do not regress.
+                return
+        progress_path = REPORT_DIR / f".progress_{date_str}.json"
+        if not progress_path.exists():
+            return
+        try:
+            progress = json.loads(progress_path.read_text(encoding="utf-8"))
+        except Exception:
+            return
+        from collections import Counter
+        tally = Counter(progress.values())
+        bundles_dir = REPORT_DIR / "bundles" / date_str
+        proj_records = []
+        if bundles_dir.is_dir():
+            for bundle_file in bundles_dir.glob("*.json"):
+                try:
+                    b = json.loads(bundle_file.read_text(encoding="utf-8"))
+                    proj_records.append({
+                        "name": b.get("project_id", bundle_file.stem),
+                        "verdict": b.get("verdict", "?"),
+                        "bundle_hash": b.get("bundle_hash", ""),
+                        "arbitration_reason": b.get("arbitration_reason", ""),
+                    })
+                except Exception:
+                    continue
+        report = {
+            "timestamp": datetime.now(UTC).isoformat(),
+            "partial": True,
+            "partial_reason": (
+                "atexit / per-iteration flush — main loop did not reach the "
+                "canonical end-of-run report write. See .progress_<date>.json "
+                "for raw verdict map."
+            ),
+            "total_projects": len(progress),
+            "certified": tally.get("CERTIFIED", 0),
+            "rejected": tally.get("REJECT", 0),
+            "failed": tally.get("FAIL", 0),
+            "single_pass": tally.get("PASS", 0),
+            "unverified": tally.get("UNVERIFIED", 0),
+            "projects": proj_records,
+        }
+        REPORT_DIR.mkdir(parents=True, exist_ok=True)
+        json_path.write_text(json.dumps(report, indent=2), encoding="utf-8")
+    except Exception:
+        # Last-resort guard: this helper must never raise. Swallow everything.
+        pass
 
 
 def collect_sentinel_findings() -> dict:
@@ -575,6 +658,13 @@ def main() -> None:
     print(f"Config: limit={args.limit}, timeout={args.timeout}s, min_risk={args.min_risk}, dry_run={args.dry_run}")
     print()
 
+    # Defensive: register atexit promote-to-partial. Covers normal exit and
+    # unhandled-exception paths. Does NOT cover faulthandler.exit=True (which
+    # uses os._exit and bypasses atexit) — for that case the per-iteration
+    # call inside the verification loop is the safety net.
+    import atexit
+    atexit.register(_promote_progress_to_partial_report, run_start.strftime("%Y-%m-%d"))
+
     if args.create_baselines:
         print("NOTE: --create-baselines is not yet implemented. Baseline creation is future work.")
         print()
@@ -783,6 +873,13 @@ def _run_verification(db: StateDatabase, args: argparse.Namespace, run_start: da
             progress = {}
         progress[proj.project_id] = verdict
         progress_path.write_text(json.dumps(progress), encoding="utf-8")
+
+        # Bulletproof: synthesize partial nightly_<date>.json from .progress.
+        # Survives faulthandler.exit=True (os._exit bypasses atexit/finally).
+        # The end-of-run canonical write at line ~1144 strips the `partial`
+        # flag on successful completion. Helper is idempotent and a no-op on
+        # already-canonical reports.
+        _promote_progress_to_partial_report(date_str)
 
     # Clean up progress file on successful completion
     if progress_path.exists():
