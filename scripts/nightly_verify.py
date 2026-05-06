@@ -186,6 +186,11 @@ PROJECT_WORKER_TIMEOUTS: dict[str, int] = {
     # headroom. Still under the 14400s script-level faulthandler.
     "rct-extractor-v2-6c290650": 7200,    # 851 pytest tests + 30K-line semgrep
     "evidence-inference-4c874004": 7200,  # transformers/biomistral deps tree
+    # superapp killed at 1800s on 2026-05-05 with witness_count=1 (test_suite
+    # alone hit the wall). Direct npm test --runInBand takes ~1200s; Overmind's
+    # subprocess wrapper adds enough overhead to push past 1800s. 3600s gives
+    # 3x margin over the direct measurement.
+    "superapp-3b1c175f": 3600,            # 207 jest tests via --runInBand
 }
 
 
