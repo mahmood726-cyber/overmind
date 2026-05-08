@@ -1,5 +1,10 @@
 # Sentinel Findings Triage — 2026-05-07
 
+<!-- sentinel:skip-file — this audit document quotes hardcoded paths as
+evidence (validation_details.json pdf_path columns, allmeta dosehtml
+launchers, etc.). The paths are the data being analysed, not application
+configuration. Same pattern as E156/rewrite-workbook.txt. -->
+
 Read-only audit of the **141,992 BLOCK / 17,484 WARN** Sentinel violations
 aggregated by Overmind's nightly_2026-05-06 report. No edits performed.
 Corpus: 260 repos with sentinel-findings; analysed top-10 repos by
