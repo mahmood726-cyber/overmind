@@ -131,11 +131,20 @@ def test_load_paths_filter_handles_blank_and_comment_only_file(tmp_path):
 
 
 def test_project_worker_timeouts_lookup_falls_back_to_default():
-    """When project_id isn't in the override dict, use the CLI default."""
+    """When project_id isn't in the override dict, use the CLI default.
+
+    Concrete budget values for rct-extractor-v2 / evidence-inference are not
+    asserted here — they have been bumped twice (3600 → 7200 → 13000) as the
+    operator chased the worker-timeout wall (see comments around lines 222-227
+    of nightly_verify.py). Asserting a specific number couples this test to
+    the next bump. We assert only the override-vs-default contract.
+    """
     overrides = nightly_verify.PROJECT_WORKER_TIMEOUTS
-    # known-overridden projects
-    assert overrides.get("rct-extractor-v2-6c290650") == 3600
-    assert overrides.get("evidence-inference-4c874004") == 3600
+    # known-overridden projects: present in dict, larger than the default
+    assert "rct-extractor-v2-6c290650" in overrides
+    assert "evidence-inference-4c874004" in overrides
+    assert overrides["rct-extractor-v2-6c290650"] >= 900
+    assert overrides["evidence-inference-4c874004"] >= 900
     # unknown project_id falls back via dict.get(default)
     assert overrides.get("nonexistent-project-id", 900) == 900
 

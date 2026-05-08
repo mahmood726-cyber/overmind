@@ -435,6 +435,62 @@ def collect_bypass_findings(window_days: int = 7) -> dict:
     return _collect_bypass(window_days=window_days)
 
 
+def _existing_path_arg(value: str) -> Path:
+    """argparse type for --projects-from-file: must be a real, existing file.
+
+    Rejects bare `-` (a stdin sentinel some tools accept but this script
+    does not) and any path that does not resolve to a regular file. Past
+    incident (2026-05-05/06): `--projects-from-file -` slipped past
+    parse_args() and crashed mid-run inside _run_verification(), AFTER
+    atexit and the nightly_started_<date>.flag had already been written.
+    Failing here is clean: argparse exits with code 2, no crash log spam,
+    no half-initialised state.
+    """
+    if value == "-":
+        raise argparse.ArgumentTypeError(
+            "'-' is not a supported file path. Pass an explicit path to a "
+            "newline-separated list of project roots (stdin is not supported)."
+        )
+    p = Path(value)
+    if not p.is_file():
+        raise argparse.ArgumentTypeError(
+            f"file not found: {value}. Pass a path to an existing "
+            "newline-separated list of project roots."
+        )
+    return p
+
+
+def _report_paths(report_dir: Path, date_str: str, run_start: datetime,
+                  is_rerun: bool) -> tuple[Path, Path, Path | None]:
+    """Decide where end-of-run report artifacts go.
+
+    Scheduled-nightly mode (is_rerun=False): canonical paths
+        nightly_<date>.json, nightly_<date>.md, latest.json.
+
+    Rerun mode (is_rerun=True, set when --projects-from-file is passed):
+        rerun_<date>_<HHMMSS>.json, rerun_<date>_<HHMMSS>.md, and None for
+        latest. Past incident (2026-05-05/06): manual --projects-from-file
+        invocations were overwriting nightly_<date>.json with single-project
+        bodies, masking the real scheduled run (whose 48 bundle files were
+        sitting next door in bundles/<date>/). The morning watchdog
+        explicitly predicts this in morning_watchdog.py:130-138.
+        Latest.json is intentionally None in rerun mode so the dashboard's
+        "latest" pointer keeps tracking the scheduled run.
+    """
+    if is_rerun:
+        stamp = run_start.strftime("%Y-%m-%d_%H%M%S")
+        return (
+            report_dir / f"rerun_{stamp}.json",
+            report_dir / f"rerun_{stamp}.md",
+            None,
+        )
+    return (
+        report_dir / f"nightly_{date_str}.json",
+        report_dir / f"nightly_{date_str}.md",
+        report_dir / "latest.json",
+    )
+
+
 def parse_args() -> argparse.Namespace:
     parser = argparse.ArgumentParser(description="Overmind Nightly Verifier")
     parser.add_argument("--dry-run", action="store_true", help="Show plan without executing")
@@ -451,12 +507,15 @@ def parse_args() -> argparse.Namespace:
                         help="Minimum risk profile to verify (default medium)")
     parser.add_argument("--create-baselines", action="store_true",
                         help="Create numerical baselines for tier-3 projects (future work)")
-    parser.add_argument("--projects-from-file", type=Path, default=None, metavar="PATH",
+    parser.add_argument("--projects-from-file", type=_existing_path_arg, default=None, metavar="PATH",
                         help="File of project paths (one per line) to verify. Bypasses "
                              "--min-risk and --limit so an operator can re-bundle a "
                              "specific set of paths (e.g. stale-UNVERIFIED projects) "
                              "without waiting for the natural risk-sorted cadence. "
-                             "Lines starting with '#' and blank lines are ignored.")
+                             "Lines starting with '#' and blank lines are ignored. "
+                             "When set, the report is written to rerun_<date>_<HHMMSS>.json "
+                             "instead of nightly_<date>.json so manual reruns do not "
+                             "clobber the canonical scheduled-nightly artifact.")
     return parser.parse_args()
 
 
@@ -1331,14 +1390,18 @@ def _run_verification(db: StateDatabase, args: argparse.Namespace, run_start: da
     except Exception as e:
         report["bypass"] = {"error": f"bypass aggregation crashed: {type(e).__name__}: {e}"}
 
-    # Write JSON report (atomic — see _atomic_write_text)
+    # Write JSON report (atomic — see _atomic_write_text). When the operator
+    # passed --projects-from-file, _report_paths reroutes output to
+    # rerun_<date>_<HHMMSS>.* so the canonical scheduled-nightly artifact is
+    # not clobbered (lessons from 2026-05-05/06 — see _report_paths docstring).
     REPORT_DIR.mkdir(parents=True, exist_ok=True)
-
-    json_path = REPORT_DIR / f"nightly_{date_str}.json"
+    is_rerun = args.projects_from_file is not None
+    json_path, md_path, latest_path = _report_paths(
+        REPORT_DIR, date_str, run_start, is_rerun=is_rerun,
+    )
     _atomic_write_text(json_path, json.dumps(report, indent=2))
 
-    # Write Markdown report
-    md_path = REPORT_DIR / f"nightly_{date_str}.md"
+    # Markdown report — same path-isolation rule as the JSON above.
     md_lines = [
         f"# Nightly Verification Report - {date_str}",
         "",
@@ -1530,8 +1593,11 @@ def _run_verification(db: StateDatabase, args: argparse.Namespace, run_start: da
 
     _atomic_write_text(md_path, "\n".join(md_lines))
 
-    # Also write latest.json for dashboard consumption (atomic)
-    _atomic_write_text(REPORT_DIR / "latest.json", json.dumps(report, indent=2))
+    # Also write latest.json for dashboard consumption (atomic). In rerun
+    # mode latest_path is None — the dashboard's "latest" pointer must keep
+    # tracking the scheduled run, not be flipped by a manual debug rerun.
+    if latest_path is not None:
+        _atomic_write_text(latest_path, json.dumps(report, indent=2))
 
     print()
     print("=" * 60)
