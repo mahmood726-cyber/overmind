@@ -387,10 +387,15 @@ def _run_portfolio_sentinel_scan() -> dict:
         # OVERMIND_PROJECT_INDEX is an internal-tooling env var sourced from the
         # operator's shell, not from any network surface. List-arg form,
         # shell=False — no shell injection vector.
+        # Timeout was 180s; bumped to 600s 2026-05-08 after the portfolio
+        # added 4 rules + tightened excludes (which require deeper file
+        # walks). The full --portfolio scan now legitimately exceeds 180s
+        # on a fresh registry walk; 600s is comfortably above current ~250s
+        # observed wall-clock.
         result = subprocess.run(
             [sys.executable, "-m", "sentinel", "scan",  # nosemgrep: python.lang.security.audit.dangerous-subprocess-use-tainted-env-args.dangerous-subprocess-use-tainted-env-args
              "--portfolio", "--project-index", project_index, "--json"],
-            capture_output=True, text=True, timeout=180,
+            capture_output=True, text=True, timeout=600,
         )
     except (FileNotFoundError, subprocess.TimeoutExpired) as e:
         return {"error": f"{type(e).__name__}: {e}"}

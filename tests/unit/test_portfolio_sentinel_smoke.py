@@ -23,14 +23,22 @@ sys.path.insert(0, str(ROOT / "scripts"))
 import nightly_verify  # noqa: E402
 
 
-def test_run_portfolio_sentinel_scan_returns_dict():
-    """Function must return a dict; never raise."""
+def test_run_portfolio_sentinel_scan_returns_dict(tmp_path, monkeypatch):
+    """Function must return a dict; never raise.
+
+    Use a tmp empty project-index so the subprocess scan finishes in
+    seconds — the real C:/ProjectIndex now legitimately takes 250-400s
+    to scan after the 2026-05-08 rule additions, which exceeds typical
+    pytest --timeout settings.
+    """
+    monkeypatch.setenv("OVERMIND_PROJECT_INDEX", str(tmp_path))
     result = nightly_verify._run_portfolio_sentinel_scan()
     assert isinstance(result, dict)
 
 
-def test_run_portfolio_sentinel_scan_dict_shape():
+def test_run_portfolio_sentinel_scan_dict_shape(tmp_path, monkeypatch):
     """Either the count keys are present (success) or 'error' is (soft-fail)."""
+    monkeypatch.setenv("OVERMIND_PROJECT_INDEX", str(tmp_path))
     result = nightly_verify._run_portfolio_sentinel_scan()
     success_keys = {"total_block", "total_warn", "total_info", "by_rule", "project_index"}
     has_success = success_keys.issubset(result.keys())
