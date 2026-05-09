@@ -1,18 +1,18 @@
 # metasprintnma
 
-**Last verified:** 2026-05-05 11:24 UTC | **Verdict:** CERTIFIED (5/5 witnesses agree PASS)
-**Bundle hash:** 8de4bd00dc61de0b | **Risk:** high | **Math:** 10
+**Last verified:** 2026-05-09 03:21 UTC | **Verdict:** CERTIFIED (5/5 witnesses agree PASS)
+**Bundle hash:** 6e85f39f1b6e96f6 | **Risk:** high | **Math:** 10
 
 ## Health
 
 | Witness | Verdict | Time | Detail |
 |---------|---------|------|--------|
-| test_suite | PASS | 2.7s | ....                                                                     [100%]
+| test_suite | PASS | 3.0s | ....                                                                     [100%]
  |
 | smoke | SKIP | 0.0s | skipped |
-| semgrep | PASS | 26.5s | semgrep findings: ERROR=0 WARNING=0 INFO=0; engine errors=0 |
-| pip_audit | PASS | 43.4s | pip-audit findings: 0 vulnerabilities across 17 dep(s); scope: requirements file |
-| numerical | PASS | 0.1s | 8 values within tolerance |
+| semgrep | PASS | 22.1s | semgrep findings: ERROR=0 WARNING=0 INFO=0; engine errors=0 |
+| pip_audit | PASS | 45.0s | pip-audit findings: 0 vulnerabilities across 17 dep(s); scope: requirements file |
+| numerical | PASS | 0.2s | 8 values within tolerance |
 | numerical_continuity | PASS | 0.0s | numerical continuity: baseline + provenance checks OK |
 
 ## Project
@@ -26,7 +26,6 @@
 
 | Date | Verdict | Witnesses | Time | Hash |
 |------|---------|-----------|------|------|
-| 2026-04-15 | FAIL | 1/1 | 0.0s | 2d2fd4a7b33129dc |
 | 2026-04-17 | PASS | 1/3 | 94.2s | a6985484cafdc34d |
 | 2026-04-19 | PASS | 1/3 | 95.9s | f43985cd6e6f3735 |
 | 2026-04-20 | UNVERIFIED | 2/4 | 94.6s | d91f9c4c691bd4c8 |
@@ -36,3 +35,4 @@
 | 2026-04-28 | UNVERIFIED | 2/4 | 98.2s | 3e826e78e3c8284a |
 | 2026-05-04 | UNVERIFIED | 4/6 | 72.2s | df90dee0fc30aeaf |
 | 2026-05-05 | CERTIFIED | 5/6 | 72.8s | 8de4bd00dc61de0b |
+| 2026-05-09 | CERTIFIED | 5/6 | 70.4s | 6e85f39f1b6e96f6 |

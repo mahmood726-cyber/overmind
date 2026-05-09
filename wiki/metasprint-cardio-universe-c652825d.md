@@ -1,15 +1,17 @@
 # metasprint-cardio-universe
 
-**Last verified:** 2026-04-28 02:42 UTC | **Verdict:** CERTIFIED (2/2 witnesses agree PASS)
-**Bundle hash:** 85dd479006ced820 | **Risk:** high | **Math:** 9
+**Last verified:** 2026-05-09 03:21 UTC | **Verdict:** CERTIFIED (3/3 witnesses agree PASS)
+**Bundle hash:** 55e63d465d09cd29 | **Risk:** high | **Math:** 9
 
 ## Health
 
 | Witness | Verdict | Time | Detail |
 |---------|---------|------|--------|
-| test_suite | PASS | 2.5s | .                                                                        [100%]
+| test_suite | PASS | 2.4s | .                                                                        [100%]
  |
-| smoke | PASS | 3.5s | 40 modules imported OK |
+| smoke | PASS | 3.6s | 40 modules imported OK |
+| semgrep | PASS | 28.0s | semgrep findings: ERROR=0 WARNING=0 INFO=0; engine errors=3 |
+| pip_audit | SKIP | 0.0s | skipped |
 
 ## Project
 
@@ -22,7 +24,6 @@
 
 | Date | Verdict | Witnesses | Time | Hash |
 |------|---------|-----------|------|------|
-| 2026-04-12 | PASS | 1/2 | 1.7s | 4c73305155fa6ecb |
 | 2026-04-13 | PASS | 1/2 | 1.3s | bd668a13457858a9 |
 | 2026-04-15 | REJECT | 2/2 | 3.5s | 8f49859479bf226a |
 | 2026-04-17 | CERTIFIED | 2/2 | 4.1s | db5fb3b548b784b6 |
@@ -32,3 +33,4 @@
 | 2026-04-26 | CERTIFIED | 2/2 | 6.0s | 1fe3a65558335022 |
 | 2026-04-27 | CERTIFIED | 2/2 | 7.0s | 6ed1f8e2c3e2d585 |
 | 2026-04-28 | CERTIFIED | 2/2 | 5.9s | 85dd479006ced820 |
+| 2026-05-09 | CERTIFIED | 3/4 | 34.0s | 55e63d465d09cd29 |

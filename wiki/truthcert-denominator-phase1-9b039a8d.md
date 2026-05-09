@@ -1,16 +1,18 @@
 # truthcert-denominator-phase1
 
-**Last verified:** 2026-04-28 02:42 UTC | **Verdict:** CERTIFIED (4/4 witnesses agree PASS)
-**Bundle hash:** 06fd651d072a0b45 | **Risk:** high | **Math:** 10
+**Last verified:** 2026-05-09 03:21 UTC | **Verdict:** CERTIFIED (6/6 witnesses agree PASS)
+**Bundle hash:** 08d8cb3414ca6b5c | **Risk:** high | **Math:** 10
 
 ## Health
 
 | Witness | Verdict | Time | Detail |
 |---------|---------|------|--------|
-| test_suite | PASS | 5.3s | .                                                                        [100%]
+| test_suite | PASS | 5.5s | .                                                                        [100%]
  |
-| smoke | PASS | 14.7s | 14 modules imported OK |
-| numerical | PASS | 1.7s | 5 values within tolerance |
+| smoke | PASS | 15.4s | 14 modules imported OK |
+| semgrep | PASS | 14.5s | semgrep findings: ERROR=0 WARNING=0 INFO=0; engine errors=0 |
+| pip_audit | PASS | 48.0s | pip-audit findings: 0 vulnerabilities across 18 dep(s); scope: requirements file |
+| numerical | PASS | 1.9s | 5 values within tolerance |
 | numerical_continuity | PASS | 0.0s | numerical continuity: baseline + provenance checks OK |
 
 ## Project
@@ -24,7 +26,6 @@
 
 | Date | Verdict | Witnesses | Time | Hash |
 |------|---------|-----------|------|------|
-| 2026-04-12 | REJECT | 3/3 | 22.7s | c808f3db46ed43ae |
 | 2026-04-13 | REJECT | 3/3 | 20.9s | 875651b66d9d5623 |
 | 2026-04-15 | CERTIFIED | 3/3 | 14.6s | f6e49761ae2bd2cd |
 | 2026-04-17 | CERTIFIED | 3/3 | 14.8s | 610f13785381a203 |
@@ -34,3 +35,4 @@
 | 2026-04-26 | CERTIFIED | 4/4 | 21.0s | 542f5cb8af5b0451 |
 | 2026-04-27 | CERTIFIED | 4/4 | 23.6s | cd2e6a824988f0c4 |
 | 2026-04-28 | CERTIFIED | 4/4 | 21.7s | 06fd651d072a0b45 |
+| 2026-05-09 | CERTIFIED | 6/6 | 85.4s | 08d8cb3414ca6b5c |

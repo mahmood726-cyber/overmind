@@ -72,6 +72,7 @@ Execution | Re-run the R test suite with verbose/traceback enabled to ca | 1 | 0
 | TIMEOUT:dta70-4b17 | timed out | Check for WMI deadlock (Python 3.13), infinite loop, or slow | 1 | 0 | 2026-04-08 |
 | TIMEOUT:esc-acs-li | timed out | Check for WMI deadlock (Python 3.13), infinite loop, or slow | 1 | 0 | 2026-04-15 |
 | TIMEOUT:evidence-i | timed out | Check for WMI deadlock (Python 3.13), infinite loop, or slow | 1 | 0 | 2026-04-15 |
+| TIMEOUT:evidence-i | timed out | Check for WMI deadlock (Python 3.13), infinite loop, or slow | 1 | 0 | 2026-05-06 |
 | TIMEOUT:evidenceor | timed out | Check for WMI deadlock (Python 3.13), infinite loop, or slow | 1 | 0 | 2026-04-15 |
 | TIMEOUT:experiment | timed out | Check for WMI deadlock (Python 3.13), infinite loop, or slow | 1 | 0 | 2026-04-15 |
 | TIMEOUT:fatiha-pro | timed out | Check for WMI deadlock (Python 3.13), infinite loop, or slow | 1 | 0 | 2026-04-08 |

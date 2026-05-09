@@ -1,18 +1,18 @@
 # ipd-meta-pro-link
 
-**Last verified:** 2026-05-05 10:47 UTC | **Verdict:** CERTIFIED (4/4 witnesses agree PASS)
-**Bundle hash:** b6ebf2465adc4349 | **Risk:** high | **Math:** 20
+**Last verified:** 2026-05-09 03:21 UTC | **Verdict:** CERTIFIED (4/4 witnesses agree PASS)
+**Bundle hash:** b29f050cc152eb2c | **Risk:** high | **Math:** 20
 
 ## Health
 
 | Witness | Verdict | Time | Detail |
 |---------|---------|------|--------|
-| test_suite | PASS | 19.2s | ======================================================================
+| test_suite | PASS | 20.8s | ======================================================================
 IPD Meta- |
 | smoke | SKIP | 0.0s | skipped |
-| semgrep | PASS | 44.4s | semgrep findings: ERROR=0 WARNING=0 INFO=0; engine errors=12 |
+| semgrep | PASS | 58.7s | semgrep findings: ERROR=0 WARNING=0 INFO=0; engine errors=15 |
 | pip_audit | SKIP | 0.0s | skipped |
-| numerical | PASS | 0.1s | 8 values within tolerance |
+| numerical | PASS | 0.2s | 8 values within tolerance |
 | numerical_continuity | PASS | 0.0s | numerical continuity: baseline + provenance checks OK |
 
 ## Project
@@ -26,7 +26,6 @@ IPD Meta- |
 
 | Date | Verdict | Witnesses | Time | Hash |
 |------|---------|-----------|------|------|
-| 2026-04-13 | FAIL | 1/3 | 0.1s | 6a2d1c5fafb75b79 |
 | 2026-04-15 | FAIL | 1/1 | 0.0s | 90d9738193edf762 |
 | 2026-04-17 | PASS | 1/3 | 16.6s | 759d10b074dfced5 |
 | 2026-04-19 | PASS | 1/3 | 18.4s | c01225289a4b2662 |
@@ -36,3 +35,4 @@ IPD Meta- |
 | 2026-04-27 | UNVERIFIED | 2/4 | 18.2s | 0605343e0256d8af |
 | 2026-04-28 | UNVERIFIED | 2/4 | 17.6s | 947fa9549e815480 |
 | 2026-05-05 | CERTIFIED | 4/6 | 63.8s | b6ebf2465adc4349 |
+| 2026-05-09 | CERTIFIED | 4/6 | 79.7s | b29f050cc152eb2c |

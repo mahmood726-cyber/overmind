@@ -1,16 +1,18 @@
 # MetaAudit
 
-**Last verified:** 2026-04-28 02:42 UTC | **Verdict:** CERTIFIED (4/4 witnesses agree PASS)
-**Bundle hash:** 7eb894ed1bd9b176 | **Risk:** high | **Math:** 10
+**Last verified:** 2026-05-09 03:21 UTC | **Verdict:** CERTIFIED (6/6 witnesses agree PASS)
+**Bundle hash:** 2380c2d449b8957f | **Risk:** high | **Math:** 10
 
 ## Health
 
 | Witness | Verdict | Time | Detail |
 |---------|---------|------|--------|
-| test_suite | PASS | 5.6s | ============================= test session starts =============================
+| test_suite | PASS | 5.7s | ============================= test session starts =============================
  |
-| smoke | PASS | 47.8s | 25 modules imported OK |
-| numerical | PASS | 2.8s | 4 values within tolerance |
+| smoke | PASS | 50.8s | 25 modules imported OK |
+| semgrep | PASS | 17.9s | semgrep findings: ERROR=0 WARNING=0 INFO=0; engine errors=0 |
+| pip_audit | PASS | 44.5s | pip-audit findings: 0 vulnerabilities across 12 dep(s); scope: requirements file |
+| numerical | PASS | 3.4s | 4 values within tolerance |
 | numerical_continuity | PASS | 0.0s | numerical continuity: baseline + provenance checks OK |
 
 ## Project
@@ -24,7 +26,6 @@
 
 | Date | Verdict | Witnesses | Time | Hash |
 |------|---------|-----------|------|------|
-| 2026-04-12 | REJECT | 2/2 | 25.6s | 06e6812eae342ee1 |
 | 2026-04-13 | REJECT | 2/2 | 32.3s | 401211baad54ea2c |
 | 2026-04-15 | CERTIFIED | 2/2 | 31.9s | 247df60d5237ff32 |
 | 2026-04-17 | CERTIFIED | 3/3 | 40.5s | ca3b9cad1779d267 |
@@ -34,3 +35,4 @@
 | 2026-04-26 | CERTIFIED | 4/4 | 53.9s | 6e37aed10aecb352 |
 | 2026-04-27 | CERTIFIED | 4/4 | 59.7s | dd365e6aedb3f45c |
 | 2026-04-28 | CERTIFIED | 4/4 | 56.2s | 7eb894ed1bd9b176 |
+| 2026-05-09 | CERTIFIED | 6/6 | 122.3s | 2380c2d449b8957f |

@@ -1,16 +1,18 @@
 # advanced-nma-pooling
 
-**Last verified:** 2026-04-28 02:42 UTC | **Verdict:** CERTIFIED (4/4 witnesses agree PASS)
-**Bundle hash:** 6aacb12886db999c | **Risk:** high | **Math:** 20
+**Last verified:** 2026-05-09 03:21 UTC | **Verdict:** CERTIFIED (6/6 witnesses agree PASS)
+**Bundle hash:** 263eea759faf0032 | **Risk:** high | **Math:** 20
 
 ## Health
 
 | Witness | Verdict | Time | Detail |
 |---------|---------|------|--------|
-| test_suite | PASS | 6.4s | .                                                                        [100%]
+| test_suite | PASS | 8.9s | .                                                                        [100%]
  |
-| smoke | PASS | 19.0s | 40 modules imported OK |
-| numerical | PASS | 0.5s | 6 values within tolerance |
+| smoke | PASS | 27.2s | 40 modules imported OK |
+| semgrep | PASS | 34.5s | semgrep findings: ERROR=0 WARNING=0 INFO=0; engine errors=0 |
+| pip_audit | PASS | 78.5s | pip-audit findings: 0 vulnerabilities across 0 dep(s); scope: requirements file: |
+| numerical | PASS | 1.0s | 6 values within tolerance |
 | numerical_continuity | PASS | 0.0s | numerical continuity: baseline + provenance checks OK |
 
 ## Project
@@ -24,7 +26,6 @@
 
 | Date | Verdict | Witnesses | Time | Hash |
 |------|---------|-----------|------|------|
-| 2026-04-12 | REJECT | 3/3 | 12.1s | b84340037aafe220 |
 | 2026-04-13 | REJECT | 3/3 | 5.5s | 67030363e12da07b |
 | 2026-04-15 | FAIL | 1/1 | 300.0s | 76c47acd327ef4bc |
 | 2026-04-17 | CERTIFIED | 3/3 | 20.1s | d98ca745941f34d0 |
@@ -34,3 +35,4 @@
 | 2026-04-26 | CERTIFIED | 4/4 | 27.7s | 91286dfc3bde1395 |
 | 2026-04-27 | CERTIFIED | 4/4 | 30.9s | 5f961843d42e2a9a |
 | 2026-04-28 | CERTIFIED | 4/4 | 25.9s | 6aacb12886db999c |
+| 2026-05-09 | CERTIFIED | 6/6 | 150.2s | 263eea759faf0032 |

@@ -1,5 +1,18 @@
 # Overmind Wiki Changelog
 
+## 2026-05-09
+
+**Verified:** 50 | **Certified:** 49 | **Rejected:** 1 | **Failed:** 0
+
+### Changes from last night
+- prognostic-meta: UNVERIFIED -> CERTIFIED
+- lec_phase0_project: UNVERIFIED -> CERTIFIED
+
+### New projects verified
+- cora
+- nur-cardiorenal-poc
+
+
 ## 2026-05-06
 
 **Verified:** 1 | **Certified:** 0 | **Rejected:** 0 | **Failed:** 1
@@ -252,17 +265,4 @@
 
 ### Changes from last night
 - registry_first_rct_meta: UNVERIFIED -> CERTIFIED
-
-
-## 2026-05-03
-
-**Verified:** 11 | **Certified:** 8 | **Rejected:** 3 | **Failed:** 0
-
-### Changes from last night
-- ctgov-search-strategies: CERTIFIED -> REJECT
-- GWAM: CERTIFIED -> REJECT
-- hfpef_registry_calibration: CERTIFIED -> REJECT
-- metaoverfit: PASS -> CERTIFIED
-- MLMResearch: PASS -> CERTIFIED
-- four_limb_synthesis: REJECT -> CERTIFIED
 

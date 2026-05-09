@@ -1,18 +1,18 @@
 # ctgov-search-strategies
 
-**Last verified:** 2026-05-04 17:46 UTC | **Verdict:** CERTIFIED (4/4 witnesses agree PASS)
-**Bundle hash:** eda9e8abc731171f | **Risk:** high | **Math:** 7
+**Last verified:** 2026-05-09 03:21 UTC | **Verdict:** CERTIFIED (4/4 witnesses agree PASS)
+**Bundle hash:** 3beac53db366bd21 | **Risk:** high | **Math:** 7
 
 ## Health
 
 | Witness | Verdict | Time | Detail |
 |---------|---------|------|--------|
-| test_suite | PASS | 4.2s | ............................                                             [100%]
+| test_suite | PASS | 4.8s | ............................                                             [100%]
  |
-| smoke | PASS | 17.7s | 40 modules imported OK |
-| semgrep | PASS | 60.6s | semgrep findings: ERROR=0 WARNING=7 INFO=0; engine errors=1
-7 advisory WARNING f |
-| pip_audit | PASS | 54.8s | pip-audit findings: 0 vulnerabilities across 52 dep(s); scope: requirements file |
+| smoke | PASS | 20.0s | 40 modules imported OK |
+| semgrep | PASS | 111.1s | semgrep findings: ERROR=0 WARNING=7 INFO=0; engine errors=18
+7 advisory WARNING  |
+| pip_audit | PASS | 61.7s | pip-audit findings: 0 vulnerabilities across 53 dep(s); scope: requirements file |
 
 ## Project
 
@@ -25,7 +25,6 @@
 
 | Date | Verdict | Witnesses | Time | Hash |
 |------|---------|-----------|------|------|
-| 2026-04-15 | CERTIFIED | 2/2 | 16.4s | 25ffa71963fa19b5 |
 | 2026-04-17 | CERTIFIED | 2/2 | 18.4s | dbc950ebada82f0b |
 | 2026-04-19 | CERTIFIED | 2/2 | 19.4s | 67cc639d353b8661 |
 | 2026-04-20 | CERTIFIED | 2/2 | 18.6s | 512158da7d1d9278 |
@@ -35,3 +34,4 @@
 | 2026-04-28 | CERTIFIED | 2/2 | 23.1s | 2abc1f0b460b7654 |
 | 2026-05-03 | REJECT | 4/4 | 143.5s | 1e63b39f7cedb825 |
 | 2026-05-04 | CERTIFIED | 4/4 | 137.3s | eda9e8abc731171f |
+| 2026-05-09 | CERTIFIED | 4/4 | 197.5s | 3beac53db366bd21 |

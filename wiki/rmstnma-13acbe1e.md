@@ -1,18 +1,18 @@
 # rmstnma
 
-**Last verified:** 2026-05-04 21:18 UTC | **Verdict:** CERTIFIED (4/4 witnesses agree PASS)
-**Bundle hash:** 33ff44e431c592ec | **Risk:** high | **Math:** 15
+**Last verified:** 2026-05-09 03:21 UTC | **Verdict:** CERTIFIED (4/4 witnesses agree PASS)
+**Bundle hash:** dfaa79ef0dc3136f | **Risk:** high | **Math:** 15
 
 ## Health
 
 | Witness | Verdict | Time | Detail |
 |---------|---------|------|--------|
-| test_suite | PASS | 1.9s | ....                                                                     [100%]
+| test_suite | PASS | 3.6s | ....                                                                     [100%]
  |
 | smoke | SKIP | 0.0s | skipped |
-| semgrep | PASS | 13.8s | semgrep findings: ERROR=0 WARNING=0 INFO=0; engine errors=0 |
+| semgrep | PASS | 17.8s | semgrep findings: ERROR=0 WARNING=0 INFO=0; engine errors=0 |
 | pip_audit | SKIP | 0.0s | skipped |
-| numerical | PASS | 2.5s | 8 values within tolerance |
+| numerical | PASS | 6.0s | 8 values within tolerance |
 | numerical_continuity | PASS | 0.0s | numerical continuity: baseline + provenance checks OK |
 
 ## Project
@@ -35,3 +35,4 @@
 | 2026-05-04 | UNVERIFIED | 3/6 | 21.2s | b3dc6fbd7c3f18a6 |
 | 2026-05-04 | UNVERIFIED | 3/6 | 13.7s | e8a64528f682d5af |
 | 2026-05-04 | CERTIFIED | 4/6 | 18.3s | 33ff44e431c592ec |
+| 2026-05-09 | CERTIFIED | 4/6 | 27.4s | dfaa79ef0dc3136f |

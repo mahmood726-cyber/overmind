@@ -1,7 +1,7 @@
 # Denominator_Calibrated_Living_NMA
 
-**Last verified:** 2026-04-28 02:42 UTC | **Verdict:** CERTIFIED (2/2 witnesses agree PASS)
-**Bundle hash:** abd5b411fa269ab2 | **Risk:** high | **Math:** 8
+**Last verified:** 2026-05-09 03:21 UTC | **Verdict:** CERTIFIED (3/3 witnesses agree PASS)
+**Bundle hash:** 2d4b5e225d61acd0 | **Risk:** high | **Math:** 8
 
 ## Health
 
@@ -9,20 +9,21 @@
 |---------|---------|------|--------|
 | test_suite | PASS | 3.0s | ........                                                           [100%]
 8 pass |
-| smoke | PASS | 2.6s | 16 modules imported OK |
+| smoke | PASS | 2.8s | 16 modules imported OK |
+| semgrep | PASS | 14.0s | semgrep findings: ERROR=0 WARNING=0 INFO=0; engine errors=0 |
+| pip_audit | SKIP | 0.0s | skipped |
 
 ## Project
 
 - **Path:** C:\Models\Denominator_Calibrated_Living_NMA
 - **Type:** hybrid_browser_analytics_app
-- **Stack:** css, javascript, python
+- **Stack:** css, html, javascript, python
 - **Test command:** `python -m pytest tests/test_smoke.py -q`
 
 ## Verification History
 
 | Date | Verdict | Witnesses | Time | Hash |
 |------|---------|-----------|------|------|
-| 2026-04-12 | PASS | 1/2 | 2.0s | 00aea3833e8fc566 |
 | 2026-04-13 | PASS | 1/2 | 2.0s | 756373b48b333aea |
 | 2026-04-15 | REJECT | 2/2 | 3.0s | b545a6bbd5c440c7 |
 | 2026-04-17 | REJECT | 2/2 | 3.7s | c7746d9a19c31e97 |
@@ -32,3 +33,4 @@
 | 2026-04-26 | CERTIFIED | 2/2 | 5.7s | 648047dda48c5658 |
 | 2026-04-27 | CERTIFIED | 2/2 | 6.5s | bdbec9b036ab8c0f |
 | 2026-04-28 | CERTIFIED | 2/2 | 5.6s | abd5b411fa269ab2 |
+| 2026-05-09 | CERTIFIED | 3/4 | 19.8s | 2d4b5e225d61acd0 |
