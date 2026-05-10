@@ -1,20 +1,20 @@
 # new-app
 
-**Last verified:** 2026-05-09 03:21 UTC | **Verdict:** CERTIFIED (5/5 witnesses agree PASS)
-**Bundle hash:** 67735b9eeb816377 | **Risk:** high | **Math:** 12
+**Last verified:** 2026-05-10 02:59 UTC | **Verdict:** CERTIFIED (5/5 witnesses agree PASS)
+**Bundle hash:** 876beb93017777f4 | **Risk:** high | **Math:** 12
 
 ## Health
 
 | Witness | Verdict | Time | Detail |
 |---------|---------|------|--------|
-| test_suite | PASS | 8.4s | 
+| test_suite | PASS | 7.0s | 
 > meta-analysis-platform@2.1.0 test
 > vitest run
 
 
 [7m[1m[36m RUN [39m[22m |
-| smoke | PASS | 3.3s | 37 modules imported OK |
-| semgrep | PASS | 21.4s | semgrep findings: ERROR=0 WARNING=0 INFO=0; engine errors=3 |
+| smoke | PASS | 2.0s | 37 modules imported OK |
+| semgrep | PASS | 29.3s | semgrep findings: ERROR=0 WARNING=0 INFO=0; engine errors=2 |
 | pip_audit | SKIP | 0.0s | skipped |
 | numerical | PASS | 0.1s | 9 values within tolerance |
 | numerical_continuity | PASS | 0.0s | numerical continuity: baseline + provenance checks OK |
@@ -39,3 +39,4 @@
 | 2026-04-13 | FAIL | 1/3 | 120.0s | 3a7a648c94f1948b |
 | 2026-05-05 | CERTIFIED | 5/6 | 37.3s | 7f6ab2ed8ee4b6ee |
 | 2026-05-09 | CERTIFIED | 5/6 | 33.1s | 67735b9eeb816377 |
+| 2026-05-10 | CERTIFIED | 5/6 | 38.3s | 876beb93017777f4 |

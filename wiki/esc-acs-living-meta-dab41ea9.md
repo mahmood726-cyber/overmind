@@ -1,18 +1,18 @@
 # esc-acs-living-meta
 
-**Last verified:** 2026-05-09 03:21 UTC | **Verdict:** CERTIFIED (5/5 witnesses agree PASS)
-**Bundle hash:** c6bc7ca29004f5ad | **Risk:** high | **Math:** 20
+**Last verified:** 2026-05-10 02:59 UTC | **Verdict:** CERTIFIED (5/5 witnesses agree PASS)
+**Bundle hash:** f83ffbbde5b421a4 | **Risk:** high | **Math:** 20
 
 ## Health
 
 | Witness | Verdict | Time | Detail |
 |---------|---------|------|--------|
-| test_suite | PASS | 4.3s | .                                                                        [100%]
+| test_suite | PASS | 2.7s | .                                                                        [100%]
  |
-| smoke | PASS | 2.5s | 20 modules imported OK |
-| semgrep | PASS | 30.3s | semgrep findings: ERROR=0 WARNING=0 INFO=0; engine errors=3 |
+| smoke | PASS | 2.1s | 20 modules imported OK |
+| semgrep | PASS | 22.6s | semgrep findings: ERROR=0 WARNING=0 INFO=0; engine errors=2 |
 | pip_audit | SKIP | 0.0s | skipped |
-| numerical | PASS | 0.3s | 9 values within tolerance |
+| numerical | PASS | 0.4s | 9 values within tolerance |
 | numerical_continuity | PASS | 0.0s | numerical continuity: baseline + provenance checks OK |
 
 ## Project
@@ -26,7 +26,6 @@
 
 | Date | Verdict | Witnesses | Time | Hash |
 |------|---------|-----------|------|------|
-| 2026-04-17 | UNVERIFIED | 2/3 | 3.1s | 4a4580105d5b36e1 |
 | 2026-04-19 | REJECT | 2/3 | 3.4s | 02b78c5a6f679e9f |
 | 2026-04-20 | REJECT | 3/4 | 3.5s | c9b72c16114b5060 |
 | 2026-04-25 | REJECT | 3/4 | 4.9s | 2236fc3a9dd890d9 |
@@ -36,3 +35,4 @@
 | 2026-05-04 | UNVERIFIED | 4/6 | 26.4s | 898c56c3ae99524c |
 | 2026-05-05 | CERTIFIED | 5/6 | 38.2s | 0bf60a27f4295be9 |
 | 2026-05-09 | CERTIFIED | 5/6 | 37.5s | c6bc7ca29004f5ad |
+| 2026-05-10 | CERTIFIED | 5/6 | 27.9s | f83ffbbde5b421a4 |

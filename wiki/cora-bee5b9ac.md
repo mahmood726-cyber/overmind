@@ -1,16 +1,16 @@
 # cora
 
-**Last verified:** 2026-05-09 03:21 UTC | **Verdict:** CERTIFIED (3/3 witnesses agree PASS)
-**Bundle hash:** d1069bcb85bcf7d7 | **Risk:** high | **Math:** 7
+**Last verified:** 2026-05-10 02:59 UTC | **Verdict:** CERTIFIED (3/3 witnesses agree PASS)
+**Bundle hash:** 9a90c51779ba6b2e | **Risk:** high | **Math:** 7
 
 ## Health
 
 | Witness | Verdict | Time | Detail |
 |---------|---------|------|--------|
-| test_suite | PASS | 2.6s | .                                                                        [100%]
+| test_suite | PASS | 1.9s | .                                                                        [100%]
  |
-| smoke | PASS | 30.4s | 22 modules imported OK |
-| semgrep | PASS | 13.3s | semgrep findings: ERROR=0 WARNING=0 INFO=0; engine errors=0 |
+| smoke | PASS | 22.9s | 22 modules imported OK |
+| semgrep | PASS | 9.6s | semgrep findings: ERROR=0 WARNING=0 INFO=0; engine errors=0 |
 | pip_audit | SKIP | 0.0s | skipped |
 
 ## Project
@@ -25,3 +25,4 @@
 | Date | Verdict | Witnesses | Time | Hash |
 |------|---------|-----------|------|------|
 | 2026-05-09 | CERTIFIED | 3/4 | 46.3s | d1069bcb85bcf7d7 |
+| 2026-05-10 | CERTIFIED | 3/4 | 34.3s | 9a90c51779ba6b2e |

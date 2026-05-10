@@ -1,17 +1,17 @@
 # truthcert-meta2-prototype
 
-**Last verified:** 2026-05-09 03:21 UTC | **Verdict:** CERTIFIED (4/4 witnesses agree PASS)
-**Bundle hash:** a00f7e0e3e75c6db | **Risk:** high | **Math:** 8
+**Last verified:** 2026-05-10 02:59 UTC | **Verdict:** CERTIFIED (4/4 witnesses agree PASS)
+**Bundle hash:** 335aad4ad2283c8e | **Risk:** high | **Math:** 8
 
 ## Health
 
 | Witness | Verdict | Time | Detail |
 |---------|---------|------|--------|
-| test_suite | PASS | 6.0s | .                                                                        [100%]
+| test_suite | PASS | 4.3s | .                                                                        [100%]
  |
-| smoke | PASS | 24.5s | 23 modules imported OK |
-| semgrep | PASS | 15.8s | semgrep findings: ERROR=0 WARNING=0 INFO=0; engine errors=0 |
-| pip_audit | PASS | 46.0s | pip-audit findings: 0 vulnerabilities across 18 dep(s); scope: requirements file |
+| smoke | PASS | 17.6s | 23 modules imported OK |
+| semgrep | PASS | 10.7s | semgrep findings: ERROR=0 WARNING=0 INFO=0; engine errors=0 |
+| pip_audit | PASS | 33.9s | pip-audit findings: 0 vulnerabilities across 18 dep(s); scope: requirements file |
 
 ## Project
 
@@ -24,7 +24,6 @@
 
 | Date | Verdict | Witnesses | Time | Hash |
 |------|---------|-----------|------|------|
-| 2026-04-13 | CERTIFIED | 2/2 | 29.6s | 2217619d50475acd |
 | 2026-04-15 | CERTIFIED | 2/2 | 20.3s | 10f724520e39cb0a |
 | 2026-04-17 | CERTIFIED | 2/2 | 20.1s | 248ffd069f1aa4ac |
 | 2026-04-19 | CERTIFIED | 2/2 | 19.1s | 0f75557e64799ad6 |
@@ -34,3 +33,4 @@
 | 2026-04-27 | CERTIFIED | 2/2 | 31.0s | 0cbda9b9e466af53 |
 | 2026-04-28 | CERTIFIED | 2/2 | 29.8s | f5ffb99c9ccfa728 |
 | 2026-05-09 | CERTIFIED | 4/4 | 92.3s | a00f7e0e3e75c6db |
+| 2026-05-10 | CERTIFIED | 4/4 | 66.6s | 335aad4ad2283c8e |

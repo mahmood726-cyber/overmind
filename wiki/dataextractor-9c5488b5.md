@@ -1,18 +1,18 @@
 # Dataextractor
 
-**Last verified:** 2026-05-09 03:21 UTC | **Verdict:** CERTIFIED (5/5 witnesses agree PASS)
-**Bundle hash:** 0018f069a679ef95 | **Risk:** high | **Math:** 18
+**Last verified:** 2026-05-10 02:59 UTC | **Verdict:** CERTIFIED (5/5 witnesses agree PASS)
+**Bundle hash:** bf80111b73f24f0f | **Risk:** high | **Math:** 18
 
 ## Health
 
 | Witness | Verdict | Time | Detail |
 |---------|---------|------|--------|
-| test_suite | PASS | 2.4s | 
+| test_suite | PASS | 1.6s | 
   ✓ R code includes rma()
   ✓ R code includes forest()
   ✓ R code includes funn |
-| smoke | PASS | 8.7s | 40 modules imported OK |
-| semgrep | PASS | 69.0s | semgrep findings: ERROR=0 WARNING=1 INFO=0; engine errors=9
+| smoke | PASS | 6.1s | 40 modules imported OK |
+| semgrep | PASS | 38.6s | semgrep findings: ERROR=0 WARNING=1 INFO=0; engine errors=6
 1 advisory WARNING f |
 | pip_audit | SKIP | 0.0s | skipped |
 | numerical | PASS | 0.1s | 7 values within tolerance |
@@ -29,7 +29,6 @@
 
 | Date | Verdict | Witnesses | Time | Hash |
 |------|---------|-----------|------|------|
-| 2026-04-15 | FAIL | 1/1 | 0.0s | 44121cac422e4788 |
 | 2026-04-17 | FAIL | 2/3 | 18.1s | 3df2500392caa5d9 |
 | 2026-04-19 | FAIL | 2/3 | 17.2s | 274b93cfd8b27691 |
 | 2026-04-20 | REJECT | 3/4 | 16.4s | 34f97199caa73b1e |
@@ -39,3 +38,4 @@
 | 2026-04-28 | REJECT | 3/4 | 18.2s | 1d5309ff4d0a7657 |
 | 2026-05-05 | CERTIFIED | 5/6 | 45.8s | d9d0765b444febd1 |
 | 2026-05-09 | CERTIFIED | 5/6 | 80.2s | 0018f069a679ef95 |
+| 2026-05-10 | CERTIFIED | 5/6 | 46.5s | bf80111b73f24f0f |

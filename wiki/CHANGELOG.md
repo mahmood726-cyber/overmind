@@ -1,5 +1,10 @@
 # Overmind Wiki Changelog
 
+## 2026-05-10
+
+**Verified:** 50 | **Certified:** 49 | **Rejected:** 1 | **Failed:** 0
+
+
 ## 2026-05-09
 
 **Verified:** 50 | **Certified:** 49 | **Rejected:** 1 | **Failed:** 0
@@ -257,12 +262,4 @@
 ### Changes from last night
 - esc-acs-living-meta: REJECT -> UNVERIFIED
 - NMA: UNVERIFIED -> REJECT
-
-
-## 2026-05-04
-
-**Verified:** 3 | **Certified:** 1 | **Rejected:** 0 | **Failed:** 0
-
-### Changes from last night
-- registry_first_rct_meta: UNVERIFIED -> CERTIFIED
 
