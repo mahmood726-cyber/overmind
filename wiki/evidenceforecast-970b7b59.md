@@ -1,16 +1,16 @@
 # EvidenceForecast
 
-**Last verified:** 2026-05-10 02:59 UTC | **Verdict:** CERTIFIED (5/5 witnesses agree PASS)
-**Bundle hash:** e388d6832a8a8a64 | **Risk:** high | **Math:** 14
+**Last verified:** 2026-05-12 03:11 UTC | **Verdict:** CERTIFIED (5/5 witnesses agree PASS)
+**Bundle hash:** f5df8385806f15a1 | **Risk:** high | **Math:** 14
 
 ## Health
 
 | Witness | Verdict | Time | Detail |
 |---------|---------|------|--------|
-| test_suite | PASS | 7.3s | ...                                                                      [100%]
+| test_suite | PASS | 6.7s | ...                                                                      [100%]
  |
-| smoke | PASS | 11.1s | 14 modules imported OK |
-| semgrep | PASS | 12.4s | semgrep findings: ERROR=0 WARNING=7 INFO=0; engine errors=0
+| smoke | PASS | 12.7s | 14 modules imported OK |
+| semgrep | PASS | 14.8s | semgrep findings: ERROR=0 WARNING=7 INFO=0; engine errors=0
 7 advisory WARNING f |
 | pip_audit | SKIP | 0.0s | skipped |
 | numerical | PASS | 0.2s | 12 values within tolerance |
@@ -27,7 +27,6 @@
 
 | Date | Verdict | Witnesses | Time | Hash |
 |------|---------|-----------|------|------|
-| 2026-04-19 | UNVERIFIED | 2/3 | 11.6s | 381418277ad65aca |
 | 2026-04-20 | UNVERIFIED | 3/4 | 12.8s | 43426e9c57781fac |
 | 2026-04-25 | UNVERIFIED | 3/4 | 20.6s | 492d85c1e8b45871 |
 | 2026-04-26 | UNVERIFIED | 3/4 | 20.1s | 303e8eac5ec0c1b5 |
@@ -37,3 +36,4 @@
 | 2026-05-05 | CERTIFIED | 5/6 | 26.3s | ee19da0a25f2cb4f |
 | 2026-05-09 | CERTIFIED | 5/6 | 42.1s | 5280abd38170e29c |
 | 2026-05-10 | CERTIFIED | 5/6 | 31.0s | e388d6832a8a8a64 |
+| 2026-05-12 | CERTIFIED | 5/6 | 34.3s | f5df8385806f15a1 |

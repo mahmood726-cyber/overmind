@@ -1,18 +1,18 @@
 # advanced-nma-pooling
 
-**Last verified:** 2026-05-10 02:59 UTC | **Verdict:** CERTIFIED (6/6 witnesses agree PASS)
-**Bundle hash:** 2cc646f44a7abcdb | **Risk:** high | **Math:** 20
+**Last verified:** 2026-05-12 03:11 UTC | **Verdict:** CERTIFIED (6/6 witnesses agree PASS)
+**Bundle hash:** fef6e8bb614f5342 | **Risk:** high | **Math:** 20
 
 ## Health
 
 | Witness | Verdict | Time | Detail |
 |---------|---------|------|--------|
-| test_suite | PASS | 7.9s | .                                                                        [100%]
+| test_suite | PASS | 7.2s | .                                                                        [100%]
  |
-| smoke | PASS | 20.0s | 40 modules imported OK |
-| semgrep | PASS | 30.5s | semgrep findings: ERROR=0 WARNING=0 INFO=0; engine errors=0 |
-| pip_audit | PASS | 63.7s | pip-audit findings: 0 vulnerabilities across 0 dep(s); scope: requirements file: |
-| numerical | PASS | 1.4s | 6 values within tolerance |
+| smoke | PASS | 22.6s | 40 modules imported OK |
+| semgrep | PASS | 30.6s | semgrep findings: ERROR=0 WARNING=0 INFO=0; engine errors=0 |
+| pip_audit | PASS | 69.2s | pip-audit findings: 0 vulnerabilities across 0 dep(s); scope: requirements file: |
+| numerical | PASS | 0.7s | 6 values within tolerance |
 | numerical_continuity | PASS | 0.0s | numerical continuity: baseline + provenance checks OK |
 
 ## Project
@@ -26,7 +26,6 @@
 
 | Date | Verdict | Witnesses | Time | Hash |
 |------|---------|-----------|------|------|
-| 2026-04-15 | FAIL | 1/1 | 300.0s | 76c47acd327ef4bc |
 | 2026-04-17 | CERTIFIED | 3/3 | 20.1s | d98ca745941f34d0 |
 | 2026-04-19 | CERTIFIED | 3/3 | 21.4s | 9208c72b1554aa49 |
 | 2026-04-20 | CERTIFIED | 4/4 | 22.5s | cb5a4143d2cad9c7 |
@@ -36,3 +35,4 @@
 | 2026-04-28 | CERTIFIED | 4/4 | 25.9s | 6aacb12886db999c |
 | 2026-05-09 | CERTIFIED | 6/6 | 150.2s | 263eea759faf0032 |
 | 2026-05-10 | CERTIFIED | 6/6 | 123.5s | 2cc646f44a7abcdb |
+| 2026-05-12 | CERTIFIED | 6/6 | 130.3s | fef6e8bb614f5342 |

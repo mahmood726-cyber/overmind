@@ -26,6 +26,7 @@ SyntaxErro | Fix the syntax error in the reported file | 2 | 0 | 2026-04-08 |
 SyntaxErro | Fix the syntax error in the reported file | 2 | 0 | 2026-04-13 |
 | UNKNOWN:pairwise70 | ck, subtests, tmp_path, tmp_pa | Manual investigation needed | 2 | 0 | 2026-04-10 |
 | CONFIGURATION:fatiha-pro | Could not parse output as JSON | Inspect numerical witness script to ensure it emits valid JS | 1 | 0 | 2026-05-04 |
+| CONFIGURATION:finrenone- | semgrep findings: ERROR=1 WARN | Replace stdlib xml parser with defusedxml in scripts/nct_dat | 1 | 0 | 2026-05-10 |
 | DEPENDENCY_ROT:browser_runtime | browser_runtime | Check if browser_runtime is installed: pip install browser_r | 1 | 0 | 2026-05-04 |
 | DEPENDENCY_ROT:cardioorac | mal_cdf, load_data)
 ImportErro | Check if shared is installed: pip install shared | 1 | 0 | 2026-04-13 |
@@ -106,5 +107,4 @@ Execution | Re-run the R test suite with verbose/traceback enabled to ca | 1 | 0
 | TIMEOUT:ubcma-4230 | timed out | Check for WMI deadlock (Python 3.13), infinite loop, or slow | 1 | 0 | 2026-04-08 |
 | TIMEOUT:user-ecc0a | timed out | Check for WMI deadlock (Python 3.13), infinite loop, or slow | 1 | 0 | 2026-04-17 |
 | UNKNOWN:denominato | py:src.dclnma.witnesses.base: | Manual investigation needed | 1 | 1 | 2026-04-25 |
-| UNKNOWN:finrenone- | semgrep findings: ERROR=1 WARN | Manual investigation needed | 1 | 0 | 2026-05-09 |
 | UNKNOWN:hta-eviden | no tests ran in 2.35s | Manual investigation needed | 1 | 0 | 2026-04-09 |

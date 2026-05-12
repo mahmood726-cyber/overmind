@@ -1,18 +1,18 @@
 # KMcurve
 
-**Last verified:** 2026-05-10 02:59 UTC | **Verdict:** CERTIFIED (5/5 witnesses agree PASS)
-**Bundle hash:** a2505a2889e2dc28 | **Risk:** high | **Math:** 20
+**Last verified:** 2026-05-12 03:11 UTC | **Verdict:** CERTIFIED (5/5 witnesses agree PASS)
+**Bundle hash:** 43e80030cbc32710 | **Risk:** high | **Math:** 20
 
 ## Health
 
 | Witness | Verdict | Time | Detail |
 |---------|---------|------|--------|
-| test_suite | PASS | 15.0s | ....                                                                     [100%]
+| test_suite | PASS | 14.2s | ....                                                                     [100%]
  |
-| smoke | PASS | 71.7s | 40 modules imported OK |
-| semgrep | PASS | 24.5s | semgrep findings: ERROR=0 WARNING=0 INFO=0; engine errors=0 |
+| smoke | PASS | 84.2s | 40 modules imported OK |
+| semgrep | PASS | 27.8s | semgrep findings: ERROR=0 WARNING=0 INFO=0; engine errors=0 |
 | pip_audit | SKIP | 0.0s | skipped |
-| numerical | PASS | 1.2s | 9 values within tolerance |
+| numerical | PASS | 1.3s | 9 values within tolerance |
 | numerical_continuity | PASS | 0.0s | numerical continuity: baseline + provenance checks OK |
 
 ## Project
@@ -26,7 +26,6 @@
 
 | Date | Verdict | Witnesses | Time | Hash |
 |------|---------|-----------|------|------|
-| 2026-04-19 | REJECT | 2/3 | 68.4s | a74f0618548d2349 |
 | 2026-04-20 | REJECT | 3/4 | 76.8s | 769f32531e931f7b |
 | 2026-04-25 | REJECT | 3/4 | 98.3s | 07b632e18c8ea47f |
 | 2026-04-26 | UNVERIFIED | 3/4 | 81.6s | 8eab19f1b0cc001b |
@@ -36,3 +35,4 @@
 | 2026-05-05 | CERTIFIED | 5/6 | 96.6s | a49a71f4a78530ac |
 | 2026-05-09 | CERTIFIED | 5/6 | 148.0s | 1b6b715af45b5881 |
 | 2026-05-10 | CERTIFIED | 5/6 | 112.4s | a2505a2889e2dc28 |
+| 2026-05-12 | CERTIFIED | 5/6 | 127.6s | 43e80030cbc32710 |

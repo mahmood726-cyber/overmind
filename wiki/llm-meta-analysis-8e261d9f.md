@@ -1,19 +1,19 @@
 # llm-meta-analysis
 
-**Last verified:** 2026-05-10 02:59 UTC | **Verdict:** CERTIFIED (5/5 witnesses agree PASS)
-**Bundle hash:** e1140f215a772d99 | **Risk:** high | **Math:** 10
+**Last verified:** 2026-05-12 03:11 UTC | **Verdict:** CERTIFIED (5/5 witnesses agree PASS)
+**Bundle hash:** 1f54098d52e73e48 | **Risk:** high | **Math:** 10
 
 ## Health
 
 | Witness | Verdict | Time | Detail |
 |---------|---------|------|--------|
-| test_suite | PASS | 2.0s | .                                                                        [100%]
+| test_suite | PASS | 2.5s | .                                                                        [100%]
  |
-| smoke | PASS | 56.6s | 40 modules imported OK |
-| semgrep | PASS | 30.4s | semgrep findings: ERROR=0 WARNING=91 INFO=0; engine errors=0
+| smoke | PASS | 70.0s | 40 modules imported OK |
+| semgrep | PASS | 35.4s | semgrep findings: ERROR=0 WARNING=91 INFO=0; engine errors=0
 91 advisory WARNING |
 | pip_audit | SKIP | 0.0s | skipped |
-| numerical | PASS | 1.7s | 10 values within tolerance |
+| numerical | PASS | 2.2s | 10 values within tolerance |
 | numerical_continuity | PASS | 0.0s | numerical continuity: baseline + provenance checks OK |
 
 ## Project
@@ -27,7 +27,6 @@
 
 | Date | Verdict | Witnesses | Time | Hash |
 |------|---------|-----------|------|------|
-| 2026-04-19 | REJECT | 2/3 | 63.0s | 09e384e9a30eb462 |
 | 2026-04-20 | UNVERIFIED | 3/4 | 62.9s | 8915919da5185f92 |
 | 2026-04-25 | REJECT | 3/4 | 80.9s | 90729ffbfefd048a |
 | 2026-04-26 | UNVERIFIED | 3/4 | 76.4s | 80daa6f592e558f9 |
@@ -37,3 +36,4 @@
 | 2026-05-05 | CERTIFIED | 5/6 | 134.5s | cc1f8139da662fdc |
 | 2026-05-09 | CERTIFIED | 5/6 | 132.8s | 314cefb3124cd7a6 |
 | 2026-05-10 | CERTIFIED | 5/6 | 90.7s | e1140f215a772d99 |
+| 2026-05-12 | CERTIFIED | 5/6 | 110.1s | 1f54098d52e73e48 |

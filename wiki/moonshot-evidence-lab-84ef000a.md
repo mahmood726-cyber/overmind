@@ -1,16 +1,16 @@
 # moonshot-evidence-lab
 
-**Last verified:** 2026-05-10 02:59 UTC | **Verdict:** CERTIFIED (5/5 witnesses agree PASS)
-**Bundle hash:** bffab952f39bf582 | **Risk:** high | **Math:** 11
+**Last verified:** 2026-05-12 03:11 UTC | **Verdict:** CERTIFIED (5/5 witnesses agree PASS)
+**Bundle hash:** f16e7ed314512268 | **Risk:** high | **Math:** 11
 
 ## Health
 
 | Witness | Verdict | Time | Detail |
 |---------|---------|------|--------|
-| test_suite | PASS | 2.1s | ...........                                                              [100%]
+| test_suite | PASS | 2.6s | ...........                                                              [100%]
  |
-| smoke | PASS | 3.0s | 19 modules imported OK |
-| semgrep | PASS | 10.2s | semgrep findings: ERROR=0 WARNING=4 INFO=0; engine errors=0
+| smoke | PASS | 4.1s | 19 modules imported OK |
+| semgrep | PASS | 14.2s | semgrep findings: ERROR=0 WARNING=4 INFO=0; engine errors=0
 4 advisory WARNING f |
 | pip_audit | SKIP | 0.0s | skipped |
 | numerical | PASS | 0.2s | 12 values within tolerance |
@@ -27,7 +27,6 @@
 
 | Date | Verdict | Witnesses | Time | Hash |
 |------|---------|-----------|------|------|
-| 2026-04-17 | UNVERIFIED | 2/3 | 4.8s | 2e9c064240a0499a |
 | 2026-04-19 | UNVERIFIED | 2/3 | 4.4s | 3edfd2a16d796449 |
 | 2026-04-20 | UNVERIFIED | 3/4 | 4.7s | 74599c026b418ded |
 | 2026-04-25 | UNVERIFIED | 3/4 | 7.3s | 7141aad63a508aac |
@@ -37,3 +36,4 @@
 | 2026-05-05 | CERTIFIED | 5/6 | 19.1s | c369c1c784a3feae |
 | 2026-05-09 | CERTIFIED | 5/6 | 23.4s | b2a0a4439133e95e |
 | 2026-05-10 | CERTIFIED | 5/6 | 15.5s | bffab952f39bf582 |
+| 2026-05-12 | CERTIFIED | 5/6 | 21.1s | f16e7ed314512268 |

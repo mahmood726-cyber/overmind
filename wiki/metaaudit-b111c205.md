@@ -1,18 +1,18 @@
 # MetaAudit
 
-**Last verified:** 2026-05-10 02:59 UTC | **Verdict:** CERTIFIED (6/6 witnesses agree PASS)
-**Bundle hash:** 990e9714dad25391 | **Risk:** high | **Math:** 10
+**Last verified:** 2026-05-12 03:11 UTC | **Verdict:** CERTIFIED (6/6 witnesses agree PASS)
+**Bundle hash:** fb9faa3fb1c1dc25 | **Risk:** high | **Math:** 10
 
 ## Health
 
 | Witness | Verdict | Time | Detail |
 |---------|---------|------|--------|
-| test_suite | PASS | 4.3s | ============================= test session starts =============================
+| test_suite | PASS | 5.3s | ============================= test session starts =============================
  |
-| smoke | PASS | 36.5s | 25 modules imported OK |
-| semgrep | PASS | 12.7s | semgrep findings: ERROR=0 WARNING=0 INFO=0; engine errors=0 |
-| pip_audit | PASS | 34.5s | pip-audit findings: 0 vulnerabilities across 12 dep(s); scope: requirements file |
-| numerical | PASS | 2.1s | 4 values within tolerance |
+| smoke | PASS | 46.1s | 25 modules imported OK |
+| semgrep | PASS | 21.1s | semgrep findings: ERROR=0 WARNING=0 INFO=0; engine errors=0 |
+| pip_audit | PASS | 41.0s | pip-audit findings: 0 vulnerabilities across 12 dep(s); scope: requirements file |
+| numerical | PASS | 2.8s | 4 values within tolerance |
 | numerical_continuity | PASS | 0.0s | numerical continuity: baseline + provenance checks OK |
 
 ## Project
@@ -26,7 +26,6 @@
 
 | Date | Verdict | Witnesses | Time | Hash |
 |------|---------|-----------|------|------|
-| 2026-04-15 | CERTIFIED | 2/2 | 31.9s | 247df60d5237ff32 |
 | 2026-04-17 | CERTIFIED | 3/3 | 40.5s | ca3b9cad1779d267 |
 | 2026-04-19 | CERTIFIED | 3/3 | 38.2s | 3c8254fd40c03a54 |
 | 2026-04-20 | CERTIFIED | 4/4 | 40.0s | e5a353ae873855a2 |
@@ -36,3 +35,4 @@
 | 2026-04-28 | CERTIFIED | 4/4 | 56.2s | 7eb894ed1bd9b176 |
 | 2026-05-09 | CERTIFIED | 6/6 | 122.3s | 2380c2d449b8957f |
 | 2026-05-10 | CERTIFIED | 6/6 | 90.1s | 990e9714dad25391 |
+| 2026-05-12 | CERTIFIED | 6/6 | 116.4s | fb9faa3fb1c1dc25 |

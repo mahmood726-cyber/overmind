@@ -1,16 +1,16 @@
 # cardio-ctgov-living-meta-portfolio
 
-**Last verified:** 2026-05-10 02:59 UTC | **Verdict:** CERTIFIED (4/4 witnesses agree PASS)
-**Bundle hash:** f202ce9e78dc24f1 | **Risk:** high | **Math:** 10
+**Last verified:** 2026-05-12 03:11 UTC | **Verdict:** CERTIFIED (4/4 witnesses agree PASS)
+**Bundle hash:** dacd50849dfcdcfd | **Risk:** high | **Math:** 10
 
 ## Health
 
 | Witness | Verdict | Time | Detail |
 |---------|---------|------|--------|
-| test_suite | PASS | 1.9s | .                                                                        [100%]
+| test_suite | PASS | 2.5s | .                                                                        [100%]
  |
 | smoke | SKIP | 0.0s | skipped |
-| semgrep | PASS | 12.9s | semgrep findings: ERROR=0 WARNING=1 INFO=0; engine errors=1
+| semgrep | PASS | 19.1s | semgrep findings: ERROR=0 WARNING=1 INFO=0; engine errors=1
 1 advisory WARNING f |
 | pip_audit | SKIP | 0.0s | skipped |
 | numerical | PASS | 0.1s | 6 values within tolerance |
@@ -27,7 +27,6 @@
 
 | Date | Verdict | Witnesses | Time | Hash |
 |------|---------|-----------|------|------|
-| 2026-04-19 | PASS | 1/3 | 1.6s | 6dd961d4e401f9cb |
 | 2026-04-20 | UNVERIFIED | 2/4 | 1.7s | 165210970577d086 |
 | 2026-04-25 | UNVERIFIED | 2/4 | 2.5s | 981a78d91b02b9cf |
 | 2026-04-26 | UNVERIFIED | 2/4 | 3.0s | c3b3bde1e113e7b8 |
@@ -37,3 +36,4 @@
 | 2026-05-05 | CERTIFIED | 4/6 | 19.0s | 29a981aa2a8c4950 |
 | 2026-05-09 | CERTIFIED | 4/6 | 23.9s | 4a0971a0a02409f8 |
 | 2026-05-10 | CERTIFIED | 4/6 | 14.9s | f202ce9e78dc24f1 |
+| 2026-05-12 | CERTIFIED | 4/6 | 21.8s | dacd50849dfcdcfd |
