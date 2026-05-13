@@ -1,16 +1,16 @@
 # ubcma
 
-**Last verified:** 2026-05-12 03:11 UTC | **Verdict:** CERTIFIED (5/5 witnesses agree PASS)
-**Bundle hash:** c2e09f5bc6ab596a | **Risk:** high | **Math:** 11
+**Last verified:** 2026-05-13 03:17 UTC | **Verdict:** CERTIFIED (5/5 witnesses agree PASS)
+**Bundle hash:** 6b10383461220431 | **Risk:** high | **Math:** 11
 
 ## Health
 
 | Witness | Verdict | Time | Detail |
 |---------|---------|------|--------|
-| test_suite | PASS | 5.3s | .......                                                                  [100%]
+| test_suite | PASS | 5.2s | .......                                                                  [100%]
  |
-| smoke | PASS | 51.1s | 18 modules imported OK |
-| semgrep | PASS | 12.6s | semgrep findings: ERROR=0 WARNING=0 INFO=0; engine errors=0 |
+| smoke | PASS | 50.4s | 18 modules imported OK |
+| semgrep | PASS | 13.0s | semgrep findings: ERROR=0 WARNING=0 INFO=0; engine errors=0 |
 | pip_audit | SKIP | 0.0s | skipped |
 | numerical | PASS | 2.2s | 2 values within tolerance |
 | numerical_continuity | PASS | 0.0s | numerical continuity: baseline + provenance checks OK |
@@ -26,7 +26,6 @@
 
 | Date | Verdict | Witnesses | Time | Hash |
 |------|---------|-----------|------|------|
-| 2026-04-17 | CERTIFIED | 3/3 | 42.9s | a99200c4e7b5f812 |
 | 2026-04-19 | CERTIFIED | 3/3 | 39.8s | 1253efec06a9f95f |
 | 2026-04-20 | CERTIFIED | 4/4 | 41.2s | 2a186c649f2c37c4 |
 | 2026-04-25 | CERTIFIED | 4/4 | 55.0s | 01a02c71cda2c350 |
@@ -36,3 +35,4 @@
 | 2026-05-09 | CERTIFIED | 5/6 | 78.6s | f0b0205984460e7e |
 | 2026-05-10 | CERTIFIED | 5/6 | 58.1s | 66d1ba2e7d377584 |
 | 2026-05-12 | CERTIFIED | 5/6 | 71.2s | c2e09f5bc6ab596a |
+| 2026-05-13 | CERTIFIED | 5/6 | 70.8s | 6b10383461220431 |

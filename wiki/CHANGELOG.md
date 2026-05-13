@@ -1,5 +1,10 @@
 # Overmind Wiki Changelog
 
+## 2026-05-13
+
+**Verified:** 50 | **Certified:** 49 | **Rejected:** 1 | **Failed:** 0
+
+
 ## 2026-05-12
 
 **Verified:** 50 | **Certified:** 49 | **Rejected:** 1 | **Failed:** 0
@@ -250,12 +255,4 @@
 ### New projects verified
 - Finrenone
 - arac
-
-
-## 2026-05-04
-
-**Verified:** 1 | **Certified:** 0 | **Rejected:** 0 | **Failed:** 0
-
-### Changes from last night
-- NMA: REJECT -> UNVERIFIED
 

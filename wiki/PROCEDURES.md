@@ -14,6 +14,7 @@ Automatically discovered fix recipes from nightly verification outcomes.
 | Recipe | Pattern | Fix | Seen | Resolved | Last Seen |
 |--------|---------|-----|------|----------|-----------|
 | CONFIGURATION:evidence-i | no tests ran in 0.03s | Check pytest configuration (testpaths, test file naming, col | 2 | 0 | 2026-04-11 |
+| CONFIGURATION:finrenone- | semgrep findings: ERROR=1 WARN | Replace stdlib xml parser with defusedxml in scripts/nct_dat | 2 | 0 | 2026-05-12 |
 | CONFIGURATION:idea12-592 | validation.run_quick_validatio | Verify column names in validation.run_quick_validation match | 2 | 0 | 2026-04-13 |
 | DEPENDENCY_ROT:statistical_framework | statistical_framework | Check if statistical_framework is installed: pip install sta | 2 | 0 | 2026-04-08 |
 | MISSING_FIXTURE:pairwise70 | ck, subtests, tmp_path, tmp_pa | Check test for unregistered fixture parameters and ensure re | 2 | 0 | 2026-04-12 |
@@ -26,7 +27,6 @@ SyntaxErro | Fix the syntax error in the reported file | 2 | 0 | 2026-04-08 |
 SyntaxErro | Fix the syntax error in the reported file | 2 | 0 | 2026-04-13 |
 | UNKNOWN:pairwise70 | ck, subtests, tmp_path, tmp_pa | Manual investigation needed | 2 | 0 | 2026-04-10 |
 | CONFIGURATION:fatiha-pro | Could not parse output as JSON | Inspect numerical witness script to ensure it emits valid JS | 1 | 0 | 2026-05-04 |
-| CONFIGURATION:finrenone- | semgrep findings: ERROR=1 WARN | Replace stdlib xml parser with defusedxml in scripts/nct_dat | 1 | 0 | 2026-05-10 |
 | DEPENDENCY_ROT:browser_runtime | browser_runtime | Check if browser_runtime is installed: pip install browser_r | 1 | 0 | 2026-05-04 |
 | DEPENDENCY_ROT:cardioorac | mal_cdf, load_data)
 ImportErro | Check if shared is installed: pip install shared | 1 | 0 | 2026-04-13 |

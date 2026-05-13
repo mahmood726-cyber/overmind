@@ -1,7 +1,7 @@
 # NMA
 
-**Last verified:** 2026-05-12 03:11 UTC | **Verdict:** CERTIFIED (4/4 witnesses agree PASS)
-**Bundle hash:** e4cb08ea7e95f7eb | **Risk:** high | **Math:** 11
+**Last verified:** 2026-05-13 03:17 UTC | **Verdict:** CERTIFIED (4/4 witnesses agree PASS)
+**Bundle hash:** 0f2f2abfbc67a86a | **Risk:** high | **Math:** 11
 
 ## Health
 
@@ -13,7 +13,7 @@
 | smoke | SKIP | 0.0s | skipped |
 | semgrep | PASS | 13.3s | semgrep findings: ERROR=0 WARNING=0 INFO=0; engine errors=0 |
 | pip_audit | SKIP | 0.0s | skipped |
-| numerical | PASS | 1.3s | 9 values within tolerance |
+| numerical | PASS | 1.2s | 9 values within tolerance |
 | numerical_continuity | PASS | 0.0s | numerical continuity: baseline + provenance checks OK |
 
 ## Project
@@ -27,7 +27,6 @@
 
 | Date | Verdict | Witnesses | Time | Hash |
 |------|---------|-----------|------|------|
-| 2026-04-27 | UNVERIFIED | 2/4 | 3.4s | 62ddf778cbbd6cd3 |
 | 2026-04-28 | UNVERIFIED | 2/4 | 3.7s | 081ea717c7a89b40 |
 | 2026-05-04 | REJECT | 3/6 | 14.1s | b5219d0cb3b05b2b |
 | 2026-05-04 | UNVERIFIED | 3/6 | 13.3s | 633d9bb94a86de54 |
@@ -37,3 +36,4 @@
 | 2026-05-09 | CERTIFIED | 4/6 | 19.7s | 49a7346e234fc187 |
 | 2026-05-10 | CERTIFIED | 4/6 | 13.6s | 9065aeb643112861 |
 | 2026-05-12 | CERTIFIED | 4/6 | 17.3s | e4cb08ea7e95f7eb |
+| 2026-05-13 | CERTIFIED | 4/6 | 17.2s | 0f2f2abfbc67a86a |

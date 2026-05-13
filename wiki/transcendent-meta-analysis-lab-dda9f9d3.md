@@ -1,18 +1,18 @@
 # Transcendent-Meta-Analysis-Lab
 
-**Last verified:** 2026-05-12 03:11 UTC | **Verdict:** CERTIFIED (6/6 witnesses agree PASS)
-**Bundle hash:** 907a71c6895bcb0e | **Risk:** high | **Math:** 11
+**Last verified:** 2026-05-13 03:17 UTC | **Verdict:** CERTIFIED (6/6 witnesses agree PASS)
+**Bundle hash:** 9b92fa8c3e57fe14 | **Risk:** high | **Math:** 11
 
 ## Health
 
 | Witness | Verdict | Time | Detail |
 |---------|---------|------|--------|
-| test_suite | PASS | 3.8s | ............                                                             [100%]
+| test_suite | PASS | 4.2s | ............                                                             [100%]
  |
 | smoke | PASS | 10.2s | 10 modules imported OK |
-| semgrep | PASS | 11.8s | semgrep findings: ERROR=0 WARNING=0 INFO=0; engine errors=0 |
-| pip_audit | PASS | 72.2s | pip-audit findings: 0 vulnerabilities across 0 dep(s); scope: requirements file: |
-| numerical | PASS | 1.0s | 8 values within tolerance |
+| semgrep | PASS | 11.9s | semgrep findings: ERROR=0 WARNING=0 INFO=0; engine errors=0 |
+| pip_audit | PASS | 76.8s | pip-audit findings: 0 vulnerabilities across 0 dep(s); scope: requirements file: |
+| numerical | PASS | 1.2s | 8 values within tolerance |
 | numerical_continuity | PASS | 0.0s | numerical continuity: baseline + provenance checks OK |
 
 ## Project
@@ -26,7 +26,6 @@
 
 | Date | Verdict | Witnesses | Time | Hash |
 |------|---------|-----------|------|------|
-| 2026-04-20 | UNVERIFIED | 3/4 | 9.9s | 19c6fc7a0cb30a70 |
 | 2026-04-25 | UNVERIFIED | 3/4 | 13.0s | 4aa177fdd4a3a959 |
 | 2026-04-26 | UNVERIFIED | 3/4 | 14.3s | c7daee2b671eda14 |
 | 2026-04-27 | UNVERIFIED | 3/4 | 15.7s | 5bb0d58f2568c138 |
@@ -36,3 +35,4 @@
 | 2026-05-09 | CERTIFIED | 6/6 | 111.8s | b0e1c7a023ef41ea |
 | 2026-05-10 | CERTIFIED | 6/6 | 80.0s | b55ed960a2d6e3a1 |
 | 2026-05-12 | CERTIFIED | 6/6 | 99.1s | 907a71c6895bcb0e |
+| 2026-05-13 | CERTIFIED | 6/6 | 104.2s | 9b92fa8c3e57fe14 |

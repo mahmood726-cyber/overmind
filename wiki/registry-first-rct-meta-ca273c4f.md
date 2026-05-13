@@ -1,16 +1,16 @@
 # registry_first_rct_meta
 
-**Last verified:** 2026-05-12 03:11 UTC | **Verdict:** CERTIFIED (3/3 witnesses agree PASS)
-**Bundle hash:** 3576c0a1909a18b1 | **Risk:** high | **Math:** 7
+**Last verified:** 2026-05-13 03:17 UTC | **Verdict:** CERTIFIED (3/3 witnesses agree PASS)
+**Bundle hash:** 0203cd9a9da6f867 | **Risk:** high | **Math:** 7
 
 ## Health
 
 | Witness | Verdict | Time | Detail |
 |---------|---------|------|--------|
-| test_suite | PASS | 3.4s | .                                                                        [100%]
+| test_suite | PASS | 3.6s | .                                                                        [100%]
  |
-| smoke | PASS | 25.5s | 40 modules imported OK |
-| semgrep | PASS | 16.1s | semgrep findings: ERROR=0 WARNING=0 INFO=0; engine errors=0 |
+| smoke | PASS | 26.8s | 40 modules imported OK |
+| semgrep | PASS | 17.6s | semgrep findings: ERROR=0 WARNING=0 INFO=0; engine errors=0 |
 | pip_audit | SKIP | 0.0s | skipped |
 
 ## Project
@@ -24,7 +24,6 @@
 
 | Date | Verdict | Witnesses | Time | Hash |
 |------|---------|-----------|------|------|
-| 2026-04-20 | UNVERIFIED | 3/4 | 20.5s | 9ed89dda132ba009 |
 | 2026-04-25 | UNVERIFIED | 3/4 | 25.9s | b37f127fa87014a5 |
 | 2026-04-26 | UNVERIFIED | 3/4 | 27.8s | e23289f79de9a7d9 |
 | 2026-04-27 | UNVERIFIED | 3/4 | 31.1s | 7256deb3890f0992 |
@@ -34,3 +33,4 @@
 | 2026-05-09 | CERTIFIED | 3/4 | 52.3s | 25bffb1e50a5cc22 |
 | 2026-05-10 | CERTIFIED | 3/4 | 37.0s | ee17927ef19d3093 |
 | 2026-05-12 | CERTIFIED | 3/4 | 45.0s | 3576c0a1909a18b1 |
+| 2026-05-13 | CERTIFIED | 3/4 | 48.1s | 0203cd9a9da6f867 |

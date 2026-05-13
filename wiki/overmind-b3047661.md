@@ -1,16 +1,16 @@
 # overmind
 
-**Last verified:** 2026-05-12 03:11 UTC | **Verdict:** CERTIFIED (5/5 witnesses agree PASS)
-**Bundle hash:** 643d03aea4a02786 | **Risk:** high | **Math:** 20
+**Last verified:** 2026-05-13 03:17 UTC | **Verdict:** CERTIFIED (5/5 witnesses agree PASS)
+**Bundle hash:** af28a139dda6e421 | **Risk:** high | **Math:** 20
 
 ## Health
 
 | Witness | Verdict | Time | Detail |
 |---------|---------|------|--------|
-| test_suite | PASS | 4.5s | .....                                                                    [100%]
+| test_suite | PASS | 4.9s | .....                                                                    [100%]
  |
-| smoke | PASS | 9.8s | 40 modules imported OK |
-| semgrep | PASS | 53.3s | semgrep findings: ERROR=0 WARNING=5 INFO=0; engine errors=0
+| smoke | PASS | 10.7s | 40 modules imported OK |
+| semgrep | PASS | 49.2s | semgrep findings: ERROR=0 WARNING=5 INFO=0; engine errors=0
 5 advisory WARNING f |
 | pip_audit | SKIP | 0.0s | skipped |
 | numerical | PASS | 0.2s | 11 values within tolerance |
@@ -27,7 +27,6 @@
 
 | Date | Verdict | Witnesses | Time | Hash |
 |------|---------|-----------|------|------|
-| 2026-04-19 | UNVERIFIED | 2/3 | 8.8s | fc4f91f1634ee545 |
 | 2026-04-20 | UNVERIFIED | 3/4 | 8.1s | bdb6ff09dc2fda95 |
 | 2026-04-25 | UNVERIFIED | 3/4 | 11.9s | 44f031c09ccdf518 |
 | 2026-04-26 | UNVERIFIED | 3/4 | 10.8s | a4d0a1c1bf508e0f |
@@ -37,3 +36,4 @@
 | 2026-05-09 | CERTIFIED | 5/6 | 70.6s | 2fe2e134a1f37d04 |
 | 2026-05-10 | CERTIFIED | 5/6 | 50.3s | 81e0c357e415f430 |
 | 2026-05-12 | CERTIFIED | 5/6 | 67.8s | 643d03aea4a02786 |
+| 2026-05-13 | CERTIFIED | 5/6 | 65.1s | af28a139dda6e421 |
