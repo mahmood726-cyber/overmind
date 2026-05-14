@@ -1,18 +1,18 @@
 # hfpef_registry_synth
 
-**Last verified:** 2026-05-13 03:17 UTC | **Verdict:** CERTIFIED (5/5 witnesses agree PASS)
-**Bundle hash:** bf8777678a9f3c2e | **Risk:** high | **Math:** 14
+**Last verified:** 2026-05-14 04:02 UTC | **Verdict:** CERTIFIED (5/5 witnesses agree PASS)
+**Bundle hash:** be865586f4d11c86 | **Risk:** high | **Math:** 14
 
 ## Health
 
 | Witness | Verdict | Time | Detail |
 |---------|---------|------|--------|
-| test_suite | PASS | 7.5s | .                                                                        [100%]
+| test_suite | PASS | 7.6s | .                                                                        [100%]
  |
-| smoke | PASS | 42.7s | 40 modules imported OK |
-| semgrep | PASS | 129.4s | semgrep findings: ERROR=0 WARNING=0 INFO=0; engine errors=0 |
+| smoke | PASS | 36.9s | 40 modules imported OK |
+| semgrep | PASS | 152.0s | semgrep findings: ERROR=0 WARNING=0 INFO=0; engine errors=0 |
 | pip_audit | SKIP | 0.0s | skipped |
-| numerical | PASS | 0.4s | 12 values within tolerance |
+| numerical | PASS | 0.6s | 12 values within tolerance |
 | numerical_continuity | PASS | 0.0s | numerical continuity: baseline + provenance checks OK |
 
 ## Project
@@ -26,7 +26,6 @@
 
 | Date | Verdict | Witnesses | Time | Hash |
 |------|---------|-----------|------|------|
-| 2026-04-26 | UNVERIFIED | 3/4 | 40.6s | 995d869603c70686 |
 | 2026-04-27 | UNVERIFIED | 3/4 | 44.9s | d198f506da75b72c |
 | 2026-04-28 | UNVERIFIED | 3/4 | 76.6s | 166c9c2f38eede25 |
 | 2026-05-04 | UNVERIFIED | 4/6 | 158.6s | 5b6315546986883f |
@@ -36,3 +35,4 @@
 | 2026-05-10 | CERTIFIED | 5/6 | 137.3s | a9a035082a1c8c51 |
 | 2026-05-12 | CERTIFIED | 5/6 | 190.9s | db3948cef38443c8 |
 | 2026-05-13 | CERTIFIED | 5/6 | 179.9s | bf8777678a9f3c2e |
+| 2026-05-14 | CERTIFIED | 5/6 | 197.1s | be865586f4d11c86 |

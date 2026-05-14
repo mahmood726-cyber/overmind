@@ -1,16 +1,16 @@
 # BayesianMA
 
-**Last verified:** 2026-05-13 03:17 UTC | **Verdict:** CERTIFIED (4/4 witnesses agree PASS)
-**Bundle hash:** 8cda18a1307856e6 | **Risk:** high | **Math:** 13
+**Last verified:** 2026-05-14 04:02 UTC | **Verdict:** CERTIFIED (4/4 witnesses agree PASS)
+**Bundle hash:** df14e2fd211b86a6 | **Risk:** high | **Math:** 13
 
 ## Health
 
 | Witness | Verdict | Time | Detail |
 |---------|---------|------|--------|
-| test_suite | PASS | 24.9s | ...................................                                      [100%]
+| test_suite | PASS | 25.3s | ...................................                                      [100%]
  |
 | smoke | SKIP | 0.0s | skipped |
-| semgrep | PASS | 14.9s | semgrep findings: ERROR=0 WARNING=0 INFO=0; engine errors=0 |
+| semgrep | PASS | 12.0s | semgrep findings: ERROR=0 WARNING=0 INFO=0; engine errors=0 |
 | pip_audit | SKIP | 0.0s | skipped |
 | numerical | PASS | 0.2s | 6 values within tolerance |
 | numerical_continuity | PASS | 0.0s | numerical continuity: baseline + provenance checks OK |
@@ -26,7 +26,6 @@
 
 | Date | Verdict | Witnesses | Time | Hash |
 |------|---------|-----------|------|------|
-| 2026-04-25 | REJECT | 2/4 | 24.5s | 02cb81be9c290dd6 |
 | 2026-04-26 | UNVERIFIED | 2/4 | 23.7s | c82fa2f279175676 |
 | 2026-04-27 | UNVERIFIED | 2/4 | 24.7s | 481098c037763edd |
 | 2026-04-28 | REJECT | 2/4 | 5.0s | 9de3771374384195 |
@@ -36,3 +35,4 @@
 | 2026-05-10 | CERTIFIED | 4/6 | 35.1s | b25bff0fd36f5289 |
 | 2026-05-12 | CERTIFIED | 4/6 | 37.9s | 7765bf97e2dd3851 |
 | 2026-05-13 | CERTIFIED | 4/6 | 40.0s | 8cda18a1307856e6 |
+| 2026-05-14 | CERTIFIED | 4/6 | 37.5s | df14e2fd211b86a6 |

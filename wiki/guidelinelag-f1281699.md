@@ -1,17 +1,17 @@
 # GuidelineLag
 
-**Last verified:** 2026-05-13 03:17 UTC | **Verdict:** CERTIFIED (4/4 witnesses agree PASS)
-**Bundle hash:** 3f7f6904251c8c1e | **Risk:** high | **Math:** 7
+**Last verified:** 2026-05-14 04:02 UTC | **Verdict:** CERTIFIED (4/4 witnesses agree PASS)
+**Bundle hash:** ebaa9b11aa9a5f2d | **Risk:** high | **Math:** 7
 
 ## Health
 
 | Witness | Verdict | Time | Detail |
 |---------|---------|------|--------|
-| test_suite | PASS | 4.5s | s                                                                        [100%]
+| test_suite | PASS | 6.0s | s                                                                        [100%]
  |
-| smoke | PASS | 23.1s | 26 modules imported OK |
-| semgrep | PASS | 13.4s | semgrep findings: ERROR=0 WARNING=0 INFO=0; engine errors=0 |
-| pip_audit | PASS | 45.5s | pip-audit findings: 0 vulnerabilities across 25 dep(s); scope: requirements file |
+| smoke | PASS | 24.0s | 26 modules imported OK |
+| semgrep | PASS | 18.6s | semgrep findings: ERROR=0 WARNING=0 INFO=0; engine errors=0 |
+| pip_audit | PASS | 46.6s | pip-audit findings: 0 vulnerabilities across 25 dep(s); scope: requirements file |
 
 ## Project
 
@@ -24,7 +24,6 @@
 
 | Date | Verdict | Witnesses | Time | Hash |
 |------|---------|-----------|------|------|
-| 2026-04-20 | CERTIFIED | 2/2 | 19.3s | 6a97590d40ca3190 |
 | 2026-04-25 | CERTIFIED | 2/2 | 25.7s | f4f138b54a77c694 |
 | 2026-04-26 | CERTIFIED | 2/2 | 27.1s | 1fb7933bf02eebcb |
 | 2026-04-27 | CERTIFIED | 2/2 | 30.0s | 8c41cf35bd03c96e |
@@ -34,3 +33,4 @@
 | 2026-05-10 | CERTIFIED | 4/4 | 65.8s | 8f13e8ab966c902c |
 | 2026-05-12 | CERTIFIED | 4/4 | 80.1s | 00cff2935946ef02 |
 | 2026-05-13 | CERTIFIED | 4/4 | 86.6s | 3f7f6904251c8c1e |
+| 2026-05-14 | CERTIFIED | 4/4 | 95.1s | ebaa9b11aa9a5f2d |

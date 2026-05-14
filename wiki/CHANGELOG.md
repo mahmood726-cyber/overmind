@@ -1,5 +1,16 @@
 # Overmind Wiki Changelog
 
+## 2026-05-14
+
+**Verified:** 50 | **Certified:** 45 | **Rejected:** 4 | **Failed:** 1
+
+### Changes from last night
+- idea12: CERTIFIED -> REJECT
+- ipd-meta-pro-link: CERTIFIED -> FAIL
+- llm-meta-analysis: CERTIFIED -> REJECT
+- nur-cardiorenal-poc: CERTIFIED -> REJECT
+
+
 ## 2026-05-13
 
 **Verified:** 50 | **Certified:** 49 | **Rejected:** 1 | **Failed:** 0
@@ -240,19 +251,4 @@
 - FATIHA_Project: REJECT -> UNVERIFIED
 - arac: REJECT -> CERTIFIED
 - Meta_Ecosystem_Model: FAIL -> CERTIFIED
-
-
-## 2026-05-04
-
-**Verified:** 7 | **Certified:** 3 | **Rejected:** 2 | **Failed:** 2
-
-### Changes from last night
-- ctgov-search-strategies: REJECT -> CERTIFIED
-- GWAM: REJECT -> CERTIFIED
-- rct-extractor-v2: REJECT -> FAIL
-- hfpef_registry_calibration: REJECT -> CERTIFIED
-
-### New projects verified
-- Finrenone
-- arac
 

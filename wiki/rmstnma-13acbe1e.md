@@ -1,18 +1,18 @@
 # rmstnma
 
-**Last verified:** 2026-05-13 03:17 UTC | **Verdict:** CERTIFIED (4/4 witnesses agree PASS)
-**Bundle hash:** da0d0047e924b81b | **Risk:** high | **Math:** 15
+**Last verified:** 2026-05-14 04:02 UTC | **Verdict:** CERTIFIED (4/4 witnesses agree PASS)
+**Bundle hash:** 13c551b3af6ac5e9 | **Risk:** high | **Math:** 15
 
 ## Health
 
 | Witness | Verdict | Time | Detail |
 |---------|---------|------|--------|
-| test_suite | PASS | 3.0s | ....                                                                     [100%]
+| test_suite | PASS | 2.5s | ....                                                                     [100%]
  |
 | smoke | SKIP | 0.0s | skipped |
-| semgrep | PASS | 15.8s | semgrep findings: ERROR=0 WARNING=0 INFO=0; engine errors=0 |
+| semgrep | PASS | 14.8s | semgrep findings: ERROR=0 WARNING=0 INFO=0; engine errors=0 |
 | pip_audit | SKIP | 0.0s | skipped |
-| numerical | PASS | 5.0s | 8 values within tolerance |
+| numerical | PASS | 6.7s | 8 values within tolerance |
 | numerical_continuity | PASS | 0.0s | numerical continuity: baseline + provenance checks OK |
 
 ## Project
@@ -26,7 +26,6 @@
 
 | Date | Verdict | Witnesses | Time | Hash |
 |------|---------|-----------|------|------|
-| 2026-04-26 | UNVERIFIED | 2/4 | 4.7s | 5b87200d4430a264 |
 | 2026-04-27 | UNVERIFIED | 2/4 | 4.5s | 8689d679471cc167 |
 | 2026-04-28 | UNVERIFIED | 2/4 | 6.0s | 655242f36a016408 |
 | 2026-05-04 | UNVERIFIED | 3/6 | 21.2s | b3dc6fbd7c3f18a6 |
@@ -36,3 +35,4 @@
 | 2026-05-10 | CERTIFIED | 4/6 | 18.8s | ba88300b3df13b66 |
 | 2026-05-12 | CERTIFIED | 4/6 | 21.9s | c43e4014513aa1ea |
 | 2026-05-13 | CERTIFIED | 4/6 | 23.8s | da0d0047e924b81b |
+| 2026-05-14 | CERTIFIED | 4/6 | 24.0s | 13c551b3af6ac5e9 |

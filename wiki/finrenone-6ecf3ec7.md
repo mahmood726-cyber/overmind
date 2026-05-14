@@ -1,16 +1,16 @@
 # Finrenone
 
-**Last verified:** 2026-05-13 03:17 UTC | **Verdict:** REJECT (Witnesses disagree: pip_audit, numerical, numerical_continuity PASS vs smoke, semgrep FAIL)
-**Bundle hash:** a7519e093676a2c9 | **Risk:** high | **Math:** 15
+**Last verified:** 2026-05-14 04:02 UTC | **Verdict:** REJECT (Witnesses disagree: pip_audit, numerical, numerical_continuity PASS vs test_suite, smoke, semgrep FAIL)
+**Bundle hash:** ec888ed8e2ff266d | **Risk:** high | **Math:** 15
 
 ## Health
 
 | Witness | Verdict | Time | Detail |
 |---------|---------|------|--------|
-| test_suite | SKIP | 37.9s | skipped |
-| smoke | FAIL | 20.6s | py:improve_round2: import timed out |
-| semgrep | FAIL | 116.8s | semgrep findings: ERROR=5 WARNING=37 INFO=0; engine errors=5 |
-| pip_audit | PASS | 58.2s | pip-audit findings: 0 vulnerabilities across 17 dep(s); scope: requirements file |
+| test_suite | FAIL | 26.6s | s\user\AppData\Local\Programs\Python\Python313\Lib\site-packages\_pytest\main.py |
+| smoke | FAIL | 20.5s | py:improve_round2: import timed out |
+| semgrep | FAIL | 202.9s | semgrep findings: ERROR=10 WARNING=44 INFO=0; engine errors=4 |
+| pip_audit | PASS | 52.9s | pip-audit findings: 0 vulnerabilities across 17 dep(s); scope: requirements file |
 | numerical | PASS | 0.2s | 5 values within tolerance |
 | numerical_continuity | PASS | 0.0s | numerical continuity: baseline + provenance checks OK |
 
@@ -34,14 +34,19 @@
 | 2026-05-10 | REJECT | 5/6 | 154.8s | 2075f7ca193c41e2 |
 | 2026-05-12 | REJECT | 5/6 | 194.3s | 68c251521869c9d2 |
 | 2026-05-13 | REJECT | 5/6 | 233.8s | a7519e093676a2c9 |
+| 2026-05-14 | REJECT | 6/6 | 303.1s | ec888ed8e2ff266d |
 
 ## Notes
 
-Witnesses disagree: pip_audit, numerical, numerical_continuity PASS vs smoke, semgrep FAIL
+Witnesses disagree: pip_audit, numerical, numerical_continuity PASS vs test_suite, smoke, semgrep FAIL
+
+**test_suite:** s\user\AppData\Local\Programs\Python\Python313\Lib\site-packages\_pytest\main.py", line 365, in pytest_cmdline_main
+    return wrap_session(config, _main)
+  File "C:\Users\user\AppData\Local\Programs\
 
 **smoke:** py:improve_round2: import timed out
 
-**semgrep:** semgrep findings: ERROR=5 WARNING=37 INFO=0; engine errors=5
+**semgrep:** semgrep findings: ERROR=10 WARNING=44 INFO=0; engine errors=4
 blocking ERROR findings:
-  - python.lang.security.use-defused-xml.use-defused-xml  scripts\fetch_pubmed_batch.py:18
-  - python.lang.securit
+  - python.lang.security.use-defused-xml.use-defused-xml  scripts\add_topic_audit_first.py:173
+  - python.lang.se

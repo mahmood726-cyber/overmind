@@ -1,16 +1,16 @@
 # metasprint-dose-response
 
-**Last verified:** 2026-05-13 03:17 UTC | **Verdict:** CERTIFIED (4/4 witnesses agree PASS)
-**Bundle hash:** 72cce35ec560f3df | **Risk:** high | **Math:** 12
+**Last verified:** 2026-05-14 04:02 UTC | **Verdict:** CERTIFIED (4/4 witnesses agree PASS)
+**Bundle hash:** 1ebbdc52ab43360c | **Risk:** high | **Math:** 12
 
 ## Health
 
 | Witness | Verdict | Time | Detail |
 |---------|---------|------|--------|
-| test_suite | PASS | 12.7s | _csv_import_button_exists PASSED [ 80%]
-test_dose_response_models.py::TestCSVImp |
+| test_suite | PASS | 13.6s | py::TestAdvancedFeatures::test_gap_to_protocol_self_test PASSED [ 81%]
+test_dose |
 | smoke | SKIP | 0.0s | skipped |
-| semgrep | PASS | 15.2s | semgrep findings: ERROR=0 WARNING=0 INFO=0; engine errors=0 |
+| semgrep | PASS | 15.1s | semgrep findings: ERROR=0 WARNING=0 INFO=0; engine errors=0 |
 | pip_audit | SKIP | 0.0s | skipped |
 | numerical | PASS | 0.2s | 7 values within tolerance |
 | numerical_continuity | PASS | 0.0s | numerical continuity: baseline + provenance checks OK |
@@ -26,7 +26,6 @@ test_dose_response_models.py::TestCSVImp |
 
 | Date | Verdict | Witnesses | Time | Hash |
 |------|---------|-----------|------|------|
-| 2026-04-25 | UNVERIFIED | 2/4 | 12.2s | 42065ae48b9af11d |
 | 2026-04-26 | UNVERIFIED | 2/4 | 12.4s | f9a31ff12032dd88 |
 | 2026-04-27 | UNVERIFIED | 2/4 | 13.1s | a75f7b396d021474 |
 | 2026-04-28 | UNVERIFIED | 2/4 | 13.4s | 1f190ac919705330 |
@@ -36,3 +35,4 @@ test_dose_response_models.py::TestCSVImp |
 | 2026-05-10 | CERTIFIED | 4/6 | 21.7s | 2228f961e9e57ece |
 | 2026-05-12 | CERTIFIED | 4/6 | 26.3s | 8bc0a2bc1955b21e |
 | 2026-05-13 | CERTIFIED | 4/6 | 28.1s | 72cce35ec560f3df |
+| 2026-05-14 | CERTIFIED | 4/6 | 28.9s | 1ebbdc52ab43360c |

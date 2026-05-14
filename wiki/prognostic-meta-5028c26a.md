@@ -1,17 +1,17 @@
 # prognostic-meta
 
-**Last verified:** 2026-05-13 03:17 UTC | **Verdict:** CERTIFIED (6/6 witnesses agree PASS)
-**Bundle hash:** 917b484397873130 | **Risk:** high | **Math:** 20
+**Last verified:** 2026-05-14 04:02 UTC | **Verdict:** CERTIFIED (6/6 witnesses agree PASS)
+**Bundle hash:** 69c895ba5c83d076 | **Risk:** high | **Math:** 20
 
 ## Health
 
 | Witness | Verdict | Time | Detail |
 |---------|---------|------|--------|
-| test_suite | PASS | 3.5s | .........                                                                [100%]
+| test_suite | PASS | 3.6s | .........                                                                [100%]
  |
-| smoke | PASS | 0.8s | 2 modules imported OK |
-| semgrep | PASS | 15.6s | semgrep findings: ERROR=0 WARNING=0 INFO=0; engine errors=0 |
-| pip_audit | PASS | 52.4s | pip-audit findings: 0 vulnerabilities across 0 dep(s); scope: requirements file: |
+| smoke | PASS | 0.5s | 2 modules imported OK |
+| semgrep | PASS | 12.8s | semgrep findings: ERROR=0 WARNING=0 INFO=0; engine errors=0 |
+| pip_audit | PASS | 48.7s | pip-audit findings: 0 vulnerabilities across 0 dep(s); scope: requirements file: |
 | numerical | PASS | 0.4s | 11 values within tolerance |
 | numerical_continuity | PASS | 0.0s | numerical continuity: baseline + provenance checks OK |
 
@@ -26,7 +26,6 @@
 
 | Date | Verdict | Witnesses | Time | Hash |
 |------|---------|-----------|------|------|
-| 2026-04-20 | UNVERIFIED | 3/4 | 2.4s | 5c56daa15353cf01 |
 | 2026-04-25 | UNVERIFIED | 3/4 | 3.6s | 9c7c4cbcb649d248 |
 | 2026-04-26 | UNVERIFIED | 3/4 | 3.4s | b922b3d050506fc5 |
 | 2026-04-27 | UNVERIFIED | 3/4 | 4.5s | ff309d2ed61a2b87 |
@@ -36,3 +35,4 @@
 | 2026-05-10 | CERTIFIED | 6/6 | 55.4s | faa143665c3496d0 |
 | 2026-05-12 | CERTIFIED | 6/6 | 68.8s | 4adc4bc076928f95 |
 | 2026-05-13 | CERTIFIED | 6/6 | 72.7s | 917b484397873130 |
+| 2026-05-14 | CERTIFIED | 6/6 | 66.1s | 69c895ba5c83d076 |

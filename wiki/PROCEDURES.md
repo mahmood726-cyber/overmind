@@ -7,7 +7,7 @@ Automatically discovered fix recipes from nightly verification outcomes.
 | Recipe | Pattern | Fix | Seen | Resolved | Confidence | Last Seen |
 |--------|---------|-----|------|----------|------------|-----------|
 | UNKNOWN:finrenone- | s\user\AppData\Local\Programs\ | Manual investigation needed | 2 | 1 | 50% | 2026-05-04 |
-| TIMEOUT:advanced-n | timed out | Check for WMI deadlock (Python 3.13), infinite loop, or slow | 27 | 1 | 4% | 2026-05-06 |
+| TIMEOUT:advanced-n | timed out | Check for WMI deadlock (Python 3.13), infinite loop, or slow | 28 | 1 | 4% | 2026-05-13 |
 
 ## Candidates (unproven)
 
