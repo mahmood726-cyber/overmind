@@ -1,5 +1,14 @@
 # Overmind Wiki Changelog
 
+## 2026-05-15
+
+**Verified:** 45 | **Certified:** 44 | **Rejected:** 1 | **Failed:** 0
+
+### Changes from last night
+- llm-meta-analysis: REJECT -> CERTIFIED
+- nur-cardiorenal-poc: REJECT -> CERTIFIED
+
+
 ## 2026-05-14
 
 **Verified:** 50 | **Certified:** 45 | **Rejected:** 4 | **Failed:** 1
@@ -241,14 +250,4 @@
 ## 2026-05-04
 
 **Verified:** 1 | **Certified:** 0 | **Rejected:** 0 | **Failed:** 0
-
-
-## 2026-05-04
-
-**Verified:** 5 | **Certified:** 2 | **Rejected:** 1 | **Failed:** 0
-
-### Changes from last night
-- FATIHA_Project: REJECT -> UNVERIFIED
-- arac: REJECT -> CERTIFIED
-- Meta_Ecosystem_Model: FAIL -> CERTIFIED
 

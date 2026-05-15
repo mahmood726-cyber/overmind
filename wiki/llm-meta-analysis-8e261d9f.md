@@ -1,19 +1,19 @@
 # llm-meta-analysis
 
-**Last verified:** 2026-05-14 04:02 UTC | **Verdict:** REJECT (Witnesses disagree: test_suite, semgrep, numerical, numerical_continuity PASS vs smoke FAIL)
-**Bundle hash:** 0e2cfee069820637 | **Risk:** high | **Math:** 10
+**Last verified:** 2026-05-15 07:13 UTC | **Verdict:** CERTIFIED (5/5 witnesses agree PASS)
+**Bundle hash:** 5d1efa7c03cb3705 | **Risk:** high | **Math:** 10
 
 ## Health
 
 | Witness | Verdict | Time | Detail |
 |---------|---------|------|--------|
-| test_suite | PASS | 3.6s | .                                                                        [100%]
+| test_suite | PASS | 3.7s | .                                                                        [100%]
  |
-| smoke | FAIL | 82.0s | py:evaluation.bayesian_meta_analysis: import timed out |
-| semgrep | PASS | 57.0s | semgrep findings: ERROR=0 WARNING=91 INFO=0; engine errors=0
+| smoke | PASS | 88.4s | 40 modules imported OK |
+| semgrep | PASS | 41.5s | semgrep findings: ERROR=0 WARNING=91 INFO=0; engine errors=0
 91 advisory WARNING |
 | pip_audit | SKIP | 0.0s | skipped |
-| numerical | PASS | 10.7s | 10 values within tolerance |
+| numerical | PASS | 1.8s | 10 values within tolerance |
 | numerical_continuity | PASS | 0.0s | numerical continuity: baseline + provenance checks OK |
 
 ## Project
@@ -27,7 +27,6 @@
 
 | Date | Verdict | Witnesses | Time | Hash |
 |------|---------|-----------|------|------|
-| 2026-04-26 | UNVERIFIED | 3/4 | 76.4s | 80daa6f592e558f9 |
 | 2026-04-27 | UNVERIFIED | 3/4 | 83.6s | 17f65fd289d9335f |
 | 2026-04-28 | UNVERIFIED | 3/4 | 82.5s | 12ff4c594b5b9761 |
 | 2026-05-04 | UNVERIFIED | 4/6 | 112.5s | fbbf9ebe200e4253 |
@@ -37,9 +36,4 @@
 | 2026-05-12 | CERTIFIED | 5/6 | 110.1s | 1f54098d52e73e48 |
 | 2026-05-13 | CERTIFIED | 5/6 | 122.5s | 2875577537a3ca70 |
 | 2026-05-14 | REJECT | 5/6 | 153.4s | 0e2cfee069820637 |
-
-## Notes
-
-Witnesses disagree: test_suite, semgrep, numerical, numerical_continuity PASS vs smoke FAIL
-
-**smoke:** py:evaluation.bayesian_meta_analysis: import timed out
+| 2026-05-15 | CERTIFIED | 5/6 | 135.5s | 5d1efa7c03cb3705 |

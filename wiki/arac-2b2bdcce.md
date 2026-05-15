@@ -1,16 +1,16 @@
 # arac
 
-**Last verified:** 2026-05-14 04:02 UTC | **Verdict:** CERTIFIED (3/3 witnesses agree PASS)
-**Bundle hash:** 91b8052380101e0d | **Risk:** high | **Math:** 7
+**Last verified:** 2026-05-15 07:13 UTC | **Verdict:** CERTIFIED (3/3 witnesses agree PASS)
+**Bundle hash:** 098a0ec44e16668b | **Risk:** high | **Math:** 7
 
 ## Health
 
 | Witness | Verdict | Time | Detail |
 |---------|---------|------|--------|
-| test_suite | PASS | 9.9s | .......                                                                  [100%]
+| test_suite | PASS | 4.9s | .......                                                                  [100%]
  |
-| smoke | PASS | 48.8s | 40 modules imported OK |
-| semgrep | PASS | 29.2s | semgrep findings: ERROR=0 WARNING=1 INFO=0; engine errors=1
+| smoke | PASS | 30.3s | 40 modules imported OK |
+| semgrep | PASS | 17.3s | semgrep findings: ERROR=0 WARNING=1 INFO=0; engine errors=1
 1 advisory WARNING f |
 | pip_audit | SKIP | 0.0s | skipped |
 
@@ -32,3 +32,4 @@
 | 2026-05-12 | CERTIFIED | 3/4 | 64.6s | 18c48692c15537e6 |
 | 2026-05-13 | CERTIFIED | 3/4 | 67.5s | 8bad7bc21ffc0d3c |
 | 2026-05-14 | CERTIFIED | 3/4 | 87.9s | 91b8052380101e0d |
+| 2026-05-15 | CERTIFIED | 3/4 | 52.5s | 098a0ec44e16668b |

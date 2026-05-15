@@ -1,18 +1,18 @@
 # repo300-ENMA-SNMA
 
-**Last verified:** 2026-05-14 04:02 UTC | **Verdict:** CERTIFIED (4/4 witnesses agree PASS)
-**Bundle hash:** e0503d82b11eb2d9 | **Risk:** high | **Math:** 14
+**Last verified:** 2026-05-15 07:13 UTC | **Verdict:** CERTIFIED (4/4 witnesses agree PASS)
+**Bundle hash:** 4c9782ba241cef5f | **Risk:** high | **Math:** 14
 
 ## Health
 
 | Witness | Verdict | Time | Detail |
 |---------|---------|------|--------|
-| test_suite | PASS | 3.5s | .                                                                        [100%]
+| test_suite | PASS | 3.4s | .                                                                        [100%]
  |
 | smoke | SKIP | 0.0s | skipped |
-| semgrep | PASS | 16.7s | semgrep findings: ERROR=0 WARNING=0 INFO=0; engine errors=0 |
+| semgrep | PASS | 18.5s | semgrep findings: ERROR=0 WARNING=0 INFO=0; engine errors=0 |
 | pip_audit | SKIP | 0.0s | skipped |
-| numerical | PASS | 2.4s | 8 values within tolerance |
+| numerical | PASS | 1.2s | 8 values within tolerance |
 | numerical_continuity | PASS | 0.0s | numerical continuity: baseline + provenance checks OK |
 
 ## Project
@@ -26,7 +26,6 @@
 
 | Date | Verdict | Witnesses | Time | Hash |
 |------|---------|-----------|------|------|
-| 2026-04-26 | UNVERIFIED | 2/4 | 3.2s | 234d7f37c27cf525 |
 | 2026-04-27 | UNVERIFIED | 2/4 | 3.4s | 71059cc3d8d56087 |
 | 2026-04-28 | UNVERIFIED | 2/4 | 2.5s | 7a84eabcb636ab25 |
 | 2026-05-04 | UNVERIFIED | 3/6 | 17.7s | 31b4b8760fea19f5 |
@@ -36,3 +35,4 @@
 | 2026-05-12 | CERTIFIED | 4/6 | 20.6s | c2be40e0187e66b3 |
 | 2026-05-13 | CERTIFIED | 4/6 | 23.4s | e274eb8325296898 |
 | 2026-05-14 | CERTIFIED | 4/6 | 22.6s | e0503d82b11eb2d9 |
+| 2026-05-15 | CERTIFIED | 4/6 | 23.1s | 4c9782ba241cef5f |

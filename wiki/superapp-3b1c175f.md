@@ -1,17 +1,17 @@
 # superapp
 
-**Last verified:** 2026-05-14 04:02 UTC | **Verdict:** CERTIFIED (5/5 witnesses agree PASS)
-**Bundle hash:** 6618510400134a40 | **Risk:** high | **Math:** 20
+**Last verified:** 2026-05-15 07:13 UTC | **Verdict:** CERTIFIED (5/5 witnesses agree PASS)
+**Bundle hash:** 50fc0fd5e186d472 | **Risk:** high | **Math:** 20
 
 ## Health
 
 | Witness | Verdict | Time | Detail |
 |---------|---------|------|--------|
-| test_suite | PASS | 56.5s | 
+| test_suite | PASS | 88.4s | 
 > meta-analysis-superapp@1.0.0 test
 > node --experimental-vm-modules node_modul |
-| smoke | PASS | 3.3s | 40 modules imported OK |
-| semgrep | PASS | 25.4s | semgrep findings: ERROR=0 WARNING=0 INFO=0; engine errors=1 |
+| smoke | PASS | 4.4s | 40 modules imported OK |
+| semgrep | PASS | 31.2s | semgrep findings: ERROR=0 WARNING=0 INFO=0; engine errors=1 |
 | pip_audit | SKIP | 0.0s | skipped |
 | numerical | PASS | 0.2s | 5 values within tolerance |
 | numerical_continuity | PASS | 0.0s | numerical continuity: baseline + provenance checks OK |
@@ -36,3 +36,4 @@
 | 2026-05-12 | CERTIFIED | 5/6 | 95.4s | 2f0ba34c9e2d5fc4 |
 | 2026-05-13 | CERTIFIED | 5/6 | 108.2s | fe049796f50949d7 |
 | 2026-05-14 | CERTIFIED | 5/6 | 85.4s | 6618510400134a40 |
+| 2026-05-15 | CERTIFIED | 5/6 | 124.2s | 50fc0fd5e186d472 |

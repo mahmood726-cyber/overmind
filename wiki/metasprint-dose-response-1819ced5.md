@@ -1,16 +1,16 @@
 # metasprint-dose-response
 
-**Last verified:** 2026-05-14 04:02 UTC | **Verdict:** CERTIFIED (4/4 witnesses agree PASS)
-**Bundle hash:** 1ebbdc52ab43360c | **Risk:** high | **Math:** 12
+**Last verified:** 2026-05-15 07:13 UTC | **Verdict:** CERTIFIED (4/4 witnesses agree PASS)
+**Bundle hash:** 1e68727b4cfb9b24 | **Risk:** high | **Math:** 12
 
 ## Health
 
 | Witness | Verdict | Time | Detail |
 |---------|---------|------|--------|
-| test_suite | PASS | 13.6s | py::TestAdvancedFeatures::test_gap_to_protocol_self_test PASSED [ 81%]
-test_dose |
+| test_suite | PASS | 13.7s | cedFeatures::test_dose_metrics_basic PASSED [ 81%]
+test_dose_response_models.py: |
 | smoke | SKIP | 0.0s | skipped |
-| semgrep | PASS | 15.1s | semgrep findings: ERROR=0 WARNING=0 INFO=0; engine errors=0 |
+| semgrep | PASS | 15.8s | semgrep findings: ERROR=0 WARNING=0 INFO=0; engine errors=0 |
 | pip_audit | SKIP | 0.0s | skipped |
 | numerical | PASS | 0.2s | 7 values within tolerance |
 | numerical_continuity | PASS | 0.0s | numerical continuity: baseline + provenance checks OK |
@@ -26,7 +26,6 @@ test_dose |
 
 | Date | Verdict | Witnesses | Time | Hash |
 |------|---------|-----------|------|------|
-| 2026-04-26 | UNVERIFIED | 2/4 | 12.4s | f9a31ff12032dd88 |
 | 2026-04-27 | UNVERIFIED | 2/4 | 13.1s | a75f7b396d021474 |
 | 2026-04-28 | UNVERIFIED | 2/4 | 13.4s | 1f190ac919705330 |
 | 2026-05-04 | UNVERIFIED | 3/6 | 24.5s | 9e50ae56550714b0 |
@@ -36,3 +35,4 @@ test_dose |
 | 2026-05-12 | CERTIFIED | 4/6 | 26.3s | 8bc0a2bc1955b21e |
 | 2026-05-13 | CERTIFIED | 4/6 | 28.1s | 72cce35ec560f3df |
 | 2026-05-14 | CERTIFIED | 4/6 | 28.9s | 1ebbdc52ab43360c |
+| 2026-05-15 | CERTIFIED | 4/6 | 29.7s | 1e68727b4cfb9b24 |
