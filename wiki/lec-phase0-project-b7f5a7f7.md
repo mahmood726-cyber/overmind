@@ -1,19 +1,19 @@
 # lec_phase0_project
 
-**Last verified:** 2026-05-15 07:13 UTC | **Verdict:** CERTIFIED (5/5 witnesses agree PASS)
-**Bundle hash:** 2b61b29e00f1789b | **Risk:** high | **Math:** 16
+**Last verified:** 2026-05-16 03:47 UTC | **Verdict:** CERTIFIED (5/5 witnesses agree PASS (upgraded after retry))
+**Bundle hash:** 7d182b9c9b47c39d | **Risk:** high | **Math:** 16
 
 ## Health
 
 | Witness | Verdict | Time | Detail |
 |---------|---------|------|--------|
-| test_suite | PASS | 6.5s | ...                                                                      [100%]
+| test_suite | PASS | 9.5s | ...                                                                      [100%]
  |
-| smoke | PASS | 106.6s | 40 modules imported OK |
-| semgrep | PASS | 19.4s | semgrep findings: ERROR=0 WARNING=1 INFO=0; engine errors=0
+| smoke | PASS | 131.9s | 40 modules imported OK |
+| semgrep | PASS | 44.7s | semgrep findings: ERROR=0 WARNING=1 INFO=0; engine errors=2
 1 advisory WARNING f |
 | pip_audit | SKIP | 0.0s | skipped |
-| numerical | PASS | 2.5s | 12 values within tolerance |
+| numerical | PASS | 4.2s | 12 values within tolerance |
 | numerical_continuity | PASS | 0.0s | numerical continuity: baseline + provenance checks OK |
 
 ## Project
@@ -27,7 +27,6 @@
 
 | Date | Verdict | Witnesses | Time | Hash |
 |------|---------|-----------|------|------|
-| 2026-04-26 | UNVERIFIED | 3/4 | 92.1s | ea13bc213983456c |
 | 2026-04-27 | UNVERIFIED | 3/4 | 124.5s | 441612a0ae7518d8 |
 | 2026-04-28 | UNVERIFIED | 3/4 | 101.1s | d4bb118b1677b877 |
 | 2026-05-04 | UNVERIFIED | 4/6 | 119.1s | 7fd9bca9f0fb2a36 |
@@ -37,3 +36,4 @@
 | 2026-05-13 | CERTIFIED | 5/6 | 147.3s | 5dcb893a384c2070 |
 | 2026-05-14 | CERTIFIED | 5/6 | 124.6s | 317679eaa4759469 |
 | 2026-05-15 | CERTIFIED | 5/6 | 135.0s | 2b61b29e00f1789b |
+| 2026-05-16 | CERTIFIED | 5/6 | 190.3s | 7d182b9c9b47c39d |

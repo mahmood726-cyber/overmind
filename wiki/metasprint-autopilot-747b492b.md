@@ -1,18 +1,18 @@
 # metasprint-autopilot
 
-**Last verified:** 2026-05-15 07:13 UTC | **Verdict:** CERTIFIED (6/6 witnesses agree PASS)
-**Bundle hash:** 51e8e0ae47272be8 | **Risk:** high | **Math:** 13
+**Last verified:** 2026-05-16 03:47 UTC | **Verdict:** CERTIFIED (6/6 witnesses agree PASS)
+**Bundle hash:** d0af9d1a86957054 | **Risk:** high | **Math:** 16
 
 ## Health
 
 | Witness | Verdict | Time | Detail |
 |---------|---------|------|--------|
-| test_suite | PASS | 14.7s | ..                                                                       [100%]
+| test_suite | PASS | 17.7s | ..                                                                       [100%]
  |
-| smoke | PASS | 15.5s | 40 modules imported OK |
-| semgrep | PASS | 56.3s | semgrep findings: ERROR=0 WARNING=3 INFO=0; engine errors=6
-3 advisory WARNING f |
-| pip_audit | PASS | 63.1s | pip-audit findings: 0 vulnerabilities across 24 dep(s); scope: requirements file |
+| smoke | PASS | 35.7s | 40 modules imported OK |
+| semgrep | PASS | 141.1s | semgrep findings: ERROR=0 WARNING=3 INFO=0; engine errors=17
+3 advisory WARNING  |
+| pip_audit | PASS | 48.6s | pip-audit findings: 0 vulnerabilities across 24 dep(s); scope: requirements file |
 | numerical | PASS | 0.2s | 7 values within tolerance |
 | numerical_continuity | PASS | 0.0s | numerical continuity: baseline + provenance checks OK |
 
@@ -36,3 +36,4 @@
 | 2026-05-13 | CERTIFIED | 6/6 | 123.9s | e16152bdd051b111 |
 | 2026-05-14 | CERTIFIED | 6/6 | 137.2s | bb003309a66b8fec |
 | 2026-05-15 | CERTIFIED | 6/6 | 149.8s | 51e8e0ae47272be8 |
+| 2026-05-16 | CERTIFIED | 6/6 | 243.3s | d0af9d1a86957054 |

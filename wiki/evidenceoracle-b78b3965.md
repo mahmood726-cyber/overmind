@@ -1,18 +1,18 @@
 # EvidenceOracle
 
-**Last verified:** 2026-05-15 07:13 UTC | **Verdict:** CERTIFIED (6/6 witnesses agree PASS)
-**Bundle hash:** 60891d9eb071e46a | **Risk:** high | **Math:** 14
+**Last verified:** 2026-05-16 03:47 UTC | **Verdict:** CERTIFIED (6/6 witnesses agree PASS)
+**Bundle hash:** 874e9c4a618d8b32 | **Risk:** high | **Math:** 14
 
 ## Health
 
 | Witness | Verdict | Time | Detail |
 |---------|---------|------|--------|
-| test_suite | PASS | 4.8s | ................                                                         [100%]
+| test_suite | PASS | 2.7s | ................                                                         [100%]
  |
-| smoke | PASS | 6.0s | 2 modules imported OK |
-| semgrep | PASS | 26.6s | semgrep findings: ERROR=0 WARNING=0 INFO=0; engine errors=0 |
-| pip_audit | PASS | 64.5s | pip-audit findings: 0 vulnerabilities across 10 dep(s); scope: requirements file |
-| numerical | PASS | 1.8s | 5 values within tolerance |
+| smoke | PASS | 5.0s | 2 modules imported OK |
+| semgrep | PASS | 15.7s | semgrep findings: ERROR=0 WARNING=0 INFO=0; engine errors=0 |
+| pip_audit | PASS | 42.1s | pip-audit findings: 0 vulnerabilities across 10 dep(s); scope: requirements file |
+| numerical | PASS | 0.8s | 5 values within tolerance |
 | numerical_continuity | PASS | 0.0s | numerical continuity: baseline + provenance checks OK |
 
 ## Project
@@ -26,7 +26,6 @@
 
 | Date | Verdict | Witnesses | Time | Hash |
 |------|---------|-----------|------|------|
-| 2026-04-27 | UNVERIFIED | 3/4 | 9.1s | 6dff181c81f768aa |
 | 2026-04-28 | UNVERIFIED | 3/4 | 7.8s | f2cf167f833af8e6 |
 | 2026-05-04 | UNVERIFIED | 5/6 | 69.4s | d5698199b1f29a29 |
 | 2026-05-05 | CERTIFIED | 6/6 | 86.0s | e7c2a6a9303df2cd |
@@ -36,3 +35,4 @@
 | 2026-05-13 | CERTIFIED | 6/6 | 82.0s | 92e5ad85233dc1c3 |
 | 2026-05-14 | CERTIFIED | 6/6 | 72.5s | 00545a08abaf53bf |
 | 2026-05-15 | CERTIFIED | 6/6 | 103.6s | 60891d9eb071e46a |
+| 2026-05-16 | CERTIFIED | 6/6 | 66.4s | 874e9c4a618d8b32 |

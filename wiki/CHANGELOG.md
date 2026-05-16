@@ -1,5 +1,22 @@
 # Overmind Wiki Changelog
 
+## 2026-05-16
+
+**Verified:** 50 | **Certified:** 44 | **Rejected:** 3 | **Failed:** 0
+
+### Changes from last night
+- idea12: REJECT -> CERTIFIED
+- ipd-meta-pro-link: FAIL -> CERTIFIED
+- KMcurve: CERTIFIED -> REJECT
+
+### New projects verified
+- allmeta
+- SheafNMA
+- mupirocin-decolonization
+- allmeta-pilot
+- africa-tb-atlas
+
+
 ## 2026-05-15
 
 **Verified:** 45 | **Certified:** 44 | **Rejected:** 1 | **Failed:** 0
@@ -245,9 +262,4 @@
 
 ### New projects verified
 - metasprint-autopilot
-
-
-## 2026-05-04
-
-**Verified:** 1 | **Certified:** 0 | **Rejected:** 0 | **Failed:** 0
 

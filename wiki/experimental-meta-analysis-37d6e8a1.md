@@ -1,18 +1,18 @@
 # experimental-meta-analysis
 
-**Last verified:** 2026-05-15 07:13 UTC | **Verdict:** CERTIFIED (6/6 witnesses agree PASS)
-**Bundle hash:** 70e58b8c990183ba | **Risk:** high | **Math:** 11
+**Last verified:** 2026-05-16 03:47 UTC | **Verdict:** CERTIFIED (6/6 witnesses agree PASS)
+**Bundle hash:** dd27a9640744ae17 | **Risk:** high | **Math:** 11
 
 ## Health
 
 | Witness | Verdict | Time | Detail |
 |---------|---------|------|--------|
-| test_suite | PASS | 2.3s | Testing Experimental Meta-Analysis Framework
+| test_suite | PASS | 1.2s | Testing Experimental Meta-Analysis Framework
 =================================== |
-| smoke | PASS | 67.5s | 25 modules imported OK |
-| semgrep | PASS | 20.2s | semgrep findings: ERROR=0 WARNING=0 INFO=0; engine errors=0 |
-| pip_audit | PASS | 69.3s | pip-audit findings: 0 vulnerabilities across 20 dep(s); scope: requirements file |
-| numerical | PASS | 2.4s | 10 values within tolerance |
+| smoke | PASS | 40.9s | 25 modules imported OK |
+| semgrep | PASS | 19.6s | semgrep findings: ERROR=0 WARNING=0 INFO=0; engine errors=0 |
+| pip_audit | PASS | 38.2s | pip-audit findings: 0 vulnerabilities across 20 dep(s); scope: requirements file |
+| numerical | PASS | 1.6s | 10 values within tolerance |
 | numerical_continuity | PASS | 0.0s | numerical continuity: baseline + provenance checks OK |
 
 ## Project
@@ -26,7 +26,6 @@
 
 | Date | Verdict | Witnesses | Time | Hash |
 |------|---------|-----------|------|------|
-| 2026-04-27 | UNVERIFIED | 3/4 | 53.3s | 821c6eb32c61aaff |
 | 2026-04-28 | UNVERIFIED | 3/4 | 52.1s | 940dae8e3b45ca0f |
 | 2026-05-04 | UNVERIFIED | 5/6 | 89.1s | 52a4a2896da2cc85 |
 | 2026-05-05 | CERTIFIED | 6/6 | 110.7s | 2d9732e0d3d151ce |
@@ -36,3 +35,4 @@
 | 2026-05-13 | CERTIFIED | 6/6 | 109.4s | c5446a62064bd424 |
 | 2026-05-14 | CERTIFIED | 6/6 | 119.8s | e65254b0e37c7e27 |
 | 2026-05-15 | CERTIFIED | 6/6 | 161.7s | 70e58b8c990183ba |
+| 2026-05-16 | CERTIFIED | 6/6 | 101.6s | dd27a9640744ae17 |
