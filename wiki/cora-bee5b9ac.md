@@ -1,16 +1,16 @@
 # cora
 
-**Last verified:** 2026-05-16 03:47 UTC | **Verdict:** CERTIFIED (3/3 witnesses agree PASS (upgraded after retry))
-**Bundle hash:** 6fa87b52e0a2e38e | **Risk:** high | **Math:** 7
+**Last verified:** 2026-05-17 03:13 UTC | **Verdict:** CERTIFIED (3/3 witnesses agree PASS)
+**Bundle hash:** 70830f38fbf576b6 | **Risk:** high | **Math:** 7
 
 ## Health
 
 | Witness | Verdict | Time | Detail |
 |---------|---------|------|--------|
-| test_suite | PASS | 9.4s | .                                                                        [100%]
+| test_suite | PASS | 1.9s | .                                                                        [100%]
  |
-| smoke | PASS | 20.1s | 22 modules imported OK |
-| semgrep | PASS | 9.7s | semgrep findings: ERROR=0 WARNING=0 INFO=0; engine errors=0 |
+| smoke | PASS | 24.0s | 22 modules imported OK |
+| semgrep | PASS | 9.9s | semgrep findings: ERROR=0 WARNING=0 INFO=0; engine errors=0 |
 | pip_audit | SKIP | 0.0s | skipped |
 
 ## Project
@@ -31,3 +31,4 @@
 | 2026-05-14 | CERTIFIED | 3/4 | 50.2s | b4497e363cee8476 |
 | 2026-05-15 | CERTIFIED | 3/4 | 30.5s | b674882ddcbb4122 |
 | 2026-05-16 | CERTIFIED | 3/4 | 39.2s | 6fa87b52e0a2e38e |
+| 2026-05-17 | CERTIFIED | 3/4 | 35.8s | 70830f38fbf576b6 |

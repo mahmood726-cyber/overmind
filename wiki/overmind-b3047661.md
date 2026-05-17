@@ -1,19 +1,19 @@
 # overmind
 
-**Last verified:** 2026-05-16 03:47 UTC | **Verdict:** CERTIFIED (5/5 witnesses agree PASS)
-**Bundle hash:** 6d92f7c303458eb5 | **Risk:** high | **Math:** 20
+**Last verified:** 2026-05-17 03:13 UTC | **Verdict:** CERTIFIED (5/5 witnesses agree PASS)
+**Bundle hash:** 24c2f8e75644a927 | **Risk:** high | **Math:** 20
 
 ## Health
 
 | Witness | Verdict | Time | Detail |
 |---------|---------|------|--------|
-| test_suite | PASS | 3.8s | .....                                                                    [100%]
+| test_suite | PASS | 4.0s | .....                                                                    [100%]
  |
-| smoke | PASS | 9.2s | 40 modules imported OK |
-| semgrep | PASS | 81.2s | semgrep findings: ERROR=0 WARNING=5 INFO=0; engine errors=0
+| smoke | PASS | 8.5s | 40 modules imported OK |
+| semgrep | PASS | 85.2s | semgrep findings: ERROR=0 WARNING=5 INFO=0; engine errors=0
 5 advisory WARNING f |
 | pip_audit | SKIP | 0.0s | skipped |
-| numerical | PASS | 0.1s | 11 values within tolerance |
+| numerical | PASS | 0.2s | 11 values within tolerance |
 | numerical_continuity | PASS | 0.0s | numerical continuity: baseline + provenance checks OK |
 
 ## Project
@@ -27,7 +27,6 @@
 
 | Date | Verdict | Witnesses | Time | Hash |
 |------|---------|-----------|------|------|
-| 2026-04-27 | UNVERIFIED | 3/4 | 12.9s | 2833254a952ef718 |
 | 2026-04-28 | UNVERIFIED | 3/4 | 10.7s | 75ad0fbf98aa7d76 |
 | 2026-05-05 | CERTIFIED | 5/6 | 47.4s | 9733c1652bc60c41 |
 | 2026-05-09 | CERTIFIED | 5/6 | 70.6s | 2fe2e134a1f37d04 |
@@ -37,3 +36,4 @@
 | 2026-05-14 | CERTIFIED | 5/6 | 125.0s | 2a920b3826a9c7c8 |
 | 2026-05-15 | CERTIFIED | 5/6 | 201.3s | c64581e48754edfb |
 | 2026-05-16 | CERTIFIED | 5/6 | 94.3s | 6d92f7c303458eb5 |
+| 2026-05-17 | CERTIFIED | 5/6 | 97.9s | 24c2f8e75644a927 |

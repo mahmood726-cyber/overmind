@@ -1,16 +1,16 @@
 # new-app
 
-**Last verified:** 2026-05-16 03:47 UTC | **Verdict:** CERTIFIED (5/5 witnesses agree PASS)
-**Bundle hash:** 68a28500e285a892 | **Risk:** high | **Math:** 12
+**Last verified:** 2026-05-17 03:13 UTC | **Verdict:** CERTIFIED (5/5 witnesses agree PASS)
+**Bundle hash:** e1f466fe9efec8c1 | **Risk:** high | **Math:** 12
 
 ## Health
 
 | Witness | Verdict | Time | Detail |
 |---------|---------|------|--------|
-| test_suite | PASS | 9.0s | ...                                                                      [100%]
+| test_suite | PASS | 11.3s | ...                                                                      [100%]
  |
-| smoke | PASS | 2.3s | 37 modules imported OK |
-| semgrep | PASS | 50.6s | semgrep findings: ERROR=0 WARNING=0 INFO=0; engine errors=1 |
+| smoke | PASS | 2.6s | 37 modules imported OK |
+| semgrep | PASS | 20.0s | semgrep findings: ERROR=0 WARNING=0 INFO=0; engine errors=3 |
 | pip_audit | SKIP | 0.0s | skipped |
 | numerical | PASS | 0.1s | 9 values within tolerance |
 | numerical_continuity | PASS | 0.0s | numerical continuity: baseline + provenance checks OK |
@@ -26,7 +26,6 @@
 
 | Date | Verdict | Witnesses | Time | Hash |
 |------|---------|-----------|------|------|
-| 2026-04-12 | FAIL | 1/3 | 120.0s | 1bbd69e62195f6ef |
 | 2026-04-13 | FAIL | 1/3 | 120.0s | 3a7a648c94f1948b |
 | 2026-05-05 | CERTIFIED | 5/6 | 37.3s | 7f6ab2ed8ee4b6ee |
 | 2026-05-09 | CERTIFIED | 5/6 | 33.1s | 67735b9eeb816377 |
@@ -36,3 +35,4 @@
 | 2026-05-14 | CERTIFIED | 5/6 | 37.6s | 0f1e3482e9566f26 |
 | 2026-05-15 | CERTIFIED | 5/6 | 37.9s | 9c116bd904576751 |
 | 2026-05-16 | CERTIFIED | 5/6 | 61.9s | 68a28500e285a892 |
+| 2026-05-17 | CERTIFIED | 5/6 | 34.0s | e1f466fe9efec8c1 |

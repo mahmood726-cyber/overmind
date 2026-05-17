@@ -1,16 +1,16 @@
 # superapp
 
-**Last verified:** 2026-05-16 03:47 UTC | **Verdict:** CERTIFIED (5/5 witnesses agree PASS)
-**Bundle hash:** 6e79d06c3f1b9ffc | **Risk:** high | **Math:** 20
+**Last verified:** 2026-05-17 03:13 UTC | **Verdict:** CERTIFIED (5/5 witnesses agree PASS)
+**Bundle hash:** 12379fe881671400 | **Risk:** high | **Math:** 20
 
 ## Health
 
 | Witness | Verdict | Time | Detail |
 |---------|---------|------|--------|
-| test_suite | PASS | 29.2s | ...                                                                      [100%]
+| test_suite | PASS | 28.1s | ...                                                                      [100%]
  |
-| smoke | PASS | 3.0s | 40 modules imported OK |
-| semgrep | PASS | 23.4s | semgrep findings: ERROR=0 WARNING=0 INFO=0; engine errors=3 |
+| smoke | PASS | 2.8s | 40 modules imported OK |
+| semgrep | PASS | 19.1s | semgrep findings: ERROR=0 WARNING=0 INFO=0; engine errors=1 |
 | pip_audit | SKIP | 0.0s | skipped |
 | numerical | PASS | 0.1s | 5 values within tolerance |
 | numerical_continuity | PASS | 0.0s | numerical continuity: baseline + provenance checks OK |
@@ -26,7 +26,6 @@
 
 | Date | Verdict | Witnesses | Time | Hash |
 |------|---------|-----------|------|------|
-| 2026-05-06 | REJECT | 4/6 | 1122.2s | 0bd7905cc12f54d2 |
 | 2026-05-06 | UNVERIFIED | 4/6 | 725.2s | 220d70e7f416dffa |
 | 2026-05-06 | CERTIFIED | 5/6 | 743.1s | 8009e400ebffd90d |
 | 2026-05-09 | CERTIFIED | 5/6 | 108.1s | fcb7b657df30d0fb |
@@ -36,3 +35,4 @@
 | 2026-05-14 | CERTIFIED | 5/6 | 85.4s | 6618510400134a40 |
 | 2026-05-15 | CERTIFIED | 5/6 | 124.2s | 50fc0fd5e186d472 |
 | 2026-05-16 | CERTIFIED | 5/6 | 55.6s | 6e79d06c3f1b9ffc |
+| 2026-05-17 | CERTIFIED | 5/6 | 50.1s | 12379fe881671400 |

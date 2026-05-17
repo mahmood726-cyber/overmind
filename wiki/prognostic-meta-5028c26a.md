@@ -1,7 +1,7 @@
 # prognostic-meta
 
-**Last verified:** 2026-05-16 03:47 UTC | **Verdict:** CERTIFIED (6/6 witnesses agree PASS)
-**Bundle hash:** 1975a738fa3b1185 | **Risk:** high | **Math:** 20
+**Last verified:** 2026-05-17 03:13 UTC | **Verdict:** CERTIFIED (6/6 witnesses agree PASS)
+**Bundle hash:** ab69c29e1c08eff1 | **Risk:** high | **Math:** 20
 
 ## Health
 
@@ -10,8 +10,8 @@
 | test_suite | PASS | 2.5s | .........                                                                [100%]
  |
 | smoke | PASS | 0.6s | 2 modules imported OK |
-| semgrep | PASS | 15.8s | semgrep findings: ERROR=0 WARNING=0 INFO=0; engine errors=0 |
-| pip_audit | PASS | 55.0s | pip-audit findings: 0 vulnerabilities across 0 dep(s); scope: requirements file: |
+| semgrep | PASS | 11.7s | semgrep findings: ERROR=0 WARNING=0 INFO=0; engine errors=0 |
+| pip_audit | PASS | 43.0s | pip-audit findings: 0 vulnerabilities across 0 dep(s); scope: requirements file: |
 | numerical | PASS | 0.3s | 11 values within tolerance |
 | numerical_continuity | PASS | 0.0s | numerical continuity: baseline + provenance checks OK |
 
@@ -26,7 +26,6 @@
 
 | Date | Verdict | Witnesses | Time | Hash |
 |------|---------|-----------|------|------|
-| 2026-04-27 | UNVERIFIED | 3/4 | 4.5s | ff309d2ed61a2b87 |
 | 2026-04-28 | UNVERIFIED | 3/4 | 3.2s | ea128e8a7371958e |
 | 2026-05-04 | UNVERIFIED | 5/6 | 56.4s | 8292d141af4c31e2 |
 | 2026-05-09 | CERTIFIED | 6/6 | 76.6s | 0b16f3a39c708029 |
@@ -36,3 +35,4 @@
 | 2026-05-14 | CERTIFIED | 6/6 | 66.1s | 69c895ba5c83d076 |
 | 2026-05-15 | CERTIFIED | 6/6 | 125.9s | d1bc3bcbabb94193 |
 | 2026-05-16 | CERTIFIED | 6/6 | 74.3s | 1975a738fa3b1185 |
+| 2026-05-17 | CERTIFIED | 6/6 | 58.2s | ab69c29e1c08eff1 |

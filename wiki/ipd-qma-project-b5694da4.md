@@ -1,18 +1,18 @@
 # ipd_qma_project
 
-**Last verified:** 2026-05-16 03:47 UTC | **Verdict:** CERTIFIED (6/6 witnesses agree PASS)
-**Bundle hash:** bfcef3c616cb7077 | **Risk:** high | **Math:** 15
+**Last verified:** 2026-05-17 03:13 UTC | **Verdict:** CERTIFIED (6/6 witnesses agree PASS)
+**Bundle hash:** ee4a38100e400b5e | **Risk:** high | **Math:** 15
 
 ## Health
 
 | Witness | Verdict | Time | Detail |
 |---------|---------|------|--------|
-| test_suite | PASS | 7.8s | .....................................s......................             [100%]
+| test_suite | PASS | 7.0s | ......s.....................................................             [100%]
  |
-| smoke | PASS | 21.3s | 13 modules imported OK |
-| semgrep | PASS | 15.8s | semgrep findings: ERROR=0 WARNING=0 INFO=0; engine errors=0 |
-| pip_audit | PASS | 65.7s | pip-audit findings: 0 vulnerabilities across 54 dep(s); scope: requirements file |
-| numerical | PASS | 2.6s | 10 values within tolerance |
+| smoke | PASS | 22.2s | 13 modules imported OK |
+| semgrep | PASS | 16.3s | semgrep findings: ERROR=0 WARNING=0 INFO=0; engine errors=0 |
+| pip_audit | PASS | 47.7s | pip-audit findings: 0 vulnerabilities across 54 dep(s); scope: requirements file |
+| numerical | PASS | 2.9s | 10 values within tolerance |
 | numerical_continuity | PASS | 0.0s | numerical continuity: baseline + provenance checks OK |
 
 ## Project
@@ -26,7 +26,6 @@
 
 | Date | Verdict | Witnesses | Time | Hash |
 |------|---------|-----------|------|------|
-| 2026-04-28 | UNVERIFIED | 3/4 | 27.8s | eb8789a9ee2b3dfc |
 | 2026-05-04 | UNVERIFIED | 5/6 | 97.6s | 3f784c3a1b9f1064 |
 | 2026-05-05 | CERTIFIED | 6/6 | 86.2s | b91082116c283366 |
 | 2026-05-09 | CERTIFIED | 6/6 | 124.1s | 0ef0d2f7f6002085 |
@@ -36,3 +35,4 @@
 | 2026-05-14 | CERTIFIED | 6/6 | 124.1s | 722b538aedf0957a |
 | 2026-05-15 | CERTIFIED | 6/6 | 155.9s | 9cccb97413222514 |
 | 2026-05-16 | CERTIFIED | 6/6 | 113.3s | bfcef3c616cb7077 |
+| 2026-05-17 | CERTIFIED | 6/6 | 96.1s | ee4a38100e400b5e |

@@ -1,19 +1,19 @@
 # SheafNMA
 
-**Last verified:** 2026-05-16 03:47 UTC | **Verdict:** UNVERIFIED (4/4 witnesses PASS but numerical witness SKIPPED (baseline missing) — NOT a release pass (upgraded after retry))
-**Bundle hash:** 62231cd69ad11cab | **Risk:** high | **Math:** 17
+**Last verified:** 2026-05-17 03:13 UTC | **Verdict:** UNVERIFIED (4/4 witnesses PASS but numerical witness SKIPPED (baseline missing) — NOT a release pass)
+**Bundle hash:** 35b8b44c8e2eea6d | **Risk:** high | **Math:** 17
 
 ## Health
 
 | Witness | Verdict | Time | Detail |
 |---------|---------|------|--------|
-| test_suite | PASS | 19.6s | .                                                                        [100%]
+| test_suite | PASS | 2.6s | .                                                                        [100%]
  |
-| smoke | PASS | 11.3s | 10 modules imported OK |
-| semgrep | PASS | 75.8s | semgrep findings: ERROR=0 WARNING=0 INFO=0; engine errors=4 |
+| smoke | PASS | 7.5s | 10 modules imported OK |
+| semgrep | PASS | 12.8s | semgrep findings: ERROR=0 WARNING=0 INFO=0; engine errors=0 |
 | pip_audit | SKIP | 0.0s | skipped |
 | numerical | SKIP | 0.0s | skipped |
-| numerical_continuity | PASS | 0.5s | numerical continuity: baseline + provenance checks OK |
+| numerical_continuity | PASS | 0.0s | numerical continuity: baseline + provenance checks OK |
 
 ## Project
 
@@ -27,3 +27,4 @@
 | Date | Verdict | Witnesses | Time | Hash |
 |------|---------|-----------|------|------|
 | 2026-05-16 | UNVERIFIED | 4/6 | 107.3s | 62231cd69ad11cab |
+| 2026-05-17 | UNVERIFIED | 4/6 | 22.9s | 35b8b44c8e2eea6d |

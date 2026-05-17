@@ -6,8 +6,8 @@ Automatically discovered fix recipes from nightly verification outcomes.
 
 | Recipe | Pattern | Fix | Seen | Resolved | Confidence | Last Seen |
 |--------|---------|-----|------|----------|------------|-----------|
-| UNKNOWN:finrenone- | s\user\AppData\Local\Programs\ | Manual investigation needed | 4 | 1 | 33% | 2026-05-15 |
-| TIMEOUT:advanced-n | timed out | Check for WMI deadlock (Python 3.13), infinite loop, or slow | 31 | 3 | 10% | 2026-05-14 |
+| UNKNOWN:finrenone- | s\user\AppData\Local\Programs\ | Manual investigation needed | 5 | 1 | 25% | 2026-05-16 |
+| TIMEOUT:advanced-n | timed out | Check for WMI deadlock (Python 3.13), infinite loop, or slow | 32 | 3 | 10% | 2026-05-16 |
 
 ## Candidates (unproven)
 
@@ -26,6 +26,8 @@ SyntaxErro | Fix the syntax error in the reported file | 2 | 0 | 2026-04-08 |
                ^
 SyntaxErro | Fix the syntax error in the reported file | 2 | 0 | 2026-04-13 |
 | UNKNOWN:pairwise70 | ck, subtests, tmp_path, tmp_pa | Manual investigation needed | 2 | 0 | 2026-04-10 |
+| CONFIGURATION:allmeta-pi | > allmeta-pilot@1.0.0 test
+> | Replace the default npm test script in package.json with the | 1 | 0 | 2026-05-16 |
 | CONFIGURATION:fatiha-pro | Could not parse output as JSON | Inspect numerical witness script to ensure it emits valid JS | 1 | 0 | 2026-05-04 |
 | DEPENDENCY_ROT:browser_runtime | browser_runtime | Check if browser_runtime is installed: pip install browser_r | 1 | 0 | 2026-05-04 |
 | DEPENDENCY_ROT:cardioorac | mal_cdf, load_data)

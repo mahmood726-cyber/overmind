@@ -1,16 +1,16 @@
 # HTA_Evidence_Integrity_Suite
 
-**Last verified:** 2026-05-16 03:47 UTC | **Verdict:** CERTIFIED (4/4 witnesses agree PASS)
-**Bundle hash:** 7d029d489bea7b1b | **Risk:** high | **Math:** 10
+**Last verified:** 2026-05-17 03:13 UTC | **Verdict:** CERTIFIED (4/4 witnesses agree PASS)
+**Bundle hash:** 8c6fdc15a0813a71 | **Risk:** high | **Math:** 10
 
 ## Health
 
 | Witness | Verdict | Time | Detail |
 |---------|---------|------|--------|
-| test_suite | PASS | 3.5s | .                                                                        [100%]
+| test_suite | PASS | 2.5s | .                                                                        [100%]
  |
 | smoke | SKIP | 0.0s | skipped |
-| semgrep | PASS | 102.0s | semgrep findings: ERROR=0 WARNING=0 INFO=0; engine errors=2 |
+| semgrep | PASS | 93.0s | semgrep findings: ERROR=0 WARNING=0 INFO=0; engine errors=0 |
 | pip_audit | SKIP | 0.0s | skipped |
 | numerical | PASS | 0.1s | 9 values within tolerance |
 | numerical_continuity | PASS | 0.0s | numerical continuity: baseline + provenance checks OK |
@@ -34,3 +34,4 @@
 | 2026-05-14 | CERTIFIED | 4/6 | 104.7s | 9f7057230a61ff3c |
 | 2026-05-15 | CERTIFIED | 4/6 | 90.3s | ba6e81f9e63eb54a |
 | 2026-05-16 | CERTIFIED | 4/6 | 105.6s | 7d029d489bea7b1b |
+| 2026-05-17 | CERTIFIED | 4/6 | 95.6s | 8c6fdc15a0813a71 |

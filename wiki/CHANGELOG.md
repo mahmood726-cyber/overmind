@@ -1,5 +1,13 @@
 # Overmind Wiki Changelog
 
+## 2026-05-17
+
+**Verified:** 50 | **Certified:** 45 | **Rejected:** 2 | **Failed:** 0
+
+### Changes from last night
+- KMcurve: REJECT -> CERTIFIED
+
+
 ## 2026-05-16
 
 **Verified:** 50 | **Certified:** 44 | **Rejected:** 3 | **Failed:** 0
@@ -254,12 +262,4 @@
 ## 2026-05-04
 
 **Verified:** 1 | **Certified:** 0 | **Rejected:** 1 | **Failed:** 0
-
-
-## 2026-05-04
-
-**Verified:** 1 | **Certified:** 0 | **Rejected:** 1 | **Failed:** 0
-
-### New projects verified
-- metasprint-autopilot
 
