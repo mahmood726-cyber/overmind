@@ -1500,6 +1500,24 @@ def _run_verification(db: StateDatabase, args: argparse.Namespace, run_start: da
             )
         md_lines.append("")
 
+        # 2026-05-24: UNVERIFIED escalation policy — surface projects that
+        # have been UNVERIFIED beyond the operator-configured age threshold.
+        # The verdict engine is unchanged; this is purely report-side surface.
+        try:
+            from overmind.policies.unverified_escalation import (
+                UnverifiedPolicy, escalate, render_escalations_md,
+            )
+            _policy = UnverifiedPolicy.from_env()
+            _bundles_root = Path(os.environ.get(
+                "OVERMIND_BUNDLES_ROOT",
+                str(Path(__file__).resolve().parents[1] / "data" / "nightly_reports" / "bundles"),
+            ))
+            _escalated = escalate(unverified_rows, _bundles_root, policy=_policy)
+            md_lines.extend(render_escalations_md(_escalated, _policy))
+        except Exception as _e:
+            # Policy is additive; never break the nightly report if it crashes.
+            md_lines.append(f"_Escalation policy could not run: {_e!r}_\n")
+
     # REJECT section
     reject_rows = [r for r in results if r["bundle"].verdict == "REJECT"]
     if reject_rows:

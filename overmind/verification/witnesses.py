@@ -401,6 +401,12 @@ class DeterminismWitness:
     Catches flaky tests, clock-dependent logic, and hidden nondeterminism
     that breaks numerical baselines across nightlies. Use for tier-3
     projects where reproducibility is a release requirement.
+
+    NOT CURRENTLY INSTANTIATED (audit 2026-05-24). Implementation is correct
+    and unit-tested at tests/unit/test_determinism_witness.py, but
+    truthcert_engine.py does not wire it into any tier yet. Keep for the
+    moment so we can flip it on without re-implementing. Delete if it has
+    not been wired in by the next portfolio-architecture review.
     """
 
     def __init__(self, timeout: int = 60) -> None:
@@ -492,6 +498,12 @@ class RegressionWitness:
     is not a git repository or when the prior ref can't be resolved. Does NOT
     modify the working tree — uses `git worktree add` instead of stash/checkout
     so concurrent work is unaffected.
+
+    NOT CURRENTLY INSTANTIATED (audit 2026-05-24). Implementation is correct
+    and unit-tested at tests/unit/test_advanced_witnesses.py, but
+    truthcert_engine.py does not wire it into any tier yet. Keep for the
+    moment so we can flip it on without re-implementing. Delete if it has
+    not been wired in by the next portfolio-architecture review.
     """
 
     # Rough pytest-style regexes. Good enough for PASS/FAIL counts; not a
