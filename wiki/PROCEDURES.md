@@ -6,13 +6,15 @@ Automatically discovered fix recipes from nightly verification outcomes.
 
 | Recipe | Pattern | Fix | Seen | Resolved | Confidence | Last Seen |
 |--------|---------|-----|------|----------|------------|-----------|
-| UNKNOWN:finrenone- | s\user\AppData\Local\Programs\ | Manual investigation needed | 5 | 1 | 25% | 2026-05-16 |
-| TIMEOUT:advanced-n | timed out | Check for WMI deadlock (Python 3.13), infinite loop, or slow | 32 | 3 | 10% | 2026-05-16 |
+| UNKNOWN:finrenone- | s\user\AppData\Local\Programs\ | Manual investigation needed | 6 | 1 | 20% | 2026-05-17 |
+| TIMEOUT:advanced-n | timed out | Check for WMI deadlock (Python 3.13), infinite loop, or slow | 32 | 4 | 12% | 2026-05-16 |
 
 ## Candidates (unproven)
 
 | Recipe | Pattern | Fix | Seen | Resolved | Last Seen |
 |--------|---------|-----|------|----------|-----------|
+| CONFIGURATION:allmeta-pi | > allmeta-pilot@1.0.0 test
+> | Replace the default npm test script in package.json with the | 2 | 0 | 2026-05-17 |
 | CONFIGURATION:evidence-i | no tests ran in 0.03s | Check pytest configuration (testpaths, test file naming, col | 2 | 0 | 2026-04-11 |
 | CONFIGURATION:finrenone- | semgrep findings: ERROR=1 WARN | Replace stdlib xml parser with defusedxml in scripts/nct_dat | 2 | 0 | 2026-05-12 |
 | CONFIGURATION:idea12-592 | validation.run_quick_validatio | Verify column names in validation.run_quick_validation match | 2 | 0 | 2026-04-13 |
@@ -26,8 +28,6 @@ SyntaxErro | Fix the syntax error in the reported file | 2 | 0 | 2026-04-08 |
                ^
 SyntaxErro | Fix the syntax error in the reported file | 2 | 0 | 2026-04-13 |
 | UNKNOWN:pairwise70 | ck, subtests, tmp_path, tmp_pa | Manual investigation needed | 2 | 0 | 2026-04-10 |
-| CONFIGURATION:allmeta-pi | > allmeta-pilot@1.0.0 test
-> | Replace the default npm test script in package.json with the | 1 | 0 | 2026-05-16 |
 | CONFIGURATION:fatiha-pro | Could not parse output as JSON | Inspect numerical witness script to ensure it emits valid JS | 1 | 0 | 2026-05-04 |
 | DEPENDENCY_ROT:browser_runtime | browser_runtime | Check if browser_runtime is installed: pip install browser_r | 1 | 0 | 2026-05-04 |
 | DEPENDENCY_ROT:cardioorac | mal_cdf, load_data)

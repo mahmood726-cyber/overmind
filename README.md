@@ -1,23 +1,27 @@
-# OVERMIND v1
+# OVERMIND v3.1.0
 
-OVERMIND is a local orchestration system for supervising terminal coding agents with an evidence-first workflow. This repository implements the first milestone from the architecture spec:
+OVERMIND is a local orchestration system for supervising terminal coding agents with an evidence-first workflow. The current codebase includes:
 
 - one-project indexing
 - up to three concurrent runner sessions
 - SQLite-backed state
 - terminal transcript capture
 - loop and proof-gap detection
-- verification before completion
+- verification planning and execution before completion
+- portfolio audit and daily reporting
+- canary meta-verification for the verifier itself
+- filesystem watching and batch verification
 - checkpoint and insight logging
 
 ## Scope
 
-This build is intentionally conservative. It favors observable behavior over deep automation:
+This build still favors observable behavior over deep automation:
 
 - the top-level supervisor works from terminal output, command results, manifests, guidance files, and stored summaries
 - the indexer reads manifests and guidance files, not arbitrary source trees
 - runners are registered from YAML and marked offline if their commands are not available
 - verification runs from discovered project commands and task requirements
+- the verifier includes TruthCert-style multi-witness checks, a canary self-test, and Sentinel aggregation hooks
 
 ## Layout
 
@@ -29,7 +33,7 @@ This build is intentionally conservative. It favors observable behavior over dee
 ## Quick Start
 
 ```powershell
-cd C:\overmind
+cd <repo-root>
 python -m venv .venv
 .venv\Scripts\Activate.ps1
 pip install -e .[dev]
@@ -46,6 +50,8 @@ overmind show-state
 overmind enqueue-demo --project-id <project_id>
 overmind run-once
 overmind run-loop --iterations 10 --sleep-seconds 5
+overmind meta-verify
+overmind watch-fs --iterations 1
 ```
 
 ## Notes
