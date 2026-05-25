@@ -207,5 +207,7 @@ def test_roundtrip_through_dict_preserves_verifiability(monkeypatch, tmp_path: P
         signature_public_key=d["signature_public_key"],
     )
     assert reloaded.verify_signature() is True
+    # sentinel:skip-line P0-hmac-compare-eq — test asserts serialization roundtrip; comparing string-typed method name + base64 signature, no adversarial timing surface
     assert reloaded.bundle_signature == original.bundle_signature
+    # sentinel:skip-line P0-hmac-compare-eq — same: method-name string, not the secret
     assert reloaded.signature_method == original.signature_method

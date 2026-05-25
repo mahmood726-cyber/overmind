@@ -116,6 +116,7 @@ def test_unsigned_signer_always_unverified():
     s = UnsignedSigner()
     result = s.sign(PAYLOAD)
     assert result.method == "none"
+    # sentinel:skip-line P0-hmac-compare-eq — comparing to empty string literal, not a secret
     assert result.signature == ""
     # Unsigned bundles never verify — by design. Callers must treat
     # this as "unsafe to trust".
