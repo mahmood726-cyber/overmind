@@ -98,6 +98,56 @@ def test_collect_prefers_jsonl_when_both_present(tmp_path):
     assert "from-md" not in top_rules
 
 
+def test_collect_uses_md_warn_when_only_block_jsonl_exists(tmp_path):
+    """P1-1: JSONL/MD selection is per severity, not per repo.
+
+    During migration, a repo can have fresh BLOCK JSONL while WARNs still only
+    exist in the legacy MD file. A repo-level JSONL gate silently drops WARNs.
+    """
+    import json as _json
+
+    r1 = tmp_path / "mixed-source-repo"
+    r1.mkdir()
+    (r1 / "STUCK_FAILURES.jsonl").write_text(
+        _json.dumps({"rule_id": "block-jsonl", "severity": "BLOCK"}) + "\n",
+        encoding="utf-8",
+    )
+    (r1 / "sentinel-findings.md").write_text(
+        "# sentinel-findings.md\n\n"
+        "## [WARN] warn-md\n"
+        "- **Location:** `x.py:1`\n",
+        encoding="utf-8",
+    )
+
+    result = collect(discover_repos=lambda: [str(r1)])
+
+    assert result["total_block"] == 1
+    assert result["total_warn"] == 1
+    assert result["top_repos"][0]["source"] == "mixed"
+    top_rules = {r["rule_id"]: r["count"] for r in result["top_rules"]}
+    assert top_rules["block-jsonl"] == 1
+    assert top_rules["warn-md"] == 1
+
+
+def test_collect_empty_jsonl_falls_back_to_md_same_severity(tmp_path):
+    """P1-1: an aborted zero-byte JSONL must not mask populated MD."""
+    r1 = tmp_path / "partial-jsonl-repo"
+    r1.mkdir()
+    (r1 / "STUCK_FAILURES.jsonl").write_text("", encoding="utf-8")
+    (r1 / "STUCK_FAILURES.md").write_text(
+        "# STUCK_FAILURES.md\n\n"
+        "## [BLOCK] block-md\n"
+        "- **Location:** `x.py:1`\n",
+        encoding="utf-8",
+    )
+
+    result = collect(discover_repos=lambda: [str(r1)])
+
+    assert result["total_block"] == 1
+    assert result["top_repos"][0]["source"] == "md"
+    assert {r["rule_id"] for r in result["top_rules"]} == {"block-md"}
+
+
 def test_collect_skips_malformed_jsonl_lines(tmp_path):
     """Malformed lines must not crash the aggregator."""
     import json as _json
@@ -114,6 +164,37 @@ def test_collect_skips_malformed_jsonl_lines(tmp_path):
 
     result = collect(discover_repos=lambda: [str(r1)])
     assert result["total_block"] == 2  # R-1 + R-2, malformed lines skipped
+
+
+def test_collect_unreadable_jsonl_falls_back_to_md(tmp_path, monkeypatch):
+    """P1-4: JSONL read errors must not silently zero out MD findings."""
+    r1 = tmp_path / "locked-jsonl-repo"
+    r1.mkdir()
+    (r1 / "STUCK_FAILURES.jsonl").write_text(
+        '{"rule_id": "jsonl-rule", "severity": "BLOCK"}\n',
+        encoding="utf-8",
+    )
+    (r1 / "STUCK_FAILURES.md").write_text(
+        "# STUCK_FAILURES.md\n\n"
+        "## [BLOCK] fallback-md\n"
+        "- **Location:** `x.py:1`\n",
+        encoding="utf-8",
+    )
+
+    original_read_text = Path.read_text
+
+    def failing_jsonl_read(self, *args, **kwargs):
+        if self.name == "STUCK_FAILURES.jsonl":
+            raise OSError("simulated locked jsonl")
+        return original_read_text(self, *args, **kwargs)
+
+    monkeypatch.setattr(Path, "read_text", failing_jsonl_read)
+
+    result = collect(discover_repos=lambda: [str(r1)])
+
+    assert result["total_block"] == 1
+    assert result["top_repos"][0]["source"] == "md"
+    assert {r["rule_id"] for r in result["top_rules"]} == {"fallback-md"}
 
 
 def test_collect_fails_soft_when_discover_raises():

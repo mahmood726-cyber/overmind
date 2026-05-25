@@ -66,7 +66,7 @@ def _default_discover_repos() -> list[str]:
     return list(discover_repos())
 
 
-def _read_jsonl(path: Path) -> list[str]:
+def _read_jsonl(path: Path) -> list[str] | None:
     """Extract DEDUPLICATED rule_ids from a Sentinel JSONL log.
 
     Sentinel's JSONL files are append-only — every scan adds entries without
@@ -82,14 +82,16 @@ def _read_jsonl(path: Path) -> list[str]:
 
     Returns a list of rule_ids — one entry per distinct finding — so callers
     that count by length get the actionable-finding count, not the
-    re-recorded-occurrences count.
+    re-recorded-occurrences count. Returns None when the file itself cannot be
+    read, so callers can fall back to legacy MD instead of silently reporting
+    zero findings.
     """
     rule_ids: list[str] = []
     seen: set[tuple] = set()
     try:
         text = path.read_text(encoding="utf-8", errors="replace")
     except OSError:
-        return rule_ids
+        return None
     for line in text.splitlines():
         line = line.strip()
         if not line:
@@ -123,6 +125,35 @@ def _read_md_regex(path: Path, pattern: re.Pattern) -> list[str]:
     return pattern.findall(text)
 
 
+def _read_severity(
+    jsonl_path: Path | None,
+    md_path: Path | None,
+    md_pattern: re.Pattern,
+) -> tuple[list[str], str]:
+    """Read one severity with JSONL preferred and MD fallback.
+
+    The fallback is per severity, not per repo. During migration, a repo can
+    have BLOCK JSONL and WARN MD; an aborted run can also leave a zero-byte
+    JSONL beside populated MD.
+    """
+    if jsonl_path:
+        ids = _read_jsonl(jsonl_path)
+        if ids is not None and (ids or jsonl_path.stat().st_size > 0 or not md_path):
+            return ids, "jsonl"
+    if md_path:
+        return _read_md_regex(md_path, md_pattern), "md"
+    return [], "none"
+
+
+def _combine_sources(block_source: str, warn_source: str) -> str:
+    sources = {s for s in (block_source, warn_source) if s != "none"}
+    if not sources:
+        return "none"
+    if len(sources) == 1:
+        return next(iter(sources))
+    return "mixed"
+
+
 def _read_findings_for_repo(root: Path) -> tuple[list[str], list[str], str]:
     """Return (block_rule_ids, warn_rule_ids, source_label) for one repo.
 
@@ -135,17 +166,9 @@ def _read_findings_for_repo(root: Path) -> tuple[list[str], list[str], str]:
     blocks_md = _first_existing(root, _BLOCK_MD_NAMES)
     warns_md = _first_existing(root, _WARN_MD_NAMES)
 
-    if blocks_jsonl or warns_jsonl:
-        blocks = _read_jsonl(blocks_jsonl) if blocks_jsonl else []
-        warns = _read_jsonl(warns_jsonl) if warns_jsonl else []
-        return blocks, warns, "jsonl"
-
-    if blocks_md or warns_md:
-        blocks = _read_md_regex(blocks_md, _RX_BLOCK) if blocks_md else []
-        warns = _read_md_regex(warns_md, _RX_WARN) if warns_md else []
-        return blocks, warns, "md"
-
-    return [], [], "none"
+    blocks, block_source = _read_severity(blocks_jsonl, blocks_md, _RX_BLOCK)
+    warns, warn_source = _read_severity(warns_jsonl, warns_md, _RX_WARN)
+    return blocks, warns, _combine_sources(block_source, warn_source)
 
 
 def collect(
