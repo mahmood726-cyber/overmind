@@ -54,9 +54,6 @@ class GuidanceParser:
         return sorted(filenames, key=lambda name: (priority.get(name.lower(), 9), name.lower()))
 
     def _resolve_guidance_file(self, root: Path, filename: str) -> Path | None:
-        path = root / filename
-        if path.exists() and path.is_file():
-            return path
         lowered = filename.lower()
         try:
             for candidate in root.iterdir():
