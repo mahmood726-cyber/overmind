@@ -40,3 +40,4 @@ data/nightly_reports/watchdog_*.alert
 data/nightly_reports/watchdog_crash.log
 sentinel-findings.md
 sentinel-findings.jsonl
+data/nightly_reports/inspect_format/
