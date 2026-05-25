@@ -15,8 +15,12 @@ Submodules:
                  load_paths_filter, select_projects
 - integrations — collect_sentinel_findings, collect_bypass_findings,
                  _run_portfolio_sentinel_scan
+- runner       — _verify_worker, _verify_with_timeout,
+                 _load_last_night_diagnoses, _run_verification
+                 (Phase-4 M-2: the 820-LOC verification driver +
+                 multiprocessing harness, moved out of nightly_verify.py)
 
-Phase 4 will extract the remaining 820-LOC `_run_verification` driver
-(workstream M-2) after a byte-identical-bundle snapshot is captured for
-one fixture project.
+scripts/nightly_verify.py is now a 190-line orchestration shim that
+sets up faulthandler / stdout encoding / atexit and calls
+runner._run_verification.
 """
