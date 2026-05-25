@@ -7,6 +7,7 @@ isn't installed).
 from __future__ import annotations
 
 import json
+import shutil
 import subprocess
 from pathlib import Path
 from unittest.mock import MagicMock, patch
@@ -263,7 +264,7 @@ def test_custom_binary_path_passed_through(repo_with_reqs: Path):
 
 
 @pytest.mark.skipif(
-    subprocess.run(["pip-audit", "--version"], capture_output=True).returncode != 0,
+    shutil.which("pip-audit") is None,
     reason="pip-audit CLI not on PATH",
 )
 def test_real_pip_audit_clean_run(tmp_path: Path):

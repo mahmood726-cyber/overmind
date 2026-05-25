@@ -22,6 +22,7 @@ from overmind.discovery.git_probe import GitProbe
 from overmind.discovery.guidance_parser import GuidanceParser
 from overmind.discovery.manifest_parser import ManifestParser
 from overmind.storage.models import ProjectRecord, slugify, utc_now
+from overmind.subprocess_utils import split_command
 
 NUMERIC_HINTS = (
     "meta",
@@ -551,7 +552,13 @@ class ProjectScanner:
         return bool(list(root.glob("*.Rproj"))) or any((root / name).exists() for name in ("DESCRIPTION", "app.R"))
 
     def _has_guidance_file(self, root: Path) -> bool:
-        return any((root / filename).exists() for filename in self.config.roots.guidance_filenames)
+        configured = {filename.lower() for filename in self.config.roots.guidance_filenames}
+        if not configured:
+            return False
+        try:
+            return any(candidate.is_file() and candidate.name.lower() in configured for candidate in root.iterdir())
+        except OSError:
+            return False
 
     def _normalize_path_fragment(self, value: str) -> str:
         normalized = value.lower().replace("/", "\\")
@@ -582,14 +589,15 @@ class ProjectScanner:
         if candidate.exists():
             return raw_path
 
-        suffix = normalized[index + len(marker):].lstrip("\\")
+        suffix = normalized[index + len(marker):].lstrip("\\").replace("\\", "/")
         rewritten = root / Path(suffix) if suffix else root
         return str(rewritten)
 
-    def _command_priority(self, command_type: str, command: str) -> tuple[int, int, str]:
+    def _command_priority(self, command_type: str, command: str) -> tuple[object, ...]:
         lowered = command.lower()
         executable_missing = int(not self._command_available(command))
         if command_type == "test":
+            pytest_signal = int("pytest" in lowered)
             targeted_file = int(
                 any(token in lowered for token in ("test_", "_test", ".spec", "spec."))
                 and any(ext in lowered for ext in (".py", ".js", ".ts"))
@@ -597,7 +605,7 @@ class ProjectScanner:
             functional_signal = int(any(token in lowered for token in ("functional", "validation", "smoke", "selenium", "playwright")))
             targeted_dir = int(("tests/" in lowered or "tests\\" in lowered) and not targeted_file)
             generic_pytest = int(lowered.strip() == "python -m pytest -q")
-            return (executable_missing, -targeted_file, -functional_signal, -targeted_dir, generic_pytest, lowered)
+            return (executable_missing, -pytest_signal, -targeted_file, -functional_signal, -targeted_dir, generic_pytest, lowered)
         if command_type == "browser":
             automated_visual = int("automated_visual_test.html" in lowered)
             automated_suite = int("automated_test_suite.html" in lowered)
@@ -605,13 +613,14 @@ class ProjectScanner:
             functional_signal = int(any(token in lowered for token in ("playwright", "selenium", "browser_checks", "visual", "validation")))
             return (
                 executable_missing,
+                0,
                 -automated_suite,
                 -automated_visual,
                 -validation_suite,
                 -functional_signal,
                 lowered,
             )
-        return (executable_missing, 0, 0, 0, 0, lowered)
+        return (executable_missing, 0, 0, 0, 0, 0, lowered)
 
     def _has_html_surface(self, root: Path) -> bool:
         if (root / "index.html").exists():
@@ -627,10 +636,13 @@ class ProjectScanner:
         stripped = command.strip()
         if not stripped:
             return False
-        if stripped.startswith('"'):
-            executable = stripped.split('"', 2)[1]
-        else:
-            executable = stripped.split(" ", 1)[0]
+        try:
+            executable = split_command(stripped)[0]
+        except (IndexError, ValueError, OSError):
+            return False
+        executable_path = Path(executable)
+        if executable_path.is_absolute():
+            return executable_path.exists()
         return shutil.which(executable) is not None
 
     def _advanced_math_signals(

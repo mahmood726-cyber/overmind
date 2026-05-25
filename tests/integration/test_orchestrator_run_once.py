@@ -820,7 +820,6 @@ def test_orchestrator_rewrites_bare_codex_command_to_exec_mode(tmp_path):
     data_dir = tmp_path / "data"
     project_root = tmp_path / "project"
     runner_script = tmp_path / "capture_codex.py"
-    wrapper_script = tmp_path / "codex.cmd"
     config_dir.mkdir()
     data_dir.mkdir()
     project_root.mkdir()
@@ -845,10 +844,19 @@ def test_orchestrator_rewrites_bare_codex_command_to_exec_mode(tmp_path):
         "print('tests passed', flush=True)\n",
         encoding="utf-8",
     )
-    wrapper_script.write_text(
-        f'@echo off\r\n"{Path(sys.executable)}" "{runner_script}" %*\r\n',
-        encoding="utf-8",
-    )
+    if sys.platform == "win32":
+        wrapper_script = tmp_path / "codex.cmd"
+        wrapper_script.write_text(
+            f'@echo off\r\n"{Path(sys.executable)}" "{runner_script}" %*\r\n',
+            encoding="utf-8",
+        )
+    else:
+        wrapper_script = tmp_path / "codex"
+        wrapper_script.write_text(
+            f'#!/usr/bin/env sh\nexec "{Path(sys.executable)}" "{runner_script}" "$@"\n',
+            encoding="utf-8",
+        )
+        wrapper_script.chmod(0o755)
 
     (config_dir / "roots.yaml").write_text(
         f'scan_roots:\n  - "{project_root.as_posix()}"\nscan_rules:\n  include_git_repos: true\n  include_non_git_apps: true\n  incremental_scan: true\n  max_depth: 2\nguidance_filenames:\n  - "README.md"\n',

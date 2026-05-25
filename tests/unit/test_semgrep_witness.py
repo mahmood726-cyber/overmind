@@ -25,6 +25,7 @@ upstream version bumps.
 from __future__ import annotations
 
 import json
+import shutil
 import subprocess
 import textwrap
 from pathlib import Path
@@ -210,7 +211,7 @@ def test_custom_configs_passed_through(tmp_path: Path):
 
 
 @pytest.mark.skipif(
-    subprocess.run(["semgrep", "--version"], capture_output=True).returncode != 0,
+    shutil.which("semgrep") is None,
     reason="semgrep CLI not on PATH",
 )
 def test_real_semgrep_catches_subprocess_shell_true(tmp_path: Path):

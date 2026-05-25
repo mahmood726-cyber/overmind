@@ -114,7 +114,7 @@ def _strip_matching_quotes(token: str) -> str:
 
 
 def _should_use_windows_split(command: str) -> bool:
-    return os.name == "nt" and bool(re.match(WINDOWS_ABSOLUTE_EXECUTABLE_RE, command))
+    return bool(re.match(WINDOWS_ABSOLUTE_EXECUTABLE_RE, command))
 
 
 def _split_for_validation(command: str) -> list[str]:
@@ -125,7 +125,7 @@ def _split_for_validation(command: str) -> list[str]:
 
 
 def _resolve_windows_executable(parts: list[str]) -> list[str]:
-    if os.name != "nt" or not parts:
+    if not parts:
         return parts
 
     parts[0] = _strip_matching_quotes(parts[0])
@@ -172,6 +172,8 @@ def _resolve_wrapper_target(
     cwd: str | Path | None,
 ) -> Path | None:
     normalized = _strip_matching_quotes(target)
+    if not re.match(WINDOWS_ABSOLUTE_EXECUTABLE_RE, normalized):
+        normalized = normalized.replace("\\", os.sep)
     path = Path(normalized)
     if not path.is_absolute():
         if cwd is None:

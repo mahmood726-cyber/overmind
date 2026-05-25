@@ -91,7 +91,9 @@ def test_project_scanner_rewrites_stale_guidance_paths_and_prioritizes_focused_t
     config = AppConfig.from_directory(config_dir=config_dir, data_dir=data_dir, db_path=data_dir / "state.db")
     project = ProjectScanner(config).scan_project(project_root)
 
-    assert project.test_commands[0].endswith("rct-extractor-v2\\tests\\test_proof_carrying_numbers.py")
+    assert project.test_commands[0].replace("\\", "/").endswith(
+        "rct-extractor-v2/tests/test_proof_carrying_numbers.py"
+    )
     assert "python -m pytest -q" == project.test_commands[-1]
 
 

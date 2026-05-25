@@ -17,7 +17,7 @@ def test_guidance_parser_extracts_commands_and_redacts_secrets(tmp_path):
 
     result = GuidanceParser().load(tmp_path, ["claude.md", "README.md"])
 
-    assert result.found == ["claude.md"]
+    assert result.found == ["CLAUDE.md"]
     assert "python -m pytest -q" in result.commands
     assert "node test.js" in result.commands
     assert "AIza" not in "\n".join(result.summary)

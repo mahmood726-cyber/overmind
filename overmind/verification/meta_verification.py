@@ -33,7 +33,13 @@ class MetaVerificationResult:
 
 
 def build_canary_project(root: Path) -> ProjectRecord:
-    """Create a minimal known-good fixture project on disk."""
+    """Create a minimal known-good fixture project on disk.
+
+    Uses stdlib `unittest` rather than `pytest` so the verifier-health
+    canary remains meaningful on a lean machine with no dev extras
+    installed. The canary's job is to test TruthCert plumbing, not the
+    caller's virtualenv completeness.
+    """
     root.mkdir(parents=True, exist_ok=True)
 
     pkg = root / CANARY_MODULE
@@ -46,16 +52,22 @@ def build_canary_project(root: Path) -> ProjectRecord:
     tests_dir = root / "tests"
     tests_dir.mkdir(exist_ok=True)
     (tests_dir / CANARY_TEST_FILE).write_text(
+        "import unittest\n\n"
         "from canary_module import VALUE, identity\n\n"
-        "def test_value_is_42():\n"
-        "    assert VALUE == 42\n\n"
-        "def test_identity():\n"
-        "    assert identity(7) == 7\n",
+        "class CanaryTests(unittest.TestCase):\n"
+        "    def test_value_is_42(self):\n"
+        "        self.assertEqual(VALUE, 42)\n\n"
+        "    def test_identity(self):\n"
+        "        self.assertEqual(identity(7), 7)\n\n"
+        "if __name__ == '__main__':\n"
+        "    unittest.main()\n",
         encoding="utf-8",
     )
 
     import sys
-    test_command = f'"{sys.executable}" -m pytest tests -q'
+    test_command = (
+        f'"{sys.executable}" -m unittest discover -s tests -p {CANARY_TEST_FILE} -q'
+    )
     return ProjectRecord(
         project_id=CANARY_PROJECT_ID,
         name="Overmind Canary",

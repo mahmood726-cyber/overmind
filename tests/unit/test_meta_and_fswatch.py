@@ -26,6 +26,8 @@ def test_build_canary_project_creates_all_required_files(tmp_path):
     assert (tmp_path / "canary_module" / "__init__.py").exists()
     assert (tmp_path / "tests" / "test_canary.py").exists()
     assert project.test_commands
+    assert "unittest" in project.test_commands[0]
+    assert "pytest" not in project.test_commands[0]
 
 
 def test_meta_verification_certifies_healthy_canary(tmp_path):

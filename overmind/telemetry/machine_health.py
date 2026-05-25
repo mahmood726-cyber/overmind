@@ -1,12 +1,24 @@
 from __future__ import annotations
 
-import psutil
+try:
+    import psutil
+except ModuleNotFoundError:  # pragma: no cover - exercised by import-time smoke tests
+    psutil = None
 
 from overmind.storage.models import MachineHealthSnapshot
 
 
 class MachineHealthMonitor:
     def snapshot(self, active_sessions: int) -> MachineHealthSnapshot:
+        if psutil is None:
+            return MachineHealthSnapshot(
+                cpu_percent=0.0,
+                ram_percent=0.0,
+                swap_used_mb=0.0,
+                active_sessions=active_sessions,
+                load_state="unknown",
+            )
+
         memory = psutil.virtual_memory()
         swap = psutil.swap_memory()
         cpu = psutil.cpu_percent(interval=0.1)
@@ -23,4 +35,3 @@ class MachineHealthMonitor:
             active_sessions=active_sessions,
             load_state=load_state,
         )
-

@@ -34,8 +34,8 @@ class GuidanceParser:
     def load(self, root: Path, filenames: list[str]) -> GuidanceScanResult:
         result = GuidanceScanResult()
         for filename in self._ordered_filenames(filenames):
-            path = root / filename
-            if not path.exists() or not path.is_file():
+            path = self._resolve_guidance_file(root, filename)
+            if path is None:
                 continue
             result.found.append(path.name)
             text = redact_text(path.read_text(encoding="utf-8-sig", errors="ignore")[: self.max_bytes])
@@ -52,6 +52,19 @@ class GuidanceParser:
     def _ordered_filenames(self, filenames: list[str]) -> list[str]:
         priority = {"claude.md": 0, "agents.md": 1, "readme.md": 2, "contributing.md": 3}
         return sorted(filenames, key=lambda name: (priority.get(name.lower(), 9), name.lower()))
+
+    def _resolve_guidance_file(self, root: Path, filename: str) -> Path | None:
+        path = root / filename
+        if path.exists() and path.is_file():
+            return path
+        lowered = filename.lower()
+        try:
+            for candidate in root.iterdir():
+                if candidate.is_file() and candidate.name.lower() == lowered:
+                    return candidate
+        except OSError:
+            return None
+        return None
 
     def _extract_lines(self, text: str) -> list[str]:
         lines: list[str] = []
