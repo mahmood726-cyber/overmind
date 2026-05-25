@@ -123,7 +123,7 @@ After judge diagnoses failures and fixes are applied:
 1. Tracks which diagnosis → fix pairs actually worked
 2. Extracts procedural recipes: "when ImportError on scipy.stats → monkey-patch platform._wmi_query"
 3. Stores recipes in wiki as "Procedures" articles
-4. Next time same failure pattern appears, recommends the proven fix
+4. Next time same failure pattern appears, recommends the previously-applied fix
 
 ### This replaces
 - Current heuristic memory (low-value "ValueError 178x" records)
