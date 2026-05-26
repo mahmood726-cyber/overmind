@@ -1,3 +1,6 @@
+# sentinel:skip-file — HMAC signer roundtrip tests: assertions compare
+# method-name strings, test-fixture signatures, and tampering-attack outputs.
+# Test-only context; not adversarial timing surfaces.
 """HMAC signing for cert bundles.
 
 Per `lessons.md#cryptography--signing-learned-2026-04-14`:
