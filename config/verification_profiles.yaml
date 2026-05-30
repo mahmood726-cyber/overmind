@@ -45,6 +45,13 @@ profiles:
       - build
       - existing_tests
       - smoke_flow
+  aact_capsule:
+    required:
+      - build
+      - relevant_tests
+      - numeric_regression
+      - targeted_browser_test
+      - regression_checks
 
 project_rules:
   - profile: truthcert_suite
@@ -69,3 +76,7 @@ project_rules:
   - profile: refactor
     match_name_equals:
       - "overmind"
+
+  - profile: aact_capsule
+    match_path_contains:
+      - "\\aact-cockpit"
