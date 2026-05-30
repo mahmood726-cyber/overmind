@@ -775,6 +775,22 @@ def _run_verification(db: StateDatabase, args: argparse.Namespace, run_start: da
             skill = skill_lib.promote_recipe(recipe)
             if skill:
                 promoted += 1
+
+    # Evidence-gated promotion: archive every decision append-only (Darwin-Gödel
+    # "keep the archive") and promote only skills with real success evidence
+    # (Audited Skill-Graph evidence bundle). See evolution/promotion.py and
+    # memory harness-ai-eng-breakthroughs-2026.
+    import time as _time
+    from overmind.evolution.promotion import PromotionGate, SkillArchive
+    _gate = PromotionGate(
+        skill_lib,
+        archive=SkillArchive(Path("C:/overmind/wiki/SKILL_ARCHIVE.jsonl")),
+        clock=_time.time,
+    )
+    _bundles = _gate.sweep()
+    _trusted = sum(1 for b in _bundles if b.decision == "promote")
+    print(f"[evolve] promotion gate: {_trusted}/{len(_bundles)} skills trusted")
+
     demoted = skill_lib.demote_stale()
     stats = skill_lib.stats()
     if promoted or demoted or stats["total_skills"]:

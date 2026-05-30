@@ -38,6 +38,8 @@ class Skill:
     times_succeeded: int = 0
     created_from_recipe: str = ""
     tags: list[str] = field(default_factory=list)
+    trusted: bool = False           # evidence-gated promotion (set by PromotionGate)
+    promoted_ts: float = 0.0
 
     @property
     def success_rate(self) -> float:
@@ -60,6 +62,8 @@ class Skill:
             "times_succeeded": self.times_succeeded,
             "created_from_recipe": self.created_from_recipe,
             "tags": self.tags,
+            "trusted": self.trusted,
+            "promoted_ts": self.promoted_ts,
         }
 
 
@@ -142,12 +146,25 @@ class SkillLibrary:
                 self.skills[skill_id].times_succeeded += 1
             self._save()
 
+    def mark_trusted(self, skill_id: str, ts: float = 0.0) -> None:
+        """Mark a skill as evidence-gated promoted (called by PromotionGate)."""
+        if skill_id in self.skills:
+            self.skills[skill_id].trusted = True
+            self.skills[skill_id].promoted_ts = ts
+            self._save()
+
     def compose(self, skill_ids: list[str]) -> list[Skill]:
         """Retrieve skills by ID for chained execution."""
         return [self.skills[sid] for sid in skill_ids if sid in self.skills]
 
-    def demote_stale(self, min_uses: int = 5, max_failure_rate: float = 0.7) -> int:
-        """Demote skills that have stopped working."""
+    def demote_stale(self, min_uses: int = 5, max_failure_rate: float = 0.7, archive=None) -> int:
+        """Demote skills that have stopped working.
+
+        If ``archive`` is provided (a promotion.SkillArchive, or any object with
+        a ``.record(dict)`` method), each demoted skill is archived BEFORE
+        deletion so its lifecycle survives — Darwin-Gödel "keep the archive,
+        never silently forget a candidate" (see promotion.py).
+        """
         demoted = 0
         to_remove = []
         for skill_id, skill in self.skills.items():
@@ -156,6 +173,15 @@ class SkillLibrary:
                     to_remove.append(skill_id)
                     demoted += 1
         for sid in to_remove:
+            if archive is not None:
+                s = self.skills[sid]
+                archive.record({
+                    "skill_id": sid, "decision": "demote",
+                    "reason": f"failure rate exceeded {max_failure_rate} over {s.times_used} uses",
+                    "times_used": s.times_used, "times_succeeded": s.times_succeeded,
+                    "success_rate": round(s.success_rate, 4),
+                    "durability": round(s.durability, 4), "policy": {}, "ts": 0.0,
+                })
             del self.skills[sid]
         if demoted:
             self._save()
