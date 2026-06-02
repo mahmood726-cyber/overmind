@@ -85,6 +85,29 @@ class EvolutionManager:
             "proven_recipes": sum(1 for r in recipes if r.is_proven()),
         }
 
+    def list_recipes(self) -> dict:
+        """Read-only view of the procedural-memory recipe library (what fixes
+        worked, how proven). Loads from PROCEDURES.md; empty when none yet."""
+        recipes = sorted(self._load_recipes(), key=lambda r: (-r.times_seen, r.recipe_id))
+        return {
+            "wiki_dir": str(self.wiki_dir),
+            "total": len(recipes),
+            "proven": sum(1 for r in recipes if r.is_proven()),
+            "recipes": [{
+                "recipe_id": r.recipe_id,
+                "failure_type": r.failure_type,
+                "fix": r.fix_description,
+                "times_seen": r.times_seen,
+                "times_resolved": r.times_resolved,
+                "confidence": round(r.confidence, 3),
+                "durability": round(r.durability, 3),
+                "proven": r.is_proven(),
+                "first_seen": r.first_seen,
+                "last_seen": r.last_seen,
+                "example_project": r.example_project,
+            } for r in recipes],
+        }
+
     def get_recommendation(self, diagnosis: Diagnosis) -> Recipe | None:
         """Find a proven recipe for a diagnosis."""
         recipes = self._load_recipes()

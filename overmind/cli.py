@@ -152,6 +152,13 @@ def build_parser() -> argparse.ArgumentParser:
                             help="extra dir to scan for .mcp.json (repeatable).")
     mcp_parser.add_argument("--pin-file", default=None)
 
+    # recipes: read-only view of the evolution manager's procedural memory.
+    recipes_parser = subparsers.add_parser(
+        "recipes",
+        help="List evolution recipes (procedural memory: which fixes worked, how proven).",
+    )
+    recipes_parser.add_argument("--dir", default=None, help="wiki dir (default: <data>/wiki).")
+
     dream_parser = subparsers.add_parser("dream")
     dream_parser.add_argument("--dry-run", action="store_true")
 
@@ -299,6 +306,12 @@ def main(argv: list[str] | None = None) -> int:
         payload["caveat"] = ("local MCP servers + plugin .mcp.json only; "
                              "claude.ai cloud connectors are managed server-side and not pinnable here")
         return _emit_payload(payload)
+
+    if args.command == "recipes":
+        from overmind.evolution.manager import EvolutionManager
+        from overmind.config import default_data_dir
+        wiki = Path(args.dir) if args.dir else (default_data_dir() / "wiki")
+        return _emit_payload(EvolutionManager(wiki).list_recipes())
 
     config = AppConfig.from_directory(
         config_dir=args.config_dir,
