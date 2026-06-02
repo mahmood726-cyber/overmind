@@ -152,6 +152,13 @@ def build_parser() -> argparse.ArgumentParser:
     # Daily report
     subparsers.add_parser("daily-report")
 
+    # Aggregate Sentinel findings across indexed repos: systemic rollup +
+    # per-rule counts (the "which rules actually catch things" metric).
+    subparsers.add_parser(
+        "aggregate-findings",
+        help="Roll up Sentinel findings across indexed repos (top repos + per-rule counts).",
+    )
+
     # Batch verify
     batch_parser = subparsers.add_parser("batch-verify")
     batch_parser.add_argument("--count", type=int, default=10)
@@ -292,6 +299,10 @@ def main(argv: list[str] | None = None) -> int:
             payload = orchestrator.dream(dry_run=args.dry_run)
         elif args.command == "audit-history":
             payload = orchestrator.audit_loop.project_history(args.project_id)
+        elif args.command == "aggregate-findings":
+            from overmind.integrations.sentinel_aggregator import collect
+            roots = [p.root_path for p in orchestrator.db.list_projects()]
+            payload = collect(discover_repos=lambda: roots)
         elif args.command == "daily-report":
             from overmind.intelligence.daily_report import DailyReport
             reporter = DailyReport(orchestrator.db, config.data_dir / "artifacts")
