@@ -159,6 +159,14 @@ def build_parser() -> argparse.ArgumentParser:
     )
     recipes_parser.add_argument("--dir", default=None, help="wiki dir (default: <data>/wiki).")
 
+    # ma-verify: check meta-analysis statistical invariants over a results CSV.
+    ma_verify_parser = subparsers.add_parser(
+        "ma-verify",
+        help="Verify meta-analysis result invariants (sig↔CI, I²/τ², HKSJ, conclusion-change) over a results CSV.",
+    )
+    ma_verify_parser.add_argument("--csv", required=True)
+    ma_verify_parser.add_argument("--tol", type=float, default=0.02)
+
     dream_parser = subparsers.add_parser("dream")
     dream_parser.add_argument("--dry-run", action="store_true")
 
@@ -312,6 +320,10 @@ def main(argv: list[str] | None = None) -> int:
         from overmind.config import default_data_dir
         wiki = Path(args.dir) if args.dir else (default_data_dir() / "wiki")
         return _emit_payload(EvolutionManager(wiki).list_recipes())
+
+    if args.command == "ma-verify":
+        from overmind.intelligence.ma_verify import verify_csv
+        return _emit_payload(verify_csv(args.csv, tol=args.tol))
 
     config = AppConfig.from_directory(
         config_dir=args.config_dir,
