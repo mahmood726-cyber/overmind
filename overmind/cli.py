@@ -166,6 +166,12 @@ def build_parser() -> argparse.ArgumentParser:
         help="Roll up Sentinel findings across indexed repos (top repos + per-rule counts).",
     )
 
+    # rule-effectiveness: join Sentinel rules with portfolio hit-counts + lessons.
+    subparsers.add_parser(
+        "rule-effectiveness",
+        help="Which rules fire, which never fire, and which lessons lack a guarding rule.",
+    )
+
     # Batch verify
     batch_parser = subparsers.add_parser("batch-verify")
     batch_parser.add_argument("--count", type=int, default=10)
@@ -314,6 +320,12 @@ def main(argv: list[str] | None = None) -> int:
             from overmind.integrations.sentinel_aggregator import collect
             roots = [p.root_path for p in orchestrator.db.list_projects()]
             payload = collect(discover_repos=lambda: roots)
+        elif args.command == "rule-effectiveness":
+            from overmind.integrations.sentinel_aggregator import rule_hit_counts
+            from overmind.intelligence.rule_effectiveness import effectiveness
+            roots = [p.root_path for p in orchestrator.db.list_projects()]
+            counts = rule_hit_counts(discover_repos=lambda: roots)
+            payload = effectiveness(hit_counts=counts)
         elif args.command == "daily-report":
             from overmind.intelligence.daily_report import DailyReport
             reporter = DailyReport(orchestrator.db, config.data_dir / "artifacts")

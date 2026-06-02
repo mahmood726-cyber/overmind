@@ -171,6 +171,26 @@ def _read_findings_for_repo(root: Path) -> tuple[list[str], list[str], str]:
     return blocks, warns, _combine_sources(block_source, warn_source)
 
 
+def rule_hit_counts(
+    discover_repos: Callable[[], Iterable[str]] | None = None,
+) -> dict[str, int]:
+    """Full {rule_id: portfolio_hit_count} map (not just the top-10 in collect()).
+
+    Used by the rule-effectiveness loop to find which rules actually fire and
+    which never do. Fails soft to {} if portfolio discovery is unavailable.
+    """
+    try:
+        repos = list(discover_repos()) if discover_repos else _default_discover_repos()
+    except Exception:
+        return {}
+    counts: dict[str, int] = {}
+    for repo_path in repos:
+        blocks, warns, _ = _read_findings_for_repo(Path(repo_path))
+        for rid in blocks + warns:
+            counts[rid] = counts.get(rid, 0) + 1
+    return counts
+
+
 def collect(
     discover_repos: Callable[[], Iterable[str]] | None = None,
 ) -> dict:
