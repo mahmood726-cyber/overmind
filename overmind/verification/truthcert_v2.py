@@ -37,6 +37,15 @@ def _key_lines(text: str, max_lines: int = 4, max_len: int = 200) -> list[str]:
     return [(ln[:max_len] + "…") if len(ln) > max_len else ln for ln in chosen]
 
 
+def bundle_vacuous_pass(bundle: dict) -> bool:
+    """True if a *serialized* bundle (dict) has a pass-like verdict but no PASS
+    witness — it "passed" because nothing actually executed. Bundle-only (no
+    project record needed), so the nightly report can flag it cheaply."""
+    if bundle.get("verdict") not in _PASS_VERDICTS:
+        return False
+    return not any(w.get("verdict") == "PASS" for w in bundle.get("witness_results", []))
+
+
 def build_evidence_snapshot(bundle) -> dict:
     lock = bundle.scope_lock
     witnesses = []

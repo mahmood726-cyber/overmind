@@ -90,6 +90,7 @@ def _promote_progress_to_partial_report(
         tally = Counter(progress.values())
         bundles_dir = rd / "bundles" / date_str
         proj_records = []
+        from overmind.verification.truthcert_v2 import bundle_vacuous_pass
         if bundles_dir.is_dir():
             for bundle_file in bundles_dir.glob("*.json"):
                 try:
@@ -99,6 +100,9 @@ def _promote_progress_to_partial_report(
                         "verdict": b.get("verdict", "?"),
                         "bundle_hash": b.get("bundle_hash", ""),
                         "arbitration_reason": b.get("arbitration_reason", ""),
+                        # Advisory (TruthCert v2): pass-like verdict but nothing
+                        # actually passed. Surfaced, not gated.
+                        "vacuous_pass": bundle_vacuous_pass(b),
                     })
                 except Exception:
                     continue
@@ -116,6 +120,7 @@ def _promote_progress_to_partial_report(
             "failed": tally.get("FAIL", 0),
             "single_pass": tally.get("PASS", 0),
             "unverified": tally.get("UNVERIFIED", 0),
+            "vacuous_pass": sum(1 for r in proj_records if r.get("vacuous_pass")),
             "projects": proj_records,
         }
         rd.mkdir(parents=True, exist_ok=True)

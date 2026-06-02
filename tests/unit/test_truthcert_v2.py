@@ -6,8 +6,18 @@ from types import SimpleNamespace
 from overmind.verification.truthcert_v2 import (
     assess,
     build_evidence_snapshot,
+    bundle_vacuous_pass,
     score_rubric,
 )
+
+
+def test_bundle_vacuous_pass_from_dict():
+    assert bundle_vacuous_pass({"verdict": "CERTIFIED",
+                                "witness_results": [{"verdict": "SKIP"}]}) is True
+    assert bundle_vacuous_pass({"verdict": "CERTIFIED",
+                                "witness_results": [{"verdict": "PASS"}]}) is False
+    assert bundle_vacuous_pass({"verdict": "FAIL",
+                                "witness_results": [{"verdict": "SKIP"}]}) is False
 
 
 def _w(witness_type, verdict, stdout="", stderr="", exit_code=0, elapsed=0.1):
