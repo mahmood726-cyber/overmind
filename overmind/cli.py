@@ -167,6 +167,13 @@ def build_parser() -> argparse.ArgumentParser:
     ma_verify_parser.add_argument("--csv", required=True)
     ma_verify_parser.add_argument("--tol", type=float, default=0.02)
 
+    # review-consensus: multi-reviewer screening consensus + signed attestations.
+    rc_parser = subparsers.add_parser(
+        "review-consensus",
+        help="Multi-reviewer screening consensus: agreement (κ), conflicts, consensus, signed per-reviewer attestations.",
+    )
+    rc_parser.add_argument("--dir", required=True, help="dir of per-reviewer *.jsonl decision files")
+
     dream_parser = subparsers.add_parser("dream")
     dream_parser.add_argument("--dry-run", action="store_true")
 
@@ -324,6 +331,10 @@ def main(argv: list[str] | None = None) -> int:
     if args.command == "ma-verify":
         from overmind.intelligence.ma_verify import verify_csv
         return _emit_payload(verify_csv(args.csv, tol=args.tol))
+
+    if args.command == "review-consensus":
+        from overmind.review.consensus import run as rc_run
+        return _emit_payload(rc_run(Path(args.dir)))
 
     config = AppConfig.from_directory(
         config_dir=args.config_dir,
