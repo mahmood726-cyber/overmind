@@ -120,6 +120,10 @@ def build_parser() -> argparse.ArgumentParser:
     notes_parser.add_argument("action", choices=["index", "recall", "consolidate"])
     notes_parser.add_argument("query", nargs="?", default=None)
     notes_parser.add_argument("--k", type=int, default=5)
+    notes_parser.add_argument("--apply", action="store_true",
+                              help="consolidate: archive expired/stale facts (reversible move to archive/).")
+    notes_parser.add_argument("--stale-days", type=int, default=365,
+                              help="consolidate --apply: archive facts unreviewed for more than N days.")
 
     # rules: JIT-load the rule slices relevant to a task/glob (1B).
     rules_parser = subparsers.add_parser(
@@ -254,7 +258,7 @@ def main(argv: list[str] | None = None) -> int:
                 return 2
             payload = fi.cmd_recall(args.query, k=args.k)
         elif args.action == "consolidate":
-            payload = fi.cmd_consolidate()
+            payload = fi.cmd_consolidate(apply=args.apply, stale_days=args.stale_days)
         else:
             payload = fi.cmd_index()
         return _emit_payload(payload)

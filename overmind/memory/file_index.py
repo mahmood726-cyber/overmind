@@ -3,7 +3,10 @@
 This is deliberately separate from the SQLite ``MemoryStore``: the markdown files
 under ``~/.claude/memory`` and ``~/.claude/projects/<machine>/memory`` are the
 *portable source of truth* (they sync across machines via claude-ecosystem-sync).
-This module **indexes** them — it never migrates or rewrites them.
+This module **indexes** them and never rewrites their content. The one mutating
+operation is the explicit, opt-in ``consolidate(apply=True)`` decay pass, which
+*moves* expired/stale facts into ``<memory>/archive/`` (reversible — never
+deletes, never edits, never auto-merges).
 
 Local-first / stdlib only: BM25 ranking over (name + description + body), a
 bidirectional ``[[wiki-link]]`` graph, and a consolidation report (near-duplicates,
@@ -86,6 +89,8 @@ def load_docs(roots: list[Path] | None = None) -> list[MemoryDoc]:
                 continue
             if "templates" in p.parts or p.name.endswith(".template.md"):
                 continue  # scaffolding, not real facts
+            if "archive" in p.parts:
+                continue  # already-decayed facts — out of the live index
             try:
                 text = p.read_text(encoding="utf-8")
             except (OSError, UnicodeDecodeError):
@@ -252,5 +257,51 @@ def cmd_recall(query: str, k: int = 5, roots: list[Path] | None = None) -> dict:
     }
 
 
-def cmd_consolidate(roots: list[Path] | None = None) -> dict:
-    return consolidate_report(load_docs(roots), roots)
+def _is_expired(fields: dict) -> bool:
+    raw = fields.get("valid_until")
+    if not raw:
+        return False
+    try:
+        return datetime.strptime(str(raw)[:10], "%Y-%m-%d").date() < date.today()
+    except ValueError:
+        return False
+
+
+def archive_stale(roots: list[Path] | None = None, stale_days: int = 365) -> list[dict]:
+    """Move expired (valid_until past) or stale (last_reviewed/created older than
+    stale_days) facts into a sibling ``archive/`` dir. Reversible — moves, never
+    deletes; never touches un-decayed facts. Returns what was archived."""
+    archived: list[dict] = []
+    for d in load_docs(roots):
+        age = _age_days(d.fields)
+        expired = _is_expired(d.fields)
+        if not expired and not (age is not None and age > stale_days):
+            continue
+        arch_dir = d.path.parent / "archive"
+        arch_dir.mkdir(exist_ok=True)
+        dest = arch_dir / d.path.name
+        try:
+            d.path.rename(dest)
+        except OSError:
+            continue
+        archived.append({
+            "slug": d.slug,
+            "from": str(d.path),
+            "to": str(dest),
+            "reason": "expired (valid_until past)" if expired else f"stale (>{stale_days}d unreviewed)",
+        })
+    return archived
+
+
+def cmd_consolidate(roots: list[Path] | None = None, apply: bool = False,
+                    stale_days: int = 365) -> dict:
+    report = consolidate_report(load_docs(roots), roots)
+    if apply:
+        report["archived"] = archive_stale(roots, stale_days)
+        if report["archived"]:
+            report["note"] = ("archived to <memory>/archive/ (reversible). "
+                              "Update MEMORY.md to drop the archived index lines.")
+        else:
+            report["note"] = "apply: nothing expired or stale — no facts archived."
+    return report
+
