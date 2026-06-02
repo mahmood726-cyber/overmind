@@ -172,6 +172,13 @@ def build_parser() -> argparse.ArgumentParser:
         help="Which rules fire, which never fire, and which lessons lack a guarding rule.",
     )
 
+    # assess: verify a project, then overlay TruthCert v2 (evidence snapshot + rubric).
+    assess_parser = subparsers.add_parser(
+        "assess",
+        help="Verify a project and assess its bundle: evidence snapshot + rubric gaps (catches CERTIFIED-but-vacuous).",
+    )
+    assess_parser.add_argument("--project-id", required=True)
+
     # Batch verify
     batch_parser = subparsers.add_parser("batch-verify")
     batch_parser.add_argument("--count", type=int, default=10)
@@ -326,6 +333,17 @@ def main(argv: list[str] | None = None) -> int:
             roots = [p.root_path for p in orchestrator.db.list_projects()]
             counts = rule_hit_counts(discover_repos=lambda: roots)
             payload = effectiveness(hit_counts=counts)
+        elif args.command == "assess":
+            from overmind.verification.truthcert_engine import TruthCertEngine
+            from overmind.verification.truthcert_v2 import assess as tc_assess
+            project = orchestrator.db.get_project(args.project_id)
+            if not project:
+                payload = {"error": f"unknown project {args.project_id}"}
+            else:
+                engine = TruthCertEngine(
+                    baselines_dir=config.data_dir / "meta_verification" / "baselines"
+                )
+                payload = tc_assess(project, engine.verify(project))
         elif args.command == "daily-report":
             from overmind.intelligence.daily_report import DailyReport
             reporter = DailyReport(orchestrator.db, config.data_dir / "artifacts")
