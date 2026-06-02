@@ -121,6 +121,15 @@ def build_parser() -> argparse.ArgumentParser:
     notes_parser.add_argument("query", nargs="?", default=None)
     notes_parser.add_argument("--k", type=int, default=5)
 
+    # rules: JIT-load the rule slices relevant to a task/glob (1B).
+    rules_parser = subparsers.add_parser(
+        "rules",
+        help="JIT-load rule slices relevant to a task/glob (reads ~/.claude/rules/_index.yaml).",
+    )
+    rules_parser.add_argument("--for", dest="for_query", required=True)
+    rules_parser.add_argument("--text", action="store_true",
+                              help="Include extracted rule text, not just slice refs.")
+
     dream_parser = subparsers.add_parser("dream")
     dream_parser.add_argument("--dry-run", action="store_true")
 
@@ -221,6 +230,11 @@ def main(argv: list[str] | None = None) -> int:
             payload = fi.cmd_consolidate()
         else:
             payload = fi.cmd_index()
+        return _emit_payload(payload)
+
+    if args.command == "rules":
+        from overmind.context.rules_index import rules_for
+        payload = rules_for(args.for_query, with_text=args.text)
         return _emit_payload(payload)
 
     config = AppConfig.from_directory(
