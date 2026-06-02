@@ -146,13 +146,27 @@ class AppConfig:
         )
 
         roots_payload = _load_yaml(config_dir / "roots.yaml")
+        # roots.local.yaml: gitignored, per-machine scan_roots merged with the
+        # committed list — so the shared file stays portable and machines don't
+        # clobber each other's absolute paths (fixes cross-machine roots drift).
+        local_roots_payload = _load_yaml(config_dir / "roots.local.yaml")
         runners_payload = _load_yaml(config_dir / "runners.yaml")
         policies_payload = _load_yaml(config_dir / "policies.yaml")
         ignores_payload = _load_yaml(config_dir / "projects_ignore.yaml")
         verification_payload = _load_yaml(config_dir / "verification_profiles.yaml")
 
+        # Expand ${ENV}/~ in every root (portable across machines) and merge the
+        # committed + local lists, de-duplicating case-insensitively in order.
+        _seen: set[str] = set()
+        _scan_roots: list[Path] = []
+        for entry in list(roots_payload.get("scan_roots", [])) + list(local_roots_payload.get("scan_roots", [])):
+            p = Path(os.path.expanduser(os.path.expandvars(str(entry))))
+            key = str(p).lower()
+            if key not in _seen:
+                _seen.add(key)
+                _scan_roots.append(p)
         roots = RootsConfig(
-            scan_roots=[Path(entry) for entry in roots_payload.get("scan_roots", [])],
+            scan_roots=_scan_roots,
             scan_rules=ScanRules(**roots_payload.get("scan_rules", {})),
             guidance_filenames=list(roots_payload.get("guidance_filenames", [])),
         )

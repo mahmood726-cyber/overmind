@@ -41,3 +41,7 @@ data/nightly_reports/watchdog_crash.log
 sentinel-findings.md
 sentinel-findings.jsonl
 data/nightly_reports/inspect_format/
+
+# machine-local overmind scan roots (P3-a)
+config/roots.local.yaml
+
