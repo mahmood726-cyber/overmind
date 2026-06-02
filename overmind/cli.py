@@ -183,6 +183,14 @@ def build_parser() -> argparse.ArgumentParser:
     )
     assess_parser.add_argument("--project-id", required=True)
 
+    # wiki: compile the flat memory store into an interlinked markdown KB.
+    wiki_parser = subparsers.add_parser(
+        "wiki",
+        help="Compile memories into an interlinked markdown wiki (index + per-scope pages).",
+    )
+    wiki_parser.add_argument("--out", default=None, help="Output dir (default: <data>/wiki).")
+    wiki_parser.add_argument("--limit", type=int, default=1000)
+
     # Batch verify
     batch_parser = subparsers.add_parser("batch-verify")
     batch_parser.add_argument("--count", type=int, default=10)
@@ -348,6 +356,11 @@ def main(argv: list[str] | None = None) -> int:
                     baselines_dir=config.data_dir / "meta_verification" / "baselines"
                 )
                 payload = tc_assess(project, engine.verify(project))
+        elif args.command == "wiki":
+            from overmind.memory.wiki_compiler import compile_wiki
+            mems = orchestrator.db.list_memories(limit=args.limit)
+            out_dir = args.out or str(config.data_dir / "wiki")
+            payload = compile_wiki(mems, out_dir)
         elif args.command == "daily-report":
             from overmind.intelligence.daily_report import DailyReport
             reporter = DailyReport(orchestrator.db, config.data_dir / "artifacts")
