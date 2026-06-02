@@ -130,6 +130,13 @@ def build_parser() -> argparse.ArgumentParser:
     rules_parser.add_argument("--text", action="store_true",
                               help="Include extracted rule text, not just slice refs.")
 
+    # eval-ecosystem: local quality scorecard (memory recall + context integrity).
+    eval_eco_parser = subparsers.add_parser(
+        "eval-ecosystem",
+        help="Local quality scorecard: memory recall@k + context-index integrity (1E).",
+    )
+    eval_eco_parser.add_argument("--k", type=int, default=3)
+
     dream_parser = subparsers.add_parser("dream")
     dream_parser.add_argument("--dry-run", action="store_true")
 
@@ -243,6 +250,10 @@ def main(argv: list[str] | None = None) -> int:
         from overmind.context.rules_index import rules_for
         payload = rules_for(args.for_query, with_text=args.text)
         return _emit_payload(payload)
+
+    if args.command == "eval-ecosystem":
+        from overmind.intelligence.ecosystem_eval import run as eco_run
+        return _emit_payload(eco_run(k=args.k))
 
     config = AppConfig.from_directory(
         config_dir=args.config_dir,
