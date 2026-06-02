@@ -111,6 +111,16 @@ def build_parser() -> argparse.ArgumentParser:
     memories_parser.add_argument("--forget", default=None)
     memories_parser.add_argument("--stats", action="store_true")
 
+    # notes: index/recall/consolidate over the markdown memory (~/.claude memory).
+    # Distinct from `memories` (the SQLite store) — markdown stays the source of truth.
+    notes_parser = subparsers.add_parser(
+        "notes",
+        help="Index/recall the local markdown memory (~/.claude). BM25 + link graph; read-only.",
+    )
+    notes_parser.add_argument("action", choices=["index", "recall", "consolidate"])
+    notes_parser.add_argument("query", nargs="?", default=None)
+    notes_parser.add_argument("--k", type=int, default=5)
+
     dream_parser = subparsers.add_parser("dream")
     dream_parser.add_argument("--dry-run", action="store_true")
 
@@ -199,6 +209,19 @@ def main(argv: list[str] | None = None) -> int:
             return _emit_payload(sessions)
         finally:
             db.close()
+
+    if args.command == "notes":
+        from overmind.memory import file_index as fi
+        if args.action == "recall":
+            if not args.query:
+                print('usage: overmind notes recall "<query>"', file=sys.stderr)
+                return 2
+            payload = fi.cmd_recall(args.query, k=args.k)
+        elif args.action == "consolidate":
+            payload = fi.cmd_consolidate()
+        else:
+            payload = fi.cmd_index()
+        return _emit_payload(payload)
 
     config = AppConfig.from_directory(
         config_dir=args.config_dir,
