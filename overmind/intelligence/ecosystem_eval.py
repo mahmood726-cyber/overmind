@@ -19,10 +19,13 @@ rather than duplicating.
 """
 from __future__ import annotations
 
+import hashlib
 from pathlib import Path
 
 from overmind.memory import file_index as fi
 from overmind.context import rules_index as ri
+
+_AGENT_DIRS = (".claude", ".gemini", ".codex")
 
 
 def eval_memory_recall(roots: list[Path] | None = None, k: int = 3) -> dict:
@@ -77,12 +80,63 @@ def eval_context_integrity(rules_dir: Path | None = None) -> dict:
     }
 
 
+def _norm_hash(path: Path) -> str | None:
+    """EOL-normalized content hash (so CRLF vs LF doesn't read as drift)."""
+    try:
+        text = path.read_text(encoding="utf-8", errors="ignore")
+    except OSError:
+        return None
+    return hashlib.sha256(text.replace("\r\n", "\n").encode("utf-8")).hexdigest()[:12]
+
+
+def eval_config_consistency(home: Path | None = None) -> dict:
+    """Detect drift of the shared context layer across the agent config dirs.
+
+    Compares AGENTS.md + rules/*.md + rules/_index.yaml across ~/.claude,
+    ~/.gemini, ~/.codex (EOL-normalized). Read-only — reports, never rewrites.
+    """
+    home = home or Path.home()
+    present = {a: home / a for a in _AGENT_DIRS if (home / a).exists()}
+    rel_files: set[str] = set()
+    for d in present.values():
+        if (d / "AGENTS.md").exists():
+            rel_files.add("AGENTS.md")
+        rdir = d / "rules"
+        if rdir.is_dir():
+            for f in rdir.glob("*.md"):
+                rel_files.add(f"rules/{f.name}")
+            if (rdir / "_index.yaml").exists():
+                rel_files.add("rules/_index.yaml")
+
+    drift = []
+    consistent = 0
+    for rel in sorted(rel_files):
+        hashes = {a: _norm_hash(d / rel) for a, d in present.items()}
+        distinct = {h for h in hashes.values() if h is not None}
+        missing = [a for a, h in hashes.items() if h is None]
+        if len(distinct) > 1 or missing:
+            drift.append({"file": rel, "missing_in": missing, "hashes": hashes})
+        else:
+            consistent += 1
+    return {
+        "agents_present": list(present),
+        "files_checked": len(rel_files),
+        "consistent": consistent,
+        "drifted": len(drift),
+        "drift": drift,
+        "status": "ok" if not drift else "drift",
+    }
+
+
 def run(k: int = 3) -> dict:
     mem = eval_memory_recall(k=k)
     ctx = eval_context_integrity()
+    cfg = eval_config_consistency()
     consolidate = fi.cmd_consolidate()
 
     status = "ok"
+    if cfg.get("status") == "drift":
+        status = "config-drift"
     if ctx.get("present") and ctx.get("integrity") == "drift":
         status = "context-drift"
     r1 = mem.get("recall@1")
@@ -102,6 +156,13 @@ def run(k: int = 3) -> dict:
                 "orphan_links": len(consolidate.get("orphan_links", [])),
             },
             "context": ctx,
+            "config_consistency": {
+                "agents": cfg.get("agents_present"),
+                "files_checked": cfg.get("files_checked"),
+                "consistent": cfg.get("consistent"),
+                "drifted": cfg.get("drifted"),
+                "drift_files": [d["file"] for d in cfg.get("drift", [])],
+            },
         },
         "external_measures": {
             "sentinel_rule_precision": "Sentinel pytest regression corpus (run `pytest` in the Sentinel repo)",
