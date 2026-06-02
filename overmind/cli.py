@@ -174,6 +174,13 @@ def build_parser() -> argparse.ArgumentParser:
     )
     rc_parser.add_argument("--dir", required=True, help="dir of per-reviewer *.jsonl decision files")
 
+    # nma-check: verify network-meta-analysis assumptions on a structured spec.
+    nma_parser = subparsers.add_parser(
+        "nma-check",
+        help="Verify NMA assumptions (connectivity, consistency, single-study, SUCRA misuse) on a spec JSON.",
+    )
+    nma_parser.add_argument("--spec", required=True, help="NMA spec JSON (treatments/comparisons/consistency/sucra)")
+
     dream_parser = subparsers.add_parser("dream")
     dream_parser.add_argument("--dry-run", action="store_true")
 
@@ -335,6 +342,10 @@ def main(argv: list[str] | None = None) -> int:
     if args.command == "review-consensus":
         from overmind.review.consensus import run as rc_run
         return _emit_payload(rc_run(Path(args.dir)))
+
+    if args.command == "nma-check":
+        from overmind.intelligence.nma_check import check_json
+        return _emit_payload(check_json(args.spec))
 
     config = AppConfig.from_directory(
         config_dir=args.config_dir,
