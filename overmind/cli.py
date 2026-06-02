@@ -141,6 +141,17 @@ def build_parser() -> argparse.ArgumentParser:
     )
     eval_eco_parser.add_argument("--k", type=int, default=3)
 
+    # mcp-pin: pin local MCP server definitions + detect descriptor drift.
+    mcp_parser = subparsers.add_parser(
+        "mcp-pin",
+        help="Pin local MCP server defs + detect drift (cloud connectors not covered).",
+    )
+    mcp_parser.add_argument("--update", action="store_true",
+                            help="(re)pin the current server defs as the baseline.")
+    mcp_parser.add_argument("--scan", action="append", default=[],
+                            help="extra dir to scan for .mcp.json (repeatable).")
+    mcp_parser.add_argument("--pin-file", default=None)
+
     dream_parser = subparsers.add_parser("dream")
     dream_parser.add_argument("--dry-run", action="store_true")
 
@@ -279,6 +290,15 @@ def main(argv: list[str] | None = None) -> int:
     if args.command == "eval-ecosystem":
         from overmind.intelligence.ecosystem_eval import run as eco_run
         return _emit_payload(eco_run(k=args.k))
+
+    if args.command == "mcp-pin":
+        from overmind.integrations.mcp_pin import collect_servers, pin, check
+        pin_path = Path(args.pin_file) if args.pin_file else Path.home() / ".claude" / "mcp-pins.json"
+        servers = collect_servers(scan_dirs=args.scan)
+        payload = pin(servers, pin_path) if args.update else check(servers, pin_path)
+        payload["caveat"] = ("local MCP servers + plugin .mcp.json only; "
+                             "claude.ai cloud connectors are managed server-side and not pinnable here")
+        return _emit_payload(payload)
 
     config = AppConfig.from_directory(
         config_dir=args.config_dir,
