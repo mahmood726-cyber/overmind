@@ -30,7 +30,7 @@ where = ["."]
 include = ["overmind*"]
 
 [tool.setuptools.package-data]
-overmind = ["prompts/*.txt"]
+overmind = ["prompts/*.txt", "evidence/data/*.jsonl", "evidence/data/*.json"]
 
 [tool.pytest.ini_options]
 testpaths = ["tests"]
