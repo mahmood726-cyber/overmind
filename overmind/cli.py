@@ -279,6 +279,24 @@ def build_parser() -> argparse.ArgumentParser:
         help="Path to a JSONL corpus file (default: bundled PubMed-seeded corpus).",
     )
 
+    screen_parser = subparsers.add_parser(
+        "screen",
+        help="Rank corpus records for relevance and emit a conservative (human-gated) screening worklist.",
+    )
+    screen_parser.add_argument("query")
+    screen_parser.add_argument("--corpus", default=None, help="Path to a JSONL corpus (default: bundled).")
+    screen_parser.add_argument("--seed", action="append", default=None,
+                               help="record_id already judged relevant (repeatable) for relevance feedback.")
+    screen_parser.add_argument("--limit", type=int, default=None)
+
+    extract_parser = subparsers.add_parser(
+        "extract-validate",
+        help="Validate extracted per-study data against the RapidMeta contract (fail-closed).",
+    )
+    extract_parser.add_argument("trials_json", help="Path to a JSON file: a list of trial objects.")
+    extract_parser.add_argument("--auto-extracted", action="store_true",
+                                help="Mark all records needsReview (auto-extraction gate).")
+
     # Mine sessions
     mine_parser = subparsers.add_parser("mine-sessions")
     mine_parser.add_argument("--count", type=int, default=30)
@@ -497,6 +515,23 @@ def main(argv: list[str] | None = None) -> int:
             payload = CorpusSearch(
                 provider=provider, artifacts_dir=config.data_dir / "artifacts"
             ).run(args.query, limit=args.limit)
+        elif args.command == "screen":
+            from overmind.evidence.corpus import OfflineCorpusProvider, default_provider
+            from overmind.evidence.screening import ScreeningRun
+            provider = OfflineCorpusProvider(args.corpus) if args.corpus else default_provider()
+            payload = ScreeningRun(
+                provider_records=provider.records(),
+                artifacts_dir=config.data_dir / "artifacts",
+            ).run(query=args.query, seed_includes=args.seed, limit=args.limit)
+        elif args.command == "extract-validate":
+            from overmind.evidence.extraction import extract_and_validate
+            trials = json.loads(Path(args.trials_json).read_text(encoding="utf-8"))
+            if not isinstance(trials, list):
+                raise SystemExit("trials_json must contain a JSON list of trial objects")
+            payload = extract_and_validate(
+                trials, auto_extracted=args.auto_extracted,
+                artifacts_dir=config.data_dir / "artifacts",
+            )
         elif args.command == "mine-sessions":
             from overmind.intelligence.session_miner import SessionMiner
             miner = SessionMiner(orchestrator.db)
