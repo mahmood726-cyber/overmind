@@ -1,0 +1,37 @@
+[
+  {
+    "nct": "NCT03036124",
+    "pmid": "31535829",
+    "name": "DAPA-HF",
+    "source": "reference",
+    "verified": true,
+    "allOutcomes": [
+      {
+        "shortLabel": "Worsening HF event",
+        "title": "First worsening heart failure event",
+        "estimandType": "HR",
+        "tE": 237, "tN": 2373, "cE": 326, "cN": 2371,
+        "publishedHR": 0.70, "hrLCI": 0.59, "hrUCI": 0.83
+      }
+    ],
+    "rob": ["low", "low", "low", "low", "low"],
+    "_provenance": "values transcribed from PubMed abstract PMID 31535829 (NEJMoa1911303)"
+  },
+  {
+    "nct": "NCT03057977",
+    "pmid": "32865377",
+    "name": "EMPEROR-Reduced",
+    "source": "reference",
+    "verified": true,
+    "allOutcomes": [
+      {
+        "shortLabel": "HF hospitalization",
+        "title": "Total hospitalizations for heart failure",
+        "estimandType": "HR",
+        "publishedHR": 0.70, "hrLCI": 0.58, "hrUCI": 0.85
+      }
+    ],
+    "rob": ["low", "low", "low", "low", "low"],
+    "_provenance": "values transcribed from PubMed abstract PMID 32865377 (NEJMoa2022190)"
+  }
+]

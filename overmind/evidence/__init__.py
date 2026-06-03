@@ -41,6 +41,7 @@ from overmind.evidence.grounding import (
     extract_identifiers,
     ground_claims,
 )
+from overmind.evidence.prisma import outcome_switching, prisma_flow
 from overmind.evidence.screening import (
     EXCLUSION_REASONS,
     ScreeningProposal,
@@ -70,4 +71,6 @@ __all__ = [
     "GroundedClaim",
     "extract_identifiers",
     "ground_claims",
+    "outcome_switching",
+    "prisma_flow",
 ]
