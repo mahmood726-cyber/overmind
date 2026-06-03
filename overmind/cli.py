@@ -14,6 +14,24 @@ _PIPE_ERROR_ERRNOS = {22, 32}
 _PIPE_ERROR_WINERRORS = {109, 232}
 
 
+def _configure_stdio_encoding() -> None:
+    """Keep argparse/help output printable in Windows cp1252 consoles."""
+    if os.name != "nt":
+        return
+    for stream_name in ("stdout", "stderr"):
+        stream = getattr(sys, stream_name, None)
+        reconfigure = getattr(stream, "reconfigure", None)
+        if not callable(reconfigure):
+            continue
+        try:
+            reconfigure(encoding="utf-8", errors="replace")
+        except (OSError, ValueError):
+            pass
+
+
+_configure_stdio_encoding()
+
+
 def _silence_broken_pipe() -> None:
     global _BROKEN_PIPE_STREAM
     if _BROKEN_PIPE_STREAM is not None:
@@ -239,6 +257,28 @@ def build_parser() -> argparse.ArgumentParser:
     eval_parser = subparsers.add_parser("eval-harness")
     eval_parser.add_argument("--project-id", default=None)
 
+    research_benchmark_parser = subparsers.add_parser(
+        "research-benchmark",
+        help="Benchmark this local evidence-synthesis system against comparable AI research tools.",
+    )
+    research_benchmark_parser.add_argument(
+        "--run-meta-verify",
+        action="store_true",
+        help="Run meta-verify first and include its current verdict in the benchmark.",
+    )
+
+    corpus_search_parser = subparsers.add_parser(
+        "corpus-search",
+        help="Search the local scholarly corpus (offline, BM25-ranked) and write an evidence artifact.",
+    )
+    corpus_search_parser.add_argument("query")
+    corpus_search_parser.add_argument("--limit", type=int, default=10)
+    corpus_search_parser.add_argument(
+        "--corpus",
+        default=None,
+        help="Path to a JSONL corpus file (default: bundled PubMed-seeded corpus).",
+    )
+
     # Mine sessions
     mine_parser = subparsers.add_parser("mine-sessions")
     mine_parser.add_argument("--count", type=int, default=30)
@@ -442,6 +482,21 @@ def main(argv: list[str] | None = None) -> int:
             payload = EvalHarness(orchestrator, config.data_dir / "artifacts").run(
                 focus_project_id=args.project_id
             )
+        elif args.command == "research-benchmark":
+            from overmind.intelligence.research_benchmark import ResearchBenchmark
+            scan = orchestrator.scan()
+            meta = orchestrator.meta_verify() if args.run_meta_verify else None
+            payload = ResearchBenchmark(config.data_dir / "artifacts").run(
+                projects=orchestrator.db.list_projects(),
+                runners=scan["runners"],
+                meta_verify=meta,
+            )
+        elif args.command == "corpus-search":
+            from overmind.evidence.corpus import CorpusSearch, OfflineCorpusProvider
+            provider = OfflineCorpusProvider(args.corpus) if args.corpus else None
+            payload = CorpusSearch(
+                provider=provider, artifacts_dir=config.data_dir / "artifacts"
+            ).run(args.query, limit=args.limit)
         elif args.command == "mine-sessions":
             from overmind.intelligence.session_miner import SessionMiner
             miner = SessionMiner(orchestrator.db)
