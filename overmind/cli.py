@@ -297,6 +297,13 @@ def build_parser() -> argparse.ArgumentParser:
     extract_parser.add_argument("--auto-extracted", action="store_true",
                                 help="Mark all records needsReview (auto-extraction gate).")
 
+    ground_parser = subparsers.add_parser(
+        "ground",
+        help="Resolve each claim's citation against the corpus and report a grounding ratio.",
+    )
+    ground_parser.add_argument("claims_json", help="Path to a JSON file: a list of claim objects {claim_id,text,source}.")
+    ground_parser.add_argument("--corpus", default=None, help="Path to a JSONL corpus (default: bundled).")
+
     # Mine sessions
     mine_parser = subparsers.add_parser("mine-sessions")
     mine_parser.add_argument("--count", type=int, default=30)
@@ -531,6 +538,16 @@ def main(argv: list[str] | None = None) -> int:
             payload = extract_and_validate(
                 trials, auto_extracted=args.auto_extracted,
                 artifacts_dir=config.data_dir / "artifacts",
+            )
+        elif args.command == "ground":
+            from overmind.evidence.corpus import OfflineCorpusProvider, default_provider
+            from overmind.evidence.grounding import ground_claims
+            provider = OfflineCorpusProvider(args.corpus) if args.corpus else default_provider()
+            claims = json.loads(Path(args.claims_json).read_text(encoding="utf-8"))
+            if not isinstance(claims, list):
+                raise SystemExit("claims_json must contain a JSON list of claim objects")
+            payload = ground_claims(
+                claims, provider.records(), artifacts_dir=config.data_dir / "artifacts"
             )
         elif args.command == "mine-sessions":
             from overmind.intelligence.session_miner import SessionMiner

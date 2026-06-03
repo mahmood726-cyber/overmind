@@ -36,6 +36,11 @@ from overmind.evidence.extraction import (
     js_escape,
     validate_trial,
 )
+from overmind.evidence.grounding import (
+    GroundedClaim,
+    extract_identifiers,
+    ground_claims,
+)
 from overmind.evidence.screening import (
     EXCLUSION_REASONS,
     ScreeningProposal,
@@ -62,4 +67,7 @@ __all__ = [
     "extract_and_validate",
     "js_escape",
     "validate_trial",
+    "GroundedClaim",
+    "extract_identifiers",
+    "ground_claims",
 ]
