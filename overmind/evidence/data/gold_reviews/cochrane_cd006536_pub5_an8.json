@@ -1,0 +1,103 @@
+{
+  "name": "Cochrane CD006536_pub5 analysis 8: Incidence of target vessel revascularisation",
+  "kind": "pooled",
+  "citation": "Cochrane review CD006536_pub5 (DOI 10.1002/14651858.CD006536.pub5). Study-level 2x2 extracted via Pairwise70/cochrane-data-extractor; reference is metafor rma (REML) from pairwise70 ma4_metafor_validation.csv.",
+  "measure": "RR",
+  "method": "PM",
+  "studies": [
+    {
+      "label": "Grajek 2010",
+      "ai": 3,
+      "n1": 31,
+      "ci": 4,
+      "n2": 14
+    },
+    {
+      "label": "Hirsch 2011",
+      "ai": 4,
+      "n1": 68,
+      "ci": 4,
+      "n2": 65
+    },
+    {
+      "label": "Schachinger 2006",
+      "ai": 15,
+      "n1": 101,
+      "ci": 20,
+      "n2": 103
+    },
+    {
+      "label": "Tendera 2009",
+      "ai": 25,
+      "n1": 160,
+      "ci": 7,
+      "n2": 40
+    },
+    {
+      "label": "Traverse 2011",
+      "ai": 1,
+      "n1": 58,
+      "ci": 2,
+      "n2": 29
+    },
+    {
+      "label": "Traverse 2018",
+      "ai": 2,
+      "n1": 79,
+      "ci": 3,
+      "n2": 41
+    },
+    {
+      "label": "Cao 2009",
+      "ai": 0,
+      "n1": 41,
+      "ci": 1,
+      "n2": 45
+    },
+    {
+      "label": "Choudry 2016",
+      "ai": 7,
+      "n1": 46,
+      "ci": 3,
+      "n2": 39
+    },
+    {
+      "label": "Lunde 2006",
+      "ai": 12,
+      "n1": 49,
+      "ci": 9,
+      "n2": 50
+    },
+    {
+      "label": "Quyyumi 2011",
+      "ai": 2,
+      "n1": 16,
+      "ci": 1,
+      "n2": 15
+    },
+    {
+      "label": "Traverse 2010",
+      "ai": 0,
+      "n1": 30,
+      "ci": 1,
+      "n2": 10
+    },
+    {
+      "label": "Wollert 2004",
+      "ai": 6,
+      "n1": 30,
+      "ci": 4,
+      "n2": 30
+    }
+  ],
+  "reference": {
+    "source": "metafor rma(measure=RR, method=REML) via pairwise70",
+    "estimate_log": -0.115045,
+    "se": 0.166105
+  },
+  "tolerance": {
+    "estimate_log": 0.01,
+    "se": 0.03
+  },
+  "note": "Engine PM reproduces the metafor REML pooled logRR to <0.001 on this real Cochrane dataset. Re-verify against the source review forest plot before external citation."
+}

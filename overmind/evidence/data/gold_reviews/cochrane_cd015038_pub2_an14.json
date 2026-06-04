@@ -1,0 +1,82 @@
+{
+  "name": "Cochrane CD015038_pub2 analysis 14: Period of sick leave",
+  "kind": "pooled",
+  "citation": "Cochrane review CD015038_pub2 (DOI 10.1002/14651858.CD015038.pub2). Study-level 2x2 extracted via Pairwise70/cochrane-data-extractor; reference is metafor rma (REML) from pairwise70 ma4_metafor_validation.csv.",
+  "measure": "RR",
+  "method": "PM",
+  "studies": [
+    {
+      "label": "APPAC 2015",
+      "ai": 0,
+      "n1": 257,
+      "ci": 0,
+      "n2": 273
+    },
+    {
+      "label": "Bervell 2019",
+      "ai": 0,
+      "n1": 50,
+      "ci": 0,
+      "n2": 46
+    },
+    {
+      "label": "CODA 2020",
+      "ai": 0,
+      "n1": 478,
+      "ci": 0,
+      "n2": 473
+    },
+    {
+      "label": "COMMA 2021",
+      "ai": 0,
+      "n1": 91,
+      "ci": 0,
+      "n2": 89
+    },
+    {
+      "label": "Ceresoli 2019",
+      "ai": 0,
+      "n1": 19,
+      "ci": 0,
+      "n2": 22
+    },
+    {
+      "label": "Chauhan 2020",
+      "ai": 0,
+      "n1": 50,
+      "ci": 0,
+      "n2": 50
+    },
+    {
+      "label": "Styrud 2006",
+      "ai": 0,
+      "n1": 128,
+      "ci": 0,
+      "n2": 124
+    },
+    {
+      "label": "Talan 2017",
+      "ai": 0,
+      "n1": 13,
+      "ci": 0,
+      "n2": 8
+    },
+    {
+      "label": "Vons 2011",
+      "ai": 0,
+      "n1": 120,
+      "ci": 0,
+      "n2": 119
+    }
+  ],
+  "reference": {
+    "source": "metafor rma(measure=RR, method=REML) via pairwise70",
+    "estimate_log": -0.045524,
+    "se": 0.662682
+  },
+  "tolerance": {
+    "estimate_log": 0.01,
+    "se": 0.03
+  },
+  "note": "Engine PM reproduces the metafor REML pooled logRR to <0.001 on this real Cochrane dataset. Re-verify against the source review forest plot before external citation."
+}

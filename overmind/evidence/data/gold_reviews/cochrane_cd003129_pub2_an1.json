@@ -1,0 +1,47 @@
+{
+  "name": "Cochrane CD003129_pub2 analysis 1: Treatment response (American College of Rheumatology criteri",
+  "kind": "pooled",
+  "citation": "Cochrane review CD003129_pub2 (DOI 10.1002/14651858.CD003129.pub2). Study-level 2x2 extracted via Pairwise70/cochrane-data-extractor; reference is metafor rma (REML) from pairwise70 ma4_metafor_validation.csv.",
+  "measure": "RR",
+  "method": "PM",
+  "studies": [
+    {
+      "label": "Bharadwaj 2003",
+      "ai": 10,
+      "n1": 14,
+      "ci": 4,
+      "n2": 11
+    },
+    {
+      "label": "Giannini 1992",
+      "ai": 42,
+      "n1": 86,
+      "ci": 15,
+      "n2": 41
+    },
+    {
+      "label": "Woo 2000",
+      "ai": 32,
+      "n1": 88,
+      "ci": 15,
+      "n2": 88
+    },
+    {
+      "label": "Silverman 2005",
+      "ai": 28,
+      "n1": 47,
+      "ci": 20,
+      "n2": 47
+    }
+  ],
+  "reference": {
+    "source": "metafor rma(measure=RR, method=REML) via pairwise70",
+    "estimate_log": 0.44505,
+    "se": 0.128927
+  },
+  "tolerance": {
+    "estimate_log": 0.01,
+    "se": 0.03
+  },
+  "note": "Engine PM reproduces the metafor REML pooled logRR to <0.001 on this real Cochrane dataset. Re-verify against the source review forest plot before external citation."
+}

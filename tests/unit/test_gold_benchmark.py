@@ -12,8 +12,9 @@ def test_committed_gold_fixtures_all_pass():
     assert rep["benchmark_type"] == "gold_standard_output_correctness"
     assert rep["fixtures_total"] >= 2
     assert rep["all_passed"] is True, [r for r in rep["results"] if not r["pass"]]
-    # at least one real pooled review, reproduced tightly
-    assert rep["pooled_reviews"] >= 1
+    # multiple real pooled reviews (BCG variants + real Cochrane reviews vs metafor),
+    # all reproduced tightly
+    assert rep["pooled_reviews"] >= 10
     assert rep["worst_pooled_logdev"] is not None and rep["worst_pooled_logdev"] < 0.02
 
 

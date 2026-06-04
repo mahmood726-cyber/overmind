@@ -1,0 +1,40 @@
+{
+  "name": "Cochrane CD015122_pub2 analysis 23: Major surgical complications (Sensitivity analysis & definit",
+  "kind": "pooled",
+  "citation": "Cochrane review CD015122_pub2 (DOI 10.1002/14651858.CD015122.pub2). Study-level 2x2 extracted via Pairwise70/cochrane-data-extractor; reference is metafor rma (REML) from pairwise70 ma4_metafor_validation.csv.",
+  "measure": "RR",
+  "method": "PM",
+  "studies": [
+    {
+      "label": "Batagello 2021",
+      "ai": 3,
+      "n1": 93,
+      "ci": 6,
+      "n2": 96
+    },
+    {
+      "label": "Iskakov 2016",
+      "ai": 5,
+      "n1": 82,
+      "ci": 12,
+      "n2": 82
+    },
+    {
+      "label": "Kumar 2013",
+      "ai": 6,
+      "n1": 100,
+      "ci": 24,
+      "n2": 100
+    }
+  ],
+  "reference": {
+    "source": "metafor rma(measure=RR, method=REML) via pairwise70",
+    "estimate_log": -1.076648,
+    "se": 0.29801
+  },
+  "tolerance": {
+    "estimate_log": 0.01,
+    "se": 0.03
+  },
+  "note": "Engine PM reproduces the metafor REML pooled logRR to <0.001 on this real Cochrane dataset. Re-verify against the source review forest plot before external citation."
+}

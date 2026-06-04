@@ -1,0 +1,96 @@
+{
+  "name": "Cochrane CD004925_pub4 analysis 1: Urine leak and obstruction",
+  "kind": "pooled",
+  "citation": "Cochrane review CD004925_pub4 (DOI 10.1002/14651858.CD004925.pub4). Study-level 2x2 extracted via Pairwise70/cochrane-data-extractor; reference is metafor rma (REML) from pairwise70 ma4_metafor_validation.csv.",
+  "measure": "RR",
+  "method": "PM",
+  "studies": [
+    {
+      "label": "Bassiri 1995",
+      "ai": 0,
+      "n1": 35,
+      "ci": 1,
+      "n2": 37
+    },
+    {
+      "label": "Benoit 1996",
+      "ai": 1,
+      "n1": 97,
+      "ci": 6,
+      "n2": 97
+    },
+    {
+      "label": "Charan Kumar 2016",
+      "ai": 0,
+      "n1": 36,
+      "ci": 1,
+      "n2": 36
+    },
+    {
+      "label": "Dominguez 2000",
+      "ai": 2,
+      "n1": 143,
+      "ci": 6,
+      "n2": 137
+    },
+    {
+      "label": "Guleria 1998",
+      "ai": 1,
+      "n1": 54,
+      "ci": 2,
+      "n2": 54
+    },
+    {
+      "label": "Kumar 1998",
+      "ai": 0,
+      "n1": 57,
+      "ci": 2,
+      "n2": 43
+    },
+    {
+      "label": "Majeed 2022",
+      "ai": 0,
+      "n1": 54,
+      "ci": 2,
+      "n2": 54
+    },
+    {
+      "label": "Osman 2005",
+      "ai": 2,
+      "n1": 50,
+      "ci": 0,
+      "n2": 50
+    },
+    {
+      "label": "Pleass 1995",
+      "ai": 0,
+      "n1": 150,
+      "ci": 13,
+      "n2": 150
+    },
+    {
+      "label": "SPLINT 2020",
+      "ai": 0,
+      "n1": 100,
+      "ci": 12,
+      "n2": 100
+    },
+    {
+      "label": "Zaki 2013",
+      "ai": 1,
+      "n1": 150,
+      "ci": 2,
+      "n2": 150
+    }
+  ],
+  "reference": {
+    "source": "metafor rma(measure=RR, method=REML) via pairwise70",
+    "estimate_log": -1.334688,
+    "se": 0.384383
+  },
+  "tolerance": {
+    "estimate_log": 0.01,
+    "se": 0.03
+  },
+  "note": "Engine PM reproduces the metafor REML pooled logRR to <0.001 on this real Cochrane dataset. Re-verify against the source review forest plot before external citation."
+}

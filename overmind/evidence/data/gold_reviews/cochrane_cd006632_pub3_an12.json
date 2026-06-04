@@ -1,0 +1,103 @@
+{
+  "name": "Cochrane CD006632_pub3 analysis 12: Sensitivity analysis: Risk of bias length of hospital stay i",
+  "kind": "pooled",
+  "citation": "Cochrane review CD006632_pub3 (DOI 10.1002/14651858.CD006632.pub3). Study-level 2x2 extracted via Pairwise70/cochrane-data-extractor; reference is metafor rma (REML) from pairwise70 ma4_metafor_validation.csv.",
+  "measure": "RR",
+  "method": "PM",
+  "studies": [
+    {
+      "label": "Aizawa 2002",
+      "ai": 0,
+      "n1": 32,
+      "ci": 0,
+      "n2": 37
+    },
+    {
+      "label": "Bernard 2011",
+      "ai": 0,
+      "n1": 87,
+      "ci": 0,
+      "n2": 89
+    },
+    {
+      "label": "Brook 1999",
+      "ai": 0,
+      "n1": 162,
+      "ci": 0,
+      "n2": 159
+    },
+    {
+      "label": "Doig 2008",
+      "ai": 0,
+      "n1": 540,
+      "ci": 0,
+      "n2": 537
+    },
+    {
+      "label": "Falconer 1993",
+      "ai": 0,
+      "n1": 53,
+      "ci": 0,
+      "n2": 68
+    },
+    {
+      "label": "Kim 2002",
+      "ai": 0,
+      "n1": 9,
+      "ci": 0,
+      "n2": 9
+    },
+    {
+      "label": "Kiyama 2003a",
+      "ai": 0,
+      "n1": 47,
+      "ci": 0,
+      "n2": 38
+    },
+    {
+      "label": "Marrie 2000",
+      "ai": 0,
+      "n1": 87,
+      "ci": 0,
+      "n2": 124
+    },
+    {
+      "label": "Panella 2009",
+      "ai": 0,
+      "n1": 201,
+      "ci": 0,
+      "n2": 201
+    },
+    {
+      "label": "Panella 2018",
+      "ai": 0,
+      "n1": 283,
+      "ci": 0,
+      "n2": 195
+    },
+    {
+      "label": "Roberts 1997",
+      "ai": 0,
+      "n1": 82,
+      "ci": 0,
+      "n2": 83
+    },
+    {
+      "label": "Sulch 2002",
+      "ai": 0,
+      "n1": 76,
+      "ci": 0,
+      "n2": 76
+    }
+  ],
+  "reference": {
+    "source": "metafor rma(measure=RR, method=REML) via pairwise70",
+    "estimate_log": 0.014165,
+    "se": 0.574513
+  },
+  "tolerance": {
+    "estimate_log": 0.01,
+    "se": 0.03
+  },
+  "note": "Engine PM reproduces the metafor REML pooled logRR to <0.001 on this real Cochrane dataset. Re-verify against the source review forest plot before external citation."
+}

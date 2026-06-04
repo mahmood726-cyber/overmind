@@ -1,0 +1,40 @@
+{
+  "name": "Cochrane CD004508_pub5 analysis 6: Postoperative placement of nasogastric tube",
+  "kind": "pooled",
+  "citation": "Cochrane review CD004508_pub5 (DOI 10.1002/14651858.CD004508.pub5). Study-level 2x2 extracted via Pairwise70/cochrane-data-extractor; reference is metafor rma (REML) from pairwise70 ma4_metafor_validation.csv.",
+  "measure": "RR",
+  "method": "PM",
+  "studies": [
+    {
+      "label": "Balayla 2015",
+      "ai": 0,
+      "n1": 61,
+      "ci": 0,
+      "n2": 58
+    },
+    {
+      "label": "MacMillan 2000",
+      "ai": 0,
+      "n1": 67,
+      "ci": 1,
+      "n2": 72
+    },
+    {
+      "label": "Pearl 1998",
+      "ai": 3,
+      "n1": 92,
+      "ci": 7,
+      "n2": 103
+    }
+  ],
+  "reference": {
+    "source": "metafor rma(measure=RR, method=REML) via pairwise70",
+    "estimate_log": -0.712615,
+    "se": 0.594862
+  },
+  "tolerance": {
+    "estimate_log": 0.01,
+    "se": 0.03
+  },
+  "note": "Engine PM reproduces the metafor REML pooled logRR to <0.001 on this real Cochrane dataset. Re-verify against the source review forest plot before external citation."
+}

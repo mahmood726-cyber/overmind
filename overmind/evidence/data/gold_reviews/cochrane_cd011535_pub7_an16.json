@@ -1,0 +1,61 @@
+{
+  "name": "Cochrane CD011535_pub7 analysis 16: Apremilast versus other systemic treatements",
+  "kind": "pooled",
+  "citation": "Cochrane review CD011535_pub7 (DOI 10.1002/14651858.CD011535.pub7). Study-level 2x2 extracted via Pairwise70/cochrane-data-extractor; reference is metafor rma (REML) from pairwise70 ma4_metafor_validation.csv.",
+  "measure": "RR",
+  "method": "PM",
+  "studies": [
+    {
+      "label": "POETYK PSO-1 2023",
+      "ai": 4,
+      "n1": 168,
+      "ci": 7,
+      "n2": 332
+    },
+    {
+      "label": "POETYK PSO-2 2022",
+      "ai": 1,
+      "n1": 254,
+      "ci": 8,
+      "n2": 511
+    },
+    {
+      "label": "LIBERATE 2017",
+      "ai": 3,
+      "n1": 83,
+      "ci": 2,
+      "n2": 83
+    },
+    {
+      "label": "Panda 2023",
+      "ai": 0,
+      "n1": 42,
+      "ci": 0,
+      "n2": 43
+    },
+    {
+      "label": "IMMpulse 2023",
+      "ai": 4,
+      "n1": 234,
+      "ci": 1,
+      "n2": 118
+    },
+    {
+      "label": "Ashwani 2023",
+      "ai": 3,
+      "n1": 26,
+      "ci": 0,
+      "n2": 26
+    }
+  ],
+  "reference": {
+    "source": "metafor rma(measure=RR, method=REML) via pairwise70",
+    "estimate_log": 0.165981,
+    "se": 0.40008
+  },
+  "tolerance": {
+    "estimate_log": 0.01,
+    "se": 0.03
+  },
+  "note": "Engine PM reproduces the metafor REML pooled logRR to <0.001 on this real Cochrane dataset. Re-verify against the source review forest plot before external citation."
+}

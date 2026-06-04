@@ -1,0 +1,82 @@
+{
+  "name": "Cochrane CD011866_pub3 analysis 5: Continuous abstinence, longest follow-up",
+  "kind": "pooled",
+  "citation": "Cochrane review CD011866_pub3 (DOI 10.1002/14651858.CD011866.pub3). Study-level 2x2 extracted via Pairwise70/cochrane-data-extractor; reference is metafor rma (REML) from pairwise70 ma4_metafor_validation.csv.",
+  "measure": "RR",
+  "method": "PM",
+  "studies": [
+    {
+      "label": "Higgins 2003",
+      "ai": 38,
+      "n1": 45,
+      "ci": 29,
+      "n2": 40
+    },
+    {
+      "label": "Higgins 1994",
+      "ai": 6,
+      "n1": 20,
+      "ci": 1,
+      "n2": 20
+    },
+    {
+      "label": "Petry 2018",
+      "ai": 37,
+      "n1": 80,
+      "ci": 28,
+      "n2": 61
+    },
+    {
+      "label": "Sorsdahl 2021",
+      "ai": 0,
+      "n1": 17,
+      "ci": 0,
+      "n2": 22
+    },
+    {
+      "label": "Parsons 2018",
+      "ai": 0,
+      "n1": 105,
+      "ci": 0,
+      "n2": 105
+    },
+    {
+      "label": "Carroll 1991",
+      "ai": 0,
+      "n1": 58,
+      "ci": 0,
+      "n2": 52
+    },
+    {
+      "label": "Alammehrjerdi 2019",
+      "ai": 0,
+      "n1": 60,
+      "ci": 0,
+      "n2": 60
+    },
+    {
+      "label": "Higgins 2000",
+      "ai": 0,
+      "n1": 36,
+      "ci": 0,
+      "n2": 34
+    },
+    {
+      "label": "Carroll 1998",
+      "ai": 14,
+      "n1": 24,
+      "ci": 8,
+      "n2": 27
+    }
+  ],
+  "reference": {
+    "source": "metafor rma(measure=RR, method=REML) via pairwise70",
+    "estimate_log": 0.166044,
+    "se": 0.0937
+  },
+  "tolerance": {
+    "estimate_log": 0.01,
+    "se": 0.03
+  },
+  "note": "Engine PM reproduces the metafor REML pooled logRR to <0.001 on this real Cochrane dataset. Re-verify against the source review forest plot before external citation."
+}

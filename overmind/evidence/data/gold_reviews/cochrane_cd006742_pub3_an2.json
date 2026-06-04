@@ -1,0 +1,47 @@
+{
+  "name": "Cochrane CD006742_pub3 analysis 2: Total cardiovascular events",
+  "kind": "pooled",
+  "citation": "Cochrane review CD006742_pub3 (DOI 10.1002/14651858.CD006742.pub3). Study-level 2x2 extracted via Pairwise70/cochrane-data-extractor; reference is metafor rma (REML) from pairwise70 ma4_metafor_validation.csv.",
+  "measure": "RR",
+  "method": "PM",
+  "studies": [
+    {
+      "label": "MRC 1985",
+      "ai": 73,
+      "n1": 3012,
+      "ci": 79,
+      "n2": 3049
+    },
+    {
+      "label": "PREVEND IT 2004",
+      "ai": 4,
+      "n1": 112,
+      "ci": 8,
+      "n2": 100
+    },
+    {
+      "label": "SHEP 1991",
+      "ai": 0,
+      "n1": 3,
+      "ci": 0,
+      "n2": 4
+    },
+    {
+      "label": "VA-NHLBI 1978",
+      "ai": 8,
+      "n1": 508,
+      "ci": 5,
+      "n2": 504
+    }
+  ],
+  "reference": {
+    "source": "metafor rma(measure=RR, method=REML) via pairwise70",
+    "estimate_log": -0.0745,
+    "se": 0.148873
+  },
+  "tolerance": {
+    "estimate_log": 0.01,
+    "se": 0.03
+  },
+  "note": "Engine PM reproduces the metafor REML pooled logRR to <0.001 on this real Cochrane dataset. Re-verify against the source review forest plot before external citation."
+}
