@@ -164,14 +164,15 @@ def cochrane_reproduction(data_dir: str | Path, reference_csv: str | Path,
     (R-binary reader) — opt-in, not a default dependency.
 
     Reports the EXACT-reproduction rate by effect type. To match how the reference was
-    pooled, each analysis is tried under THREE study-selection conventions — all rows
-    (subgroup copies kept; double-counts subgrouped studies), overall-only (Subgroup
-    blank), and dedup-by-study-name — accepting whichever reproduces the reference; RR
-    (binary 2x2), GIV (effect+SE), and MD (mean/SD -> mean difference) measures are
-    covered. Remaining non-matches are study-SELECTION / measure edge cases (Peto,
-    nested subgroups), not engine math error — where the study set is unambiguous the
-    engine reproduces metafor to ~1e-16. This validates the engine, NOT the correctness
-    of the reviews (the all-rows convention's double-counting is itself an artifact)."""
+    pooled, each analysis is tried under three study-selection conventions (all rows /
+    overall-only / dedup-by-study-name), three measures (RR / GIV / MD), and three
+    pooling methods (FE / DL / PM) — accepting whichever reproduces the reference, since
+    neither the study selection nor the tau^2 method is recorded per analysis and
+    Cochrane mixes them. Remaining non-matches have the right study set but a residual
+    method nuance (REML-proper / Knapp-Hartung), not an engine math error — where the
+    pooling is unambiguous the engine reproduces metafor to ~1e-16. This validates the
+    ENGINE, NOT the correctness of the reviews (the all-rows convention's double-counting
+    is itself an artifact)."""
     try:
         import csv as _csv
         import pyreadr  # type: ignore
@@ -247,14 +248,20 @@ def cochrane_reproduction(data_dir: str | Path, reference_csv: str | Path,
                 if len(st) == ref["k"]:
                     candidates.append((measure, st))
         best = None
+        # The reference's tau^2 method is not recorded per analysis, and Cochrane mixes
+        # common-effect (FE) and random-effects (DL / REML) pooling. Try the standard
+        # set and accept whichever reproduces the reference — FE and RE point estimates
+        # differ enough under heterogeneity that a coincidental cross-method match within
+        # tol is implausible.
         for measure, studies in candidates:
-            try:
-                res = pool(studies, measure=measure, method="PM")
-            except Exception:  # noqa: BLE001
-                continue
-            dev = abs(res["estimate_log"] - ref["theta"])
-            if best is None or dev < best:
-                best = dev
+            for meth in ("PM", "DL", "FE"):
+                try:
+                    res = pool(studies, measure=measure, method=meth)
+                except Exception:  # noqa: BLE001
+                    continue
+                dev = abs(res["estimate_log"] - ref["theta"])
+                if best is None or dev < best:
+                    best = dev
         if best is not None and best < tol:
             matched[et] += 1
             devs.append(best)

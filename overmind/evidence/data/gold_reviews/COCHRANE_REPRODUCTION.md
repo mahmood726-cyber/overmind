@@ -25,16 +25,20 @@ tools to surface the fragility (`hksj_se` in `pool()`, the HKSJ-floor rule, and
 
 ## Measured result (2026-06-04)
 The runner tries three study-selection conventions per analysis (all-rows /
-overall-only / dedup-by-study-name) and three measures (RR / GIV / MD), accepting
-whichever reproduces the reference — because the reference tables themselves pool
-differently (see the caveat below).
+overall-only / dedup-by-study-name), three measures (RR / GIV / MD), and three pooling
+methods (common-effect FE / DerSimonian-Laird / Paule-Mandel), accepting whichever
+reproduces the reference — because the reference tables pool differently (selection)
+and Cochrane mixes FE and RE (method), and neither is recorded per analysis.
 
-- **Direct-metafor validation set: 80/100 analyses reproduce metafor EXACTLY (< 0.005),
-  median deviation ~1e-16** — machine precision; 71 distinct reviews. This set uses the
+- **Direct-metafor validation set: 85/100 analyses reproduce metafor EXACTLY (< 0.005),
+  median deviation ~1e-16** — machine precision; 75 distinct reviews. This set uses the
   CORRECT (deduped, overall) study pooling.
-- **Full k>=5 set (434 MAs): 242 exact (56%)** — logRR 69/132, GIV 142/223, MD 31/79
-  (up from 99 after adding the MD path + the all-rows/overall study-selection
-  conventions).
+- **Full k>=5 set (434 MAs): 289 exact (67%)** — logRR 77/132, GIV 173/223 (78%), MD
+  39/79. (Lifted from 99 -> 242 -> 289 by adding the MD path, the study-selection
+  conventions, and multi-method matching.) Of the remainder, only ~3 are true study-
+  selection failures; the rest have the RIGHT study set but a residual method nuance
+  (REML-proper / Knapp-Hartung point adjustment / pairwise70's specific estimator) of
+  ~1e-3..1e-2 — a method-implementation gap, NOT an engine math error, and NOT loosened.
 - **Committed in-repo gold set: 41 curated pooled reviews** (3 BCG variants + 38 real
   Cochrane; 32 RR / 1 OR / 8 GIV), every one an exact reproduction, always run by
   `overmind gold-benchmark` with no extra dependency.
