@@ -90,6 +90,26 @@ def _score_prisma(fix: dict) -> dict:
     return {"kind": "prisma", "pass": passed, "buckets": rows}
 
 
+def _score_screening(fix: dict) -> dict:
+    from overmind.evidence.corpus import CorpusRecord
+    from overmind.evidence.screening_eval import screening_recall
+    records = [CorpusRecord.from_dict(r) for r in fix["records"]]
+    rep = screening_recall(records, fix["gold_includes"],
+                           query=fix.get("query"), pico=fix.get("pico"))
+    min_recall = fix.get("min_review_recall")
+    rev = rep["review_bucket"]["recall"]
+    passed = rep["meets_safety_bar"] if min_recall is None else (rev >= min_recall)
+    return {
+        "kind": "screening", "pass": passed,
+        "review_recall": rev,
+        "include_recall": rep["include_bucket"]["recall"],
+        "safety_bar": rep["safety_bar"],
+        "meets_safety_bar": rep["meets_safety_bar"],
+        "workload_fraction": rep["review_bucket"]["workload_fraction"],
+        "missed_gold_includes": rep["missed_gold_includes"],
+    }
+
+
 def run_gold_benchmark(gold_dir: Path | None = None) -> dict:
     """Run every gold fixture; return a measured output-correctness report."""
     gdir = Path(gold_dir) if gold_dir else _GOLD_DIR
@@ -103,6 +123,8 @@ def run_gold_benchmark(gold_dir: Path | None = None) -> dict:
                 r = _score_pooled(fix)
             elif kind == "prisma":
                 r = _score_prisma(fix)
+            elif kind == "screening":
+                r = _score_screening(fix)
             else:
                 r = {"kind": kind, "pass": False, "error": f"unknown fixture kind {kind!r}"}
         except Exception as exc:  # noqa: BLE001 - fail closed: an erroring fixture FAILS

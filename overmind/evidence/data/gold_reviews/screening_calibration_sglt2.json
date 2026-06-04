@@ -1,0 +1,22 @@
+{
+  "name": "Screening recall calibration - SGLT2 inhibitors in heart failure",
+  "kind": "screening",
+  "citation": "Illustrative calibration set (clearly on-topic vs off-topic records). Safety bar 0.95 integrated sensitivity per Oami et al. 2025 (Reson Med Sci, PMC12657656). NOT a held-out Cochrane gold set - it measures whether the conservative worklist surfaces true includes into the human review bucket, and reports recall vs the bar.",
+  "query": "SGLT2 inhibitor heart failure reduced ejection fraction outcomes",
+  "gold_includes": ["inc1", "inc2", "inc3", "inc4", "inc5", "inc6"],
+  "min_review_recall": 0.95,
+  "records": [
+    {"record_id": "inc1", "title": "Dapagliflozin in heart failure with reduced ejection fraction", "abstract": "randomized trial of the SGLT2 inhibitor dapagliflozin reduced cardiovascular death and worsening heart failure in patients with reduced ejection fraction"},
+    {"record_id": "inc2", "title": "Empagliflozin outcomes in heart failure", "abstract": "SGLT2 inhibitor empagliflozin reduced hospitalization for heart failure across the ejection fraction spectrum in a randomized outcomes trial"},
+    {"record_id": "inc3", "title": "Sotagliflozin in patients with heart failure", "abstract": "SGLT2 inhibitor therapy lowered heart failure events and cardiovascular outcomes in a randomized controlled trial"},
+    {"record_id": "inc4", "title": "Canagliflozin and heart failure hospitalization", "abstract": "SGLT2 inhibitor canagliflozin reduced heart failure hospitalization in patients with reduced ejection fraction in a randomized outcomes study"},
+    {"record_id": "inc5", "title": "Ertugliflozin cardiovascular and heart failure outcomes", "abstract": "randomized trial of the SGLT2 inhibitor ertugliflozin assessing heart failure hospitalization and cardiovascular death"},
+    {"record_id": "inc6", "title": "SGLT2 inhibition in heart failure with reduced ejection fraction: a randomized outcomes trial", "abstract": "the sodium glucose cotransporter 2 inhibitor reduced the composite of cardiovascular death and worsening heart failure"},
+    {"record_id": "exc1", "title": "Orange juice consumption and breakfast cereal preferences", "abstract": "a nutrition survey of breakfast habits unrelated to cardiology or pharmacology"},
+    {"record_id": "exc2", "title": "Geology of sandstone formations in arid basins", "abstract": "sedimentary deposition patterns across desert basins over geological time"},
+    {"record_id": "exc3", "title": "Machine learning for image segmentation in satellites", "abstract": "convolutional neural networks for remote sensing land cover classification"},
+    {"record_id": "exc4", "title": "Medieval trade routes across the Mediterranean", "abstract": "a historical analysis of commerce and shipping in the medieval period"},
+    {"record_id": "exc5", "title": "Pollinator behavior in temperate orchards", "abstract": "field study of bee foraging patterns and fruit set in apple orchards"},
+    {"record_id": "exc6", "title": "Concrete curing methods for bridge construction", "abstract": "civil engineering study of cement hydration and structural strength over time"}
+  ]
+}
