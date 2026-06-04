@@ -17,6 +17,12 @@ honesty rules, by construction:
      were actually used. With no embed bound, nothing claims neural semantics.
 
 Stdlib-only in the default path; deterministic; offline.
+
+NOTE on scope: this ranker is NOT wired into the benchmark's scored ``search_corpus``
+path — ``CorpusSearch.run`` (the artifact the research-benchmark scores) uses plain
+BM25 and labels itself "lexical ... not semantic". HybridRanker is an available,
+unit-tested capability; the system does NOT credit its recall gain in any score. Wire
+it into ``CorpusSearch`` if you want the gain measured in the benchmark.
 """
 from __future__ import annotations
 
@@ -111,6 +117,13 @@ class HybridRanker:
 
     def _dense_ranking(self, records: list[CorpusRecord], query: str, limit: int) -> list[str]:
         vecs = self._embed([query] + [r.searchable_text for r in records])
+        # Fail closed if the opt-in backend returns the wrong number of vectors: a
+        # silent zip()-truncation would re-rank only a prefix of the corpus while still
+        # claiming "neural embeddings fused" (confident-tone tool failure).
+        if len(vecs) != len(records) + 1:
+            raise ValueError(
+                f"embed() returned {len(vecs)} vectors for {len(records) + 1} inputs "
+                "(query + docs); a dense backend must return one vector per input")
         qv, doc_vs = vecs[0], vecs[1:]
 
         def _cos(a: list[float], b: list[float]) -> float:

@@ -4,7 +4,8 @@ The screening module (screening.py) is deliberately conservative and human-gated
 it NEVER auto-includes, it only ranks and SUGGESTS. That is the safe posture the SR
 literature supports (LLM screening precision collapses to 0.004-0.096 at realistic
 class-imbalance, and no single LLM met the 95%-recall safety bar — best 0.94; Oami
-et al., J-SSCG 2024 evaluation). But "never auto-include" is not a recall number.
+et al. 2024, JAMA Netw Open, DOI 10.1001/jamanetworkopen.2024.20496). But
+"never auto-include" is not a recall number.
 
 This module makes the worklist's recall MEASURABLE against a stated threshold: given
 a labelled set with gold include/exclude decisions, what fraction of the true
@@ -13,8 +14,9 @@ includes does the worklist surface in the buckets a human actually reviews
 implied human review burden, and whether the review bucket clears the 0.95 bar — it
 does NOT auto-decide. Deterministic, offline, stdlib-only.
 
-Safety bar: 0.95 integrated sensitivity (Oami et al. 2025, Reson Med Sci; the SR
-field's recall threshold for screening to be "safe" to deploy).
+Safety bar: 0.95 integrated sensitivity (Oami et al. 2024, JAMA Netw Open, DOI
+10.1001/jamanetworkopen.2024.20496; the SR field's recall threshold for screening
+to be "safe" to deploy).
 """
 from __future__ import annotations
 
@@ -39,6 +41,12 @@ def screening_recall(
     gold = set(gold_includes)
     if not gold:
         raise ValueError("gold_includes must be non-empty to measure recall")
+
+    # screen() de-dups on record_id internally, so the proposal buckets reflect the unique
+    # set. Count candidate_count / workload_fraction over the SAME deduped set, not the raw
+    # input, or the denominator is inflated by duplicates the worklist never screened.
+    from overmind.evidence.screening import _dedup_by_record_id
+    records = _dedup_by_record_id(records)
 
     proposals = screen(records, query=query, pico=pico,
                        include_threshold=include_threshold, exclude_threshold=exclude_threshold)

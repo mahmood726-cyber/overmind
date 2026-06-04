@@ -23,42 +23,54 @@ not a claim that any review's conclusion is right. The engine already carries th
 tools to surface the fragility (`hksj_se` in `pool()`, the HKSJ-floor rule, and
 `ma_verify`'s conclusion-instability check).
 
-## Measured result (2026-06-04)
-The runner tries three study-selection conventions per analysis (all-rows /
-overall-only / dedup-by-study-name), three measures (RR / GIV / MD), and four pooling
-methods (common-effect FE / DerSimonian-Laird / Paule-Mandel / **REML**), accepting
-whichever reproduces the reference — because the reference tables pool differently
-(selection) and Cochrane mixes FE and RE (method), and neither is recorded per analysis.
+## Measured result (2026-06-05)
 
-- **Direct-metafor validation set: 100/100 analyses reproduce metafor EXACTLY (< 0.005),
-  median deviation ~2e-16** — i.e. the engine reproduces metafor's REML pooling on EVERY
-  analysis to machine precision; 87 distinct reviews. (metafor's default is REML; adding
-  it took this set from 85 -> 100.)
-- **Full k>=5 set (434 MAs): 361 exact (83%)** — logRR 93/132, **GIV 223/223 (100%)**, MD
-  45/79. (Lifted 99 -> 242 -> 289 -> 361 by adding the MD path, the study-selection
-  conventions, multi-method matching, and finally REML.)
+### Committed, always-run gold set (no dependency) — the honest headline
+- **41 committed pooled fixtures, 43/43 pass, worst pooled logRR deviation 3.2e-5.** 3 BCG
+  variants + 38 real Cochrane; **measures 32 RR / 1 OR / 8 GIV** (MD/SMD are NOT in the
+  committed set — they are exercised only in the opt-in corpus run below).
+- Each fixture now pools with the SAME method as its metafor reference (REML for the RR/GIV
+  reviews whose reference is metafor-REML; DL for the BCG-OR fixture, whose committed value
+  is the DL OR estimate), so the gated `estimate_log` is a like-for-like check, not a
+  PM-as-proxy-for-REML approximation absorbed by a loose tolerance.
+- **Heterogeneity disclosure (so "reproduces REML" is not over-read):** 34 of the 41
+  fixtures pool to tau^2=0, where FE/DL/PM/REML all collapse to the identical fixed-effect
+  estimate — those validate the FE path only. **7 fixtures are genuinely heterogeneous
+  (tau^2>0)** and now use REML, so the REML tau^2 estimator IS exercised by their gated
+  estimate_log; the BCG-RR fixture additionally gates tau^2/I^2 against the documented
+  metafor values. (The 4 heterogeneous Cochrane fixtures have no independent metafor
+  tau^2/I^2 source offline, so tau^2/I^2 are not separately gated on them — only the
+  REML-dependent estimate_log is.)
 
-**The remaining 73 were chased and characterised, not hidden:** 70 of them have the
-RIGHT study set (k matches) but do not reproduce under any of {FE, DL, PM, REML} x {RR,
-OR, MD, SMD} x {Hedges tau^2} x the three selection conventions — i.e. the reference's
-broader-set pipeline used a tau^2-estimator / continuity-correction convention that is
-NOT recorded per analysis and cannot be reverse-engineered without risking spurious
-within-tolerance matches. Only 3 are true study-selection failures. The engine itself is
-verified correct — it reproduces all five standard methods to machine precision (median
-dev ~1e-7 where reproduced) — so the residual is "which unrecorded estimator did the
-reference use", NOT an engine error. Nothing is shipped with a loosened tolerance.
-- **Committed in-repo gold set: 41 curated pooled reviews** (3 BCG variants + 38 real
-  Cochrane; 32 RR / 1 OR / 8 GIV), every one an exact reproduction, always run by
-  `overmind gold-benchmark` with no extra dependency.
+### Opt-in full-corpus run — a best-of-configurations DIAGNOSTIC, not a single-pipeline rate
+The runner tries, per analysis, three study-selection conventions (all-rows / overall-only
+/ dedup-by-study-name) x three measures (RR / GIV / MD) x four methods (FE / DL / PM / REML)
+and credits a reproduction if ANY combination lands within tol=0.005 — because neither the
+reference's study selection nor its tau^2 method is recorded per analysis. This is a
+*best-of-up-to-24-configurations* search, so read these as upper-bound diagnostics, not a
+fidelity-to-the-intended-config measurement:
+- **Direct-metafor validation set: 100/100 within tol** (median dev ~2e-16). Caveat: in
+  **12/100** analyses more than one distinct estimate lands within tol (multiplicity>1), so
+  the credit goes to whichever combo matched, not necessarily the reference's config; and
+  tol=0.005 is ~4 orders of magnitude looser than the engine's ~1e-12 reproduction floor.
+  The runner now reports per-analysis multiplicity and the matched convention/method.
+- **Full k>=5 set (434 MAs): 361 within tol (83%)** — logRR 93/132, GIV 223/223, MD 45/79.
 
-**Caveat (a "Cochrane isn't perfect" artifact):** the broader k>=5 reference table pooled
-**all data rows including a study's subgroup-disaggregated copies**, which DOUBLE-COUNTS
-subgrouped studies. Reproducing that convention demonstrates the engine matches the
-pipeline, NOT that the pipeline's pooling is statistically correct. The 80/100 validation
-result (overall/deduped studies) is the meaningful engine-correctness number. Remaining
-non-matches are study-SELECTION / measure edge cases (Peto, nested subgroups), not engine
-math error — confirmed by the ~1e-16 deviations wherever the study set is unambiguous.
-Non-matches are excluded, never shipped with a loosened tolerance.
+**The remaining 73:** 70 have the RIGHT study set (k matches) but do not reproduce under
+the runner's {FE,DL,PM,REML} x {RR,GIV,MD} x three-convention search (I also separately
+probed OR, SMD, and a Hedges tau^2 estimator in throwaway scripts — none recovered them;
+those measures/estimators are NOT in the shipped runner). Only 3 are true study-selection
+failures. The five standard methods reproduce metafor to machine precision on every
+*checkable* analysis, so the most parsimonious explanation for the 70 is an unrecorded
+reference estimator/continuity convention — but those 70 are **unverified, not
+confirmed-correct**: by construction you cannot distinguish an unrecorded-convention
+mismatch from a genuine bug in a case you cannot reproduce. They are excluded from the
+shipped gold set, never shipped with a loosened tolerance.
+
+**A "Cochrane isn't perfect" artifact:** the broader k>=5 reference table pools **all data
+rows including a study's subgroup-disaggregated copies**, which DOUBLE-COUNTS subgrouped
+studies. Reproducing that convention shows the engine matches the *pipeline*, not that the
+pipeline's pooling is statistically correct.
 
 ## Reproduce the full corpus yourself (opt-in; needs the local data + pyreadr)
 ```

@@ -3,7 +3,7 @@
   "kind": "pooled",
   "citation": "Cochrane review CD006475_pub3 (DOI 10.1002/14651858.CD006475.pub3). Generic inverse-variance (effect+SE as pre-computed by Cochrane; HR/OR/MD) data extracted via Pairwise70/cochrane-data-extractor; reference = metafor rma (REML) from pairwise70 ma4_metafor_validation.csv.",
   "measure": "GIV",
-  "method": "PM",
+  "method": "REML",
   "studies": [
     {
       "label": "Abrahamsson 2007",
@@ -37,8 +37,8 @@
     "se": 0.349072
   },
   "tolerance": {
-    "estimate_log": 0.01,
+    "estimate_log": 0.005,
     "se": 0.03
   },
-  "note": "Engine PM reproduces the metafor pooled estimate to <0.005 on this real Cochrane dataset. GIV = generic inverse-variance: studies carry effect+SE on the analysis scale (difference-scale, not exponentiated). Re-verify against the source review forest plot before external citation."
+  "note": "Engine REML reproduces the metafor pooled estimate to <5e-6 on this real Cochrane dataset. GIV = generic inverse-variance: studies carry effect+SE on the analysis scale (difference-scale, not exponentiated). Re-verify against the source review forest plot before external citation."
 }

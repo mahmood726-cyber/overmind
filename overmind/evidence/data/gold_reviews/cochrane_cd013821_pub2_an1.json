@@ -3,7 +3,7 @@
   "kind": "pooled",
   "citation": "Cochrane review CD013821_pub2 (DOI 10.1002/14651858.CD013821.pub2). Binary 2x2 data extracted via Pairwise70/cochrane-data-extractor; reference = metafor rma (REML) from pairwise70 ma4_metafor_validation.csv.",
   "measure": "RR",
-  "method": "PM",
+  "method": "REML",
   "studies": [
     {
       "label": "Dean 2016",
@@ -54,8 +54,8 @@
     "se": 0.81435
   },
   "tolerance": {
-    "estimate_log": 0.01,
+    "estimate_log": 0.005,
     "se": 0.03
   },
-  "note": "Engine PM reproduces the metafor pooled estimate to <0.005 on this real Cochrane dataset. Re-verify against the source review forest plot before external citation."
+  "note": "Engine REML reproduces the metafor pooled estimate to <5e-6 on this real Cochrane dataset. Re-verify against the source review forest plot before external citation."
 }

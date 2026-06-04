@@ -196,13 +196,18 @@ def cochrane_reproduction(data_dir: str | Path, reference_csv: str | Path,
                 continue
 
     def _nn(*xs) -> bool:
-        return not any((x != x) for x in xs)
+        # reject NaN (x != x) AND None — a None cell would slip past a NaN-only guard
+        # and then raise int(None)/None>0 in _build (fail-open vs crash inconsistency).
+        return all(x is not None and x == x for x in xs)
 
     from collections import defaultdict
     matched = defaultdict(int)
     total = defaultdict(int)
     devs: list[float] = []
     reviews: set[str] = set()
+    multiplicity: dict = {}   # mult -> count of matched analyses with that many within-tol estimates
+    ambiguous = 0             # matched analyses with multiplicity > 1
+    conv_match: dict = {}     # convention name -> count of best matches
     for (rid, an), ref in refs.items():
         f = ddir / f"{rid}_data.rda"
         if not f.is_file():
@@ -241,19 +246,21 @@ def cochrane_reproduction(data_dir: str | Path, reference_csv: str | Path,
         dedup_sets = _build(sub.drop_duplicates(subset="Study", keep="first"))  # one row per study name
         et = ref["et"] or "?"
         total[et] += 1
-        candidates = []
+        candidates = []  # (measure, convention, studies)
         for measure in (("RR",) if et == "logRR" else ("GIV",) if et == "GIV" else ("MD",) if et == "MD" else ("RR", "GIV", "MD")):
-            for conv_sets in (all_sets, overall_sets, dedup_sets):
+            for conv_name, conv_sets in (("all-rows", all_sets), ("overall", overall_sets), ("dedup", dedup_sets)):
                 st = conv_sets[measure]
                 if len(st) == ref["k"]:
-                    candidates.append((measure, st))
+                    candidates.append((measure, conv_name, st))
+        # This is a BEST-OF-CONFIGURATIONS search: neither the reference's study selection
+        # nor its tau^2 method is recorded per analysis, so we try {measure} x {convention}
+        # x {FE,DL,PM,REML} and accept whichever lands within tol. We ALSO record how many
+        # DISTINCT estimates land within tol (multiplicity) so a reader can see when the
+        # credit is ambiguous (>1 qualifying config) rather than a single-pipeline match.
         best = None
-        # The reference's tau^2 method is not recorded per analysis, and Cochrane mixes
-        # common-effect (FE) and random-effects (DL / REML) pooling. Try the standard
-        # set and accept whichever reproduces the reference — FE and RE point estimates
-        # differ enough under heterogeneity that a coincidental cross-method match within
-        # tol is implausible.
-        for measure, studies in candidates:
+        best_cfg = None
+        within_tol_estimates: set = set()
+        for measure, conv_name, studies in candidates:
             for meth in ("REML", "PM", "DL", "FE"):
                 try:
                     res = pool(studies, measure=measure, method=meth)
@@ -261,22 +268,37 @@ def cochrane_reproduction(data_dir: str | Path, reference_csv: str | Path,
                     continue
                 dev = abs(res["estimate_log"] - ref["theta"])
                 if best is None or dev < best:
-                    best = dev
+                    best, best_cfg = dev, (measure, conv_name, meth)
+                if dev < tol:
+                    within_tol_estimates.add(round(res["estimate_log"], 6))
         if best is not None and best < tol:
             matched[et] += 1
             devs.append(best)
             reviews.add(rid)
+            mult = len(within_tol_estimates)
+            multiplicity[mult] = multiplicity.get(mult, 0) + 1
+            if mult > 1:
+                ambiguous += 1
+            conv_match[best_cfg[1]] = conv_match.get(best_cfg[1], 0) + 1
     devs.sort()
+    import statistics
     return {
         "capability": "cochrane_corpus_reproduction",
+        "search": "best-of-configurations: {measure} x {all-rows/overall/dedup} x {FE,DL,PM,REML}",
         "references_total": sum(total.values()),
         "exact_reproductions": sum(matched.values()),
         "distinct_reviews_matched": len(reviews),
         "by_effect_type": {et: {"matched": matched[et], "total": total[et]} for et in total},
-        "median_deviation": devs[len(devs) // 2] if devs else None,
+        "median_deviation": statistics.median(devs) if devs else None,
+        "ambiguous_matches": ambiguous,  # matched analyses where >1 distinct estimate was within tol
+        "multiplicity_distribution": dict(sorted(multiplicity.items())),
+        "matched_by_convention": dict(conv_match),
         "tolerance": tol,
         "scope_note": (
-            "ENGINE-correctness, not Cochrane-correctness. Non-matches are dominated by "
-            "study-SELECTION (subgroup/overall) ambiguity, not engine math error."
+            "ENGINE-correctness, not Cochrane-correctness, and a BEST-OF-CONFIGURATIONS "
+            "upper bound: a reproduction is credited if ANY of up to ~24 (measure x "
+            "selection-convention x method) combinations lands within tol. 'ambiguous_matches' "
+            "counts analyses where more than one distinct estimate qualified. The committed "
+            "in-repo gold set (run_gold_benchmark) is the single-config, like-for-like check."
         ),
     }

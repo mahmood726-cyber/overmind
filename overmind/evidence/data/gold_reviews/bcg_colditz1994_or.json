@@ -4,37 +4,118 @@
   "citation": "Colditz GA, Brewer TF, Berkey CS, et al. JAMA 1994;271(9):698-702. Raw 2x2 as in metafor dat.bcg (Viechtbauer 2010). This fixture exercises the OR pooling path on the same cross-validated raw data as bcg_colditz1994.json (which exercises RR).",
   "data_provenance": "metafor dat.bcg; ai=vaccinated TB+, n1=vaccinated total, ci=control TB+, n2=control total.",
   "measure": "OR",
-  "method": "PM",
+  "method": "DL",
   "studies": [
-    {"label": "Aronson 1948",            "ai": 4,   "n1": 123,    "ci": 11,  "n2": 139},
-    {"label": "Ferguson & Simes 1949",   "ai": 6,   "n1": 306,    "ci": 29,  "n2": 303},
-    {"label": "Rosenthal 1960",          "ai": 3,   "n1": 231,    "ci": 11,  "n2": 220},
-    {"label": "Hart & Sutherland 1977",  "ai": 62,  "n1": 13598,  "ci": 248, "n2": 12867},
-    {"label": "Frimodt-Moller 1973",     "ai": 33,  "n1": 5069,   "ci": 47,  "n2": 5808},
-    {"label": "Stein & Aronson 1953",    "ai": 180, "n1": 1541,   "ci": 372, "n2": 1451},
-    {"label": "Vandiviere 1973",         "ai": 8,   "n1": 2545,   "ci": 10,  "n2": 629},
-    {"label": "TPT Madras 1980",         "ai": 505, "n1": 88391,  "ci": 499, "n2": 88391},
-    {"label": "Coetzee & Berjak 1968",   "ai": 29,  "n1": 7499,   "ci": 45,  "n2": 7277},
-    {"label": "Rosenthal 1961",          "ai": 17,  "n1": 1716,   "ci": 65,  "n2": 1665},
-    {"label": "Comstock 1974",           "ai": 186, "n1": 50634,  "ci": 141, "n2": 27338},
-    {"label": "Comstock & Webster 1969", "ai": 5,   "n1": 2498,   "ci": 3,   "n2": 2341},
-    {"label": "Comstock 1976",           "ai": 27,  "n1": 16913,  "ci": 29,  "n2": 17854}
+    {
+      "label": "Aronson 1948",
+      "ai": 4,
+      "n1": 123,
+      "ci": 11,
+      "n2": 139
+    },
+    {
+      "label": "Ferguson & Simes 1949",
+      "ai": 6,
+      "n1": 306,
+      "ci": 29,
+      "n2": 303
+    },
+    {
+      "label": "Rosenthal 1960",
+      "ai": 3,
+      "n1": 231,
+      "ci": 11,
+      "n2": 220
+    },
+    {
+      "label": "Hart & Sutherland 1977",
+      "ai": 62,
+      "n1": 13598,
+      "ci": 248,
+      "n2": 12867
+    },
+    {
+      "label": "Frimodt-Moller 1973",
+      "ai": 33,
+      "n1": 5069,
+      "ci": 47,
+      "n2": 5808
+    },
+    {
+      "label": "Stein & Aronson 1953",
+      "ai": 180,
+      "n1": 1541,
+      "ci": 372,
+      "n2": 1451
+    },
+    {
+      "label": "Vandiviere 1973",
+      "ai": 8,
+      "n1": 2545,
+      "ci": 10,
+      "n2": 629
+    },
+    {
+      "label": "TPT Madras 1980",
+      "ai": 505,
+      "n1": 88391,
+      "ci": 499,
+      "n2": 88391
+    },
+    {
+      "label": "Coetzee & Berjak 1968",
+      "ai": 29,
+      "n1": 7499,
+      "ci": 45,
+      "n2": 7277
+    },
+    {
+      "label": "Rosenthal 1961",
+      "ai": 17,
+      "n1": 1716,
+      "ci": 65,
+      "n2": 1665
+    },
+    {
+      "label": "Comstock 1974",
+      "ai": 186,
+      "n1": 50634,
+      "ci": 141,
+      "n2": 27338
+    },
+    {
+      "label": "Comstock & Webster 1969",
+      "ai": 5,
+      "n1": 2498,
+      "ci": 3,
+      "n2": 2341
+    },
+    {
+      "label": "Comstock 1976",
+      "ai": 27,
+      "n1": 16913,
+      "ci": 29,
+      "n2": 17854
+    }
   ],
   "reference": {
-    "source": "metafor rma(measure='OR', method='REML', data=dat.bcg) - documented output; engine DL reproduces logOR=-0.7474 exactly, PM=-0.7455.",
+    "source": "metafor rma(measure='OR', method='DL', data=dat.bcg) DerSimonian-Laird OR estimate; engine DL reproduces logOR=-0.7474 to ~8e-6. NOTE: the committed value is the DL OR estimate (metafor's REML OR is slightly different, ~-0.745); this fixture pins the DL path on the OR scale.",
     "estimate_log": -0.7474,
-    "se": 0.1860,
-    "ci_log": [-1.1119, -0.3829],
+    "se": 0.186,
+    "ci_log": [
+      -1.1119,
+      -0.3829
+    ],
     "tau2": 0.3663,
     "I2_percent": 92.6,
     "estimate_ratio": 0.4736
   },
   "tolerance": {
-    "estimate_log": 0.02,
+    "estimate_log": 0.005,
     "se": 0.02,
     "ci_log": 0.06,
     "tau2": 0.06,
     "I2_percent": 3.0
   },
-  "note": "OR-path coverage on cross-validated BCG raw data. PM is used by the engine; the published reference uses REML (point estimate agrees to <0.002). Re-verify against a fresh metafor dat.bcg before external citation."
+  "note": "OR-path coverage on cross-validated BCG raw data, pinned to the DerSimonian-Laird OR estimate (engine DL reproduces it to ~8e-6). Re-verify against a fresh metafor dat.bcg before external citation."
 }

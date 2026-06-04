@@ -2,6 +2,8 @@ from __future__ import annotations
 
 import json
 
+import pytest
+
 from overmind.intelligence.gold_benchmark import run_gold_benchmark
 
 
@@ -44,6 +46,49 @@ def test_cochrane_reproduction_fails_closed_on_missing_paths(tmp_path):
     (tmp_path / "ref.csv").write_text("review_id,analysis_number,k,mf_theta\n", encoding="utf-8")
     r2 = cochrane_reproduction(tmp_path / "nope", tmp_path / "ref.csv")
     assert "error" in r2
+
+
+def test_cochrane_reproduction_accept_logic(tmp_path, monkeypatch):
+    """The opt-in corpus runner must: (1) only count a candidate whose study count == ref k
+    (cardinality guard blocks coincidental wrong-cardinality matches); (2) only count a match
+    within tol; (3) build the denominator (total) independently of acceptance."""
+    pd = pytest.importorskip("pandas")
+    import pyreadr
+    from overmind.evidence.pooling import Study, pool
+    from overmind.intelligence.gold_benchmark import cochrane_reproduction
+
+    # one analysis, 2 binary studies; reference theta = the engine's own REML pooled value
+    studies = [Study(ai=10, n1=100, ci=20, n2=100), Study(ai=15, n1=120, ci=25, n2=130)]
+    theta = pool(studies, measure="RR", method="REML")["estimate_log"]
+    df = pd.DataFrame([
+        {"Analysis.number": 1, "Study": "A", "Experimental.cases": 10, "Experimental.N": 100,
+         "Control.cases": 20, "Control.N": 100, "GIV.Mean": float("nan"), "GIV.SE": float("nan"),
+         "Experimental.mean": float("nan"), "Experimental.SD": float("nan"),
+         "Control.mean": float("nan"), "Control.SD": float("nan"), "Subgroup.number": float("nan")},
+        {"Analysis.number": 1, "Study": "B", "Experimental.cases": 15, "Experimental.N": 120,
+         "Control.cases": 25, "Control.N": 130, "GIV.Mean": float("nan"), "GIV.SE": float("nan"),
+         "Experimental.mean": float("nan"), "Experimental.SD": float("nan"),
+         "Control.mean": float("nan"), "Control.SD": float("nan"), "Subgroup.number": float("nan")},
+    ])
+    monkeypatch.setattr(pyreadr, "read_r", lambda path: {"d": df})
+    (tmp_path / "CD0001_pub1_data.rda").write_text("stub", encoding="utf-8")
+
+    def _ref(k, ref_theta):
+        p = tmp_path / f"ref_{k}_{ref_theta:.4f}.csv"
+        p.write_text("review_id,analysis_number,k,mf_theta,effect_type\n"
+                     f"CD0001_pub1,1,{k},{ref_theta},logRR\n", encoding="utf-8")
+        return cochrane_reproduction(tmp_path, p)
+
+    # (1) correct k + within tol -> matched
+    r = _ref(2, theta)
+    assert r["exact_reproductions"] == 1 and r["references_total"] == 1
+    # (2) wrong cardinality (k=3) but SAME theta -> cardinality guard blocks it
+    r = _ref(3, theta)
+    assert r["exact_reproductions"] == 0 and r["references_total"] == 1
+    # (3) correct k but theta far outside tol -> counted in denominator, not matched
+    r = _ref(2, theta + 0.5)
+    assert r["exact_reproductions"] == 0 and r["references_total"] == 1
+    assert r["median_deviation"] is None
 
 
 def test_erroring_fixture_fails_closed(tmp_path):

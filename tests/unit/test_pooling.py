@@ -4,7 +4,7 @@ import math
 
 import pytest
 
-from overmind.evidence.pooling import PoolingError, Study, pool
+from overmind.evidence.pooling import _RATIO_MEASURES, _binary_effect, PoolingError, Study, pool
 
 # Canonical BCG / Colditz 1994 raw 2x2 (metafor dat.bcg): ai=vacc TB+, n1=vacc total,
 # ci=control TB+, n2=control total.
@@ -69,6 +69,41 @@ def test_zero_cell_correction_only_when_a_cell_is_zero():
     # a clean 2x2 should NOT be perturbed: pooling twice is identical (determinism)
     clean = [Study(ai=10, n1=100, ci=20, n2=100), Study(ai=12, n1=100, ci=18, n2=100)]
     assert pool(clean, measure="OR")["estimate_log"] == pool(clean, measure="OR")["estimate_log"]
+
+
+def test_hksj_floor_engages_under_dispersion_and_releases_under_heterogeneity():
+    # Under-dispersed (Q < k-1): q < 1, the floor max(1.0, q) engages -> hksj_se = sqrt(1/sw).
+    homo = pool([Study(yi=0.5, vi=0.1), Study(yi=0.5, vi=0.1), Study(yi=0.5, vi=0.1)], method="DL")
+    assert math.isclose(homo["hksj_se"], math.sqrt(1.0 / 30.0), abs_tol=1e-12)  # floor pinned
+    # Heterogeneous (BCG): q > 1, floor does NOT engage -> hksj_se > the RE se.
+    het = pool(_bcg_studies(), measure="RR", method="DL")
+    assert het["hksj_se"] > het["se"]
+    # hksj_se is emitted for the RE estimators (DL/PM), absent for FE/REML (per the guard).
+    assert "hksj_se" in pool(_bcg_studies(), method="PM")
+    assert "hksj_se" not in pool(_bcg_studies(), method="FE")
+    assert "hksj_se" not in pool(_bcg_studies(), method="REML")
+
+
+def test_zero_cell_correction_exact_values():
+    # zero-cell OR: 0.5 added to ALL four cells -> exact corrected logOR and variance.
+    yi, vi = _binary_effect(0, 100, 5, 100, "OR")
+    assert math.isclose(yi, math.log((0.5 * 95.5) / (100.5 * 5.5)), abs_tol=1e-12)
+    assert math.isclose(vi, 1 / 0.5 + 1 / 100.5 + 1 / 5.5 + 1 / 95.5, abs_tol=1e-12)
+    # clean 2x2: NO correction applied -> exact uncorrected logOR and variance.
+    yc, vc = _binary_effect(10, 100, 20, 100, "OR")
+    assert math.isclose(yc, math.log((10 * 80) / (90 * 20)), abs_tol=1e-12)
+    assert math.isclose(vc, 1 / 10 + 1 / 90 + 1 / 20 + 1 / 80, abs_tol=1e-12)
+
+
+def test_ratio_vs_difference_scale_membership_is_pinned():
+    # every ratio measure back-transforms; every difference measure does not (and a large
+    # difference does not overflow). Pins the _RATIO_MEASURES frozenset against drift.
+    for m in _RATIO_MEASURES:
+        r = pool([Study(yi=0.1, vi=0.2), Study(yi=0.2, vi=0.3)], measure=m)
+        assert r["scale"] == "ratio" and r["estimate_ratio"] is not None
+    for m in ("MD", "SMD", "RD", "GIV"):
+        r = pool([Study(yi=800.0, vi=1.0), Study(yi=820.0, vi=1.5)], measure=m)  # huge -> exp() would overflow
+        assert r["scale"] == "difference" and r["estimate_ratio"] is None and r["ci_ratio"] is None
 
 
 def test_k_less_than_2_fails_closed():

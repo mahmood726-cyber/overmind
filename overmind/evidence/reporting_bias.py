@@ -45,6 +45,7 @@ def registry_linkage(n_registered: int, n_published: int, n_in_review: int | Non
         "n_published": n_published,
         "n_unpublished": unpublished,
         "linkage_rate": round(linkage, 4),
+        "linkage_rate_exact": linkage,  # unrounded — use for threshold comparisons, not the display value
         "unpublished_fraction": round(1 - linkage, 4),
         "base_rate_reference": LINKAGE_BASE_RATE,
         "below_base_rate": linkage < LINKAGE_BASE_RATE,
@@ -81,6 +82,10 @@ def missing_evidence_robme(
         raise ValueError("linkage_rate must be in [0,1]")
     if n_unpublished < 0:
         raise ValueError("n_unpublished must be >= 0")
+    # A NaN funnel p (a failed/degenerate Egger computation) must NOT be silently coerced
+    # to "no asymmetry" (NaN < 0.10 is False). Fail closed, mirroring the linkage_rate guard.
+    if funnel_asymmetry_p is not None and funnel_asymmetry_p != funnel_asymmetry_p:
+        raise ValueError("funnel_asymmetry_p is NaN (a failed small-study test); pass None or a real p-value")
     reasons: list[str] = []
     level = "low"
 
@@ -136,7 +141,7 @@ def reporting_bias_report(
     """Bundle the missing-evidence signals into one first-class artifact."""
     linkage = registry_linkage(n_registered, n_published, n_in_review)
     robme = missing_evidence_robme(
-        linkage["linkage_rate"], linkage["n_unpublished"],
+        linkage["linkage_rate_exact"], linkage["n_unpublished"],  # unrounded: drives the < 0.50 threshold
         small_study_effect=small_study_effect, funnel_asymmetry_p=funnel_asymmetry_p,
     )
     report = {
