@@ -24,18 +24,29 @@ tools to surface the fragility (`hksj_se` in `pool()`, the HKSJ-floor rule, and
 `ma_verify`'s conclusion-instability check).
 
 ## Measured result (2026-06-04)
-- **Direct-metafor validation set (clean analysis mapping): 79/100 analyses reproduce
-  metafor EXACTLY (< 0.005), median deviation ~1e-16** — i.e. machine precision where
-  the study set is unambiguous; across 70 distinct reviews.
+The runner tries three study-selection conventions per analysis (all-rows /
+overall-only / dedup-by-study-name) and three measures (RR / GIV / MD), accepting
+whichever reproduces the reference — because the reference tables themselves pool
+differently (see the caveat below).
+
+- **Direct-metafor validation set: 80/100 analyses reproduce metafor EXACTLY (< 0.005),
+  median deviation ~1e-16** — machine precision; 71 distinct reviews. This set uses the
+  CORRECT (deduped, overall) study pooling.
+- **Full k>=5 set (434 MAs): 242 exact (56%)** — logRR 69/132, GIV 142/223, MD 31/79
+  (up from 99 after adding the MD path + the all-rows/overall study-selection
+  conventions).
 - **Committed in-repo gold set: 41 curated pooled reviews** (3 BCG variants + 38 real
   Cochrane; 32 RR / 1 OR / 8 GIV), every one an exact reproduction, always run by
-  `overmind gold-benchmark`.
-- **Full k>=5 set (434 MAs): 99 exact** (logRR 32/132, GIV 67/223, MD 0/79 — MD-from-
-  mean/SD is not computed by the opt-in runner). The lower full-set rate is dominated
-  by **study-SELECTION ambiguity** (Cochrane subgroup-vs-overall structure, analysis-
-  index drift in the broader reference table), **not engine math error** — confirmed by
-  the ~1e-16 deviations wherever the study set is unambiguous. Non-matches are
-  excluded, never shipped with a loosened tolerance.
+  `overmind gold-benchmark` with no extra dependency.
+
+**Caveat (a "Cochrane isn't perfect" artifact):** the broader k>=5 reference table pooled
+**all data rows including a study's subgroup-disaggregated copies**, which DOUBLE-COUNTS
+subgrouped studies. Reproducing that convention demonstrates the engine matches the
+pipeline, NOT that the pipeline's pooling is statistically correct. The 80/100 validation
+result (overall/deduped studies) is the meaningful engine-correctness number. Remaining
+non-matches are study-SELECTION / measure edge cases (Peto, nested subgroups), not engine
+math error — confirmed by the ~1e-16 deviations wherever the study set is unambiguous.
+Non-matches are excluded, never shipped with a loosened tolerance.
 
 ## Reproduce the full corpus yourself (opt-in; needs the local data + pyreadr)
 ```

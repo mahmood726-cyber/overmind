@@ -163,10 +163,15 @@ def cochrane_reproduction(data_dir: str | Path, reference_csv: str | Path,
     reference table (``review_id, analysis_number, k, mf_theta``). Requires ``pyreadr``
     (R-binary reader) — opt-in, not a default dependency.
 
-    Reports the EXACT-reproduction rate by effect type. Non-matches are dominated by
-    Cochrane subgroup/overall study-SELECTION ambiguity, not engine math error — where
-    the study set is unambiguous the engine reproduces metafor to < ``tol`` (often
-    exactly). This validates the engine, NOT the correctness of the reviews."""
+    Reports the EXACT-reproduction rate by effect type. To match how the reference was
+    pooled, each analysis is tried under THREE study-selection conventions — all rows
+    (subgroup copies kept; double-counts subgrouped studies), overall-only (Subgroup
+    blank), and dedup-by-study-name — accepting whichever reproduces the reference; RR
+    (binary 2x2), GIV (effect+SE), and MD (mean/SD -> mean difference) measures are
+    covered. Remaining non-matches are study-SELECTION / measure edge cases (Peto,
+    nested subgroups), not engine math error — where the study set is unambiguous the
+    engine reproduces metafor to ~1e-16. This validates the engine, NOT the correctness
+    of the reviews (the all-rows convention's double-counting is itself an artifact)."""
     try:
         import csv as _csv
         import pyreadr  # type: ignore
@@ -206,30 +211,41 @@ def cochrane_reproduction(data_dir: str | Path, reference_csv: str | Path,
         except Exception:  # noqa: BLE001
             continue
         sub = df[df["Analysis.number"] == an]
-        seen: set = set()
-        binr: list = []   # binary 2x2 studies
-        givr: list = []   # generic inverse-variance (effect + SE) studies
-        for _, r in sub.iterrows():
-            s = r["Study"]
-            if s in seen:
-                continue
-            a, n1, c, n2 = r["Experimental.cases"], r["Experimental.N"], r["Control.cases"], r["Control.N"]
-            gm, gse = r["GIV.Mean"], r["GIV.SE"]
-            used = False
-            if _nn(a, n1, c, n2) and n1 > 0 and n2 > 0:
-                binr.append(Study(str(s), ai=int(a), n1=int(n1), ci=int(c), n2=int(n2))); used = True
-            if _nn(gm, gse) and gse > 0:
-                givr.append(Study(str(s), yi=float(gm), vi=float(gse) ** 2)); used = True
-            if used:
-                seen.add(s)
+        # Build study sets under BOTH conventions, because the two reference tables
+        # disagree: the metafor-validation table pooled the OVERALL (deduped) studies
+        # (correct MA), while the broader k>=5 table pooled ALL rows including a study's
+        # subgroup-disaggregated copies (which DOUBLE-COUNTS subgrouped studies — itself
+        # a data-handling artifact). We try both and accept whichever reproduces the
+        # reference, tracking which convention matched.
+        def _build(rows):
+            binr: list = []; givr: list = []; mdr: list = []
+            for _, r in rows.iterrows():
+                s = str(r["Study"])
+                a, n1, c, n2 = r["Experimental.cases"], r["Experimental.N"], r["Control.cases"], r["Control.N"]
+                gm, gse = r["GIV.Mean"], r["GIV.SE"]
+                m1, sd1, m2, sd2 = r["Experimental.mean"], r["Experimental.SD"], r["Control.mean"], r["Control.SD"]
+                if _nn(a, n1, c, n2) and n1 > 0 and n2 > 0:
+                    binr.append(Study(s, ai=int(a), n1=int(n1), ci=int(c), n2=int(n2)))
+                if _nn(gm, gse) and gse > 0:
+                    givr.append(Study(s, yi=float(gm), vi=float(gse) ** 2))
+                if _nn(m1, sd1, n1, m2, sd2, n2) and n1 > 0 and n2 > 0 and sd1 > 0 and sd2 > 0:
+                    mdr.append(Study(s, yi=float(m1) - float(m2), vi=float(sd1) ** 2 / n1 + float(sd2) ** 2 / n2))
+            return {"RR": binr, "GIV": givr, "MD": mdr}
+
+        all_sets = _build(sub)                                          # all rows (subgroup copies kept)
+        if "Subgroup.number" in sub.columns:
+            overall_sets = _build(sub[sub["Subgroup.number"].isna()])   # overall-only
+        else:
+            overall_sets = all_sets
+        dedup_sets = _build(sub.drop_duplicates(subset="Study", keep="first"))  # one row per study name
         et = ref["et"] or "?"
         total[et] += 1
-        # try whichever complete study set matches k (RR for binary, GIV otherwise)
         candidates = []
-        if len(binr) == ref["k"]:
-            candidates.append(("RR", binr))
-        if len(givr) == ref["k"]:
-            candidates.append(("GIV", givr))
+        for measure in (("RR",) if et == "logRR" else ("GIV",) if et == "GIV" else ("MD",) if et == "MD" else ("RR", "GIV", "MD")):
+            for conv_sets in (all_sets, overall_sets, dedup_sets):
+                st = conv_sets[measure]
+                if len(st) == ref["k"]:
+                    candidates.append((measure, st))
         best = None
         for measure, studies in candidates:
             try:
