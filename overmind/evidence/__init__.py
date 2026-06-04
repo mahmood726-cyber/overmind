@@ -28,6 +28,7 @@ from overmind.evidence.corpus import (
     McpCorpusProvider,
     OfflineCorpusProvider,
     default_provider,
+    live_pubmed_provider,
     rank,
 )
 from overmind.evidence.extraction import (
@@ -58,6 +59,7 @@ __all__ = [
     "McpCorpusProvider",
     "OfflineCorpusProvider",
     "default_provider",
+    "live_pubmed_provider",
     "rank",
     "EXCLUSION_REASONS",
     "ScreeningProposal",

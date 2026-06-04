@@ -387,9 +387,10 @@ def _current_system_scores(
         # a LIVE/large index (not the bundled offline seed) earns first-class 3
         if corpus.get("provider_available") and corpus.get("provider") not in (None, "offline-jsonl") and hits > 0:
             scores["search_corpus"] = 3
+        _live = corpus.get("provider") not in (None, "offline-jsonl")
         evidence["search_corpus"] = (
             f"corpus_search artifact: provider={corpus.get('provider')}, corpus_size={size}, "
-            f"hits={hits} (offline BM25; lexical, not semantic)."
+            f"hits={hits} ({'live' if _live else 'offline'} retrieval; BM25 lexical re-rank, not semantic)."
         )
 
     screening = art.get("screening")
@@ -555,12 +556,18 @@ class ResearchBenchmark:
                 continue
         return out
 
-    def exercise_evidence(self) -> dict[str, Any]:
+    def exercise_evidence(self, live_corpus: bool = False) -> dict[str, Any]:
         """Run each evidence subsystem on the bundled (real, offline) corpus so the
         benchmark self-demonstrates the capability before scoring it. Deterministic,
         offline, no fabrication: corpus/screening/PRISMA run on the real seed records;
         extraction/grounding run on a small fixture transcribed from real PubMed
-        abstracts. Returns the produced artifacts."""
+        abstracts. Returns the produced artifacts.
+
+        ``live_corpus=True`` is OPT-IN: the corpus step queries the live NCBI
+        E-utilities index (network) instead of the offline seed, which lifts the
+        search_corpus capability to first-class. It fails CLOSED — any network/parse
+        error falls back to the offline corpus, so the score never rises on a failed
+        live attempt."""
         from pathlib import Path as _Path
 
         from overmind.evidence import corpus as _corpus
@@ -575,7 +582,18 @@ class ResearchBenchmark:
         art = self.artifacts_dir
         topic = "SGLT2 inhibitor heart failure"
 
-        CorpusSearch(provider=provider, artifacts_dir=art).run(topic, limit=10)
+        # Corpus step: offline by default; opt-in live, failing closed to offline.
+        corpus_ran_live = False
+        if live_corpus:
+            try:
+                from overmind.evidence.corpus import live_pubmed_provider
+                CorpusSearch(provider=live_pubmed_provider(), artifacts_dir=art).run(topic, limit=10)
+                corpus_ran_live = True
+            except Exception:  # noqa: BLE001 - network/parse failure -> fall back offline
+                corpus_ran_live = False
+        if not corpus_ran_live:
+            CorpusSearch(provider=provider, artifacts_dir=art).run(topic, limit=10)
+
         ScreeningRun(provider_records=records, artifacts_dir=art).run(query=topic)
 
         demo_path = _Path(_corpus.__file__).parent / "data" / "extraction_demo.json"
@@ -609,10 +627,11 @@ class ResearchBenchmark:
         runners: list[dict[str, Any]] | None = None,
         meta_verify: dict[str, Any] | None = None,
         exercise: bool = True,
+        live_corpus: bool = False,
     ) -> dict[str, Any]:
         if exercise:
             try:
-                evidence_artifacts = self.exercise_evidence()
+                evidence_artifacts = self.exercise_evidence(live_corpus=live_corpus)
             except Exception:  # noqa: BLE001 - never let demo wiring break the benchmark
                 evidence_artifacts = self.read_evidence_artifacts()
         else:

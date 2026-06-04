@@ -140,6 +140,36 @@ def test_mcp_provider_uses_injected_fetcher():
 
 # --- artifact contract (what the benchmark reads) ------------------------
 
+def test_corpus_search_uses_queryable_live_provider(tmp_path):
+    # A live-style provider exposes query(); CorpusSearch must fetch-then-rank it and
+    # report it as a non-offline provider (the precondition for search_corpus=3).
+    def fake_fetch(query, limit):
+        assert query and limit >= 1
+        return [
+            {"pmid": "1", "title": "Dapagliflozin in heart failure", "source": "pubmed",
+             "abstract": "randomized trial of dapagliflozin"},
+            {"pmid": "2", "title": "Unrelated nutrition survey", "source": "pubmed"},
+        ]
+
+    provider = McpCorpusProvider(fetch=fake_fetch, name="pubmed-eutils")
+    report = CorpusSearch(provider=provider, artifacts_dir=tmp_path / "artifacts").run(
+        "dapagliflozin heart failure", limit=5)
+    assert report["provider"] == "pubmed-eutils"
+    assert report["provider_available"] is True
+    assert report["hit_count"] >= 1
+    # the relevant record ranks first
+    assert report["hits"][0]["record_id"] == "pmid:1"
+
+
+def test_live_pubmed_provider_factory_is_unbound_offline(monkeypatch):
+    # The factory builds a provider whose name marks it non-offline; it stays inert
+    # (and importable) without touching the network at construction time.
+    from overmind.evidence.corpus import live_pubmed_provider
+    provider = live_pubmed_provider()
+    assert provider.name == "pubmed-eutils"
+    assert provider.available is True  # a fetcher is bound, but no call made yet
+
+
 def test_corpus_search_writes_artifact(tmp_path):
     artifacts = tmp_path / "artifacts"
     report = CorpusSearch(artifacts_dir=artifacts).run("empagliflozin", limit=3)

@@ -1,0 +1,65 @@
+<?xml version="1.0" ?>
+<!-- Compact PubMed efetch fixture: schema-faithful subset validated against a real
+     NCBI E-utilities response (2026-06-04). Two articles exercise every field the
+     parser extracts: title, multi-part abstract, authors, journal, year, DOI,
+     publication types — plus one record missing a DOI (parser must yield doi=None). -->
+<PubmedArticleSet>
+  <PubmedArticle>
+    <MedlineCitation>
+      <PMID Version="1">31535829</PMID>
+      <Article>
+        <Journal>
+          <JournalIssue>
+            <PubDate><Year>2019</Year><Month>Nov</Month></PubDate>
+          </JournalIssue>
+          <Title>The New England journal of medicine</Title>
+        </Journal>
+        <ArticleTitle>Dapagliflozin in Patients with Heart Failure and Reduced Ejection Fraction.</ArticleTitle>
+        <Abstract>
+          <AbstractText Label="BACKGROUND">In patients with heart failure and reduced ejection fraction, SGLT2 inhibitors may reduce events.</AbstractText>
+          <AbstractText Label="RESULTS">A first worsening heart failure event occurred less often with dapagliflozin (hazard ratio, 0.74; 95% CI, 0.65 to 0.85).</AbstractText>
+        </Abstract>
+        <AuthorList>
+          <Author><LastName>McMurray</LastName><Initials>JJV</Initials></Author>
+          <Author><LastName>Solomon</LastName><Initials>SD</Initials></Author>
+        </AuthorList>
+        <PublicationTypeList>
+          <PublicationType>Journal Article</PublicationType>
+          <PublicationType>Randomized Controlled Trial</PublicationType>
+        </PublicationTypeList>
+      </Article>
+    </MedlineCitation>
+    <PubmedData>
+      <ArticleIdList>
+        <ArticleId IdType="pubmed">31535829</ArticleId>
+        <ArticleId IdType="doi">10.1056/NEJMoa1911303</ArticleId>
+      </ArticleIdList>
+    </PubmedData>
+  </PubmedArticle>
+  <PubmedArticle>
+    <MedlineCitation>
+      <PMID Version="1">99999999</PMID>
+      <Article>
+        <Journal>
+          <JournalIssue><PubDate><Year>2024</Year></PubDate></JournalIssue>
+          <Title>Journal of Test Medicine</Title>
+        </Journal>
+        <ArticleTitle>A record with no DOI to exercise the null path.</ArticleTitle>
+        <Abstract>
+          <AbstractText>Single-part abstract with no label.</AbstractText>
+        </Abstract>
+        <AuthorList>
+          <Author><LastName>Doe</LastName><Initials>J</Initials></Author>
+        </AuthorList>
+        <PublicationTypeList>
+          <PublicationType>Journal Article</PublicationType>
+        </PublicationTypeList>
+      </Article>
+    </MedlineCitation>
+    <PubmedData>
+      <ArticleIdList>
+        <ArticleId IdType="pubmed">99999999</ArticleId>
+      </ArticleIdList>
+    </PubmedData>
+  </PubmedArticle>
+</PubmedArticleSet>

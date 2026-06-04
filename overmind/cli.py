@@ -266,6 +266,12 @@ def build_parser() -> argparse.ArgumentParser:
         action="store_true",
         help="Run meta-verify first and include its current verdict in the benchmark.",
     )
+    research_benchmark_parser.add_argument(
+        "--live-corpus",
+        action="store_true",
+        help="OPT-IN: exercise the corpus step against the live PubMed index (network); "
+             "lifts search_corpus to first-class. Fails closed to offline on any error.",
+    )
 
     corpus_search_parser = subparsers.add_parser(
         "corpus-search",
@@ -277,6 +283,12 @@ def build_parser() -> argparse.ArgumentParser:
         "--corpus",
         default=None,
         help="Path to a JSONL corpus file (default: bundled PubMed-seeded corpus).",
+    )
+    corpus_search_parser.add_argument(
+        "--live",
+        action="store_true",
+        help="OPT-IN: query the live NCBI E-utilities (PubMed) index instead of the "
+             "offline seed (network-dependent; raises search_corpus to first-class).",
     )
 
     screen_parser = subparsers.add_parser(
@@ -515,10 +527,16 @@ def main(argv: list[str] | None = None) -> int:
                 projects=orchestrator.db.list_projects(),
                 runners=scan["runners"],
                 meta_verify=meta,
+                live_corpus=args.live_corpus,
             )
         elif args.command == "corpus-search":
-            from overmind.evidence.corpus import CorpusSearch, OfflineCorpusProvider
-            provider = OfflineCorpusProvider(args.corpus) if args.corpus else None
+            from overmind.evidence.corpus import CorpusSearch, OfflineCorpusProvider, live_pubmed_provider
+            if args.live:
+                provider = live_pubmed_provider()
+            elif args.corpus:
+                provider = OfflineCorpusProvider(args.corpus)
+            else:
+                provider = None
             payload = CorpusSearch(
                 provider=provider, artifacts_dir=config.data_dir / "artifacts"
             ).run(args.query, limit=args.limit)

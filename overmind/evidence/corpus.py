@@ -197,11 +197,11 @@ class McpCorpusProvider:
     headless/cron runs may not have the interactively-authenticated MCP server.
     """
 
-    name = "mcp-live"
-
-    def __init__(self, fetch: Callable[[str, int], Iterable[dict]] | None = None) -> None:
+    def __init__(self, fetch: Callable[[str, int], Iterable[dict]] | None = None,
+                 name: str = "mcp-live") -> None:
         self._fetch = fetch
         self._last: list[CorpusRecord] = []
+        self.name = name
 
     @property
     def available(self) -> bool:
@@ -225,6 +225,19 @@ class McpCorpusProvider:
 def default_provider() -> OfflineCorpusProvider:
     """The provider used by the CLI and the benchmark unless overridden."""
     return OfflineCorpusProvider()
+
+
+def live_pubmed_provider(api_key: str | None = None) -> "McpCorpusProvider":
+    """OPT-IN live provider backed by NCBI E-utilities (PubMed). Network-dependent;
+    never the default. Lifts search_corpus from a strong-partial (2) offline seed to
+    first-class (3) retrieval over a large live index — but only when it actually
+    returns hits, so scoring stays honest."""
+    from overmind.evidence.eutils import eutils_fetch
+
+    def _fetch(query: str, limit: int) -> list[dict]:
+        return eutils_fetch(query, limit, api_key=api_key)
+
+    return McpCorpusProvider(fetch=_fetch, name="pubmed-eutils")
 
 
 def rank(records: list[CorpusRecord], query: str, limit: int = 10) -> list[CorpusHit]:
@@ -287,11 +300,20 @@ class CorpusSearch:
         self.provider = provider or default_provider()
         self.artifacts_dir = Path(artifacts_dir) if artifacts_dir else None
 
+    def _records_for(self, query: str, limit: int) -> list[CorpusRecord]:
+        """Offline providers expose a fixed corpus via records(); live providers
+        expose query() — fetch a candidate pool for THIS query, then BM25 re-rank it
+        with the same ranking function so behaviour is uniform across providers."""
+        live_query = getattr(self.provider, "query", None)
+        if callable(live_query):
+            return live_query(query, max(limit * 3, 25))
+        return self.provider.records()
+
     def search(self, query: str, limit: int = 10) -> list[CorpusHit]:
-        return rank(self.provider.records(), query, limit=limit)
+        return rank(self._records_for(query, limit), query, limit=limit)
 
     def run(self, query: str, limit: int = 10) -> dict:
-        records = self.provider.records()
+        records = self._records_for(query, limit)
         hits = rank(records, query, limit=limit)
         report = {
             "capability": "search_corpus",
