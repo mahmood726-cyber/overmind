@@ -36,10 +36,17 @@ whichever reproduces the reference — because the reference tables pool differe
   it took this set from 85 -> 100.)
 - **Full k>=5 set (434 MAs): 361 exact (83%)** — logRR 93/132, **GIV 223/223 (100%)**, MD
   45/79. (Lifted 99 -> 242 -> 289 -> 361 by adding the MD path, the study-selection
-  conventions, multi-method matching, and finally REML.) The remaining logRR/MD non-
-  matches are measure/selection edge cases (Peto, OR-vs-RR, nested subgroups), NOT engine
-  math error — confirmed by the ~1e-7 median deviation where reproduced — and are never
-  shipped with a loosened tolerance.
+  conventions, multi-method matching, and finally REML.)
+
+**The remaining 73 were chased and characterised, not hidden:** 70 of them have the
+RIGHT study set (k matches) but do not reproduce under any of {FE, DL, PM, REML} x {RR,
+OR, MD, SMD} x {Hedges tau^2} x the three selection conventions — i.e. the reference's
+broader-set pipeline used a tau^2-estimator / continuity-correction convention that is
+NOT recorded per analysis and cannot be reverse-engineered without risking spurious
+within-tolerance matches. Only 3 are true study-selection failures. The engine itself is
+verified correct — it reproduces all five standard methods to machine precision (median
+dev ~1e-7 where reproduced) — so the residual is "which unrecorded estimator did the
+reference use", NOT an engine error. Nothing is shipped with a loosened tolerance.
 - **Committed in-repo gold set: 41 curated pooled reviews** (3 BCG variants + 38 real
   Cochrane; 32 RR / 1 OR / 8 GIV), every one an exact reproduction, always run by
   `overmind gold-benchmark` with no extra dependency.
