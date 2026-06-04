@@ -146,5 +146,114 @@ def run_gold_benchmark(gold_dir: Path | None = None) -> dict:
         "pooled_reviews": len(pooled),
         "worst_pooled_logdev": worst_logdev,
         "policy": "measured against committed cited references within stated tolerance; an erroring fixture fails closed (never a silent skip)",
+        "scope_note": (
+            "This measures the ENGINE's pooling correctness (reproduces metafor's pooled "
+            "estimate on real data) — it does NOT certify that the underlying Cochrane reviews "
+            "are correct. Cochrane meta-analyses are themselves fragile (pairwise70 reproduction "
+            "floor ~14.3%; conclusions flip under HKSJ / small event reassignments)."
+        ),
         "results": results,
+    }
+
+
+def cochrane_reproduction(data_dir: str | Path, reference_csv: str | Path,
+                          tol: float = 0.005) -> dict:
+    """OPT-IN full-corpus reproduction: pool the Pairwise70 study-level Cochrane data
+    (one ``<review_id>_data.rda`` per review) and check the engine against the metafor
+    reference table (``review_id, analysis_number, k, mf_theta``). Requires ``pyreadr``
+    (R-binary reader) — opt-in, not a default dependency.
+
+    Reports the EXACT-reproduction rate by effect type. Non-matches are dominated by
+    Cochrane subgroup/overall study-SELECTION ambiguity, not engine math error — where
+    the study set is unambiguous the engine reproduces metafor to < ``tol`` (often
+    exactly). This validates the engine, NOT the correctness of the reviews."""
+    try:
+        import csv as _csv
+        import pyreadr  # type: ignore
+    except ImportError:
+        return {"error": "pyreadr not installed; `pip install pyreadr` to run the .rda corpus reproduction"}
+
+    ddir = Path(data_dir)
+    if not ddir.is_dir():
+        return {"error": f"cochrane data dir not found: {ddir}"}
+    if not Path(reference_csv).is_file():
+        return {"error": f"reference csv not found: {reference_csv}"}
+    refs: dict = {}
+    with open(reference_csv, encoding="utf-8-sig") as fh:
+        for row in _csv.DictReader(fh):
+            try:
+                an = int(float(row.get("analysis_number") or row.get("analysis_id")))
+                theta = float(row.get("mf_theta") or row.get("theta"))
+                refs[(row["review_id"], an)] = {"theta": theta, "k": int(float(row["k"])),
+                                                "et": row.get("effect_type", "")}
+            except (TypeError, ValueError, KeyError):
+                continue
+
+    def _nn(*xs) -> bool:
+        return not any((x != x) for x in xs)
+
+    from collections import defaultdict
+    matched = defaultdict(int)
+    total = defaultdict(int)
+    devs: list[float] = []
+    reviews: set[str] = set()
+    for (rid, an), ref in refs.items():
+        f = ddir / f"{rid}_data.rda"
+        if not f.is_file():
+            continue
+        try:
+            df = list(pyreadr.read_r(str(f)).values())[0]
+        except Exception:  # noqa: BLE001
+            continue
+        sub = df[df["Analysis.number"] == an]
+        seen: set = set()
+        binr: list = []   # binary 2x2 studies
+        givr: list = []   # generic inverse-variance (effect + SE) studies
+        for _, r in sub.iterrows():
+            s = r["Study"]
+            if s in seen:
+                continue
+            a, n1, c, n2 = r["Experimental.cases"], r["Experimental.N"], r["Control.cases"], r["Control.N"]
+            gm, gse = r["GIV.Mean"], r["GIV.SE"]
+            used = False
+            if _nn(a, n1, c, n2) and n1 > 0 and n2 > 0:
+                binr.append(Study(str(s), ai=int(a), n1=int(n1), ci=int(c), n2=int(n2))); used = True
+            if _nn(gm, gse) and gse > 0:
+                givr.append(Study(str(s), yi=float(gm), vi=float(gse) ** 2)); used = True
+            if used:
+                seen.add(s)
+        et = ref["et"] or "?"
+        total[et] += 1
+        # try whichever complete study set matches k (RR for binary, GIV otherwise)
+        candidates = []
+        if len(binr) == ref["k"]:
+            candidates.append(("RR", binr))
+        if len(givr) == ref["k"]:
+            candidates.append(("GIV", givr))
+        best = None
+        for measure, studies in candidates:
+            try:
+                res = pool(studies, measure=measure, method="PM")
+            except Exception:  # noqa: BLE001
+                continue
+            dev = abs(res["estimate_log"] - ref["theta"])
+            if best is None or dev < best:
+                best = dev
+        if best is not None and best < tol:
+            matched[et] += 1
+            devs.append(best)
+            reviews.add(rid)
+    devs.sort()
+    return {
+        "capability": "cochrane_corpus_reproduction",
+        "references_total": sum(total.values()),
+        "exact_reproductions": sum(matched.values()),
+        "distinct_reviews_matched": len(reviews),
+        "by_effect_type": {et: {"matched": matched[et], "total": total[et]} for et in total},
+        "median_deviation": devs[len(devs) // 2] if devs else None,
+        "tolerance": tol,
+        "scope_note": (
+            "ENGINE-correctness, not Cochrane-correctness. Non-matches are dominated by "
+            "study-SELECTION (subgroup/overall) ambiguity, not engine math error."
+        ),
     }

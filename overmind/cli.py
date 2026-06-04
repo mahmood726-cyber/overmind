@@ -273,10 +273,19 @@ def build_parser() -> argparse.ArgumentParser:
              "lifts search_corpus to first-class. Fails closed to offline on any error.",
     )
 
-    subparsers.add_parser(
+    gold_benchmark_parser = subparsers.add_parser(
         "gold-benchmark",
         help="Measure synthesis OUTPUT-correctness: reproduce committed, cited gold reviews "
              "(pooled estimate within tolerance + PRISMA flow-count match). Fail-closed.",
+    )
+    gold_benchmark_parser.add_argument(
+        "--cochrane-dir", default=None,
+        help="OPT-IN: directory of <review_id>_data.rda Cochrane study-level files (needs pyreadr). "
+             "Runs the full-corpus reproduction vs metafor in addition to the committed fixtures.",
+    )
+    gold_benchmark_parser.add_argument(
+        "--cochrane-ref", default=None,
+        help="Metafor reference CSV (review_id, analysis_number, k, mf_theta) for --cochrane-dir.",
     )
 
     corpus_search_parser = subparsers.add_parser(
@@ -536,8 +545,10 @@ def main(argv: list[str] | None = None) -> int:
                 live_corpus=args.live_corpus,
             )
         elif args.command == "gold-benchmark":
-            from overmind.intelligence.gold_benchmark import run_gold_benchmark
+            from overmind.intelligence.gold_benchmark import cochrane_reproduction, run_gold_benchmark
             payload = run_gold_benchmark()
+            if args.cochrane_dir and args.cochrane_ref:
+                payload["cochrane_corpus"] = cochrane_reproduction(args.cochrane_dir, args.cochrane_ref)
         elif args.command == "corpus-search":
             from overmind.evidence.corpus import CorpusSearch, OfflineCorpusProvider, live_pubmed_provider
             if args.live:

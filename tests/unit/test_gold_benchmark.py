@@ -26,6 +26,26 @@ def test_bcg_fixture_reproduces_within_tolerance():
     assert gating and all(c["pass"] for c in gating)
 
 
+def test_scope_note_separates_engine_from_cochrane_correctness():
+    """The report must state it validates the ENGINE, not the Cochrane reviews."""
+    rep = run_gold_benchmark()
+    note = rep.get("scope_note", "")
+    assert "ENGINE" in note and "not certify" in note.lower()
+    assert "fragile" in note.lower()  # Cochrane reviews are themselves fragile
+
+
+def test_cochrane_reproduction_fails_closed_on_missing_paths(tmp_path):
+    """Opt-in corpus runner returns an error (never crashes / never fakes) when the
+    data dir or reference csv is absent."""
+    from overmind.intelligence.gold_benchmark import cochrane_reproduction
+    r = cochrane_reproduction(tmp_path / "nope", tmp_path / "missing.csv")
+    assert "error" in r
+    # with a real (empty) csv but missing data dir, still errors
+    (tmp_path / "ref.csv").write_text("review_id,analysis_number,k,mf_theta\n", encoding="utf-8")
+    r2 = cochrane_reproduction(tmp_path / "nope", tmp_path / "ref.csv")
+    assert "error" in r2
+
+
 def test_erroring_fixture_fails_closed(tmp_path):
     """A malformed / unknown fixture must FAIL (never a silent skip)."""
     (tmp_path / "bad.json").write_text(json.dumps({"kind": "pooled", "studies": []}), encoding="utf-8")
