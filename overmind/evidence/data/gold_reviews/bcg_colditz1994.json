@@ -1,0 +1,40 @@
+{
+  "name": "BCG vaccine against tuberculosis (Colditz 1994)",
+  "kind": "pooled",
+  "citation": "Colditz GA, Brewer TF, Berkey CS, et al. Efficacy of BCG vaccine in the prevention of tuberculosis. JAMA 1994;271(9):698-702.",
+  "data_provenance": "Raw 2x2 counts as distributed in metafor's dat.bcg (Viechtbauer W. Conducting meta-analyses in R with the metafor package. J Stat Softw 2010;36(3):1-48). ai=vaccinated TB+, n1=vaccinated total, ci=control TB+, n2=control total.",
+  "measure": "RR",
+  "method": "PM",
+  "studies": [
+    {"label": "Aronson 1948",            "ai": 4,   "n1": 123,    "ci": 11,  "n2": 139},
+    {"label": "Ferguson & Simes 1949",   "ai": 6,   "n1": 306,    "ci": 29,  "n2": 303},
+    {"label": "Rosenthal 1960",          "ai": 3,   "n1": 231,    "ci": 11,  "n2": 220},
+    {"label": "Hart & Sutherland 1977",  "ai": 62,  "n1": 13598,  "ci": 248, "n2": 12867},
+    {"label": "Frimodt-Moller 1973",     "ai": 33,  "n1": 5069,   "ci": 47,  "n2": 5808},
+    {"label": "Stein & Aronson 1953",    "ai": 180, "n1": 1541,   "ci": 372, "n2": 1451},
+    {"label": "Vandiviere 1973",         "ai": 8,   "n1": 2545,   "ci": 10,  "n2": 629},
+    {"label": "TPT Madras 1980",         "ai": 505, "n1": 88391,  "ci": 499, "n2": 88391},
+    {"label": "Coetzee & Berjak 1968",   "ai": 29,  "n1": 7499,   "ci": 45,  "n2": 7277},
+    {"label": "Rosenthal 1961",          "ai": 17,  "n1": 1716,   "ci": 65,  "n2": 1665},
+    {"label": "Comstock 1974",           "ai": 186, "n1": 50634,  "ci": 141, "n2": 27338},
+    {"label": "Comstock & Webster 1969", "ai": 5,   "n1": 2498,   "ci": 3,   "n2": 2341},
+    {"label": "Comstock 1976",           "ai": 27,  "n1": 16913,  "ci": 29,  "n2": 17854}
+  ],
+  "reference": {
+    "source": "metafor rma(measure='RR', method='REML', data=dat.bcg) — standard published output (Viechtbauer 2010 and metafor documentation).",
+    "estimate_log": -0.7145,
+    "se": 0.1798,
+    "ci_log": [-1.0669, -0.3622],
+    "tau2": 0.3132,
+    "I2_percent": 92.22,
+    "estimate_ratio": 0.4894
+  },
+  "tolerance": {
+    "estimate_log": 0.02,
+    "se": 0.02,
+    "ci_log": 0.05,
+    "tau2": 0.06,
+    "I2_percent": 3.0
+  },
+  "note": "Reproduction target is the random-effects pooled logRR. PM (Paule-Mandel) is used by the engine (advanced-stats rule: not DL for small k); the published reference uses REML, whose point estimate agrees to <0.001 on this dataset. tau^2 is method-dependent (DL 0.309 / PM 0.318 / REML 0.313), so its tolerance is wider. Re-verify the raw counts against a fresh metafor dat.bcg before citing externally."
+}

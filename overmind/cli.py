@@ -273,6 +273,12 @@ def build_parser() -> argparse.ArgumentParser:
              "lifts search_corpus to first-class. Fails closed to offline on any error.",
     )
 
+    subparsers.add_parser(
+        "gold-benchmark",
+        help="Measure synthesis OUTPUT-correctness: reproduce committed, cited gold reviews "
+             "(pooled estimate within tolerance + PRISMA flow-count match). Fail-closed.",
+    )
+
     corpus_search_parser = subparsers.add_parser(
         "corpus-search",
         help="Search the local scholarly corpus (offline, BM25-ranked) and write an evidence artifact.",
@@ -529,6 +535,9 @@ def main(argv: list[str] | None = None) -> int:
                 meta_verify=meta,
                 live_corpus=args.live_corpus,
             )
+        elif args.command == "gold-benchmark":
+            from overmind.intelligence.gold_benchmark import run_gold_benchmark
+            payload = run_gold_benchmark()
         elif args.command == "corpus-search":
             from overmind.evidence.corpus import CorpusSearch, OfflineCorpusProvider, live_pubmed_provider
             if args.live:

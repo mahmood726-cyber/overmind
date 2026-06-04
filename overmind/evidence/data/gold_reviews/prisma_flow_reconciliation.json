@@ -1,0 +1,32 @@
+{
+  "name": "PRISMA 2020 flow accounting reconciliation",
+  "kind": "prisma",
+  "citation": "Structured per the PRISMA 2020 flow diagram (Page MJ et al. BMJ 2021;372:n71). This is an ACCOUNTING-correctness fixture: it asserts prisma_flow reproduces a declared, internally-consistent flow from per-record screening decisions — it is NOT a claim that any model performed the screening.",
+  "records": [
+    {"record_id": "r1",  "duplicate": true},
+    {"record_id": "r2",  "duplicate": true},
+    {"record_id": "r3",  "ta_decision": "exclude", "ta_reason": "wrong_population"},
+    {"record_id": "r4",  "ta_decision": "exclude", "ta_reason": "wrong_intervention"},
+    {"record_id": "r5",  "ta_decision": "exclude", "ta_reason": "wrong_design"},
+    {"record_id": "r6",  "ta_decision": "exclude", "ta_reason": "wrong_population"},
+    {"record_id": "r7",  "ta_decision": "include", "retrieved": false},
+    {"record_id": "r8",  "ta_decision": "include", "retrieved": true,  "ft_decision": "exclude", "ft_reason": "wrong_outcome"},
+    {"record_id": "r9",  "ta_decision": "include", "retrieved": true,  "ft_decision": "exclude", "ft_reason": "wrong_comparator"},
+    {"record_id": "r10", "ta_decision": "include", "retrieved": true,  "ft_decision": "include"},
+    {"record_id": "r11", "ta_decision": "include", "retrieved": true,  "ft_decision": "include"},
+    {"record_id": "r12", "ta_decision": "include", "retrieved": true,  "ft_decision": "include"}
+  ],
+  "expected": {
+    "identification.records_identified": 12,
+    "identification.duplicates_removed": 2,
+    "identification.records_after_dedup": 10,
+    "screening.records_screened": 10,
+    "screening.records_excluded_title_abstract": 4,
+    "screening.reports_sought": 6,
+    "screening.reports_not_retrieved": 1,
+    "screening.reports_assessed_eligibility": 5,
+    "screening.reports_excluded_full_text": 2,
+    "screening.awaiting_assessment": 0,
+    "included.studies_included": 3
+  }
+}
