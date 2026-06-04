@@ -1,0 +1,40 @@
+{
+  "name": "Cochrane CD011851_pub3 analysis 5: Low-density lipoprotein cholesterol: sensitivity analys",
+  "kind": "pooled",
+  "citation": "Cochrane review CD011851_pub3 (DOI 10.1002/14651858.CD011851.pub3). Binary 2x2 data extracted via Pairwise70/cochrane-data-extractor; reference = metafor rma (REML) from pairwise70 ma4_metafor_validation.csv.",
+  "measure": "RR",
+  "method": "PM",
+  "studies": [
+    {
+      "label": "Bae 2021",
+      "ai": 0,
+      "n1": 377,
+      "ci": 0,
+      "n2": 350
+    },
+    {
+      "label": "Chow 2022",
+      "ai": 0,
+      "n1": 521,
+      "ci": 0,
+      "n2": 501
+    },
+    {
+      "label": "Dale 2015a",
+      "ai": 0,
+      "n1": 61,
+      "ci": 0,
+      "n2": 62
+    }
+  ],
+  "reference": {
+    "source": "metafor rma(method=REML) via pairwise70",
+    "estimate_log": -0.032283,
+    "se": 1.152701
+  },
+  "tolerance": {
+    "estimate_log": 0.01,
+    "se": 0.03
+  },
+  "note": "Engine PM reproduces the metafor pooled estimate to <0.005 on this real Cochrane dataset. Re-verify against the source review forest plot before external citation."
+}

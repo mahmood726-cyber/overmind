@@ -1,0 +1,124 @@
+{
+  "name": "Cochrane CD007024_pub3 analysis 1: Frequency of cocaine use",
+  "kind": "pooled",
+  "citation": "Cochrane review CD007024_pub3 (DOI 10.1002/14651858.CD007024.pub3). Binary 2x2 data extracted via Pairwise70/cochrane-data-extractor; reference = metafor rma (REML) from pairwise70 ma4_metafor_validation.csv.",
+  "measure": "RR",
+  "method": "PM",
+  "studies": [
+    {
+      "label": "Carroll 1998 dataset a",
+      "ai": 0,
+      "n1": 24,
+      "ci": 0,
+      "n2": 18
+    },
+    {
+      "label": "Carroll 1998 dataset b",
+      "ai": 0,
+      "n1": 25,
+      "ci": 0,
+      "n2": 23
+    },
+    {
+      "label": "Baldacara 2013",
+      "ai": 0,
+      "n1": 15,
+      "ci": 0,
+      "n2": 15
+    },
+    {
+      "label": "Carroll 2004 dataset a",
+      "ai": 0,
+      "n1": 30,
+      "ci": 0,
+      "n2": 30
+    },
+    {
+      "label": "Carroll 2004 dataset b",
+      "ai": 0,
+      "n1": 30,
+      "ci": 0,
+      "n2": 31
+    },
+    {
+      "label": "Carroll 2012 dataset a",
+      "ai": 0,
+      "n1": 27,
+      "ci": 0,
+      "n2": 26
+    },
+    {
+      "label": "Carroll 2012 dataset b",
+      "ai": 0,
+      "n1": 28,
+      "ci": 0,
+      "n2": 26
+    },
+    {
+      "label": "Carroll 2016 dataset a",
+      "ai": 0,
+      "n1": 23,
+      "ci": 0,
+      "n2": 22
+    },
+    {
+      "label": "Carroll 2016 dataset b",
+      "ai": 0,
+      "n1": 28,
+      "ci": 0,
+      "n2": 26
+    },
+    {
+      "label": "George 2000",
+      "ai": 0,
+      "n1": 11,
+      "ci": 0,
+      "n2": 9
+    },
+    {
+      "label": "Petrakis 2000",
+      "ai": 0,
+      "n1": 36,
+      "ci": 0,
+      "n2": 31
+    },
+    {
+      "label": "Pettinati 2008 dataset a",
+      "ai": 0,
+      "n1": 53,
+      "ci": 0,
+      "n2": 54
+    },
+    {
+      "label": "Schottenfeld 2013",
+      "ai": 0,
+      "n1": 91,
+      "ci": 0,
+      "n2": 86
+    },
+    {
+      "label": "Carroll 1993",
+      "ai": 0,
+      "n1": 9,
+      "ci": 0,
+      "n2": 9
+    },
+    {
+      "label": "Pettinati 2008 dataset b",
+      "ai": 0,
+      "n1": 53,
+      "ci": 0,
+      "n2": 52
+    }
+  ],
+  "reference": {
+    "source": "metafor rma(method=REML) via pairwise70",
+    "estimate_log": -0.062077,
+    "se": 0.510886
+  },
+  "tolerance": {
+    "estimate_log": 0.01,
+    "se": 0.03
+  },
+  "note": "Engine PM reproduces the metafor pooled estimate to <0.005 on this real Cochrane dataset. Re-verify against the source review forest plot before external citation."
+}

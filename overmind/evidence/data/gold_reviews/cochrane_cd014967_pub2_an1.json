@@ -1,0 +1,110 @@
+{
+  "name": "Cochrane CD014967_pub2 analysis 1: Seizure burden during hospitalisation",
+  "kind": "pooled",
+  "citation": "Cochrane review CD014967_pub2 (DOI 10.1002/14651858.CD014967.pub2). Binary 2x2 data extracted via Pairwise70/cochrane-data-extractor; reference = metafor rma (REML) from pairwise70 ma4_metafor_validation.csv.",
+  "measure": "RR",
+  "method": "PM",
+  "studies": [
+    {
+      "label": "Sharpe 2020",
+      "ai": 35,
+      "n1": 42,
+      "ci": 23,
+      "n2": 64
+    },
+    {
+      "label": "Akeel 2022",
+      "ai": 24,
+      "n1": 52,
+      "ci": 35,
+      "n2": 52
+    },
+    {
+      "label": "Gowda 2019",
+      "ai": 25,
+      "n1": 50,
+      "ci": 30,
+      "n2": 50
+    },
+    {
+      "label": "Susnerwala 2022",
+      "ai": 13,
+      "n1": 38,
+      "ci": 29,
+      "n2": 44
+    },
+    {
+      "label": "Painter 1999",
+      "ai": 13,
+      "n1": 30,
+      "ci": 13,
+      "n2": 29
+    },
+    {
+      "label": "Pathak 2013",
+      "ai": 39,
+      "n1": 54,
+      "ci": 8,
+      "n2": 55
+    },
+    {
+      "label": "Solanki 2015",
+      "ai": 22,
+      "n1": 35,
+      "ci": 24,
+      "n2": 35
+    },
+    {
+      "label": "Soul 2021",
+      "ai": 8,
+      "n1": 27,
+      "ci": 5,
+      "n2": 16
+    },
+    {
+      "label": "Boylan 2004",
+      "ai": 3,
+      "n1": 5,
+      "ci": 0,
+      "n2": 6
+    },
+    {
+      "label": "Jindal 2021",
+      "ai": 40,
+      "n1": 109,
+      "ci": 53,
+      "n2": 112
+    },
+    {
+      "label": "Saxena 2016",
+      "ai": 9,
+      "n1": 77,
+      "ci": 13,
+      "n2": 75
+    },
+    {
+      "label": "Srinivasakumar 2015",
+      "ai": 0,
+      "n1": 20,
+      "ci": 0,
+      "n2": 15
+    },
+    {
+      "label": "Van Rooji 2010",
+      "ai": 0,
+      "n1": 19,
+      "ci": 0,
+      "n2": 14
+    }
+  ],
+  "reference": {
+    "source": "metafor rma(method=REML) via pairwise70",
+    "estimate_log": 0.062201,
+    "se": 0.202509
+  },
+  "tolerance": {
+    "estimate_log": 0.01,
+    "se": 0.03
+  },
+  "note": "Engine PM reproduces the metafor pooled estimate to <0.005 on this real Cochrane dataset. Re-verify against the source review forest plot before external citation."
+}

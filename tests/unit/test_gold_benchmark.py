@@ -14,7 +14,7 @@ def test_committed_gold_fixtures_all_pass():
     assert rep["all_passed"] is True, [r for r in rep["results"] if not r["pass"]]
     # multiple real pooled reviews (BCG variants + real Cochrane reviews vs metafor),
     # all reproduced tightly
-    assert rep["pooled_reviews"] >= 10
+    assert rep["pooled_reviews"] >= 30
     assert rep["worst_pooled_logdev"] is not None and rep["worst_pooled_logdev"] < 0.02
 
 

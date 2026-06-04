@@ -1,0 +1,96 @@
+{
+  "name": "Cochrane CD013614_pub2 analysis 27: Improvement in pain as measured by VAS or NRS at week 1",
+  "kind": "pooled",
+  "citation": "Cochrane review CD013614_pub2 (DOI 10.1002/14651858.CD013614.pub2). Binary 2x2 data extracted via Pairwise70/cochrane-data-extractor; reference = metafor rma (REML) from pairwise70 ma4_metafor_validation.csv.",
+  "measure": "RR",
+  "method": "PM",
+  "studies": [
+    {
+      "label": "Genovese 2007",
+      "ai": 0,
+      "n1": 51,
+      "ci": 0,
+      "n2": 49
+    },
+    {
+      "label": "McInnes 2021",
+      "ai": 0,
+      "n1": 406,
+      "ci": 0,
+      "n2": 392
+    },
+    {
+      "label": "McInnes 2023",
+      "ai": 0,
+      "n1": 140,
+      "ci": 0,
+      "n2": 281
+    },
+    {
+      "label": "Mease 2005",
+      "ai": 0,
+      "n1": 151,
+      "ci": 0,
+      "n2": 161
+    },
+    {
+      "label": "Mease 2017a",
+      "ai": 0,
+      "n1": 101,
+      "ci": 0,
+      "n2": 106
+    },
+    {
+      "label": "Mease 2017b",
+      "ai": 0,
+      "n1": 105,
+      "ci": 0,
+      "n2": 104
+    },
+    {
+      "label": "Mease 2014",
+      "ai": 0,
+      "n1": 273,
+      "ci": 0,
+      "n2": 136
+    },
+    {
+      "label": "Antoni 2005a",
+      "ai": 0,
+      "n1": 52,
+      "ci": 0,
+      "n2": 52
+    },
+    {
+      "label": "Antoni 2005b",
+      "ai": 0,
+      "n1": 100,
+      "ci": 0,
+      "n2": 100
+    },
+    {
+      "label": "Mease 2019",
+      "ai": 0,
+      "n1": 264,
+      "ci": 0,
+      "n2": 133
+    },
+    {
+      "label": "Baranauskaite 2012",
+      "ai": 0,
+      "n1": 56,
+      "ci": 0,
+      "n2": 54
+    }
+  ],
+  "reference": {
+    "source": "metafor rma(method=REML) via pairwise70",
+    "estimate_log": -0.0626,
+    "se": 0.601503
+  },
+  "tolerance": {
+    "estimate_log": 0.01,
+    "se": 0.03
+  },
+  "note": "Engine PM reproduces the metafor pooled estimate to <0.005 on this real Cochrane dataset. Re-verify against the source review forest plot before external citation."
+}

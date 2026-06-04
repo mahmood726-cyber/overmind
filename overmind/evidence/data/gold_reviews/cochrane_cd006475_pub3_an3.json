@@ -1,0 +1,44 @@
+{
+  "name": "Cochrane CD006475_pub3 analysis 3: Allergic rhinitis by 10 years of age",
+  "kind": "pooled",
+  "citation": "Cochrane review CD006475_pub3 (DOI 10.1002/14651858.CD006475.pub3). Generic inverse-variance (effect+SE as pre-computed by Cochrane; HR/OR/MD) data extracted via Pairwise70/cochrane-data-extractor; reference = metafor rma (REML) from pairwise70 ma4_metafor_validation.csv.",
+  "measure": "GIV",
+  "method": "PM",
+  "studies": [
+    {
+      "label": "Abrahamsson 2007",
+      "yi": 0.0,
+      "vi": 1.228721
+    },
+    {
+      "label": "Allen 2014",
+      "yi": 0.0,
+      "vi": 0.18976172
+    },
+    {
+      "label": "Savino 2010",
+      "yi": 0.0,
+      "vi": 1.92
+    },
+    {
+      "label": "Soh 2009",
+      "yi": 0.0,
+      "vi": 0.81700435
+    },
+    {
+      "label": "West 2008",
+      "yi": 0.0,
+      "vi": 2.64353832
+    }
+  ],
+  "reference": {
+    "source": "metafor rma(method=REML) via pairwise70",
+    "estimate_log": 0.0,
+    "se": 0.349072
+  },
+  "tolerance": {
+    "estimate_log": 0.01,
+    "se": 0.03
+  },
+  "note": "Engine PM reproduces the metafor pooled estimate to <0.005 on this real Cochrane dataset. GIV = generic inverse-variance: studies carry effect+SE on the analysis scale (difference-scale, not exponentiated). Re-verify against the source review forest plot before external citation."
+}

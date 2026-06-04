@@ -1,0 +1,40 @@
+{
+  "name": "Cochrane CD008688_pub3 analysis 3: Postoperative mortality",
+  "kind": "pooled",
+  "citation": "Cochrane review CD008688_pub3 (DOI 10.1002/14651858.CD008688.pub3). Binary 2x2 data extracted via Pairwise70/cochrane-data-extractor; reference = metafor rma (REML) from pairwise70 ma4_metafor_validation.csv.",
+  "measure": "RR",
+  "method": "PM",
+  "studies": [
+    {
+      "label": "Bassi 1999",
+      "ai": 0,
+      "n1": 14,
+      "ci": 0,
+      "n2": 15
+    },
+    {
+      "label": "Diener 2011",
+      "ai": 1,
+      "n1": 177,
+      "ci": 2,
+      "n2": 175
+    },
+    {
+      "label": "Shimada 2021",
+      "ai": 0,
+      "n1": 68,
+      "ci": 0,
+      "n2": 66
+    }
+  ],
+  "reference": {
+    "source": "metafor rma(method=REML) via pairwise70",
+    "estimate_log": -0.392567,
+    "se": 0.919815
+  },
+  "tolerance": {
+    "estimate_log": 0.01,
+    "se": 0.03
+  },
+  "note": "Engine PM reproduces the metafor pooled estimate to <0.005 on this real Cochrane dataset. Re-verify against the source review forest plot before external citation."
+}

@@ -1,0 +1,68 @@
+{
+  "name": "Cochrane CD013875_pub2 analysis 7: Clinical pregnancy \u2013 sensitivity analysis (risk ratio)",
+  "kind": "pooled",
+  "citation": "Cochrane review CD013875_pub2 (DOI 10.1002/14651858.CD013875.pub2). Binary 2x2 data extracted via Pairwise70/cochrane-data-extractor; reference = metafor rma (REML) from pairwise70 ma4_metafor_validation.csv.",
+  "measure": "RR",
+  "method": "PM",
+  "studies": [
+    {
+      "label": "Baybordi 2022",
+      "ai": 2,
+      "n1": 48,
+      "ci": 2,
+      "n2": 46
+    },
+    {
+      "label": "Ershadi 2022",
+      "ai": 5,
+      "n1": 45,
+      "ci": 1,
+      "n2": 45
+    },
+    {
+      "label": "Safdarian 2022",
+      "ai": 4,
+      "n1": 60,
+      "ci": 2,
+      "n2": 60
+    },
+    {
+      "label": "Zamaniyan 2021",
+      "ai": 1,
+      "n1": 60,
+      "ci": 2,
+      "n2": 60
+    },
+    {
+      "label": "Zargar 2021",
+      "ai": 1,
+      "n1": 40,
+      "ci": 1,
+      "n2": 40
+    },
+    {
+      "label": "Godha 2019",
+      "ai": 5,
+      "n1": 20,
+      "ci": 3,
+      "n2": 20
+    },
+    {
+      "label": "Selvaraj 2019",
+      "ai": 27,
+      "n1": 56,
+      "ci": 34,
+      "n2": 76
+    }
+  ],
+  "reference": {
+    "source": "metafor rma(method=REML) via pairwise70",
+    "estimate_log": 0.146574,
+    "se": 0.16896
+  },
+  "tolerance": {
+    "estimate_log": 0.01,
+    "se": 0.03
+  },
+  "note": "Engine PM reproduces the metafor pooled estimate to <0.005 on this real Cochrane dataset. Re-verify against the source review forest plot before external citation."
+}

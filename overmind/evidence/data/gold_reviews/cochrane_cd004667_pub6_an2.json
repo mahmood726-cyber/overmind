@@ -1,0 +1,131 @@
+{
+  "name": "Cochrane CD004667_pub6 analysis 2: Caesarean birth",
+  "kind": "pooled",
+  "citation": "Cochrane review CD004667_pub6 (DOI 10.1002/14651858.CD004667.pub6). Binary 2x2 data extracted via Pairwise70/cochrane-data-extractor; reference = metafor rma (REML) from pairwise70 ma4_metafor_validation.csv.",
+  "measure": "RR",
+  "method": "PM",
+  "studies": [
+    {
+      "label": "Begley 2011",
+      "ai": 163,
+      "n1": 1096,
+      "ci": 84,
+      "n2": 549
+    },
+    {
+      "label": "Biro 2000",
+      "ai": 100,
+      "n1": 488,
+      "ci": 91,
+      "n2": 480
+    },
+    {
+      "label": "Fernandez Turienzo 2020",
+      "ai": 51,
+      "n1": 168,
+      "ci": 49,
+      "n2": 163
+    },
+    {
+      "label": "Flint 1989",
+      "ai": 37,
+      "n1": 488,
+      "ci": 35,
+      "n2": 479
+    },
+    {
+      "label": "Gu 2013",
+      "ai": 18,
+      "n1": 53,
+      "ci": 30,
+      "n2": 53
+    },
+    {
+      "label": "Harvey 1996",
+      "ai": 4,
+      "n1": 105,
+      "ci": 14,
+      "n2": 97
+    },
+    {
+      "label": "Hicks 2003",
+      "ai": 9,
+      "n1": 81,
+      "ci": 14,
+      "n2": 92
+    },
+    {
+      "label": "Homer 2001",
+      "ai": 73,
+      "n1": 594,
+      "ci": 96,
+      "n2": 601
+    },
+    {
+      "label": "Kenny 1994",
+      "ai": 24,
+      "n1": 194,
+      "ci": 27,
+      "n2": 211
+    },
+    {
+      "label": "MacVicar 1993",
+      "ai": 144,
+      "n1": 2304,
+      "ci": 78,
+      "n2": 1206
+    },
+    {
+      "label": "McLachlan 2012",
+      "ai": 221,
+      "n1": 1146,
+      "ci": 285,
+      "n2": 1149
+    },
+    {
+      "label": "North Stafford 2000",
+      "ai": 137,
+      "n1": 770,
+      "ci": 128,
+      "n2": 735
+    },
+    {
+      "label": "Rowley 1995",
+      "ai": 52,
+      "n1": 388,
+      "ci": 59,
+      "n2": 397
+    },
+    {
+      "label": "Tracy 2013",
+      "ai": 183,
+      "n1": 851,
+      "ci": 204,
+      "n2": 841
+    },
+    {
+      "label": "Turnbull 1996",
+      "ai": 79,
+      "n1": 643,
+      "ci": 71,
+      "n2": 635
+    },
+    {
+      "label": "Waldenstrom 2001",
+      "ai": 55,
+      "n1": 484,
+      "ci": 56,
+      "n2": 496
+    }
+  ],
+  "reference": {
+    "source": "metafor rma(method=REML) via pairwise70",
+    "estimate_log": -0.094032,
+    "se": 0.040907
+  },
+  "tolerance": {
+    "estimate_log": 0.01,
+    "se": 0.03
+  },
+  "note": "Engine PM reproduces the metafor pooled estimate to <0.005 on this real Cochrane dataset. Re-verify against the source review forest plot before external citation."
+}

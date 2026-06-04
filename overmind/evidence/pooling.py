@@ -25,6 +25,10 @@ import math
 from dataclasses import dataclass
 
 _Z_975 = 1.959963984540054  # qnorm(0.975); matches metafor's default normal CI
+# Ratio measures are pooled on the LOG scale and back-transformed with exp(); all
+# others (MD/SMD/RD/raw GIV) are difference-scale and must NOT be exponentiated
+# (exp of a large mean difference overflows, and a ratio is meaningless there).
+_RATIO_MEASURES = frozenset({"RR", "OR", "HR", "IRR"})
 
 
 class PoolingError(ValueError):
@@ -172,19 +176,23 @@ def pool(studies: list[Study], measure: str = "RR", method: str = "DL") -> dict:
 
     se = math.sqrt(var)
     lo, hi = theta - _Z_975 * se, theta + _Z_975 * se
+    is_ratio = measure in _RATIO_MEASURES
     out = {
         "measure": measure,
+        "scale": "ratio" if is_ratio else "difference",
         "method": method,
         "k": k,
-        "estimate_log": theta,
+        "estimate_log": theta,   # pooled estimate on the analysis scale (log for ratios)
         "se": se,
         "ci_log": [lo, hi],
         "tau2": tau2,
         "Q": q,
         "df": k - 1,
         "I2_percent": i2,
-        "estimate_ratio": math.exp(theta),
-        "ci_ratio": [math.exp(lo), math.exp(hi)],
+        # back-transformed ratio + CI ONLY for ratio measures; difference measures
+        # (MD/SMD/RD/GIV) are already on the natural scale and are not exponentiated.
+        "estimate_ratio": math.exp(theta) if is_ratio else None,
+        "ci_ratio": [math.exp(lo), math.exp(hi)] if is_ratio else None,
         "labels": labels,
     }
     if method in ("DL", "PM") and k >= 2:

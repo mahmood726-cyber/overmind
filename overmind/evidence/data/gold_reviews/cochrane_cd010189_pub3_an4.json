@@ -1,0 +1,39 @@
+{
+  "name": "Cochrane CD010189_pub3 analysis 4: Incidence of extensive chronic GvHD",
+  "kind": "pooled",
+  "citation": "Cochrane review CD010189_pub3 (DOI 10.1002/14651858.CD010189.pub3). Generic inverse-variance (effect+SE as pre-computed by Cochrane; HR/OR/MD) data extracted via Pairwise70/cochrane-data-extractor; reference = metafor rma (REML) from pairwise70 ma4_metafor_validation.csv.",
+  "measure": "GIV",
+  "method": "PM",
+  "studies": [
+    {
+      "label": "Couban 2002",
+      "yi": -0.21,
+      "vi": 0.0529
+    },
+    {
+      "label": "Friedrichs 2010",
+      "yi": -0.8,
+      "vi": 0.0676
+    },
+    {
+      "label": "Mielcarek 2011",
+      "yi": -0.15,
+      "vi": 0.0576
+    },
+    {
+      "label": "Vigorito 2001",
+      "yi": -0.4,
+      "vi": 0.1521
+    }
+  ],
+  "reference": {
+    "source": "metafor rma(method=REML) via pairwise70",
+    "estimate_log": -0.373724,
+    "se": 0.161687
+  },
+  "tolerance": {
+    "estimate_log": 0.01,
+    "se": 0.03
+  },
+  "note": "Engine PM reproduces the metafor pooled estimate to <0.005 on this real Cochrane dataset. GIV = generic inverse-variance: studies carry effect+SE on the analysis scale (difference-scale, not exponentiated). Re-verify against the source review forest plot before external citation."
+}

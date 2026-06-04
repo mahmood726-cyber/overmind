@@ -1,0 +1,61 @@
+{
+  "name": "Cochrane CD012570_pub2 analysis 3: Serious adverse events",
+  "kind": "pooled",
+  "citation": "Cochrane review CD012570_pub2 (DOI 10.1002/14651858.CD012570.pub2). Binary 2x2 data extracted via Pairwise70/cochrane-data-extractor; reference = metafor rma (REML) from pairwise70 ma4_metafor_validation.csv.",
+  "measure": "RR",
+  "method": "PM",
+  "studies": [
+    {
+      "label": "ALLAY 2009",
+      "ai": 10,
+      "n1": 154,
+      "ci": 13,
+      "n2": 152
+    },
+    {
+      "label": "ASSERTIVE 2010",
+      "ai": 3,
+      "n1": 411,
+      "ci": 5,
+      "n2": 403
+    },
+    {
+      "label": "CSPP100A1301",
+      "ai": 0,
+      "n1": 302,
+      "ci": 1,
+      "n2": 303
+    },
+    {
+      "label": "Oparil 2007",
+      "ai": 8,
+      "n1": 437,
+      "ci": 6,
+      "n2": 455
+    },
+    {
+      "label": "Palatini 2010",
+      "ai": 1,
+      "n1": 218,
+      "ci": 4,
+      "n2": 222
+    },
+    {
+      "label": "Stanton 2003",
+      "ai": 2,
+      "n1": 182,
+      "ci": 1,
+      "n2": 44
+    }
+  ],
+  "reference": {
+    "source": "metafor rma(method=REML) via pairwise70",
+    "estimate_log": -0.266186,
+    "se": 0.273804
+  },
+  "tolerance": {
+    "estimate_log": 0.01,
+    "se": 0.03
+  },
+  "note": "Engine PM reproduces the metafor pooled estimate to <0.005 on this real Cochrane dataset. Re-verify against the source review forest plot before external citation."
+}

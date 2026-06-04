@@ -1,0 +1,40 @@
+{
+  "name": "Cochrane CD014935_pub2 analysis 2: All-cause mortality - Sensitivity analysis (best-case s",
+  "kind": "pooled",
+  "citation": "Cochrane review CD014935_pub2 (DOI 10.1002/14651858.CD014935.pub2). Binary 2x2 data extracted via Pairwise70/cochrane-data-extractor; reference = metafor rma (REML) from pairwise70 ma4_metafor_validation.csv.",
+  "measure": "RR",
+  "method": "PM",
+  "studies": [
+    {
+      "label": "Alian 2014",
+      "ai": 2,
+      "n1": 28,
+      "ci": 3,
+      "n2": 28
+    },
+    {
+      "label": "Cerqueira 1985",
+      "ai": 1,
+      "n1": 11,
+      "ci": 2,
+      "n2": 11
+    },
+    {
+      "label": "Niwattayakul 2010",
+      "ai": 4,
+      "n1": 22,
+      "ci": 3,
+      "n2": 23
+    }
+  ],
+  "reference": {
+    "source": "metafor rma(method=REML) via pairwise70",
+    "estimate_log": -0.094343,
+    "se": 0.49424
+  },
+  "tolerance": {
+    "estimate_log": 0.01,
+    "se": 0.03
+  },
+  "note": "Engine PM reproduces the metafor pooled estimate to <0.005 on this real Cochrane dataset. Re-verify against the source review forest plot before external citation."
+}

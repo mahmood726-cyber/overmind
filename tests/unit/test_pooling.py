@@ -71,6 +71,22 @@ def test_non_positive_variance_fails_closed():
         pool([Study(yi=0.1, vi=0.0), Study(yi=0.2, vi=0.1)])
 
 
+def test_difference_scale_measure_is_not_exponentiated():
+    # MD / GIV (difference-scale): a large mean difference must NOT overflow via exp()
+    # and the ratio fields are None (a ratio is meaningless on the difference scale).
+    r = pool([Study("a", yi=700.0, vi=100.0), Study("b", yi=720.0, vi=150.0)], measure="MD")
+    assert r["scale"] == "difference"
+    assert r["estimate_ratio"] is None and r["ci_ratio"] is None
+    assert 700.0 < r["estimate_log"] < 720.0   # pooled MD on the natural scale
+
+
+def test_ratio_measure_back_transforms():
+    r = pool([Study(ai=10, n1=100, ci=20, n2=100), Study(ai=12, n1=100, ci=18, n2=100)], measure="RR")
+    assert r["scale"] == "ratio"
+    assert r["estimate_ratio"] is not None
+    assert math.isclose(r["estimate_ratio"], math.exp(r["estimate_log"]), rel_tol=1e-12)
+
+
 def test_generic_effect_and_2x2_paths_agree():
     # feed a 2x2's computed (yi,vi) directly and via the 2x2 — same result
     via_2x2 = pool([Study(ai=10, n1=100, ci=20, n2=100), Study(ai=15, n1=120, ci=25, n2=130)],

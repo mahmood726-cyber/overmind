@@ -1,0 +1,54 @@
+{
+  "name": "Cochrane CD009417_pub3 analysis 9: Need for ICU admission",
+  "kind": "pooled",
+  "citation": "Cochrane review CD009417_pub3 (DOI 10.1002/14651858.CD009417.pub3). Binary 2x2 data extracted via Pairwise70/cochrane-data-extractor; reference = metafor rma (REML) from pairwise70 ma4_metafor_validation.csv.",
+  "measure": "RR",
+  "method": "PM",
+  "studies": [
+    {
+      "label": "Alansari 2019",
+      "ai": 10,
+      "n1": 208,
+      "ci": 13,
+      "n2": 205
+    },
+    {
+      "label": "Lagos 2009",
+      "ai": 1,
+      "n1": 15,
+      "ci": 2,
+      "n2": 15
+    },
+    {
+      "label": "Ramilo 2014",
+      "ai": 6,
+      "n1": 74,
+      "ci": 0,
+      "n2": 37
+    },
+    {
+      "label": "Rodriguez 1997a",
+      "ai": 31,
+      "n1": 51,
+      "ci": 18,
+      "n2": 51
+    },
+    {
+      "label": "Rodriguez 1997b",
+      "ai": 25,
+      "n1": 46,
+      "ci": 33,
+      "n2": 52
+    }
+  ],
+  "reference": {
+    "source": "metafor rma(method=REML) via pairwise70",
+    "estimate_log": 0.092717,
+    "se": 0.24683
+  },
+  "tolerance": {
+    "estimate_log": 0.01,
+    "se": 0.03
+  },
+  "note": "Engine PM reproduces the metafor pooled estimate to <0.005 on this real Cochrane dataset. Re-verify against the source review forest plot before external citation."
+}

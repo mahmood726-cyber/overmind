@@ -1,0 +1,47 @@
+{
+  "name": "Cochrane CD013816_pub2 analysis 16: Economic costs - Days of hospitalization",
+  "kind": "pooled",
+  "citation": "Cochrane review CD013816_pub2 (DOI 10.1002/14651858.CD013816.pub2). Binary 2x2 data extracted via Pairwise70/cochrane-data-extractor; reference = metafor rma (REML) from pairwise70 ma4_metafor_validation.csv.",
+  "measure": "RR",
+  "method": "PM",
+  "studies": [
+    {
+      "label": "BRUISE CONTROL 2013",
+      "ai": 1,
+      "n1": 338,
+      "ci": 1,
+      "n2": 343
+    },
+    {
+      "label": "FinPAC 2013",
+      "ai": 1,
+      "n1": 107,
+      "ci": 1,
+      "n2": 106
+    },
+    {
+      "label": "Tolosana\u00a02009",
+      "ai": 1,
+      "n1": 51,
+      "ci": 0,
+      "n2": 50
+    },
+    {
+      "label": "Ricciardi\u00a02018",
+      "ai": 0,
+      "n1": 51,
+      "ci": 0,
+      "n2": 50
+    }
+  ],
+  "reference": {
+    "source": "metafor rma(method=REML) via pairwise70",
+    "estimate_log": 0.249146,
+    "se": 0.781058
+  },
+  "tolerance": {
+    "estimate_log": 0.01,
+    "se": 0.03
+  },
+  "note": "Engine PM reproduces the metafor pooled estimate to <0.005 on this real Cochrane dataset. Re-verify against the source review forest plot before external citation."
+}

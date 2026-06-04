@@ -1,0 +1,96 @@
+{
+  "name": "Cochrane CD015432_pub2 analysis 14: Any bleeding, including gastrointestinal bleeding and o",
+  "kind": "pooled",
+  "citation": "Cochrane review CD015432_pub2 (DOI 10.1002/14651858.CD015432.pub2). Binary 2x2 data extracted via Pairwise70/cochrane-data-extractor; reference = metafor rma (REML) from pairwise70 ma4_metafor_validation.csv.",
+  "measure": "RR",
+  "method": "PM",
+  "studies": [
+    {
+      "label": "Cui 2022",
+      "ai": 0,
+      "n1": 51,
+      "ci": 1,
+      "n2": 50
+    },
+    {
+      "label": "Derkay 1998",
+      "ai": 12,
+      "n1": 46,
+      "ci": 13,
+      "n2": 44
+    },
+    {
+      "label": "Gao 2022",
+      "ai": 0,
+      "n1": 45,
+      "ci": 0,
+      "n2": 45
+    },
+    {
+      "label": "Maunuksela 1992",
+      "ai": 6,
+      "n1": 64,
+      "ci": 7,
+      "n2": 64
+    },
+    {
+      "label": "Moss 2014",
+      "ai": 2,
+      "n1": 82,
+      "ci": 1,
+      "n2": 79
+    },
+    {
+      "label": "Pickering 2002",
+      "ai": 3,
+      "n1": 40,
+      "ci": 3,
+      "n2": 18
+    },
+    {
+      "label": "Santos 2020",
+      "ai": 3,
+      "n1": 16,
+      "ci": 0,
+      "n2": 16
+    },
+    {
+      "label": "Troendle 2020",
+      "ai": 2,
+      "n1": 29,
+      "ci": 0,
+      "n2": 29
+    },
+    {
+      "label": "Viitanen 2003",
+      "ai": 0,
+      "n1": 41,
+      "ci": 0,
+      "n2": 38
+    },
+    {
+      "label": "Diercks 2019",
+      "ai": 38,
+      "n1": 372,
+      "ci": 27,
+      "n2": 369
+    },
+    {
+      "label": "Mirashrafi 2021",
+      "ai": 3,
+      "n1": 26,
+      "ci": 2,
+      "n2": 26
+    }
+  ],
+  "reference": {
+    "source": "metafor rma(method=REML) via pairwise70",
+    "estimate_log": 0.139827,
+    "se": 0.16911
+  },
+  "tolerance": {
+    "estimate_log": 0.01,
+    "se": 0.03
+  },
+  "note": "Engine PM reproduces the metafor pooled estimate to <0.005 on this real Cochrane dataset. Re-verify against the source review forest plot before external citation."
+}

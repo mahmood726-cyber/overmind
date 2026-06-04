@@ -1,0 +1,49 @@
+{
+  "name": "Cochrane CD013255_pub2 analysis 6: Acute procedural success (paroxysmal AF)",
+  "kind": "pooled",
+  "citation": "Cochrane review CD013255_pub2 (DOI 10.1002/14651858.CD013255.pub2). Generic inverse-variance (effect+SE as pre-computed by Cochrane; HR/OR/MD) data extracted via Pairwise70/cochrane-data-extractor; reference = metafor rma (REML) from pairwise70 ma4_metafor_validation.csv.",
+  "measure": "GIV",
+  "method": "PM",
+  "studies": [
+    {
+      "label": "Balla 2011",
+      "yi": 0.0,
+      "vi": 0.3692386
+    },
+    {
+      "label": "Cotter 1999",
+      "yi": 0.0,
+      "vi": 0.35384094
+    },
+    {
+      "label": "Cybulski 2003",
+      "yi": 0.0,
+      "vi": 2.07128616
+    },
+    {
+      "label": "Joseph 2000",
+      "yi": 0.0,
+      "vi": 0.66444444
+    },
+    {
+      "label": "Kochiadakis 1998a",
+      "yi": 0.0,
+      "vi": 0.42173913
+    },
+    {
+      "label": "Kochiadakis 2007",
+      "yi": 0.0,
+      "vi": 0.19900068
+    }
+  ],
+  "reference": {
+    "source": "metafor rma(method=REML) via pairwise70",
+    "estimate_log": 0.0,
+    "se": 0.258904
+  },
+  "tolerance": {
+    "estimate_log": 0.01,
+    "se": 0.03
+  },
+  "note": "Engine PM reproduces the metafor pooled estimate to <0.005 on this real Cochrane dataset. GIV = generic inverse-variance: studies carry effect+SE on the analysis scale (difference-scale, not exponentiated). Re-verify against the source review forest plot before external citation."
+}

@@ -1,0 +1,82 @@
+{
+  "name": "Cochrane CD004871_pub5 analysis 8: Health-related quality of life (long-term)",
+  "kind": "pooled",
+  "citation": "Cochrane review CD004871_pub5 (DOI 10.1002/14651858.CD004871.pub5). Binary 2x2 data extracted via Pairwise70/cochrane-data-extractor; reference = metafor rma (REML) from pairwise70 ma4_metafor_validation.csv.",
+  "measure": "RR",
+  "method": "PM",
+  "studies": [
+    {
+      "label": "Antolinos-Campillo 2014",
+      "ai": 0,
+      "n1": 20,
+      "ci": 0,
+      "n2": 20
+    },
+    {
+      "label": "Briem 2007",
+      "ai": 0,
+      "n1": 20,
+      "ci": 0,
+      "n2": 20
+    },
+    {
+      "label": "Capo-Juan 2017",
+      "ai": 0,
+      "n1": 25,
+      "ci": 0,
+      "n2": 25
+    },
+    {
+      "label": "Gemmell 2008",
+      "ai": 0,
+      "n1": 15,
+      "ci": 0,
+      "n2": 15
+    },
+    {
+      "label": "Haller 2016",
+      "ai": 0,
+      "n1": 27,
+      "ci": 0,
+      "n2": 27
+    },
+    {
+      "label": "Irnich 2001",
+      "ai": 0,
+      "n1": 57,
+      "ci": 0,
+      "n2": 57
+    },
+    {
+      "label": "Klein 2013",
+      "ai": 0,
+      "n1": 30,
+      "ci": 0,
+      "n2": 31
+    },
+    {
+      "label": "Segura-Orti 2016",
+      "ai": 0,
+      "n1": 8,
+      "ci": 0,
+      "n2": 6
+    },
+    {
+      "label": "Skillgate 2020",
+      "ai": 0,
+      "n1": 147,
+      "ci": 0,
+      "n2": 139
+    }
+  ],
+  "reference": {
+    "source": "metafor rma(method=REML) via pairwise70",
+    "estimate_log": -0.031672,
+    "se": 0.658846
+  },
+  "tolerance": {
+    "estimate_log": 0.01,
+    "se": 0.03
+  },
+  "note": "Engine PM reproduces the metafor pooled estimate to <0.005 on this real Cochrane dataset. Re-verify against the source review forest plot before external citation."
+}

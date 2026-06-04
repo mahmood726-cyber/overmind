@@ -1,0 +1,69 @@
+{
+  "name": "Cochrane CD015219_pub2 analysis 2: All adverse events",
+  "kind": "pooled",
+  "citation": "Cochrane review CD015219_pub2 (DOI 10.1002/14651858.CD015219.pub2). Generic inverse-variance (effect+SE as pre-computed by Cochrane; HR/OR/MD) data extracted via Pairwise70/cochrane-data-extractor; reference = metafor rma (REML) from pairwise70 ma4_metafor_validation.csv.",
+  "measure": "GIV",
+  "method": "PM",
+  "studies": [
+    {
+      "label": "AlQahatani 2022",
+      "yi": 0.0,
+      "vi": 2.62961692
+    },
+    {
+      "label": "Chuah 2021",
+      "yi": 0.0,
+      "vi": 0.35866667
+    },
+    {
+      "label": "Finberg 2021",
+      "yi": 0.0,
+      "vi": 2.58974359
+    },
+    {
+      "label": "Ivaschenko 2020",
+      "yi": 0.0,
+      "vi": 0.02086057
+    },
+    {
+      "label": "Lou 2020",
+      "yi": 0.0,
+      "vi": 2.51904762
+    },
+    {
+      "label": "Mahmudie 2022",
+      "yi": 0.0,
+      "vi": 0.79205674
+    },
+    {
+      "label": "Ruzhentsova 2021",
+      "yi": 0.0,
+      "vi": 2.64027325
+    },
+    {
+      "label": "Solaymani-Dodaran 2021",
+      "yi": 0.0,
+      "vi": 0.0663094
+    },
+    {
+      "label": "McMahon 2022",
+      "yi": 0.0,
+      "vi": 0.13267677
+    },
+    {
+      "label": "Shah 2023",
+      "yi": 0.0,
+      "vi": 0.0084658
+    }
+  ],
+  "reference": {
+    "source": "metafor rma(method=REML) via pairwise70",
+    "estimate_log": 0.0,
+    "se": 0.071746
+  },
+  "tolerance": {
+    "estimate_log": 0.01,
+    "se": 0.03
+  },
+  "note": "Engine PM reproduces the metafor pooled estimate to <0.005 on this real Cochrane dataset. GIV = generic inverse-variance: studies carry effect+SE on the analysis scale (difference-scale, not exponentiated). Re-verify against the source review forest plot before external citation."
+}

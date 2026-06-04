@@ -1,0 +1,89 @@
+{
+  "name": "Cochrane CD000478_pub5 analysis 1: Failure to maintain remission",
+  "kind": "pooled",
+  "citation": "Cochrane review CD000478_pub5 (DOI 10.1002/14651858.CD000478.pub5). Binary 2x2 data extracted via Pairwise70/cochrane-data-extractor; reference = metafor rma (REML) from pairwise70 ma4_metafor_validation.csv.",
+  "measure": "RR",
+  "method": "PM",
+  "studies": [
+    {
+      "label": "Hawthorne 1992",
+      "ai": 16,
+      "n1": 38,
+      "ci": 22,
+      "n2": 39
+    },
+    {
+      "label": "Jewell 1974",
+      "ai": 21,
+      "n1": 37,
+      "ci": 24,
+      "n2": 33
+    },
+    {
+      "label": "Sood 2000",
+      "ai": 11,
+      "n1": 25,
+      "ci": 15,
+      "n2": 25
+    },
+    {
+      "label": "Sood 2002",
+      "ai": 4,
+      "n1": 17,
+      "ci": 10,
+      "n2": 18
+    },
+    {
+      "label": "L\u00f6wenberg 2023",
+      "ai": 12,
+      "n1": 26,
+      "ci": 25,
+      "n2": 28
+    },
+    {
+      "label": "Mate-Jimenez 2000",
+      "ai": 3,
+      "n1": 11,
+      "ci": 2,
+      "n2": 2
+    },
+    {
+      "label": "Paraskeva 2000",
+      "ai": 4,
+      "n1": 8,
+      "ci": 5,
+      "n2": 8
+    },
+    {
+      "label": "Sakuraba 2012",
+      "ai": 3,
+      "n1": 11,
+      "ci": 3,
+      "n2": 10
+    },
+    {
+      "label": "Kiszka-Kanowitz 2022",
+      "ai": 27,
+      "n1": 47,
+      "ci": 33,
+      "n2": 42
+    },
+    {
+      "label": "Roblin 2017",
+      "ai": 2,
+      "n1": 12,
+      "ci": 3,
+      "n2": 11
+    }
+  ],
+  "reference": {
+    "source": "metafor rma(method=REML) via pairwise70",
+    "estimate_log": -0.375861,
+    "se": 0.083362
+  },
+  "tolerance": {
+    "estimate_log": 0.01,
+    "se": 0.03
+  },
+  "note": "Engine PM reproduces the metafor pooled estimate to <0.005 on this real Cochrane dataset. Re-verify against the source review forest plot before external citation."
+}
