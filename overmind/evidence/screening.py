@@ -91,6 +91,23 @@ def pico_query(pico: dict) -> str:
     return query
 
 
+def _dedup_by_record_id(records: list[CorpusRecord]) -> list[CorpusRecord]:
+    """Drop records that repeat an already-seen record_id (first occurrence wins),
+    matching OfflineCorpusProvider's contract. Without this, a caller passing a raw
+    list with two records sharing a record_id (only one of which scores in BM25)
+    would have the zero-score copy silently suppressed by the completeness loop,
+    making proposal_count < candidate_count — a silent truncation. Deduping up front
+    makes record_id the unit and keeps proposal_count == (deduped) candidate_count."""
+    seen: set[str] = set()
+    out: list[CorpusRecord] = []
+    for rec in records:
+        if rec.record_id in seen:
+            continue
+        seen.add(rec.record_id)
+        out.append(rec)
+    return out
+
+
 def _relevance_feedback_terms(records: list[CorpusRecord], seed_ids: list[str], top_n: int = 8) -> list[str]:
     """Rocchio-lite: the most frequent non-trivial terms across seed includes."""
     by_id = {r.record_id: r for r in records}
@@ -130,6 +147,7 @@ def screen(
     """
     if not query and not pico:
         raise ValueError("screen() needs either query or pico")
+    records = _dedup_by_record_id(records)  # record_id is the unit; no silent dup suppression
     effective_query = query or pico_query(pico)
     if seed_includes:
         fb = _relevance_feedback_terms(records, seed_includes)
@@ -182,14 +200,19 @@ class ScreeningRun:
 
     def run(self, query: str | None = None, pico: dict | None = None,
             seed_includes: list[str] | None = None, **kwargs) -> dict:
-        proposals = screen(self.provider_records, query=query, pico=pico,
+        # Dedup on record_id up front so candidate_count reflects the unique set that
+        # screen() actually worklist-s; surface the removed count rather than letting
+        # it vanish silently (no-silent-caps rule).
+        deduped = _dedup_by_record_id(self.provider_records)
+        proposals = screen(deduped, query=query, pico=pico,
                            seed_includes=seed_includes, **kwargs)
         counts = Counter(p.suggestion for p in proposals)
         report = {
             "capability": "screening",
             "query": query or (pico_query(pico) if pico else None),
             "used_relevance_feedback": bool(seed_includes),
-            "candidate_count": len(self.provider_records),
+            "candidate_count": len(deduped),
+            "duplicates_removed": len(self.provider_records) - len(deduped),
             "proposal_count": len(proposals),
             "suggestion_counts": dict(counts),
             # every proposal is pending/needs_review — the machine closes nothing

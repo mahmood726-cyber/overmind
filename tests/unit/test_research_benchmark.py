@@ -2,8 +2,20 @@ from __future__ import annotations
 
 import json
 
-from overmind.intelligence.research_benchmark import ResearchBenchmark
+from overmind.intelligence.research_benchmark import ResearchBenchmark, _current_system_scores
 from overmind.storage.models import ProjectRecord
+
+
+def _bare_summary(**over):
+    base = {
+        "evidence_synthesis_projects": 0,
+        "advanced_math_projects": 0,
+        "validation_history_projects": 0,
+        "oracle_benchmark_projects": 0,
+        "available_runner_count": 0,
+    }
+    base.update(over)
+    return base
 
 
 def test_research_benchmark_scores_current_system_and_writes_artifacts(tmp_path):
@@ -142,12 +154,44 @@ def test_live_corpus_failure_falls_back_offline(tmp_path, monkeypatch):
             raise RuntimeError("network down")
         return McpCorpusProvider(fetch=fetch, name="pubmed-eutils")
 
-    monkeypatch.setattr(corpus_mod, "live_pubmed_provider", broken_live)
+    calls = {"n": 0}
+
+    def broken_live_counted():
+        from overmind.evidence.corpus import McpCorpusProvider
+
+        def fetch(query, limit):
+            calls["n"] += 1
+            raise RuntimeError("network down")
+        return McpCorpusProvider(fetch=fetch, name="pubmed-eutils")
+
+    monkeypatch.setattr(corpus_mod, "live_pubmed_provider", broken_live_counted)
     projects = [ProjectRecord(project_id="e", name="E", root_path=str(tmp_path / "e"),
                               project_type="python_tool", analysis_focus_areas=["evidence synthesis"])]
-    report = ResearchBenchmark(tmp_path / "artifacts").run(projects, exercise=True, live_corpus=True)
+    artifacts = tmp_path / "artifacts"
+    report = ResearchBenchmark(artifacts).run(projects, exercise=True, live_corpus=True)
     # offline fallback corpus artifact present -> 2, not 3, not crashed
     assert _scores(report)["search_corpus"] == 2
+    # prove fail-closed-AFTER-attempt (not never-attempted): the live fetch WAS called
+    assert calls["n"] >= 1
+    # and the artifact that drove the score came from the OFFLINE fallback provider
+    written = json.loads((artifacts / "evidence" / "corpus_search.json").read_text(encoding="utf-8"))
+    assert written["provider"] == "offline-jsonl"
+
+
+def test_corpus_score_boundaries_size_hits_and_live_floor():
+    """Boundary table for the corpus gate (research_benchmark.py:384-394):
+    offline needs size>=5 AND hits>0 for 2; a live provider must clear the SAME
+    size>=5 floor before reaching 3 (tiny-corpus asymmetry fix, 2026-06-04)."""
+    def corpus(**kw):
+        return _current_system_scores(_bare_summary(), None, {"corpus_search": kw})[0]["search_corpus"]
+
+    off = dict(provider="offline-jsonl", provider_available=True)
+    live = dict(provider="pubmed-eutils", provider_available=True)
+    assert corpus(corpus_size=3, hit_count=2, **off) == 1   # size<5 -> partial
+    assert corpus(corpus_size=6, hit_count=0, **off) == 1   # hits==0 -> not credited 2
+    assert corpus(corpus_size=6, hit_count=3, **off) == 2   # size>=5 + hits -> 2
+    assert corpus(corpus_size=3, hit_count=2, **live) == 1  # tiny live must NOT reach 3
+    assert corpus(corpus_size=6, hit_count=2, **live) == 3  # live + size>=5 + hits -> 3
 
 
 def test_fail_closed_no_artifacts_keeps_floor(tmp_path):
@@ -160,3 +204,9 @@ def test_fail_closed_no_artifacts_keeps_floor(tmp_path):
     scores = _scores(report)
     assert scores["search_corpus"] == 0          # no artifact => no credit
     assert report["evidence_artifacts_used"] == []
+    # the OTHER gated dimensions must also stay at their heuristic floors when no
+    # artifact backs them (no score moves without a backing artifact). evidence_count
+    # == 1 here (one analysis_focus_areas project).
+    assert scores["screening_extraction"] == 1   # floor: 1 if evidence_count else 0
+    assert scores["citation_grounding"] == 2     # floor: 2 if validation or evidence_count
+    assert scores["review_workflow"] == 1        # floor: 1 (<10 evidence projects)

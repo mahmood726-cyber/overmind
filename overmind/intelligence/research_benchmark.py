@@ -384,8 +384,12 @@ def _current_system_scores(
     if corpus and corpus.get("corpus_size", 0) >= 1:
         size, hits = corpus.get("corpus_size", 0), corpus.get("hit_count", 0)
         scores["search_corpus"] = 2 if (size >= 5 and hits > 0) else 1
-        # a LIVE/large index (not the bundled offline seed) earns first-class 3
-        if corpus.get("provider_available") and corpus.get("provider") not in (None, "offline-jsonl") and hits > 0:
+        # A LIVE/large index (not the bundled offline seed) earns first-class 3 — but
+        # only when it clears the SAME size>=5 floor the offline path must clear. A
+        # live provider returning 1-4 records is not demonstrating large-index
+        # retrieval, so it must not leapfrog straight to 3 over the offline seed.
+        if (corpus.get("provider_available") and corpus.get("provider") not in (None, "offline-jsonl")
+                and hits > 0 and size >= 5):
             scores["search_corpus"] = 3
         _live = corpus.get("provider") not in (None, "offline-jsonl")
         evidence["search_corpus"] = (
@@ -395,9 +399,17 @@ def _current_system_scores(
 
     screening = art.get("screening")
     extraction = art.get("extraction")
-    if screening or extraction:
+    # Content gates (not mere existence): an empty screening.json (proposal_count=0)
+    # or an extraction.json with no validated records must not lift the floor.
+    screen_has_content = bool(screening) and screening.get("proposal_count", 0) > 0
+    extract_validated = extraction.get("validated_count", 0) if extraction else 0
+    extract_clean = extract_validated - (extraction.get("needs_review_count", 0) if extraction else 0)
+    if screen_has_content or extract_validated > 0:
         scores["screening_extraction"] = max(scores["screening_extraction"], 2)
-    if screening and extraction and extraction.get("validated_count", 0) > 0:
+    # First-class 3 requires BOTH a non-empty screening worklist AND an extraction
+    # that validated at least one CLEAN (not needs_review) record — a fixture of
+    # only-flagged/rejected records cannot reach first-class.
+    if screen_has_content and extract_validated > 0 and extract_clean > 0:
         scores["screening_extraction"] = 3
     if screening or extraction:
         evidence["screening_extraction"] = (
@@ -532,13 +544,17 @@ class ResearchBenchmark:
         return {"json": str(json_path), "markdown": str(md_path)}
 
     # Map of evidence artifact filename (under <artifacts>/evidence/) -> report key.
+    # Only artifacts that exercise_evidence actually (re)produces are listed, so a
+    # stale file written by a SEPARATE `overmind` command cannot be surfaced as an
+    # "evidence artifact used" by a benchmark run that did not generate it.
+    # (outcome_switching.json is intentionally excluded: it is a standalone CLI
+    # capability, never produced by exercise_evidence — see prisma.outcome_switching.)
     _EVIDENCE_FILES = {
         "corpus_search.json": "corpus_search",
         "screening.json": "screening",
         "extraction.json": "extraction",
         "citation_grounding.json": "citation_grounding",
         "prisma.json": "prisma",
-        "outcome_switching.json": "outcome_switching",
     }
 
     def read_evidence_artifacts(self) -> dict[str, Any]:
@@ -566,8 +582,16 @@ class ResearchBenchmark:
         ``live_corpus=True`` is OPT-IN: the corpus step queries the live NCBI
         E-utilities index (network) instead of the offline seed, which lifts the
         search_corpus capability to first-class. It fails CLOSED — any network/parse
-        error falls back to the offline corpus, so the score never rises on a failed
-        live attempt."""
+        error OR a successful-but-empty result (zero hits) falls back to the offline
+        corpus, so the score never rises on a failed live attempt and a present-but-
+        empty live artifact never suppresses the offline floor (it is overwritten by
+        the offline run).
+
+        Freshness: every artifact this method credits (corpus_search, screening,
+        extraction, citation_grounding, prisma) is (re)written here on each call, so
+        an exercise run cannot be credited from a stale file left by a prior/separate
+        run. (``run(exercise=False)`` deliberately reads previously-produced
+        artifacts — that is the documented "score only what was produced" path.)"""
         from pathlib import Path as _Path
 
         from overmind.evidence import corpus as _corpus

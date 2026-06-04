@@ -47,7 +47,12 @@ def prisma_flow(records: list[dict], artifacts_dir: Path | None = None) -> dict:
     ta_excluded = [r for r in screened if r.get("ta_decision") == EXCLUDE]
     ta_included = [r for r in screened if r.get("ta_decision") == INCLUDE]
 
-    # reports sought for retrieval = TA-included; not retrieved if retrieved is False
+    # reports sought for retrieval = TA-included; not retrieved ONLY if retrieved is
+    # explicitly False. NOTE the asymmetry: a TA-included record that omits `retrieved`
+    # defaults to retrieved=True (optimistic), whereas a record awaiting a full-text
+    # decision is honestly counted as awaiting. So the retrieval stage is the one place
+    # the flow leans optimistic — pass `retrieved=False` to mark a report still awaiting
+    # retrieval. The arithmetic still reconciles (sought = retrieved + not_retrieved).
     sought = ta_included
     not_retrieved = [r for r in sought if r.get("retrieved") is False]
     retrieved = [r for r in sought if r.get("retrieved") is not False]

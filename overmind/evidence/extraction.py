@@ -125,9 +125,14 @@ def _check_outcome_coherence(outcome: dict, kind: str) -> list[str]:
         if None not in (lci, uci) and not (lci <= effect <= uci):
             issues.append(f"CI not ordered: lci={lci} <= effect={effect} <= uci={uci} fails")
 
-    # inverted-HR anti-pattern: a published ratio and the count-derived OR on
-    # opposite sides of the null is a likely sign/inversion error (RapidMeta AUDIT
-    # line 14). Needs both representations present, regardless of `kind`.
+    # Direction-disagreement check: a published ratio and the count-derived OR on
+    # opposite sides of the null (RapidMeta AUDIT line 14). Needs both representations
+    # present, regardless of `kind`. NOTE this is a heuristic, not proof of inversion:
+    # the published effect is often an HR while the count-derived value is an OR, and
+    # in a high-event-rate / time-varying-hazard regime an HR and an OR can legitimately
+    # straddle 1.0 without any data-entry error — so the message reports a *disagreement*
+    # to review, not a confirmed mis-label. (Zero-cell 2x2s are skipped here; the
+    # advanced-stats 0.5 continuity correction would be needed to extend this safely.)
     if has_binary and has_ratio and tN > 0 and cN > 0:
         a, b = tE, tN - tE
         c, d = cE, cN - cE
@@ -136,7 +141,8 @@ def _check_outcome_coherence(outcome: dict, kind: str) -> list[str]:
             if (effect - _RATIO_NULL) * (count_or - _RATIO_NULL) < 0:
                 issues.append(
                     f"publishedHR/effect {effect} contradicts count-derived OR {count_or:.3f} "
-                    "(opposite sides of 1.0) - possible inverted/mis-labelled effect"
+                    "(opposite sides of 1.0) - review for inversion/mis-label, or a legitimate "
+                    "HR-vs-OR divergence under high event rates"
                 )
 
     if se is not None and se <= 0:

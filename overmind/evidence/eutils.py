@@ -19,6 +19,8 @@ as data); fail closed on malformed/partial responses by raising ``EutilsError``.
 from __future__ import annotations
 
 import json
+import random
+import re
 import time
 import urllib.error
 import urllib.parse
@@ -31,30 +33,79 @@ _EMAIL = "noreply@overmind.local"
 _USER_AGENT = f"{_TOOL} (mailto:{_EMAIL})"
 _MAX_RETRIES = 3
 _BACKOFF_BASE = 0.8  # seconds; bounded exponential backoff
+_BACKOFF_CAP = 8.0  # seconds; never sleep longer than this between attempts
+_RETRY_AFTER_CAP = 30.0  # honor a server Retry-After, but never hang on a huge value
+_MAX_BYTES = 25 * 1024 * 1024  # 25 MiB hard ceiling on any single response body
+_EFETCH_POST_THRESHOLD = 200  # NCBI guidance: POST efetch when the id list is large
+_PMID_RE = re.compile(r"^[0-9]+$")  # PubMed IDs are bare integers
 
 
 class EutilsError(RuntimeError):
     """A live-fetch failure. Callers fail closed: no live artifact => no credit."""
 
 
-def _http_get(url: str, *, timeout: float, expect: str) -> bytes:
-    """GET with bounded retry/backoff. ``expect`` is 'json' or 'xml'; an HTML
-    error payload (Cloudflare/NCBI throttle page) is rejected, never parsed."""
+def _parse_retry_after(headers) -> float | None:
+    """Extract a Retry-After delay (delta-seconds form only) from an HTTPError's
+    headers. The HTTP-date form is ignored (treated as absent) to keep this small;
+    the fixed backoff still applies in that case."""
+    getter = getattr(headers, "get", None)
+    raw = getter("Retry-After") if callable(getter) else None
+    if not raw:
+        return None
+    try:
+        secs = float(str(raw).strip())
+    except ValueError:
+        return None
+    return secs if secs >= 0 else None
+
+
+def _backoff_delay(attempt: int, retry_after: float | None) -> float:
+    """Exponential backoff, capped, honoring a (bounded) server Retry-After, plus a
+    small jitter so concurrent callers don't synchronize their retries."""
+    backoff = min(_BACKOFF_BASE * (2 ** attempt), _BACKOFF_CAP)
+    if retry_after is not None:
+        backoff = min(max(backoff, retry_after), _RETRY_AFTER_CAP)
+    return backoff + random.uniform(0, _BACKOFF_BASE * 0.25)
+
+
+def _http_get(url: str, *, timeout: float, expect: str, data: bytes | None = None) -> bytes:
+    """HTTP GET (or POST when ``data`` is given) with bounded retry/backoff.
+    ``expect`` is 'json' or 'xml'; an HTML/other error payload (Cloudflare/NCBI
+    throttle page) is rejected, never parsed. Defenses applied before the body is
+    trusted: host-pinning (a redirect off the requested host fails closed), a hard
+    response size ceiling, BOM strip, and content-shape sniffing for the expected
+    type."""
     last_exc: Exception | None = None
     for attempt in range(_MAX_RETRIES):
         try:
-            req = urllib.request.Request(url, headers={"User-Agent": _USER_AGENT})
+            req = urllib.request.Request(url, data=data, headers={"User-Agent": _USER_AGENT})
             with urllib.request.urlopen(req, timeout=timeout) as resp:
                 if resp.status != 200:
                     raise EutilsError(f"HTTP {resp.status} from {url}")
+                # Host-pin: urlopen auto-follows 3xx; reject a body served from a
+                # host other than the one we requested before reading it.
+                req_host = urllib.parse.urlsplit(url).hostname
+                final_host = urllib.parse.urlsplit(getattr(resp, "url", None) or url).hostname
+                if req_host and final_host and final_host != req_host:
+                    raise EutilsError(
+                        f"redirected off {req_host!r} to unexpected host {final_host!r}")
                 ctype = (resp.headers.get("Content-Type") or "").lower()
-                body = resp.read()
+                body = resp.read(_MAX_BYTES + 1)
+            if len(body) > _MAX_BYTES:
+                raise EutilsError(f"oversized payload from {url} (> {_MAX_BYTES} bytes)")
+            # Strip a leading BOM before sniffing the content shape.
+            head = body[:512].lstrip(b"\xef\xbb\xbf").lstrip().lower()
             # An HTML body when we asked for json/xml is an error/throttle page.
-            head = body[:200].lstrip().lower()
             if head.startswith(b"<!doctype html") or head.startswith(b"<html"):
                 raise EutilsError(f"HTML error payload from {url} (likely throttled)")
-            if expect == "json" and "json" not in ctype and not head.startswith(b"{"):
-                raise EutilsError(f"expected JSON, got {ctype!r} from {url}")
+            if expect == "json":
+                if "json" not in ctype and not head.startswith(b"{"):
+                    raise EutilsError(f"expected JSON, got {ctype!r} from {url}")
+            elif expect == "xml":
+                # Reject plain-text/JSON error bodies (e.g. "Server busy") that
+                # would otherwise reach the XML parser as garbage.
+                if not head.startswith(b"<"):
+                    raise EutilsError(f"expected XML, got {ctype!r} from {url}")
             return body
         except (urllib.error.HTTPError, urllib.error.URLError, TimeoutError, EutilsError) as exc:
             last_exc = exc
@@ -63,7 +114,7 @@ def _http_get(url: str, *, timeout: float, expect: str) -> bytes:
             if status is not None and 400 <= status < 500 and status != 429:
                 raise EutilsError(f"non-retryable HTTP {status} from {url}") from exc
             if attempt < _MAX_RETRIES - 1:
-                time.sleep(_BACKOFF_BASE * (2 ** attempt))
+                time.sleep(_backoff_delay(attempt, _parse_retry_after(getattr(exc, "headers", None))))
     raise EutilsError(f"giving up on {url} after {_MAX_RETRIES} attempts: {last_exc}")
 
 
@@ -86,7 +137,11 @@ def esearch(query: str, limit: int, *, timeout: float = 15.0, api_key: str | Non
     idlist = (data.get("esearchresult") or {}).get("idlist")
     if not isinstance(idlist, list):
         raise EutilsError("esearch response missing esearchresult.idlist")
-    return [str(pmid) for pmid in idlist]
+    # Validate shape: a PubMed ID is a bare integer. Drop anything malformed/hostile
+    # (it could never resolve via efetch anyway) and cap to the requested limit so a
+    # misbehaving response cannot inflate the efetch id list.
+    pmids = [s for s in (str(pid).strip() for pid in idlist) if _PMID_RE.match(s)]
+    return pmids[: max(1, int(limit))]
 
 
 def _text(node: ET.Element | None) -> str:
@@ -99,6 +154,12 @@ def parse_efetch_xml(xml_bytes: bytes, query: str = "") -> list[dict]:
     """Parse a PubmedArticleSet efetch XML payload into seed-shaped record dicts.
 
     Pure function (no network) so it is unit-testable against a committed fixture.
+
+    XML safety: stdlib ElementTree does not resolve external entities (XXE is not
+    exploitable; an external-entity ref raises ParseError -> EutilsError). Internal
+    entity-expansion ("billion laughs") is bounded by CPython's bundled expat
+    (>= 2.4) amplification limits; the ``_MAX_BYTES`` ceiling in ``_http_get`` bounds
+    the input size before it reaches the parser.
     """
     try:
         root = ET.fromstring(xml_bytes)
@@ -177,8 +238,15 @@ def efetch(pmids: list[str], *, query: str = "", timeout: float = 20.0, api_key:
     }
     if api_key:
         params["api_key"] = api_key
-    url = f"{_BASE}/efetch.fcgi?{urllib.parse.urlencode(params)}"
-    return parse_efetch_xml(_http_get(url, timeout=timeout, expect="xml"), query=query)
+    encoded = urllib.parse.urlencode(params)
+    base_url = f"{_BASE}/efetch.fcgi"
+    # Per NCBI guidance, POST the id list once it is large, so a big PMID batch does
+    # not blow past URL-length limits as an over-long GET query string.
+    if len(pmids) > _EFETCH_POST_THRESHOLD:
+        body = _http_get(base_url, timeout=timeout, expect="xml", data=encoded.encode())
+    else:
+        body = _http_get(f"{base_url}?{encoded}", timeout=timeout, expect="xml")
+    return parse_efetch_xml(body, query=query)
 
 
 def eutils_fetch(query: str, limit: int = 20, *, timeout: float = 20.0, api_key: str | None = None) -> list[dict]:

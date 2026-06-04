@@ -54,6 +54,31 @@ def test_screen_is_complete_no_silent_truncation():
     assert {p.record_id for p in proposals} == {r.record_id for r in recs}
 
 
+def test_screen_dedups_duplicate_record_ids_no_silent_loss(tmp_path):
+    # Two records share record_id 'pmid:1': one scores in BM25 (matches the query),
+    # the other has zero overlap. Pre-fix, the completeness loop suppressed the
+    # zero-score copy because its id was already a hit -> proposal_count < candidate.
+    # Now record_id is deduped up front: exactly one proposal per unique id, and the
+    # ScreeningRun report surfaces the removed count rather than dropping it silently.
+    recs = [
+        CorpusRecord(record_id="pmid:1", title="Dapagliflozin in heart failure",
+                     abstract="randomized dapagliflozin trial"),
+        CorpusRecord(record_id="pmid:1", title="Totally unrelated nutrition note",
+                     abstract="orange juice breakfast survey"),
+        CorpusRecord(record_id="pmid:2", title="Empagliflozin heart failure",
+                     abstract="SGLT2 inhibitor outcomes"),
+    ]
+    proposals = screen(recs, query="dapagliflozin heart failure")
+    ids = [p.record_id for p in proposals]
+    assert sorted(ids) == ["pmid:1", "pmid:2"]      # one proposal per unique id
+    assert len(ids) == len(set(ids))                # no duplicate proposals
+
+    report = ScreeningRun(provider_records=recs, artifacts_dir=tmp_path / "a").run(
+        query="dapagliflozin heart failure")
+    assert report["candidate_count"] == report["proposal_count"]  # invariant holds
+    assert report["duplicates_removed"] == 1                      # surfaced, not silent
+
+
 def test_relevance_feedback_changes_scoring():
     recs = _recs()
     base = {p.record_id: p.score for p in screen(recs, query="heart failure")}
