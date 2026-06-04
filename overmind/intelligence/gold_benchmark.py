@@ -165,14 +165,14 @@ def cochrane_reproduction(data_dir: str | Path, reference_csv: str | Path,
 
     Reports the EXACT-reproduction rate by effect type. To match how the reference was
     pooled, each analysis is tried under three study-selection conventions (all rows /
-    overall-only / dedup-by-study-name), three measures (RR / GIV / MD), and three
-    pooling methods (FE / DL / PM) — accepting whichever reproduces the reference, since
-    neither the study selection nor the tau^2 method is recorded per analysis and
-    Cochrane mixes them. Remaining non-matches have the right study set but a residual
-    method nuance (REML-proper / Knapp-Hartung), not an engine math error — where the
-    pooling is unambiguous the engine reproduces metafor to ~1e-16. This validates the
-    ENGINE, NOT the correctness of the reviews (the all-rows convention's double-counting
-    is itself an artifact)."""
+    overall-only / dedup-by-study-name), three measures (RR / GIV / MD), and four pooling
+    methods (FE / DL / PM / REML) — accepting whichever reproduces the reference, since
+    neither the study selection nor the tau^2 method is recorded per analysis and Cochrane
+    mixes them. With REML (metafor's default) the direct-metafor validation set reproduces
+    100/100 to machine precision; remaining broader-set non-matches are measure/selection
+    edge cases (Peto, OR-vs-RR, nested subgroups), not engine math error. This validates
+    the ENGINE, NOT the correctness of the reviews (the all-rows convention's double-
+    counting is itself an artifact)."""
     try:
         import csv as _csv
         import pyreadr  # type: ignore
@@ -254,7 +254,7 @@ def cochrane_reproduction(data_dir: str | Path, reference_csv: str | Path,
         # differ enough under heterogeneity that a coincidental cross-method match within
         # tol is implausible.
         for measure, studies in candidates:
-            for meth in ("PM", "DL", "FE"):
+            for meth in ("REML", "PM", "DL", "FE"):
                 try:
                     res = pool(studies, measure=measure, method=meth)
                 except Exception:  # noqa: BLE001

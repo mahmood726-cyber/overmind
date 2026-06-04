@@ -136,6 +136,35 @@ def _tau2_pm(ys, vs) -> float:
     return tau2
 
 
+def _tau2_reml(ys, vs) -> float:
+    """REML tau^2 via Fisher scoring on the REML estimating equation (the metafor
+    default). Iterates: tau2 += [Sw2(y-mu)^2 - W + Sw2/W] / [Sw2 - 2Sw3/W + Sw2^2/W^2],
+    with w=1/(v+tau2), W=Sum w, mu=weighted mean. Starts from DL; clamps tau2>=0."""
+    k = len(ys)
+    if k < 2:
+        return 0.0
+    tau2 = _tau2_dl(ys, vs, _fe(ys, vs)[0])  # DL warm start
+    for _ in range(200):
+        w = [1.0 / (v + tau2) for v in vs]
+        wsum = math.fsum(w)
+        mu = math.fsum(wi * yi for wi, yi in zip(w, ys)) / wsum
+        w2 = math.fsum(wi * wi for wi in w)
+        w3 = math.fsum(wi ** 3 for wi in w)
+        rss = math.fsum((wi * wi) * (y - mu) ** 2 for wi, y in zip(w, ys))
+        score = rss - wsum + w2 / wsum
+        info = w2 - 2.0 * w3 / wsum + (w2 * w2) / (wsum * wsum)
+        if info == 0:
+            break
+        new = tau2 + score / info
+        if new < 0:
+            new = 0.0
+        if abs(new - tau2) < 1e-11:
+            tau2 = new
+            break
+        tau2 = new
+    return max(0.0, tau2)
+
+
 def _re(ys, vs, tau2) -> tuple[float, float]:
     w = [1.0 / (v + tau2) for v in vs]
     sw = math.fsum(w)
@@ -154,7 +183,7 @@ def _hksj_se(ys, vs, tau2, theta_re) -> float:
 
 
 def pool(studies: list[Study], measure: str = "RR", method: str = "DL") -> dict:
-    """Pool studies on the log scale. ``method`` in {'FE','DL','PM'}.
+    """Pool studies on the log scale. ``method`` in {'FE','DL','PM','REML'}.
 
     Returns logRR/logOR pooled estimate, SE, z-Wald CI, tau^2, Q, I^2, and the
     back-transformed ratio + CI. Deterministic; raises PoolingError on bad input.
@@ -171,7 +200,14 @@ def pool(studies: list[Study], measure: str = "RR", method: str = "DL") -> dict:
     if method == "FE":
         tau2, theta, var = 0.0, theta_fe, var_fe
     else:
-        tau2 = _tau2_pm(ys, vs) if method == "PM" else _tau2_dl(ys, vs, theta_fe)
+        if method == "PM":
+            tau2 = _tau2_pm(ys, vs)
+        elif method == "REML":
+            tau2 = _tau2_reml(ys, vs)
+        elif method == "DL":
+            tau2 = _tau2_dl(ys, vs, theta_fe)
+        else:
+            raise PoolingError(f"unknown method {method!r}; use FE/DL/PM/REML")
         theta, var = _re(ys, vs, tau2)
 
     se = math.sqrt(var)

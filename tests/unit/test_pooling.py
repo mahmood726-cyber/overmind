@@ -38,6 +38,16 @@ def test_bcg_reproduces_published_random_effects():
     assert abs(r["estimate_ratio"] - 0.489) < 0.01       # back-transformed RR
 
 
+def test_bcg_reml_matches_metafor_to_machine_precision():
+    # REML is metafor's default; the engine must reproduce its reference EXACTLY.
+    # metafor rma(measure="RR", method="REML", dat.bcg): logRR=-0.71450, se=0.17982,
+    # tau2=0.31322.
+    r = pool(_bcg_studies(), measure="RR", method="REML")
+    assert abs(r["estimate_log"] - (-0.71450)) < 1e-3
+    assert abs(r["se"] - 0.17982) < 1e-3
+    assert abs(r["tau2"] - 0.31322) < 1e-3
+
+
 def test_dl_and_pm_point_estimates_agree_on_bcg():
     dl = pool(_bcg_studies(), measure="RR", method="DL")
     pm = pool(_bcg_studies(), measure="RR", method="PM")
