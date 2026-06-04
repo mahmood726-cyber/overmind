@@ -58,10 +58,11 @@ class _CorpusIndex:
     by_record_id: dict[str, CorpusRecord]
     by_pmid: dict[str, CorpusRecord]
     by_doi: dict[str, CorpusRecord]
+    by_nct: dict[str, CorpusRecord]
 
     @classmethod
     def build(cls, records: list[CorpusRecord]) -> "_CorpusIndex":
-        by_id, by_pmid, by_doi = {}, {}, {}
+        by_id, by_pmid, by_doi, by_nct = {}, {}, {}, {}
         for rec in records:
             by_id[rec.record_id] = rec
             if rec.pmid:
@@ -69,7 +70,10 @@ class _CorpusIndex:
             nd = _norm_doi(rec.doi)
             if nd:
                 by_doi[nd] = rec
-        return cls(by_id, by_pmid, by_doi)
+            nct = getattr(rec, "nct", None)
+            if nct:
+                by_nct[str(nct).upper()] = rec
+        return cls(by_id, by_pmid, by_doi, by_nct)
 
     def resolve(self, ident: dict) -> CorpusRecord | None:
         if ident.get("record_id") and ident["record_id"] in self.by_record_id:
@@ -79,6 +83,8 @@ class _CorpusIndex:
         nd = _norm_doi(ident.get("doi"))
         if nd and nd in self.by_doi:
             return self.by_doi[nd]
+        if ident.get("nct") and str(ident["nct"]).upper() in self.by_nct:
+            return self.by_nct[str(ident["nct"]).upper()]
         return None
 
 
@@ -111,10 +117,13 @@ def _claim_identifier(claim: dict) -> dict:
     if isinstance(src, dict):
         ident = {k: src.get(k) for k in ("doi", "pmid", "nct", "record_id") if src.get(k)}
     elif isinstance(src, str) and src.strip():
-        if src.startswith(("pmid:", "doi:")) or src.startswith("NCT"):
-            ident["record_id"] = src.strip()
-        else:
-            ident.update({k: v for k, v in extract_identifiers(src).items() if v})
+        s = src.strip()
+        # a literal corpus record_id (records use the 'pmid:<id>' form)
+        if s.startswith("pmid:"):
+            ident["record_id"] = s
+        # plus any embedded doi / pmid / nct — so 'doi:10.x/y' resolves via by_doi
+        # and 'NCT01234567' via by_nct, not silently dropped into record_id.
+        ident.update({k: v for k, v in extract_identifiers(s).items() if v})
     if not ident:
         ident = {k: v for k, v in extract_identifiers(claim.get("text", "")).items() if v}
     return ident

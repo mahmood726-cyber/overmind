@@ -587,8 +587,13 @@ class ResearchBenchmark:
         if live_corpus:
             try:
                 from overmind.evidence.corpus import live_pubmed_provider
-                CorpusSearch(provider=live_pubmed_provider(), artifacts_dir=art).run(topic, limit=10)
-                corpus_ran_live = True
+                live_report = CorpusSearch(provider=live_pubmed_provider(), artifacts_dir=art).run(topic, limit=10)
+                # A live query that SUCCEEDS but returns zero hits is a failed
+                # attempt, not a demonstrated capability. Without this guard the
+                # empty live artifact (corpus_size=0) skips the scoring upgrade and
+                # search_corpus drops BELOW the offline floor of 2. Treat no-hits as
+                # a fallback trigger so the offline corpus overwrites the artifact.
+                corpus_ran_live = live_report.get("hit_count", 0) > 0
             except Exception:  # noqa: BLE001 - network/parse failure -> fall back offline
                 corpus_ran_live = False
         if not corpus_ran_live:

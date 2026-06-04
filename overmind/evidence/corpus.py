@@ -63,6 +63,7 @@ class CorpusRecord:
     source: str = "unknown"
     pmid: str | None = None
     doi: str | None = None
+    nct: str | None = None
     year: int | None = None
     journal: str = ""
     authors: list[str] = field(default_factory=list)
@@ -85,6 +86,12 @@ class CorpusRecord:
             # be screened or cited. Fail closed rather than admit a blank record.
             raise ValueError(f"corpus record {rid!r} has no title")
         year = raw.get("year")
+        try:
+            year_val = int(year) if year not in (None, "") else None
+        except (TypeError, ValueError):
+            # a non-numeric year (e.g. "2023 Mar") must not abort the whole corpus
+            # load — degrade that one field to None.
+            year_val = None
         return cls(
             record_id=rid,
             title=raw["title"].strip(),
@@ -92,7 +99,8 @@ class CorpusRecord:
             source=raw.get("source") or "unknown",
             pmid=raw.get("pmid"),
             doi=raw.get("doi"),
-            year=int(year) if year else None,
+            nct=raw.get("nct"),
+            year=year_val,
             journal=raw.get("journal") or "",
             authors=list(raw.get("authors") or []),
             article_types=list(raw.get("article_types") or []),

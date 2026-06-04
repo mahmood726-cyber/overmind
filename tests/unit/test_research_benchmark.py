@@ -113,6 +113,23 @@ def test_live_corpus_lifts_search_corpus_to_first_class(tmp_path, monkeypatch):
     assert _scores(report)["search_corpus"] == 3
 
 
+def test_live_corpus_zero_hits_falls_back_to_offline_floor(tmp_path, monkeypatch):
+    """Regression (2026-06-04 review): a live query that SUCCEEDS with zero hits must
+    not crash search_corpus below the offline floor — it falls back to offline (2)."""
+    from overmind.evidence.corpus import McpCorpusProvider
+    import overmind.evidence.corpus as corpus_mod
+
+    def empty_live():
+        return McpCorpusProvider(fetch=lambda q, l: [], name="pubmed-eutils")
+
+    monkeypatch.setattr(corpus_mod, "live_pubmed_provider", empty_live)
+    projects = [ProjectRecord(project_id="e", name="E", root_path=str(tmp_path / "e"),
+                              project_type="python_tool", analysis_focus_areas=["evidence synthesis"])]
+    report = ResearchBenchmark(tmp_path / "artifacts").run(projects, exercise=True, live_corpus=True)
+    # empty live result -> offline fallback -> 2, never 0/1
+    assert _scores(report)["search_corpus"] == 2
+
+
 def test_live_corpus_failure_falls_back_offline(tmp_path, monkeypatch):
     """If the live provider raises (network down), the corpus step fails CLOSED to
     the offline seed — search_corpus stays at 2, never credited on a failed attempt."""

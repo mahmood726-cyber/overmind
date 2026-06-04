@@ -36,6 +36,26 @@ def test_claim_resolved_by_doi_case_insensitive():
     assert report["grounded_count"] == 1
 
 
+def test_claim_resolved_by_lowercase_doi_prefix_string():
+    # regression (2026-06-04 review): a lowercase 'doi:'-prefixed bare string used to
+    # be stuffed into record_id and never resolved via the DOI index.
+    claims = [{"claim_id": "c1", "text": "x", "source": "doi:10.1056/NEJMoa1911303"}]
+    report = ground_claims(claims, _recs())
+    assert report["grounded_count"] == 1
+    assert report["claims"][0]["matched_record_id"] == "pmid:31535829"
+
+
+def test_claim_resolved_by_nct():
+    # regression (2026-06-04 review): NCT was advertised but could never resolve
+    # (no nct field / index). A record carrying an NCT now grounds an NCT-cited claim.
+    recs = _recs() + [CorpusRecord(record_id="pmid:31535829b", title="DAPA-HF",
+                                   pmid="31535829b", nct="NCT03036124")]
+    report = ground_claims([{"claim_id": "c1", "text": "x", "source": "NCT03036124"}], recs)
+    assert report["grounded_count"] == 1
+    report2 = ground_claims([{"claim_id": "c1", "text": "x", "source": {"nct": "nct03036124"}}], recs)
+    assert report2["grounded_count"] == 1  # case-insensitive
+
+
 def test_claim_with_no_identifier_is_ungrounded():
     claims = [{"claim_id": "c1", "text": "The drug reduced events by 30%."}]
     report = ground_claims(claims, _recs())

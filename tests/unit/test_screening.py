@@ -54,13 +54,18 @@ def test_screen_is_complete_no_silent_truncation():
     assert {p.record_id for p in proposals} == {r.record_id for r in recs}
 
 
-def test_relevance_feedback_changes_ranking():
+def test_relevance_feedback_changes_scoring():
     recs = _recs()
-    base = screen(recs, query="heart failure")
-    fed = screen(recs, query="heart failure", seed_includes=["pmid:1"])
-    # feedback folds dapagliflozin/HFrEF terms in; ranking remains deterministic
-    assert [p.record_id for p in fed] == [p.record_id for p in screen(recs, query="heart failure", seed_includes=["pmid:1"])]
-    assert isinstance(base, list)
+    base = {p.record_id: p.score for p in screen(recs, query="heart failure")}
+    fed = {p.record_id: p.score for p in screen(recs, query="heart failure", seed_includes=["pmid:1"])}
+    # folding pmid:1's distinctive terms (dapagliflozin/HFrEF/...) into the query
+    # actually changes the scores vs no feedback — not a no-op
+    assert base != fed
+    # the seed doc scores at least as high once its own vocabulary is folded in
+    assert fed["pmid:1"] >= base["pmid:1"]
+    # and feedback is deterministic
+    fed2 = {p.record_id: p.score for p in screen(recs, query="heart failure", seed_includes=["pmid:1"])}
+    assert fed == fed2
 
 
 def test_pico_query_flatten_and_empty():

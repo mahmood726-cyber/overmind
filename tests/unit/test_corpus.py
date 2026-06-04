@@ -117,6 +117,15 @@ def test_record_id_synthesized_from_pmid():
     assert rec.record_id == "pmid:42"
 
 
+def test_non_integer_year_degrades_to_none_not_abort(tmp_path):
+    # regression (2026-06-04 review): a non-numeric year must not abort the load
+    rec = CorpusRecord.from_dict({"pmid": "1", "title": "X", "year": "2023 Mar"})
+    assert rec.year is None
+    # and a whole corpus with such a record still loads
+    path = _write_corpus(tmp_path / "c.jsonl", [{"pmid": "1", "title": "X", "year": "n/a"}])
+    assert len(OfflineCorpusProvider(path).records()) == 1
+
+
 # --- live MCP provider is honest about availability ----------------------
 
 def test_mcp_provider_unavailable_without_fetcher():

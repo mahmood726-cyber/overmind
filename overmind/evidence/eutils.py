@@ -139,11 +139,22 @@ def parse_efetch_xml(xml_bytes: bytes, query: str = "") -> list[dict]:
             if last:
                 authors.append((last + " " + inits).strip())
         ptypes = [_text(p) for p in article.findall(".//PublicationTypeList/PublicationType") if _text(p)]
+        # ClinicalTrials.gov accession (NCT) from the DataBankList, if present.
+        nct = None
+        for db in article.findall(".//DataBankList/DataBank"):
+            if _text(db.find("DataBankName")).lower() == "clinicaltrials.gov":
+                for acc in db.findall(".//AccessionNumber"):
+                    if _text(acc).upper().startswith("NCT"):
+                        nct = _text(acc).upper()
+                        break
+            if nct:
+                break
         records.append({
             "record_id": f"pmid:{pmid}",
             "source": "pubmed",
             "pmid": pmid,
             "doi": doi,
+            "nct": nct,
             "title": title,
             "abstract": abstract,
             "year": year,
