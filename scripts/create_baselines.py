@@ -22,6 +22,7 @@ from __future__ import annotations
 
 import argparse
 import json
+import shutil
 import subprocess
 import sys
 from pathlib import Path
@@ -1511,6 +1512,122 @@ print(json.dumps({
 }))
 ''',
     },
+    # ---- JS-dashboard engines (node probes) --------------------------------
+    # These projects ship a pure, node-requireable `engine.js`. The probe
+    # requires it via `path.resolve(process.cwd(), 'engine.js')` — Node resolves
+    # a bare relative require against the probe FILE, not cwd, so the absolute
+    # resolve is required (the NumericalWitness runs `node <probe>` with
+    # cwd = project root). Outputs are kept numeric for the witness comparator.
+    {
+        # htmlpairwise-repro: metaAnalyze(yi, vi) reproduces metafor EXACTLY on
+        # metadat dat.bcg (REML tau2=0.313243 est=-0.714533 SE=0.179781;
+        # DL tau2=0.308758 est=-0.714117; Q=152.2268; I2=92.2211). Cross-checked
+        # against the spec-collapse-atlas / overmind dat.bcg baselines.
+        "project_id_prefix": "htmlpairwise-repro",
+        "project_path": r"C:\Projects\htmlpairwise-repro",
+        "lang": "node",
+        "tolerance": 1e-4,
+        "probe": '''
+const path = require('path');
+const api = require(path.resolve(process.cwd(), 'engine.js'));
+const r = (x, n) => { const p = Math.pow(10, n == null ? 6 : n); return Math.round(x * p) / p; };
+const yi = [-0.889311,-1.585389,-1.348073,-1.441551,-0.217547,-0.786116,-1.620898,0.011952,-0.469418,-1.371345,-0.339359,0.445913,-0.017314];
+const vi = [0.325585,0.194581,0.415368,0.02001,0.05121,0.006906,0.223017,0.003962,0.056434,0.073025,0.012412,0.532506,0.071405];
+const reml = api.metaAnalyze(yi, vi, { method: 'REML' });
+const dl = api.metaAnalyze(yi, vi, { method: 'DL' });
+const pm = api.metaAnalyze(yi, vi, { method: 'PM' });
+console.log(JSON.stringify({
+  bcg_k: reml.k,
+  reml_mu: r(reml.mu), reml_tau2: r(reml.tau2), reml_seMu: r(reml.seMu),
+  dl_mu: r(dl.mu), dl_tau2: r(dl.tau2),
+  pm_tau2: r(pm.tau2),
+  Q: r(reml.Q, 4), I2: r(reml.I2, 4)
+}));
+''',
+    },
+    {
+        # html1-effectsize: deterministic effect-size conversions. Cross-checked
+        # against closed forms: logOR->d uses sqrt(3)/pi=0.551329; Hedges
+        # J=1-3/(4*df-1); d->r point-biserial; r->z=atanh(r); OR->RR; Fisher
+        # SE=1/sqrt(n-3).
+        "project_id_prefix": "html1-effectsize",
+        "project_path": r"C:\Projects\html1-effectsize",
+        "lang": "node",
+        "tolerance": 1e-4,
+        "probe": '''
+const path = require('path');
+const api = require(path.resolve(process.cwd(), 'engine.js'));
+const r = (x) => Math.round(x * 1e6) / 1e6;
+const d = api.logOR_to_d(1.0, null);
+const g = api.d_to_g(0.8, null, 50, 50);
+const rr = api.d_to_r(0.8, null, 50, 50);
+const z = api.r_to_z(0.5, null);
+console.log(JSON.stringify({
+  logOR1_to_d: r(d.mean),
+  sqrt3_over_pi: r(api.constants.SQRT3_OVER_PI),
+  d_to_g_J: r(g.J),
+  d_to_g_mean: r(g.mean),
+  d_to_r: r(rr.mean),
+  r05_to_z: r(z.mean),
+  OR2_p01_to_RR: r(api.OR_to_RR(2.0, 0.1)),
+  fisherSE_28: r(api.fisherSE(28))
+}));
+''',
+    },
+    {
+        # html2-tsa: trial-sequential-analysis sample size + monitoring.
+        # Cross-checked against closed forms: zAlpha(0.05,2)=qnorm(0.975)=
+        # 1.959964; O'Brien-Fleming boundary z_alpha/sqrt(t) (advanced-stats.md);
+        # RIS_binary = (za+zb)^2*(pc(1-pc)+pe(1-pe))/diff^2.
+        "project_id_prefix": "html2-tsa",
+        "project_path": r"C:\Projects\html2-tsa",
+        "lang": "node",
+        "tolerance": 1e-4,
+        "probe": '''
+const path = require('path');
+const api = require(path.resolve(process.cwd(), 'engine.js'));
+const r = (x, n) => { const p = Math.pow(10, n == null ? 6 : n); return Math.round(x * p) / p; };
+const rb = api.risBinary(0.3, 0.2, 0.05, 0.8, true);
+const rc = api.risContinuous(1.0, 0.5, 0.05, 0.8, true);
+console.log(JSON.stringify({
+  zAlpha_0975: r(api.zAlpha(0.05, true)),
+  zBeta_08: r(api.zBeta(0.8)),
+  obf_t05: r(api.obfBoundary(0.5, 0.05, true)),
+  ris_binary_nPerArm: r(rb.nPerArm, 4),
+  ris_binary_total: r(rb.ris, 4),
+  ris_continuous_nPerArm: r(rc.nPerArm, 4),
+  adj_factor_D05: r(api.adjustmentFactor(0.5)),
+  adjusted_ris: r(api.adjustedRIS(100, 0.5), 4)
+}));
+''',
+    },
+    {
+        # html3-fragility: fragility index by exact Fisher test, one-arm
+        # modification (lessons.md: modify ONE arm only). Cross-checked against
+        # the project's own tests.js: fragility(40,60,5,95) FI=21,
+        # fragility(20,80,9,91) borderline FI=1.
+        "project_id_prefix": "html3-fragility",
+        "project_path": r"C:\Projects\html3-fragility",
+        "lang": "node",
+        "tolerance": 1e-4,
+        "probe": '''
+const path = require('path');
+const api = require(path.resolve(process.cwd(), 'engine.js'));
+const r = (x) => Math.round(x * 1e6) / 1e6;
+const main = api.fragility(20, 80, 6, 94, { alpha: 0.05, test: 'fisher' });
+const strong = api.fragility(40, 60, 5, 95, { alpha: 0.05, test: 'fisher' });
+const border = api.fragility(20, 80, 9, 91, { alpha: 0.05, test: 'fisher' });
+console.log(JSON.stringify({
+  main_FI: main.FI,
+  main_significant: main.significant ? 1 : 0,
+  main_p0: r(main.p0),
+  main_FQ: r(main.FQ),
+  strong_FI: strong.FI,
+  border_FI: border.FI,
+  fisher_p_20_80_6_94: r(api.fisherTwoSided(20, 80, 6, 94))
+}));
+''',
+    },
 ]
 
 
@@ -1535,13 +1652,27 @@ def create_baseline(spec: dict, dry_run: bool = False) -> dict | None:
     prefix = spec["project_id_prefix"]
     probe_code = spec["probe"].strip()
     tolerance = spec["tolerance"]
+    lang = spec.get("lang", "python")
 
-    # Write probe script
+    # Write probe script (.py for python probes, .js for node probes).
+    # Node probes target JS-dashboard engines; the runner ("node") is
+    # allowlisted in subprocess_utils so the NumericalWitness can re-run them.
     PROBES_DIR.mkdir(parents=True, exist_ok=True)
-    probe_path = PROBES_DIR / f"probe_{prefix}.py"
+    ext = "js" if lang == "node" else "py"
+    probe_path = PROBES_DIR / f"probe_{prefix}.{ext}"
     probe_path.write_text(probe_code, encoding="utf-8")
 
-    command = f"{PYTHON} {probe_path}"
+    if lang == "node":
+        # Resolve node to an ABSOLUTE path and quote it. The NumericalWitness's
+        # split_command only preserves Windows backslash paths when the command
+        # starts with an absolute "C:\..." executable (WINDOWS_ABSOLUTE_EXECUTABLE_RE);
+        # a bare `node` would fall through to POSIX splitting and mangle the
+        # probe path's backslashes. Quoting handles the space in "Program Files".
+        runner = shutil.which("node") or "node"
+        command = f'"{runner}" {probe_path}'
+    else:
+        runner = PYTHON
+        command = f"{runner} {probe_path}"
 
     if dry_run:
         print(f"  Would create: {prefix}")
@@ -1552,7 +1683,7 @@ def create_baseline(spec: dict, dry_run: bool = False) -> dict | None:
     # Run the probe to capture expected values
     try:
         proc = subprocess.run(
-            [PYTHON, str(probe_path)],
+            [runner, str(probe_path)],
             cwd=project_path,
             capture_output=True, text=True, timeout=30,
         )
@@ -1571,7 +1702,7 @@ def create_baseline(spec: dict, dry_run: bool = False) -> dict | None:
         return None
 
     baseline = {
-        "command": f"{PYTHON} {probe_path}",
+        "command": command,
         "values": values,
         "tolerance": tolerance,
         "project_path": project_path,
@@ -1584,7 +1715,14 @@ def main() -> None:
     parser = argparse.ArgumentParser(description="Create numerical baselines")
     parser.add_argument("--dry-run", action="store_true")
     parser.add_argument("--verify", action="store_true", help="Verify after creating")
+    parser.add_argument(
+        "--only",
+        help="comma-separated project_id_prefix values to build (default: all). "
+        "Use this to create baselines surgically without re-running stale specs.",
+    )
     args = parser.parse_args()
+
+    only = {s.strip() for s in args.only.split(",")} if args.only else None
 
     BASELINES_DIR.mkdir(parents=True, exist_ok=True)
     db_path = DATA_DIR / "state" / "overmind.db"
@@ -1595,6 +1733,8 @@ def main() -> None:
     created = 0
     for spec in BASELINE_SPECS:
         prefix = spec["project_id_prefix"]
+        if only is not None and prefix not in only:
+            continue
         project_id = find_project_id(db_path, prefix)
 
         print(f"[{prefix}]", end=" ")
@@ -1616,8 +1756,11 @@ def main() -> None:
 
         # Optional immediate verify
         if args.verify:
+            lang = spec.get("lang", "python")
+            ext = "js" if lang == "node" else "py"
+            runner = "node" if lang == "node" else PYTHON
             verify_proc = subprocess.run(
-                [PYTHON, str(PROBES_DIR / f"probe_{prefix}.py")],
+                [runner, str(PROBES_DIR / f"probe_{prefix}.{ext}")],
                 cwd=spec["project_path"],
                 capture_output=True, text=True, timeout=30,
             )

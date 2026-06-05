@@ -1,0 +1,16 @@
+{
+  "command": "\"C:\\Program Files\\nodejs\\node.EXE\" C:\\Users\\mahmo\\code\\overmind\\data\\baseline_probes\\probe_html2-tsa.js",
+  "values": {
+    "zAlpha_0975": 1.959964,
+    "zBeta_08": 0.841621,
+    "obf_t05": 2.771808,
+    "ris_binary_nPerArm": 290.4086,
+    "ris_binary_total": 580.8171,
+    "ris_continuous_nPerArm": 62.791,
+    "adj_factor_D05": 2,
+    "adjusted_ris": 200
+  },
+  "tolerance": 0.0001,
+  "project_path": "C:\\Projects\\html2-tsa",
+  "created_by": "create_baselines.py"
+}

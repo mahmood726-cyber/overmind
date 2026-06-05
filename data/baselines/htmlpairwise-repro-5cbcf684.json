@@ -1,0 +1,17 @@
+{
+  "command": "\"C:\\Program Files\\nodejs\\node.EXE\" C:\\Users\\mahmo\\code\\overmind\\data\\baseline_probes\\probe_htmlpairwise-repro.js",
+  "values": {
+    "bcg_k": 13,
+    "reml_mu": -0.714533,
+    "reml_tau2": 0.313243,
+    "reml_seMu": 0.179781,
+    "dl_mu": -0.714117,
+    "dl_tau2": 0.308758,
+    "pm_tau2": 0.318068,
+    "Q": 152.2268,
+    "I2": 92.2211
+  },
+  "tolerance": 0.0001,
+  "project_path": "C:\\Projects\\htmlpairwise-repro",
+  "created_by": "create_baselines.py"
+}

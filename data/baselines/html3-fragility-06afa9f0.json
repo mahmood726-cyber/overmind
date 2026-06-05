@@ -1,0 +1,15 @@
+{
+  "command": "\"C:\\Program Files\\nodejs\\node.EXE\" C:\\Users\\mahmo\\code\\overmind\\data\\baseline_probes\\probe_html3-fragility.js",
+  "values": {
+    "main_FI": 4,
+    "main_significant": 1,
+    "main_p0": 0.005427,
+    "main_FQ": 0.02,
+    "strong_FI": 21,
+    "border_FI": 1,
+    "fisher_p_20_80_6_94": 0.005427
+  },
+  "tolerance": 0.0001,
+  "project_path": "C:\\Projects\\html3-fragility",
+  "created_by": "create_baselines.py"
+}

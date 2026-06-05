@@ -72,6 +72,34 @@ from this decayed slug list. Rows below are preserved as the historical record.
   dataset; matches the project's own R/mada `validation_reference.json` within its
   stated tolerances (Sens 0.865/Spec 0.903; I²_spec=73.99 exact).
 
+### Fresh-discovery JS-dashboard baselines shipped (2026-06-05, node probes)
+
+`create_baselines.py` now supports node probes via a per-spec `"lang": "node"`
+field (writes `probe_<slug>.js`, runs with an ABSOLUTE quoted node path so the
+witness's `split_command` keeps the backslash path — see the create_baseline
+comment). A new `--only PREFIX[,PREFIX]` flag builds specs surgically. Node JS
+probes `require(path.resolve(process.cwd(), 'engine.js'))` (bare relative require
+resolves against the probe file, not cwd). All 4 verified SKIP→PASS via the real
+`NumericalWitness` and re-run deterministic:
+
+- ✅ **htmlpairwise-repro** (`-5cbcf684`) — `metaAnalyze(yi,vi)` on dat.bcg
+  reproduces metafor EXACTLY (REML τ²=0.313243 est=−0.714533 SE=0.179781;
+  DL τ²=0.308758 est=−0.714117; Q=152.2268; I²=92.2211). Strongest cross-check.
+- ✅ **html1-effectsize** (`-1d41f3b9`) — effect-size conversions vs closed forms:
+  sqrt(3)/π=0.551329, Hedges J=0.992327, d→r=0.371391, atanh(0.5)=0.549306,
+  OR→RR=1.818182, Fisher SE(28)=0.2.
+- ✅ **html2-tsa** (`-3c1289d5`) — TSA: zα=1.959964, OBF boundary z/√t=2.771808,
+  RIS_binary nPerArm=290.4086, all vs closed form.
+- ✅ **html3-fragility** (`-06afa9f0`) — fragility index (one-arm, exact Fisher):
+  strong(40,60,5,95) FI=21 and border(20,80,9,91) FI=1 match the project's own
+  tests.js; main(20,80,6,94) FI=4, p0=0.005427, FQ=0.02.
+
+> ~35 more JS engine.js dashboards remain (C:\Projects, all node-requireable with
+> a tests.js). Next batches: betablocker, culpritcontroversy, livingmetacolchicine,
+> Metamvhtml, pairwisepro-proportion, Omnibusextendedmeta, html4/5/6, htmlnma-geometry.
+> Skip (not in Overmind DB — need a scan first): Eplerenone, Bivariatehtml-,
+> Mulitlevelhtmlfinal, neurosynth.
+
 > Remaining Python-engine candidates are not faithful targets: transcendent-ma-lab's
 > `pool_quantum` is an explicitly experimental method (no ground truth);
 > evidence-forecast loads studies from data (not self-contained); cora/dclnma/lec

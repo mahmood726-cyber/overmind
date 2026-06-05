@@ -1,0 +1,16 @@
+{
+  "command": "\"C:\\Program Files\\nodejs\\node.EXE\" C:\\Users\\mahmo\\code\\overmind\\data\\baseline_probes\\probe_html1-effectsize.js",
+  "values": {
+    "logOR1_to_d": 0.551329,
+    "sqrt3_over_pi": 0.551329,
+    "d_to_g_J": 0.992327,
+    "d_to_g_mean": 0.793862,
+    "d_to_r": 0.371391,
+    "r05_to_z": 0.549306,
+    "OR2_p01_to_RR": 1.818182,
+    "fisherSE_28": 0.2
+  },
+  "tolerance": 0.0001,
+  "project_path": "C:\\Projects\\html1-effectsize",
+  "created_by": "create_baselines.py"
+}
