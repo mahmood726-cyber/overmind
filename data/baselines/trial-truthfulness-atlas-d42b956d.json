@@ -1,0 +1,13 @@
+{
+  "command": "C:\\Users\\mahmo\\AppData\\Local\\Programs\\Python\\Python313\\python.exe C:\\Users\\mahmo\\code\\overmind\\data\\baseline_probes\\probe_trial-truthfulness-atlas.py",
+  "values": {
+    "k": 13,
+    "mu": -0.714117,
+    "tau2": 0.308758,
+    "ci_low": -1.107855,
+    "ci_high": -0.320379
+  },
+  "tolerance": 0.0001,
+  "project_path": "C:\\Projects\\trial-truthfulness-atlas",
+  "created_by": "create_baselines.py"
+}

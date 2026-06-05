@@ -64,6 +64,10 @@ from this decayed slug list. Rows below are preserved as the historical record.
 - ✅ **e156-student-starter** (`e156-student-starter-f1c47832`) — probes
   `tools.pool_pairwise.pool` (Paule-Mandel τ² + HKSJ-floor t CI) on a fixed 5-study
   2×2 set (homogeneous, OR≈0.6 → τ²=0): pooled_or=0.598889, se=0.154654.
+- ✅ **hfpef-registry-calibration** (`-8f9669f5`), **trial-truthfulness-atlas**
+  (`-d42b956d`), **mission-critical** (`-06fb513a`) — each probes its own DL
+  random-effects engine on dat.bcg; all reproduce metafor DL EXACTLY
+  (est/mu/log_rr=−0.714117, τ²=0.308758, Q=152.23, I²=92.1).
 
 > NOTE on the wider BASELINE_SPECS list: many pre-existing specs still carry stale
 > 2026-04 paths (e.g. `C:\Models\…`, `C:\overmind`). Repair a spec's path (and any

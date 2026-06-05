@@ -1,0 +1,14 @@
+{
+  "command": "C:\\Users\\mahmo\\AppData\\Local\\Programs\\Python\\Python313\\python.exe C:\\Users\\mahmo\\code\\overmind\\data\\baseline_probes\\probe_hfpef-registry-calibration.py",
+  "values": {
+    "k": 13,
+    "log_rr": -0.714117,
+    "se": 0.178741,
+    "tau2": 0.308758,
+    "i2": 92.117,
+    "q": 152.226766
+  },
+  "tolerance": 0.0001,
+  "project_path": "C:\\Projects\\hfpef-registry-calibration",
+  "created_by": "create_baselines.py"
+}

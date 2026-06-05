@@ -1416,6 +1416,73 @@ print(json.dumps({
 }))
 ''',
     },
+    {
+        # Added 2026-06-05. DL random-effects on canonical dat.bcg (log-RR):
+        # reproduces metafor DL exactly (log_rr=-0.714117, tau2=0.308758, I2=92.1).
+        "project_id_prefix": "hfpef-registry-calibration",
+        "project_path": r"C:\Projects\hfpef-registry-calibration",
+        "tolerance": 1e-4,
+        "probe": '''
+import sys, math, json
+sys.path.insert(0, "src")
+from hfpef_calibrate.meta import random_effects_pool
+
+YI = [-0.889311, -1.585389, -1.348073, -1.441551, -0.217547, -0.786116,
+      -1.620898, 0.011952, -0.469418, -1.371345, -0.339359, 0.445913, -0.017314]
+VI = [0.325585, 0.194581, 0.415368, 0.02001, 0.05121, 0.006906, 0.223017,
+      0.003962, 0.056434, 0.073025, 0.012412, 0.532506, 0.071405]
+r = random_effects_pool(YI, [math.sqrt(v) for v in VI], "DL")
+print(json.dumps({
+    "k": r.k, "log_rr": round(r.log_rr, 6), "se": round(r.se, 6),
+    "tau2": round(r.tau2, 6), "i2": round(r.i2, 4), "q": round(r.q, 6),
+}))
+''',
+    },
+    {
+        # Added 2026-06-05. DL random-effects (HKSJ CI) on dat.bcg:
+        # reproduces metafor DL (mu=-0.714117, tau2=0.308758).
+        "project_id_prefix": "trial-truthfulness-atlas",
+        "project_path": r"C:\Projects\trial-truthfulness-atlas",
+        "tolerance": 1e-4,
+        "probe": '''
+import sys, json
+sys.path.insert(0, "src")
+from tta.meta import random_effects_pool
+
+YI = [-0.889311, -1.585389, -1.348073, -1.441551, -0.217547, -0.786116,
+      -1.620898, 0.011952, -0.469418, -1.371345, -0.339359, 0.445913, -0.017314]
+VI = [0.325585, 0.194581, 0.415368, 0.02001, 0.05121, 0.006906, 0.223017,
+      0.003962, 0.056434, 0.073025, 0.012412, 0.532506, 0.071405]
+r = random_effects_pool(YI, VI)
+print(json.dumps({
+    "k": r.k, "mu": round(r.mu, 6), "tau2": round(r.tau2, 6),
+    "ci_low": round(r.ci_low, 6), "ci_high": round(r.ci_high, 6),
+}))
+''',
+    },
+    {
+        # Added 2026-06-05. Pure-Python DL pool on dat.bcg: reproduces metafor DL
+        # exactly (estimate=-0.714117, tau2=0.308758, Q=152.23, I2=92.1).
+        "project_id_prefix": "mission-critical",
+        "project_path": r"C:\Projects\mission-critical",
+        "tolerance": 1e-4,
+        "probe": '''
+import sys, json
+import numpy as np
+sys.path.insert(0, ".")
+from mission_critical.diffmeta.engine import _python_pool
+
+YI = np.array([-0.889311, -1.585389, -1.348073, -1.441551, -0.217547, -0.786116,
+               -1.620898, 0.011952, -0.469418, -1.371345, -0.339359, 0.445913, -0.017314])
+VI = np.array([0.325585, 0.194581, 0.415368, 0.02001, 0.05121, 0.006906, 0.223017,
+               0.003962, 0.056434, 0.073025, 0.012412, 0.532506, 0.071405])
+r = _python_pool(YI, VI, method="DL", measure="generic").to_dict()
+print(json.dumps({
+    "k": r["k"], "estimate": round(r["estimate"], 6), "se": round(r["se"], 6),
+    "tau2": round(r["tau2"], 6), "i2": round(r["i2"], 4), "q": round(r["q"], 6),
+}))
+''',
+    },
 ]
 
 
