@@ -1,0 +1,32 @@
+{
+  "capability": "citation_grounding",
+  "corpus_size": 10,
+  "claim_count": 2,
+  "grounded_count": 2,
+  "ungrounded_count": 0,
+  "grounding_ratio": 1.0,
+  "ungrounded": [],
+  "claims": [
+    {
+      "claim_id": "DAPA-HF",
+      "text": "First worsening heart failure event",
+      "resolved": true,
+      "matched_record_id": "pmid:31535829",
+      "identifier": {
+        "pmid": "31535829"
+      },
+      "reason": "resolved"
+    },
+    {
+      "claim_id": "EMPEROR-Reduced",
+      "text": "Total hospitalizations for heart failure",
+      "resolved": true,
+      "matched_record_id": "pmid:32865377",
+      "identifier": {
+        "pmid": "32865377"
+      },
+      "reason": "resolved"
+    }
+  ],
+  "policy": "a claim with no resolvable doi/pmid/nct/record_id is UNGROUNDED, never assumed"
+}

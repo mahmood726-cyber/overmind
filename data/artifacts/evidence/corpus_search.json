@@ -1,0 +1,169 @@
+{
+  "capability": "search_corpus",
+  "provider": "offline-jsonl",
+  "provider_available": true,
+  "corpus_size": 10,
+  "sources": [
+    "pubmed"
+  ],
+  "query": "SGLT2 inhibitor heart failure",
+  "limit": 10,
+  "hit_count": 10,
+  "hits": [
+    {
+      "record_id": "pmid:32446323",
+      "score": 1.4673,
+      "matched_terms": [
+        "sglt2",
+        "inhibitor",
+        "heart",
+        "failure"
+      ],
+      "title": "Estimating lifetime benefits of comprehensive disease-modifying pharmacological therapies in patients with heart failure with reduced ejection fraction: a comparative analysis of three randomised controlled trials.",
+      "doi": "10.1016/S0140-6736(20)30748-0",
+      "pmid": "32446323",
+      "year": 2020,
+      "source": "pubmed",
+      "url": "https://pubmed.ncbi.nlm.nih.gov/32446323/"
+    },
+    {
+      "record_id": "pmid:34711976",
+      "score": 1.2803,
+      "matched_terms": [
+        "sglt2",
+        "inhibitor",
+        "heart",
+        "failure"
+      ],
+      "title": "The SGLT2 inhibitor dapagliflozin in heart failure with preserved ejection fraction: a multicenter randomized trial.",
+      "doi": "10.1038/s41591-021-01536-x",
+      "pmid": "34711976",
+      "year": 2021,
+      "source": "pubmed",
+      "url": "https://pubmed.ncbi.nlm.nih.gov/34711976/"
+    },
+    {
+      "record_id": "pmid:35228754",
+      "score": 1.2679,
+      "matched_terms": [
+        "sglt2",
+        "inhibitor",
+        "heart",
+        "failure"
+      ],
+      "title": "The SGLT2 inhibitor empagliflozin in patients hospitalized for acute heart failure: a multinational randomized trial.",
+      "doi": "10.1038/s41591-021-01659-1",
+      "pmid": "35228754",
+      "year": 2022,
+      "source": "pubmed",
+      "url": "https://pubmed.ncbi.nlm.nih.gov/35228754/"
+    },
+    {
+      "record_id": "pmid:35228753",
+      "score": 1.1143,
+      "matched_terms": [
+        "sglt2",
+        "inhibitor",
+        "heart",
+        "failure"
+      ],
+      "title": "The SGLT2 inhibitor canagliflozin in heart failure: the CHIEF-HF remote, patient-centered randomized trial.",
+      "doi": "10.1038/s41591-022-01703-8",
+      "pmid": "35228753",
+      "year": 2022,
+      "source": "pubmed",
+      "url": "https://pubmed.ncbi.nlm.nih.gov/35228753/"
+    },
+    {
+      "record_id": "pmid:36592186",
+      "score": 1.0396,
+      "matched_terms": [
+        "sglt2",
+        "inhibitor",
+        "heart",
+        "failure"
+      ],
+      "title": "Cardiovascular and renal effects of SGLT2 inhibitor initiation in acute heart failure: a meta-analysis of randomized controlled trials.",
+      "doi": "10.1007/s00392-022-02148-2",
+      "pmid": "36592186",
+      "year": 2023,
+      "source": "pubmed",
+      "url": "https://pubmed.ncbi.nlm.nih.gov/36592186/"
+    },
+    {
+      "record_id": "pmid:36041474",
+      "score": 0.6824,
+      "matched_terms": [
+        "sglt2",
+        "heart",
+        "failure"
+      ],
+      "title": "SGLT-2 inhibitors in patients with heart failure: a comprehensive meta-analysis of five randomised controlled trials.",
+      "doi": "10.1016/S0140-6736(22)01429-5",
+      "pmid": "36041474",
+      "year": 2022,
+      "source": "pubmed",
+      "url": "https://pubmed.ncbi.nlm.nih.gov/36041474/"
+    },
+    {
+      "record_id": "pmid:30415602",
+      "score": 0.6221,
+      "matched_terms": [
+        "inhibitor",
+        "heart",
+        "failure"
+      ],
+      "title": "Dapagliflozin and Cardiovascular Outcomes in Type 2 Diabetes.",
+      "doi": "10.1056/NEJMoa1812389",
+      "pmid": "30415602",
+      "year": 2018,
+      "source": "pubmed",
+      "url": "https://pubmed.ncbi.nlm.nih.gov/30415602/"
+    },
+    {
+      "record_id": "pmid:31535829",
+      "score": 0.563,
+      "matched_terms": [
+        "sglt2",
+        "heart",
+        "failure"
+      ],
+      "title": "Dapagliflozin in Patients with Heart Failure and Reduced Ejection Fraction.",
+      "doi": "10.1056/NEJMoa1911303",
+      "pmid": "31535829",
+      "year": 2019,
+      "source": "pubmed",
+      "url": "https://pubmed.ncbi.nlm.nih.gov/31535829/"
+    },
+    {
+      "record_id": "pmid:32865377",
+      "score": 0.4708,
+      "matched_terms": [
+        "sglt2",
+        "heart",
+        "failure"
+      ],
+      "title": "Cardiovascular and Renal Outcomes with Empagliflozin in Heart Failure.",
+      "doi": "10.1056/NEJMoa2022190",
+      "pmid": "32865377",
+      "year": 2020,
+      "source": "pubmed",
+      "url": "https://pubmed.ncbi.nlm.nih.gov/32865377/"
+    },
+    {
+      "record_id": "pmid:34449189",
+      "score": 0.208,
+      "matched_terms": [
+        "heart",
+        "failure"
+      ],
+      "title": "Empagliflozin in Heart Failure with a Preserved Ejection Fraction.",
+      "doi": "10.1056/NEJMoa2107038",
+      "pmid": "34449189",
+      "year": 2021,
+      "source": "pubmed",
+      "url": "https://pubmed.ncbi.nlm.nih.gov/34449189/"
+    }
+  ],
+  "ranking": "bm25(k1=1.5,b=0.75) lexical over title+abstract; not semantic"
+}

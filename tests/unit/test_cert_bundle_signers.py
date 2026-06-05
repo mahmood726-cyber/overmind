@@ -1,7 +1,3 @@
-# sentinel:skip-file — pytest assertions in this signer-roundtrip test compare
-# method-name strings, empty-string literals, and known-test-fixture values.
-# Not adversarial timing surfaces; constant-time comparison would just slow
-# tests for no benefit.
 """CertBundle integration with the pluggable signer framework.
 
 Exercises the full signing pipeline at the CertBundle level — the HMAC
@@ -16,6 +12,7 @@ path is already covered in test_cert_bundle_hmac.py. This module covers:
 """
 from __future__ import annotations
 
+import hmac
 from pathlib import Path
 
 import pytest
@@ -71,9 +68,9 @@ def test_ed25519_bundle_sign_and_verify(monkeypatch, tmp_path: Path):
     monkeypatch.setenv(ENV_ED25519_KEY, str(priv))
 
     b = _bundle()
-    assert b.signature_method == "ed25519"
-    assert b.bundle_signature != ""
-    assert b.signature_public_key != ""
+    assert hmac.compare_digest(b.signature_method, "ed25519")
+    assert b.bundle_signature
+    assert b.signature_public_key
     assert b.verify_signature() is True
 
 
@@ -116,9 +113,9 @@ def test_explicit_hmac_picks_hmac_even_when_ed25519_available(monkeypatch, tmp_p
     monkeypatch.setenv(ENV_METHOD, "hmac")
 
     b = _bundle()
-    assert b.signature_method == "hmac"
+    assert hmac.compare_digest(b.signature_method, "hmac")
     assert len(b.bundle_signature) == 64  # sha256 hex
-    assert b.signature_public_key == ""   # hmac has no public key
+    assert hmac.compare_digest(b.signature_public_key, "")   # hmac has no public key
     assert b.verify_signature() is True
 
 
@@ -135,7 +132,7 @@ def test_legacy_hmac_bundle_without_method_still_verifies(monkeypatch):
     # Simulate loading a pre-refactor bundle: wipe the method field, keep sig.
     legacy_sig = b.bundle_signature
     b.signature_method = ""
-    assert b.bundle_signature == legacy_sig  # untouched
+    assert hmac.compare_digest(b.bundle_signature, legacy_sig)  # untouched
     assert b.verify_signature() is True, (
         "legacy bundles (no signature_method) must fall back to HMAC to "
         "preserve verifiability of archived nightly outputs"
@@ -152,7 +149,7 @@ def test_tampered_method_breaks_verify(monkeypatch, tmp_path: Path):
     monkeypatch.setenv(ENV_HMAC_KEY, "attacker-key")
 
     b = _bundle()
-    assert b.signature_method == "ed25519"
+    assert hmac.compare_digest(b.signature_method, "ed25519")
     # Attacker rewrites signature_method to hmac to try to route through
     # the HMAC verifier with their own key. Must fail.
     b.signature_method = "hmac"
@@ -164,12 +161,12 @@ def test_tampered_method_breaks_verify(monkeypatch, tmp_path: Path):
 def test_no_signer_configured_leaves_all_fields_empty(monkeypatch):
     _clear_signer_env(monkeypatch)
     b = _bundle()
-    assert b.bundle_signature == ""
-    assert b.signature_method == ""
-    assert b.signature_public_key == ""
+    assert hmac.compare_digest(b.bundle_signature, "")
+    assert hmac.compare_digest(b.signature_method, "")
+    assert hmac.compare_digest(b.signature_public_key, "")
     assert b.verify_signature() is False
     # bundle_hash remains populated regardless — cache-skip still works
-    assert b.bundle_hash != ""
+    assert b.bundle_hash
 
 
 # --- Serialization --------------------------------------------------
@@ -181,9 +178,9 @@ def test_to_dict_carries_signer_fields(monkeypatch, tmp_path: Path):
     b = _bundle()
 
     d = b.to_dict()
-    assert d["signature_method"] == "ed25519"
-    assert d["signature_public_key"] == b.signature_public_key
-    assert d["bundle_signature"] == b.bundle_signature
+    assert hmac.compare_digest(d["signature_method"], "ed25519")
+    assert hmac.compare_digest(d["signature_public_key"], b.signature_public_key)
+    assert hmac.compare_digest(d["bundle_signature"], b.bundle_signature)
 
 
 def test_roundtrip_through_dict_preserves_verifiability(monkeypatch, tmp_path: Path):
@@ -211,5 +208,5 @@ def test_roundtrip_through_dict_preserves_verifiability(monkeypatch, tmp_path: P
         signature_public_key=d["signature_public_key"],
     )
     assert reloaded.verify_signature() is True
-    assert reloaded.bundle_signature == original.bundle_signature
-    assert reloaded.signature_method == original.signature_method
+    assert hmac.compare_digest(reloaded.bundle_signature, original.bundle_signature)
+    assert hmac.compare_digest(reloaded.signature_method, original.signature_method)

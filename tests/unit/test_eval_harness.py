@@ -6,7 +6,11 @@ from overmind.intelligence.eval_harness import EvalHarness
 from overmind.storage.models import ProjectRecord
 
 
-def test_eval_harness_writes_reproducible_report(tmp_path):
+def test_eval_harness_writes_reproducible_report(monkeypatch, tmp_path):
+    monkeypatch.delenv("OVERMIND_CONFIG_DIR", raising=False)
+    monkeypatch.delenv("OVERMIND_DATA_DIR", raising=False)
+    monkeypatch.delenv("OVERMIND_DB_PATH", raising=False)
+
     config_dir = tmp_path / "config"
     data_dir = tmp_path / "data"
     config_dir.mkdir()
@@ -63,6 +67,11 @@ def test_eval_harness_writes_reproducible_report(tmp_path):
         assert report["focus_project_id"] == "eval-project"
         assert report["isolation_policy"]["mode"] == "high_risk"
         assert report["state"]["project_count"] == 1
+        assert report["research_benchmark"]["benchmark_type"] == "capability_evidence_benchmark"
+        assert any(
+            row["name"] == "Overmind + Sentinel + TruthCert"
+            for row in report["research_benchmark"]["systems"]
+        )
         assert "artifact" in report
         assert (config.data_dir / "artifacts" / "eval_harness_eval-project.json").exists()
     finally:

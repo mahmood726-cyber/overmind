@@ -1,0 +1,389 @@
+{
+  "benchmark_type": "capability_evidence_benchmark",
+  "current_system_rank": 1,
+  "current_system_score_percent": 88.8,
+  "dimensions": [
+    {
+      "description": "Does it reproduce published pooled estimates / flow counts within tolerance on a committed gold set, with a deterministic auditable engine? (MEASURED, not self-asserted.)",
+      "dimension_id": "output_correctness",
+      "label": "Measured output correctness (gold-standard reproduction)",
+      "weight": 2.0
+    },
+    {
+      "description": "Does it verify calculations, statistical claims, numerical baselines, or meta-analytic outputs?",
+      "dimension_id": "statistical_verification",
+      "label": "Statistical and numerical verification",
+      "weight": 1.4
+    },
+    {
+      "description": "Does it automate study screening, coding, extraction, or related review labor?",
+      "dimension_id": "screening_extraction",
+      "label": "Screening and data-extraction automation",
+      "weight": 1.2
+    },
+    {
+      "description": "Are outputs tied to papers, citations, quotes, source records, or auditable evidence?",
+      "dimension_id": "citation_grounding",
+      "label": "Evidence and citation grounding",
+      "weight": 1.2
+    },
+    {
+      "description": "Can the system retrieve papers from a large scholarly corpus or index?",
+      "dimension_id": "search_corpus",
+      "label": "Scholarly search and corpus access",
+      "weight": 1.0
+    },
+    {
+      "description": "Does it cover search, screening, extraction, reporting, or living-review workflow steps?",
+      "dimension_id": "review_workflow",
+      "label": "Systematic-review workflow coverage",
+      "weight": 1.0
+    },
+    {
+      "description": "Can it repeatedly monitor, route, verify, or gate work across projects?",
+      "dimension_id": "continuous_verification",
+      "label": "Continuous verification and orchestration",
+      "weight": 1.0
+    },
+    {
+      "description": "Does it preserve audit trails, block unsafe outputs, or enforce transparent governance?",
+      "dimension_id": "auditability_governance",
+      "label": "Auditability and fail-closed governance",
+      "weight": 1.0
+    },
+    {
+      "description": "Does public documentation expose validation, benchmark, simulation, or test evidence?",
+      "dimension_id": "public_benchmarking",
+      "label": "Public benchmark transparency",
+      "weight": 0.7
+    },
+    {
+      "description": "Can the user inspect, modify, self-host, or run the system locally?",
+      "dimension_id": "local_control",
+      "label": "Local/open control",
+      "weight": 0.5
+    }
+  ],
+  "evidence_artifacts_used": [
+    "citation_grounding",
+    "corpus_search",
+    "extraction",
+    "prisma",
+    "screening"
+  ],
+  "gaps": [
+    {
+      "best_comparator_score": 3,
+      "current_score": 2,
+      "dimension": "search_corpus",
+      "gap": 1,
+      "label": "Scholarly search and corpus access"
+    },
+    {
+      "best_comparator_score": 3,
+      "current_score": 2,
+      "dimension": "auditability_governance",
+      "gap": 1,
+      "label": "Auditability and fail-closed governance"
+    },
+    {
+      "best_comparator_score": 3,
+      "current_score": 2,
+      "dimension": "public_benchmarking",
+      "gap": 1,
+      "label": "Public benchmark transparency"
+    }
+  ],
+  "generated_at": "2026-06-04T21:59:58+00:00",
+  "interpretation": [
+    "Use this as a capability and governance benchmark, not as an accuracy leaderboard.",
+    "External systems are scored from public documentation and publications; they were not run on shared fixtures here.",
+    "A true accuracy benchmark requires a locked task set, blinded expected answers, and the same inputs submitted to each system."
+  ],
+  "max_weighted_total": 33.0,
+  "methodology": "Dimension weights rebalanced 2026-06-04 so output-correctness + synthesis dominate governance/infra (now ~29% of weight, was ~45%). output_correctness is MEASURED via gold_benchmark (published pooled-estimate reproduction within tolerance), fail-closed. Comparator scores remain capability-PRESENCE from public documentation (some figures literature-grounded, e.g. Elicit data-extraction ~21% exact match vs humans, Cochrane ESM 10.1002/cesm.70033); they are NOT a hands-on head-to-head, so the ranking measures capability coverage, not a measured output-quality contest. Comparators score 0 on output_correctness because a pooled meta-analytic estimate is not their output product (they assist discovery/screening; the human/RevMan pools) and none publishes a gold reproduction \u2014 it reflects scope, NOT a measured failure of a test they were given.",
+  "portfolio_summary": {
+    "advanced_math_projects": 294,
+    "available_runner_count": 3,
+    "evidence_synthesis_projects": 253,
+    "high_risk_projects": 372,
+    "oracle_benchmark_projects": 17,
+    "project_count": 581,
+    "runner_count": 4,
+    "testable_projects": 401,
+    "validation_history_projects": 167
+  },
+  "score_scale": {
+    "0": "no public evidence or not a core capability",
+    "1": "limited or adjacent capability",
+    "2": "strong partial capability",
+    "3": "first-class documented capability"
+  },
+  "strengths": [
+    {
+      "competitor_median": 0,
+      "current_score": 3,
+      "dimension": "output_correctness",
+      "label": "Measured output correctness (gold-standard reproduction)"
+    },
+    {
+      "competitor_median": 0,
+      "current_score": 3,
+      "dimension": "statistical_verification",
+      "label": "Statistical and numerical verification"
+    },
+    {
+      "competitor_median": 2,
+      "current_score": 3,
+      "dimension": "screening_extraction",
+      "label": "Screening and data-extraction automation"
+    },
+    {
+      "competitor_median": 2,
+      "current_score": 3,
+      "dimension": "citation_grounding",
+      "label": "Evidence and citation grounding"
+    },
+    {
+      "competitor_median": 2,
+      "current_score": 3,
+      "dimension": "review_workflow",
+      "label": "Systematic-review workflow coverage"
+    },
+    {
+      "competitor_median": 1,
+      "current_score": 2,
+      "dimension": "continuous_verification",
+      "label": "Continuous verification and orchestration"
+    },
+    {
+      "competitor_median": 1,
+      "current_score": 2,
+      "dimension": "auditability_governance",
+      "label": "Auditability and fail-closed governance"
+    },
+    {
+      "competitor_median": 0,
+      "current_score": 3,
+      "dimension": "local_control",
+      "label": "Local/open control"
+    }
+  ],
+  "systems": [
+    {
+      "category": "Local evidence-first research verification system",
+      "name": "Overmind + Sentinel + TruthCert",
+      "notes": [
+        "This system is strongest as a verifier/governance/orchestration layer.",
+        "It is not scored as a literature search corpus unless a search backend is explicitly measured.",
+        "output_correctness and statistical_verification are MEASURED (gold_benchmark reproduces published pooled estimates within tolerance); other dimensions are capability-presence.",
+        "Comparator scores are capability-presence from public docs (some literature-grounded), NOT a hands-on head-to-head \u2014 do not read the ranking as a measured output-quality contest."
+      ],
+      "rank": 1,
+      "score_evidence": {
+        "auditability_governance": "Sentinel, TruthCert, and policy guards provide fail-closed local governance.",
+        "citation_grounding": "citation_grounding artifact: 2/2 claims resolved to corpus records (ratio=1.0); ungrounded claims are reported, never assumed.",
+        "continuous_verification": "3 available runners; meta-verify verdict is not_run.",
+        "local_control": "System is local, editable Python source in the user's workspace.",
+        "output_correctness": "gold-standard benchmark: 43/43 fixtures pass; worst pooled logRR deviation 0.0029176432525671453 (MEASURED against published references, fail-closed).",
+        "public_benchmarking": "17 projects carry oracle-benchmark signals; meta-verify is not_run.",
+        "review_workflow": "PRISMA 2020 flow artifact present: 10 identified -> 8 included; 253 indexed evidence-synthesis projects.",
+        "screening_extraction": "screening artifact: True (10 proposals, 0 auto-included); extraction artifact: True (2 validated, 0 flagged).",
+        "search_corpus": "corpus_search artifact: provider=offline-jsonl, corpus_size=10, hits=10 (offline retrieval; BM25 lexical re-rank, not semantic).",
+        "statistical_verification": "294 indexed projects carry advanced mathematical/statistical signals."
+      },
+      "score_percent": 88.8,
+      "scores": {
+        "auditability_governance": 2,
+        "citation_grounding": 3,
+        "continuous_verification": 2,
+        "local_control": 3,
+        "output_correctness": 3,
+        "public_benchmarking": 2,
+        "review_workflow": 3,
+        "screening_extraction": 3,
+        "search_corpus": 2,
+        "statistical_verification": 3
+      },
+      "source_checked": "runtime",
+      "source_summary": "Computed from indexed project records and optional current verifier status.",
+      "source_url": "local workspace",
+      "weighted_total": 29.3
+    },
+    {
+      "category": "Enterprise AI-enabled literature-review platform",
+      "name": "DistillerSR",
+      "notes": [
+        "Strong enterprise comparator for regulated literature-review operations.",
+        "Statistical verification is scored as limited because public claims focus on workflow and extraction."
+      ],
+      "rank": 2,
+      "score_percent": 57.0,
+      "scores": {
+        "auditability_governance": 3,
+        "citation_grounding": 2,
+        "continuous_verification": 2,
+        "local_control": 0,
+        "public_benchmarking": 2,
+        "review_workflow": 3,
+        "screening_extraction": 3,
+        "search_corpus": 2,
+        "statistical_verification": 1
+      },
+      "source_checked": "2026-06-03",
+      "source_summary": "Public product page describes AI-enabled evidence synthesis, screening rerank, AI classifiers, smart extraction, traceability, audit logs, and PRISMA reporting.",
+      "source_url": "https://www.distillersr.com/products/distillersr-systematic-review-software",
+      "weighted_total": 18.8
+    },
+    {
+      "category": "AI scientific research and systematic-review assistant",
+      "name": "Elicit",
+      "notes": [
+        "Strongest comparator for front-door literature search and systematic-review workflow.",
+        "Benchmark here does not independently verify Elicit's posted accuracy claims."
+      ],
+      "rank": 3,
+      "score_percent": 55.5,
+      "scores": {
+        "auditability_governance": 2,
+        "citation_grounding": 3,
+        "continuous_verification": 1,
+        "local_control": 0,
+        "public_benchmarking": 3,
+        "review_workflow": 3,
+        "screening_extraction": 3,
+        "search_corpus": 3,
+        "statistical_verification": 0
+      },
+      "source_checked": "2026-06-03",
+      "source_summary": "Public product page describes scholarly search, systematic-review screening and data extraction, sentence-level citations, and posted systematic-review validation.",
+      "source_url": "https://elicit.com/welcome",
+      "weighted_total": 18.3
+    },
+    {
+      "category": "Open-source active-learning screening tool",
+      "name": "ASReview",
+      "notes": [
+        "Best open-source comparator for active-learning title/abstract screening.",
+        "Not scored as a full evidence-synthesis verifier because its core workflow is screening."
+      ],
+      "rank": 4,
+      "score_percent": 38.5,
+      "scores": {
+        "auditability_governance": 2,
+        "citation_grounding": 1,
+        "continuous_verification": 1,
+        "local_control": 3,
+        "public_benchmarking": 2,
+        "review_workflow": 2,
+        "screening_extraction": 3,
+        "search_corpus": 0,
+        "statistical_verification": 0
+      },
+      "source_checked": "2026-06-03",
+      "source_summary": "Public project page describes open-source AI screening, workload reduction, simulation/performance comparison, local control, and transparent systematic reviews.",
+      "source_url": "https://asreview.nl/",
+      "weighted_total": 12.7
+    },
+    {
+      "category": "AI academic search and synthesis engine",
+      "name": "Consensus",
+      "notes": [
+        "Strong comparator for paper-grounded question answering and synthesis.",
+        "Not a dedicated systematic-review verification or numerical audit system."
+      ],
+      "rank": 5,
+      "score_percent": 31.2,
+      "scores": {
+        "auditability_governance": 1,
+        "citation_grounding": 3,
+        "continuous_verification": 1,
+        "local_control": 0,
+        "public_benchmarking": 1,
+        "review_workflow": 1,
+        "screening_extraction": 0,
+        "search_corpus": 3,
+        "statistical_verification": 0
+      },
+      "source_checked": "2026-06-03",
+      "source_summary": "Help center describes a large peer-reviewed paper database, hybrid semantic/BM25 search, paper-grounded answers, Pro Analysis, Ask Paper, and Consensus Meter.",
+      "source_url": "https://help.consensus.app/en/articles/9922673-how-consensus-works",
+      "weighted_total": 10.3
+    },
+    {
+      "category": "AI literature search with citation-context classification",
+      "name": "Scite",
+      "notes": [
+        "Strong comparator for citation-context and claim-support analysis.",
+        "Not a systematic-review execution or meta-analysis verification engine."
+      ],
+      "rank": 6,
+      "score_percent": 31.2,
+      "scores": {
+        "auditability_governance": 1,
+        "citation_grounding": 3,
+        "continuous_verification": 1,
+        "local_control": 0,
+        "public_benchmarking": 1,
+        "review_workflow": 1,
+        "screening_extraction": 0,
+        "search_corpus": 3,
+        "statistical_verification": 0
+      },
+      "source_checked": "2026-06-03",
+      "source_summary": "Public page describes full-text search, Smart Citations, evidence-grounded answers, and citation contexts classified as supporting or contradicting.",
+      "source_url": "https://scite.ai/",
+      "weighted_total": 10.3
+    },
+    {
+      "category": "Biomedical evidence-synthesis automation research system",
+      "name": "RobotReviewer",
+      "notes": [
+        "Closest historical comparator for risk-of-bias and evidence-synthesis automation.",
+        "Scored as research-system evidence, not a currently validated commercial workflow."
+      ],
+      "rank": 7,
+      "score_percent": 30.9,
+      "scores": {
+        "auditability_governance": 1,
+        "citation_grounding": 2,
+        "continuous_verification": 0,
+        "local_control": 2,
+        "public_benchmarking": 2,
+        "review_workflow": 2,
+        "screening_extraction": 2,
+        "search_corpus": 0,
+        "statistical_verification": 0
+      },
+      "source_checked": "2026-06-03",
+      "source_summary": "ACL system-demonstration paper documents RobotReviewer as a biomedical evidence-synthesis automation system.",
+      "source_url": "https://aclanthology.org/P17-4002/",
+      "weighted_total": 10.2
+    },
+    {
+      "category": "AI scholarly search and paper-understanding platform",
+      "name": "Semantic Scholar",
+      "notes": [
+        "Strong comparator for scholarly discovery infrastructure.",
+        "Scored lower on review execution because it is not a dedicated review workflow tool."
+      ],
+      "rank": 8,
+      "score_percent": 29.7,
+      "scores": {
+        "auditability_governance": 1,
+        "citation_grounding": 2,
+        "continuous_verification": 1,
+        "local_control": 0,
+        "public_benchmarking": 2,
+        "review_workflow": 1,
+        "screening_extraction": 0,
+        "search_corpus": 3,
+        "statistical_verification": 0
+      },
+      "source_checked": "2026-06-03",
+      "source_summary": "Public product page describes automatically generated paper TLDRs and API access for summaries over a large scholarly graph.",
+      "source_url": "https://www.semanticscholar.org/product/tldr",
+      "weighted_total": 9.8
+    }
+  ]
+}

@@ -1,0 +1,12 @@
+{
+  "capability": "data_extraction",
+  "schema": "rapidmeta-compatible (tE/tN/cE/cN | effect/lci/uci | md/se; estimandType; rob[5])",
+  "input_count": 2,
+  "validated_count": 2,
+  "rejected_count": 0,
+  "needs_review_count": 0,
+  "auto_extracted": false,
+  "rejected": [],
+  "needs_review": [],
+  "fail_closed_policy": "missing required field raises; no plausible default is ever substituted"
+}

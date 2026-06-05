@@ -5,6 +5,7 @@ import time
 from pathlib import Path
 
 from overmind.intelligence.daily_report import DailyReport
+from overmind.intelligence.research_benchmark import ResearchBenchmark
 from overmind.storage.models import utc_now
 
 
@@ -40,6 +41,9 @@ class EvalHarness:
             self.orchestrator.db,
             self.artifacts_dir,
         )._benchmark_tracking(projects, memories, routing_scores)
+        research_benchmark = ResearchBenchmark(
+            self.artifacts_dir,
+        ).build_report(projects, runners=scan["runners"])
 
         report = {
             "generated_at": utc_now(),
@@ -68,6 +72,7 @@ class EvalHarness:
             },
             "checkpoint_history": self.orchestrator.list_checkpoints(name="main", limit=5)["checkpoints"],
             "benchmark": benchmark,
+            "research_benchmark": research_benchmark,
             "timings_ms": timings_ms,
         }
         artifact_path = self.write(report, focus_project_id=focus_project_id)

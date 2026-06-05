@@ -1,35 +1,8 @@
 scan_roots:
   - "C:\\Projects"
-  - "C:\\HTML apps"
-  - "C:\\Models"
-  - "C:\\Truthcert1"
-  - "C:\\MetaReproducer"
-  - "C:\\MetaFrontierLab"
-  - "C:\\ctgov_transparency_intelligence"
-  - "C:\\Integrity-Guard-Forensics"
-  - "C:\\Users\\user"
-  - "C:\\Users\\user\\Downloads"
-  - "C:\\Users\\user\\Desktop"
-  - "C:\\Users\\user\\Documents"
-  # OneDrive paths removed 2026-05-04: discovery was indexing 37 OneDrive
-  # auto-syncs as separate projects, 33 of them duplicates of canonical paths
-  # (e.g. an OneDrive Documents auto-synced copy aliased to the canonical
-  # project root). The 33 duplicate ProjectRecords are SKIP_PROJECTS-listed
-  # in scripts/nightly_verify.py; 4 truly-OneDrive-only ones are skipped
-  # pending a re-home decision.
-  # - "C:\\Users\\user\\OneDrive\\Documents"
   - "C:\\E156"
-  - "C:\\FragilityAtlas"
-  - "C:\\MetaAudit"
-  - "C:\\AlMizan"
-  - "C:\\BiasForensics"
-  - "C:\\AdaptSim"
-  - "C:\\RMSTmeta"
-  - "C:\\NICECardiology"
-  - "C:\\saarc-e156-students"
-  - "C:\\ubcma"
-  - "C:\\overmind"
-  - "C:\\cardiosynth"
+
+# Machine-specific roots belong in gitignored roots.local.yaml.
 
 scan_rules:
   include_git_repos: true

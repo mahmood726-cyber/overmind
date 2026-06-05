@@ -1,0 +1,26 @@
+{
+  "capability": "review_workflow",
+  "standard": "PRISMA 2020",
+  "identification": {
+    "records_identified": 10,
+    "duplicates_removed": 0,
+    "records_after_dedup": 10
+  },
+  "screening": {
+    "records_screened": 10,
+    "records_excluded_title_abstract": 2,
+    "ta_exclusion_reasons": {
+      "wrong_design": 2
+    },
+    "reports_sought": 8,
+    "reports_not_retrieved": 0,
+    "reports_assessed_eligibility": 8,
+    "reports_excluded_full_text": 0,
+    "ft_exclusion_reasons": {},
+    "awaiting_assessment": 0
+  },
+  "included": {
+    "studies_included": 8
+  },
+  "policy": "records without a confirmed full-text decision are 'awaiting_assessment', never counted as included"
+}

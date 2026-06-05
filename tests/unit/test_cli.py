@@ -19,6 +19,25 @@ def test_python_module_cli_help_outputs_usage():
 
     assert proc.returncode == 0
     assert "usage: overmind" in proc.stdout.lower()
+    assert "research-benchmark" in proc.stdout
+
+
+def test_cli_help_survives_cp1252_stdio():
+    env = os.environ.copy()
+    env["PYTHONIOENCODING"] = "cp1252"
+    proc = subprocess.run(
+        [sys.executable, "-m", "overmind.cli", "--help"],
+        capture_output=True,
+        text=True,
+        encoding="utf-8",
+        errors="replace",
+        timeout=15,
+        env=env,
+    )
+
+    assert proc.returncode == 0
+    assert "usage: overmind" in proc.stdout.lower()
+    assert "unicodeencodeerror" not in proc.stderr.lower()
 
 
 class _BrokenPipeStream:

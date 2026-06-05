@@ -1,0 +1,171 @@
+{
+  "capability": "screening",
+  "query": "SGLT2 inhibitor heart failure",
+  "used_relevance_feedback": false,
+  "candidate_count": 10,
+  "duplicates_removed": 0,
+  "proposal_count": 10,
+  "suggestion_counts": {
+    "suggest_unclear": 8,
+    "suggest_exclude": 2
+  },
+  "auto_included": 0,
+  "decision_policy": "machine suggests; human confirms (all decisions PENDING/needs_review)",
+  "exclusion_reason_vocab": [
+    "duplicate",
+    "language",
+    "no_outcome_data",
+    "not_primary_study",
+    "wrong_comparator",
+    "wrong_design",
+    "wrong_intervention",
+    "wrong_outcome",
+    "wrong_population"
+  ],
+  "proposals": [
+    {
+      "record_id": "pmid:32446323",
+      "score": 1.4673,
+      "rank": 1,
+      "suggestion": "suggest_unclear",
+      "decision": "pending",
+      "needs_review": true,
+      "matched_terms": [
+        "sglt2",
+        "inhibitor",
+        "heart",
+        "failure"
+      ],
+      "title": "Estimating lifetime benefits of comprehensive disease-modifying pharmacological therapies in patients with heart failure with reduced ejection fraction: a comparative analysis of three randomised controlled trials."
+    },
+    {
+      "record_id": "pmid:34711976",
+      "score": 1.2803,
+      "rank": 2,
+      "suggestion": "suggest_unclear",
+      "decision": "pending",
+      "needs_review": true,
+      "matched_terms": [
+        "sglt2",
+        "inhibitor",
+        "heart",
+        "failure"
+      ],
+      "title": "The SGLT2 inhibitor dapagliflozin in heart failure with preserved ejection fraction: a multicenter randomized trial."
+    },
+    {
+      "record_id": "pmid:35228754",
+      "score": 1.2679,
+      "rank": 3,
+      "suggestion": "suggest_unclear",
+      "decision": "pending",
+      "needs_review": true,
+      "matched_terms": [
+        "sglt2",
+        "inhibitor",
+        "heart",
+        "failure"
+      ],
+      "title": "The SGLT2 inhibitor empagliflozin in patients hospitalized for acute heart failure: a multinational randomized trial."
+    },
+    {
+      "record_id": "pmid:35228753",
+      "score": 1.1143,
+      "rank": 4,
+      "suggestion": "suggest_unclear",
+      "decision": "pending",
+      "needs_review": true,
+      "matched_terms": [
+        "sglt2",
+        "inhibitor",
+        "heart",
+        "failure"
+      ],
+      "title": "The SGLT2 inhibitor canagliflozin in heart failure: the CHIEF-HF remote, patient-centered randomized trial."
+    },
+    {
+      "record_id": "pmid:36592186",
+      "score": 1.0396,
+      "rank": 5,
+      "suggestion": "suggest_unclear",
+      "decision": "pending",
+      "needs_review": true,
+      "matched_terms": [
+        "sglt2",
+        "inhibitor",
+        "heart",
+        "failure"
+      ],
+      "title": "Cardiovascular and renal effects of SGLT2 inhibitor initiation in acute heart failure: a meta-analysis of randomized controlled trials."
+    },
+    {
+      "record_id": "pmid:36041474",
+      "score": 0.6824,
+      "rank": 6,
+      "suggestion": "suggest_unclear",
+      "decision": "pending",
+      "needs_review": true,
+      "matched_terms": [
+        "sglt2",
+        "heart",
+        "failure"
+      ],
+      "title": "SGLT-2 inhibitors in patients with heart failure: a comprehensive meta-analysis of five randomised controlled trials."
+    },
+    {
+      "record_id": "pmid:30415602",
+      "score": 0.6221,
+      "rank": 7,
+      "suggestion": "suggest_unclear",
+      "decision": "pending",
+      "needs_review": true,
+      "matched_terms": [
+        "inhibitor",
+        "heart",
+        "failure"
+      ],
+      "title": "Dapagliflozin and Cardiovascular Outcomes in Type 2 Diabetes."
+    },
+    {
+      "record_id": "pmid:31535829",
+      "score": 0.563,
+      "rank": 8,
+      "suggestion": "suggest_unclear",
+      "decision": "pending",
+      "needs_review": true,
+      "matched_terms": [
+        "sglt2",
+        "heart",
+        "failure"
+      ],
+      "title": "Dapagliflozin in Patients with Heart Failure and Reduced Ejection Fraction."
+    },
+    {
+      "record_id": "pmid:32865377",
+      "score": 0.4708,
+      "rank": 9,
+      "suggestion": "suggest_exclude",
+      "decision": "pending",
+      "needs_review": true,
+      "matched_terms": [
+        "sglt2",
+        "heart",
+        "failure"
+      ],
+      "title": "Cardiovascular and Renal Outcomes with Empagliflozin in Heart Failure."
+    },
+    {
+      "record_id": "pmid:34449189",
+      "score": 0.208,
+      "rank": 10,
+      "suggestion": "suggest_exclude",
+      "decision": "pending",
+      "needs_review": true,
+      "matched_terms": [
+        "heart",
+        "failure"
+      ],
+      "title": "Empagliflozin in Heart Failure with a Preserved Ejection Fraction."
+    }
+  ]
+}

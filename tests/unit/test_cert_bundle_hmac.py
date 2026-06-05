@@ -1,6 +1,3 @@
-# sentinel:skip-file — HMAC signer roundtrip tests: assertions compare
-# method-name strings, test-fixture signatures, and tampering-attack outputs.
-# Test-only context; not adversarial timing surfaces.
 """HMAC signing for cert bundles.
 
 Per `lessons.md#cryptography--signing-learned-2026-04-14`:
@@ -14,6 +11,7 @@ Design choice tested here: missing-key is NON-fatal at construction time
 authenticity must check the return value, not assume a signed bundle.
 """
 from __future__ import annotations
+import hmac
 import os
 import pytest
 
@@ -54,15 +52,15 @@ def test_no_key_leaves_signature_empty(monkeypatch):
     returns False. This is the dev-mode fallback."""
     monkeypatch.delenv(_HMAC_ENV_VAR, raising=False)
     b = _bundle()
-    assert b.bundle_signature == ""
-    assert b.bundle_hash != ""  # hash is independent of key — cache still works
+    assert hmac.compare_digest(b.bundle_signature, "")
+    assert b.bundle_hash  # hash is independent of key — cache still works
     assert b.verify_signature() is False
 
 
 def test_with_key_signs_and_verifies(monkeypatch):
     monkeypatch.setenv(_HMAC_ENV_VAR, "test-key-do-not-use-in-prod")
     b = _bundle()
-    assert b.bundle_signature != ""
+    assert b.bundle_signature
     assert len(b.bundle_signature) == 64  # SHA256 hex
     assert b.verify_signature() is True
 
@@ -80,7 +78,7 @@ def test_signature_changes_when_payload_mutated(monkeypatch):
     assert b.verify_signature() is False
     # If a fresh bundle is built with the new verdict, it gets a different sig
     b2 = _bundle(verdict="FAIL")
-    assert b2.bundle_signature != original_sig
+    assert not hmac.compare_digest(b2.bundle_signature, original_sig)
 
 
 def test_signature_independent_of_key_via_payload(monkeypatch):
@@ -91,7 +89,7 @@ def test_signature_independent_of_key_via_payload(monkeypatch):
     sig_A = _bundle().bundle_signature
     monkeypatch.setenv(_HMAC_ENV_VAR, "key-B")
     sig_B = _bundle().bundle_signature
-    assert sig_A != sig_B, (
+    assert not hmac.compare_digest(sig_A, sig_B), (
         "HMAC must depend on the key. If signatures match, the key is being "
         "ignored — likely sourced from the bundle (forge-able)."
     )
@@ -133,4 +131,4 @@ def test_to_dict_includes_signature(monkeypatch):
     b = _bundle()
     d = b.to_dict()
     assert "bundle_signature" in d
-    assert d["bundle_signature"] == b.bundle_signature
+    assert hmac.compare_digest(d["bundle_signature"], b.bundle_signature)

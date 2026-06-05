@@ -15,6 +15,32 @@ from overmind.integrations.sentinel_aggregator import collect as _collect_sentin
 from overmind.integrations.bypass_log_aggregator import collect as _collect_bypass
 
 
+_PROJECT_INDEX_RELATIVE_CANDIDATES = (
+    ("Projects", "projectindex-audit"),
+    ("ProjectIndex",),
+)
+
+
+def _candidate_drive_roots() -> list[Path]:
+    letters: list[str] = []
+    system_drive = os.environ.get("SystemDrive", "")
+    if len(system_drive) >= 1 and system_drive[0].isalpha():
+        letters.append(system_drive[0].upper())
+    for letter in ("C", "D"):
+        if letter not in letters:
+            letters.append(letter)
+    return [Path(f"{letter}:" + os.sep) for letter in letters]
+
+
+def _discover_project_index() -> str | None:
+    for drive_root in _candidate_drive_roots():
+        for rel_parts in _PROJECT_INDEX_RELATIVE_CANDIDATES:
+            candidate = drive_root.joinpath(*rel_parts)
+            if candidate.is_dir():
+                return str(candidate)
+    return None
+
+
 def collect_sentinel_findings() -> dict:
     """Thin wrapper around overmind.integrations.sentinel_aggregator.collect.
 
@@ -36,11 +62,12 @@ def _run_portfolio_sentinel_scan() -> dict:
     the scan crashes, or JSON parsing fails. Nightly verify must not crash
     here.
 
-    Default project-index: C:/ProjectIndex (the canonical portfolio
-    registry); override via OVERMIND_PROJECT_INDEX env var for tests.
+    Default project-index: discovered from candidate drive roots, preferring
+    the current projectindex-audit registry and then the legacy ProjectIndex
+    folder; override via OVERMIND_PROJECT_INDEX env var for tests.
     """
-    project_index = os.environ.get("OVERMIND_PROJECT_INDEX", "C:/ProjectIndex")
-    if not Path(project_index).is_dir():
+    project_index = os.environ.get("OVERMIND_PROJECT_INDEX") or _discover_project_index()
+    if not project_index or not Path(project_index).is_dir():
         return {"error": f"project-index not found: {project_index}"}
     try:
         # OVERMIND_PROJECT_INDEX is an internal-tooling env var sourced from the
