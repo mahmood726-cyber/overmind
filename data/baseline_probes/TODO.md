@@ -37,6 +37,17 @@ Net: the numerical-SKIP gap should be **re-derived from current discovery**
 (scan roots are now `C:\Projects` + `C:\E156` + `C:\Users\mahmo\code`), not
 from this decayed slug list. Rows below are preserved as the historical record.
 
+### Fresh-discovery baselines shipped (2026-06-05)
+
+- ✅ **spec-collapse-atlas** (`spec-collapse-atlas-b0a2eceb`, math_score=6, alive
+  in `C:\Projects`) — baseline + `probe_spec-collapse-atlas.py` added. Probes the
+  pure-Python `spec_collapse.engine` (REML/DL τ² + RE pool) on the canonical
+  metadat `dat.bcg` (13-study log-RR) dataset. Values are externally validated
+  against metafor by the project's own `ci/check_against_metafor.py` (engine
+  matches REML/DL within 2e-3): τ²_REML=0.313243, τ²_DL=0.308758, est=−0.714533,
+  pooled var=0.032321. Deterministic (re-run identical); `NumericalWitness.run`
+  verified SKIP→PASS; spec registered in `scripts/create_baselines.py`.
+
 ## Ingredient contract
 
 Before writing a probe, confirm the project:

@@ -1,0 +1,13 @@
+{
+  "command": "C:\\Users\\mahmo\\AppData\\Local\\Programs\\Python\\Python313\\python.exe C:\\Users\\mahmo\\code\\overmind\\data\\baseline_probes\\probe_spec-collapse-atlas.py",
+  "values": {
+    "bcg_k": 13,
+    "tau2_reml": 0.313243,
+    "tau2_dl": 0.308758,
+    "reml_est": -0.714533,
+    "reml_pooled_var": 0.032321
+  },
+  "tolerance": 0.0001,
+  "project_path": "C:\\Projects\\spec-collapse-atlas",
+  "created_by": "create_baselines.py"
+}
