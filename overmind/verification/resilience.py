@@ -13,6 +13,27 @@ from datetime import datetime, UTC
 from pathlib import Path
 
 
+# Files Overmind itself generates inside a project. A dirty working tree
+# consisting only of these is NOT a sign a human is editing — it's our own
+# output, and must not block verification.
+_OVERMIND_ARTIFACT_BASENAMES = frozenset({"DECISIONS.md"})
+
+
+def _is_overmind_artifact(porcelain_line: str) -> bool:
+    """True if a `git status --porcelain` line refers only to an
+    Overmind-generated artifact (its decision log, or Python bytecode)."""
+    # Porcelain line: 2 status chars + space + path (rename uses ' -> ').
+    path = porcelain_line[3:].strip().strip('"')
+    if " -> " in path:
+        path = path.split(" -> ", 1)[1]
+    base = path.rsplit("/", 1)[-1]
+    if base in _OVERMIND_ARTIFACT_BASENAMES:
+        return True
+    if "__pycache__/" in path or path.endswith((".pyc", ".pyo")):
+        return True
+    return False
+
+
 # ─── 1. Systemic Alert Detector (Immunology: fever response) ───────────────
 
 @dataclass
@@ -115,13 +136,22 @@ class PreFixRiskChecker:
         if not path.exists():
             return PreFixRisk(False, "Project path does not exist")
 
-        # Check 1: uncommitted changes (dirty working tree)
+        # Check 1: uncommitted changes (dirty working tree).
+        # Ignore Overmind's OWN generated artifacts — a tracked DECISIONS.md
+        # (the decision log Overmind appends to every run) and Python bytecode
+        # caches. Counting those as "human changes" made the nightly skip ~30
+        # repos every run that Overmind itself had dirtied, so they never got
+        # verified. Only non-Overmind-generated changes mean a human is editing.
         try:
             proc = subprocess.run(
                 ["git", "status", "--porcelain"],
                 cwd=project_path, capture_output=True, text=True, timeout=10,
             )
-            if proc.stdout.strip():
+            human_changes = [
+                ln for ln in proc.stdout.splitlines()
+                if ln.strip() and not _is_overmind_artifact(ln)
+            ]
+            if human_changes:
                 return PreFixRisk(False, "Dirty working tree — human has uncommitted changes")
         except (subprocess.TimeoutExpired, OSError):
             pass  # Not a git repo or git unavailable — allow
