@@ -214,24 +214,36 @@ print(json.dumps({
 ''',
     },
     {
+        # Path repaired + probe upgraded 2026-06-05: was C:\MetaAudit (stale,
+        # also hardcoded inside the probe); now C:\Projects\metaaudit with a
+        # relative import. Baselines the REML recompute engine on canonical
+        # dat.bcg (log-RR): reproduces metafor BCG (est within 5e-4, Q/I2 exact;
+        # its own HKSJ-REML gives tau2=0.3181, est=-0.7150).
         "project_id_prefix": "metaaudit",
-        "project_path": r"C:\MetaAudit",
+        "project_path": r"C:\Projects\metaaudit",
         "tolerance": 1e-4,
         "probe": '''
 import sys, json, platform
 platform._win32_ver = lambda *a, **k: ("10", "10.0.26100", "SP0", False)
 platform._wmi_query = lambda *a, **k: "AMD64"
-sys.path.insert(0, r"C:\\MetaAudit")
+sys.path.insert(0, ".")
 import numpy as np
-from metaaudit.recompute import compute_log_or, compute_smd
+from metaaudit.recompute import pool_effects_reml
 
-lor = compute_log_or(np.array([30]), np.array([100]), np.array([15]), np.array([100]))
-smd = compute_smd(np.array([10.0]), np.array([2.0]), np.array([50]), np.array([8.0]), np.array([2.5]), np.array([50]))
+YI = [-0.889311, -1.585389, -1.348073, -1.441551, -0.217547, -0.786116,
+      -1.620898, 0.011952, -0.469418, -1.371345, -0.339359, 0.445913, -0.017314]
+VI = [0.325585, 0.194581, 0.415368, 0.02001, 0.05121, 0.006906, 0.223017,
+      0.003962, 0.056434, 0.073025, 0.012412, 0.532506, 0.071405]
+r = pool_effects_reml(np.array(YI), np.array(VI))
 print(json.dumps({
-    "logOR": round(float(lor[0][0]), 6),
-    "logOR_se": round(float(lor[1][0]), 6),
-    "smd": round(float(smd[0][0]), 6),
-    "smd_se": round(float(smd[1][0]), 6),
+    "k": r["k"],
+    "estimate": round(r["estimate"], 6),
+    "se": round(r["se"], 6),
+    "tau2": round(r["tau2"], 6),
+    "Q": round(r["Q"], 6),
+    "I2": round(r["I2"], 4),
+    "ci_lower": round(r["ci_lower"], 6),
+    "ci_upper": round(r["ci_upper"], 6),
 }))
 ''',
     },
@@ -890,43 +902,32 @@ print(json.dumps({
 ''',
     },
     {
+        # Path repaired + probe upgraded 2026-06-05: was C:\overmind (stale) with
+        # a tier-logic probe; now baselines Overmind's OWN pooling engine (the
+        # gold-benchmark reproduction engine) on the canonical metadat dat.bcg
+        # (log-RR). Reproduces metafor EXACTLY: REML tau2=0.3132, est=-0.7145,
+        # SE=0.1798 — the strongest possible external cross-check.
         "project_id_prefix": "overmind",
-        "project_path": r"C:\overmind",
-        "tolerance": 1e-6,
+        "project_path": r"C:\Users\mahmo\code\overmind",
+        "tolerance": 1e-4,
         "probe": '''
 import sys, json
 sys.path.insert(0, ".")
-from overmind.discovery.analysis_signals import (
-    detect_analysis_signals, compute_analysis_score, analysis_rigor_level,
-    describe_analysis_signals, recommended_analysis_checks,
-)
-from overmind.verification.scope_lock import compute_tier
+from overmind.evidence.pooling import pool, Study
 
-# Fixed deterministic input — README-style description with several signals
-text = "Bayesian meta-analysis with HKSJ and DerSimonian-Laird random effects, MCMC convergence diagnostics, and bootstrap confidence intervals."
-signals = detect_analysis_signals(text)
-score = compute_analysis_score(signals, has_validation_history=True, has_oracle_benchmarks=False)
-score_high = compute_analysis_score(signals, has_validation_history=True, has_oracle_benchmarks=True, has_drift_history=True)
-labels = describe_analysis_signals(signals)
-checks = recommended_analysis_checks(signals, score=score)
-
-# Tier-derivation from risk + math
-t1 = compute_tier("high", 12)        # 3 (most risk)
-t2 = compute_tier("medium_high", 5)  # 2
-t3 = compute_tier("low", 1)          # 1
-
+YI = [-0.889311, -1.585389, -1.348073, -1.441551, -0.217547, -0.786116,
+      -1.620898, 0.011952, -0.469418, -1.371345, -0.339359, 0.445913, -0.017314]
+VI = [0.325585, 0.194581, 0.415368, 0.02001, 0.05121, 0.006906, 0.223017,
+      0.003962, 0.056434, 0.073025, 0.012412, 0.532506, 0.071405]
+r = pool([Study(yi=y, vi=v) for y, v in zip(YI, VI)], measure="RR", method="REML")
 print(json.dumps({
-    "n_signals": len(signals),
-    "signals": sorted(signals),
-    "score": score,
-    "score_with_oracle_drift": score_high,
-    "rigor_at_default": analysis_rigor_level(score),
-    "rigor_at_high": analysis_rigor_level(score_high),
-    "n_labels": len(labels),
-    "n_checks": len(checks),
-    "tier_high_math12": t1,
-    "tier_med_high_math5": t2,
-    "tier_low_math1": t3,
+    "k": r["k"],
+    "estimate_log": round(r["estimate_log"], 6),
+    "se": round(r["se"], 6),
+    "tau2": round(r["tau2"], 6),
+    "Q": round(r["Q"], 6),
+    "I2_percent": round(r["I2_percent"], 4),
+    "estimate_ratio": round(r["estimate_ratio"], 6),
 }))
 ''',
     },

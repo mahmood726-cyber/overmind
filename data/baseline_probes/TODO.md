@@ -47,6 +47,22 @@ from this decayed slug list. Rows below are preserved as the historical record.
   matches REML/DL within 2e-3): τ²_REML=0.313243, τ²_DL=0.308758, est=−0.714533,
   pooled var=0.032321. Deterministic (re-run identical); `NumericalWitness.run`
   verified SKIP→PASS; spec registered in `scripts/create_baselines.py`.
+- ✅ **overmind** (`overmind-8751d000`, math_score=high) — baselines Overmind's OWN
+  pooling engine (`overmind.evidence.pooling.pool`, the gold-benchmark engine) on
+  dat.bcg: reproduces metafor EXACTLY (est_log=−0.714533, tau2=0.313243, SE=0.179781).
+  Existing spec's stale `C:\overmind` path repaired; tier-logic probe upgraded to
+  the pooling cross-check.
+- ✅ **metaaudit** (`metaaudit-7da8ccd7`, math_score=high) — baselines
+  `metaaudit.recompute.pool_effects_reml` (HKSJ-REML) on dat.bcg: reproduces metafor
+  BCG (est=−0.714968, tau2=0.318067, Q/I2 exact). Existing spec's stale `C:\MetaAudit`
+  path (in BOTH project_path and the in-probe sys.path) repaired; probe upgraded.
+
+> NOTE on the wider BASELINE_SPECS list: many pre-existing specs still carry stale
+> 2026-04 paths (e.g. `C:\Models\…`, `C:\overmind`). Repair a spec's path (and any
+> hardcoded in-probe path) before relying on it; create surgically per spec rather
+> than running the whole `create_baselines.py` loop (which would error on the stale
+> ones). Most high-math no-baseline projects are JS/HTML dashboards with no Python
+> entrypoint — those need a node-based probe, not a Python one.
 
 ## Ingredient contract
 

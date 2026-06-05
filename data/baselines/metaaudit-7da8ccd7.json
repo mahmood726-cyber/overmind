@@ -1,0 +1,16 @@
+{
+  "command": "C:\\Users\\mahmo\\AppData\\Local\\Programs\\Python\\Python313\\python.exe C:\\Users\\mahmo\\code\\overmind\\data\\baseline_probes\\probe_metaaudit.py",
+  "values": {
+    "k": 13,
+    "estimate": -0.714968,
+    "se": 0.180892,
+    "tau2": 0.318067,
+    "Q": 152.226766,
+    "I2": 92.117,
+    "ci_lower": -1.109098,
+    "ci_upper": -0.320838
+  },
+  "tolerance": 0.0001,
+  "project_path": "C:\\Projects\\metaaudit",
+  "created_by": "create_baselines.py"
+}

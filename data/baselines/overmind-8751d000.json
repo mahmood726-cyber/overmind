@@ -1,0 +1,15 @@
+{
+  "command": "C:\\Users\\mahmo\\AppData\\Local\\Programs\\Python\\Python313\\python.exe C:\\Users\\mahmo\\code\\overmind\\data\\baseline_probes\\probe_overmind.py",
+  "values": {
+    "k": 13,
+    "estimate_log": -0.714533,
+    "se": 0.179781,
+    "tau2": 0.313243,
+    "Q": 152.226766,
+    "I2_percent": 92.117,
+    "estimate_ratio": 0.489421
+  },
+  "tolerance": 0.0001,
+  "project_path": "C:\\Users\\mahmo\\code\\overmind",
+  "created_by": "create_baselines.py"
+}
