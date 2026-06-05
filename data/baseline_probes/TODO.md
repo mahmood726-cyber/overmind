@@ -7,6 +7,36 @@
 > plus a matching `data/baselines/<project_id>.json`. Copy `TEMPLATE.py`
 > and fill in per project.
 
+## ⚠ 2026-06-05 path-decay reconciliation (READ BEFORE working this list)
+
+A preflight of the four still-open targets (cbamm, evidence-inference,
+fatiha, pairwise70) found the 2026-04-14 paths have decayed — do **not**
+fabricate baselines against them:
+
+- **Cbamm** (`#2`) and **Pairwise70** (`#13`): their roots were under
+  `C:\Users\user\OneDrive - NHS\Documents\…`. OneDrive roots were removed from
+  the scan config (2026-05-04) and these directories are gone on this machine.
+  Candidate relocations exist under `C:\Projects` (cbamm-lfa, cbamm-project2,
+  CBAMMR, cbammr-bayes; grma/gwam `pairwise70_benchmark_grma`) but their
+  canonical identity is ambiguous and **none exposes a deterministic Python
+  pooling entrypoint** (verified by grep). Decision needed: which relocation,
+  if any, IS the canonical project — or regenerate this list from a fresh
+  `overmind scan` instead of chasing slugs.
+- **FATIHA** (`#6`): root `C:\Models\FATIHA_Project` is gone; `C:\Models` is not
+  a scan root. `C:\Projects\fatiha` exists but has no Python pooling entrypoint
+  (it was an R/`Rscript testthat` project; an R-side probe per the section below
+  is the only faithful path, and only once the canonical path is reconfirmed).
+- **evidence-inference** (`#5`): the path resolves (`C:\Projects\evidence-inference`,
+  in scope) BUT its *live* package (`evidence_inference/{models,preprocess,
+  experiments}`) is the academic NLP-dataset code with **no meta-analysis pooling
+  core**. The pooling helpers live only in `root_backup/` (abandoned). A probe of
+  `root_backup` would baseline dead code — out of contract. Needs a live,
+  deterministic pooling entrypoint before a numerical baseline is meaningful.
+
+Net: the numerical-SKIP gap should be **re-derived from current discovery**
+(scan roots are now `C:\Projects` + `C:\E156` + `C:\Users\mahmo\code`), not
+from this decayed slug list. Rows below are preserved as the historical record.
+
 ## Ingredient contract
 
 Before writing a probe, confirm the project:
