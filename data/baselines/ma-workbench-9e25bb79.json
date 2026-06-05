@@ -1,0 +1,16 @@
+{
+  "command": "C:\\Users\\mahmo\\AppData\\Local\\Programs\\Python\\Python313\\python.exe C:\\Users\\mahmo\\code\\overmind\\data\\baseline_probes\\probe_ma-workbench.py",
+  "values": {
+    "k": 5,
+    "fe_estimate": -0.19791392,
+    "fe_se": 0.04796191,
+    "pm_estimate": -0.19791392,
+    "pm_se": 0.04796191,
+    "pm_tau2": 0.0,
+    "pm_qe": 0.07720669,
+    "pm_i2_pct": 0.0
+  },
+  "tolerance": 0.0001,
+  "project_path": "C:\\Projects\\ma-workbench",
+  "created_by": "create_baselines.py"
+}

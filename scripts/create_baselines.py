@@ -1358,6 +1358,64 @@ print(json.dumps({
 }))
 ''',
     },
+    {
+        # Added 2026-06-05. ma-workbench ships its OWN golden references
+        # (golden/references/G*.json, PM/IV-validated and R-cross-checked). This
+        # probes pool() on golden dataset G01 and reproduces the committed
+        # reference exactly (pm_estimate=-0.19791392, tau2=0, qe=0.07720669).
+        "project_id_prefix": "ma-workbench",
+        "project_path": r"C:\Projects\ma-workbench",
+        "tolerance": 1e-4,
+        "probe": '''
+import sys, json
+sys.path.insert(0, ".")
+from golden.generate_references import pool
+
+ds = json.load(open("golden/datasets/G01-homogeneous-small.json", encoding="utf-8"))
+r = pool(ds["bus_payload"]["studies"])
+fe, pm = r["fe"], r["re_pm"]
+print(json.dumps({
+    "k": r["k"],
+    "fe_estimate": round(fe["estimate"], 8),
+    "fe_se": round(fe["se"], 8),
+    "pm_estimate": round(pm["estimate"], 8),
+    "pm_se": round(pm["se"], 8),
+    "pm_tau2": round(pm["tau2"], 8),
+    "pm_qe": round(pm["qe"], 8),
+    "pm_i2_pct": round(pm["i2_pct"], 6),
+}))
+''',
+    },
+    {
+        # Added 2026-06-05. The student starter's pairwise pooling tool
+        # (Paule-Mandel tau2 + HKSJ-floor t CI). Fixed 5-study 2x2 input
+        # (homogeneous, OR~0.6 => tau2=0, I2=0).
+        "project_id_prefix": "e156-student-starter",
+        "project_path": r"C:\Projects\e156-student-starter",
+        "tolerance": 1e-4,
+        "probe": '''
+import sys, json
+sys.path.insert(0, ".")
+from tools.pool_pairwise import pool, Study
+
+rows = [(20, 80, 30, 70), (15, 85, 25, 75), (25, 75, 35, 65),
+        (10, 90, 18, 82), (22, 78, 28, 72)]
+studies = [Study(label="S%d" % i, a=a, b=b, c=c, d=d)
+           for i, (a, b, c, d) in enumerate(rows, 1)]
+r = pool(studies)
+print(json.dumps({
+    "k": r["k"],
+    "pooled_estimate": round(r["pooled_estimate"], 6),
+    "pooled_or": round(r["pooled_or"], 6),
+    "se": round(r["se"], 6),
+    "ci_lower": round(r["ci_lower"], 6),
+    "ci_upper": round(r["ci_upper"], 6),
+    "q": round(r["q"], 6),
+    "i2": round(r["i2"], 4),
+    "tau2": round(r["tau2"], 6),
+}))
+''',
+    },
 ]
 
 

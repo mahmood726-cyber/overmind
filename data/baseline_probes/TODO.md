@@ -56,6 +56,14 @@ from this decayed slug list. Rows below are preserved as the historical record.
   `metaaudit.recompute.pool_effects_reml` (HKSJ-REML) on dat.bcg: reproduces metafor
   BCG (est=−0.714968, tau2=0.318067, Q/I2 exact). Existing spec's stale `C:\MetaAudit`
   path (in BOTH project_path and the in-probe sys.path) repaired; probe upgraded.
+- ✅ **ma-workbench** (`ma-workbench-9e25bb79`) — probes `golden/generate_references.pool`
+  on its OWN committed golden dataset G01 and reproduces the committed
+  `golden/references/G01-*.json` EXACTLY (pm_estimate=−0.19791392, tau2=0,
+  qe=0.07720669). Strongest cross-check: the project ships PM/IV-validated,
+  R-cross-checked references.
+- ✅ **e156-student-starter** (`e156-student-starter-f1c47832`) — probes
+  `tools.pool_pairwise.pool` (Paule-Mandel τ² + HKSJ-floor t CI) on a fixed 5-study
+  2×2 set (homogeneous, OR≈0.6 → τ²=0): pooled_or=0.598889, se=0.154654.
 
 > NOTE on the wider BASELINE_SPECS list: many pre-existing specs still carry stale
 > 2026-04 paths (e.g. `C:\Models\…`, `C:\overmind`). Repair a spec's path (and any

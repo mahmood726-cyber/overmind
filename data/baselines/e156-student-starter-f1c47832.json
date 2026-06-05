@@ -1,0 +1,17 @@
+{
+  "command": "C:\\Users\\mahmo\\AppData\\Local\\Programs\\Python\\Python313\\python.exe C:\\Users\\mahmo\\code\\overmind\\data\\baseline_probes\\probe_e156-student-starter.py",
+  "values": {
+    "k": 5,
+    "pooled_estimate": -0.512679,
+    "pooled_or": 0.598889,
+    "se": 0.154654,
+    "ci_lower": -0.942068,
+    "ci_upper": -0.08329,
+    "q": 0.630972,
+    "i2": 0.0,
+    "tau2": 0.0
+  },
+  "tolerance": 0.0001,
+  "project_path": "C:\\Projects\\e156-student-starter",
+  "created_by": "create_baselines.py"
+}
