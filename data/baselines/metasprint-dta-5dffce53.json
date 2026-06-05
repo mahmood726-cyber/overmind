@@ -1,0 +1,17 @@
+{
+  "command": "C:\\Users\\mahmo\\AppData\\Local\\Programs\\Python\\Python313\\python.exe C:\\Users\\mahmo\\code\\overmind\\data\\baseline_probes\\probe_metasprint-dta.py",
+  "values": {
+    "k": 6,
+    "pooledSens": 0.865044,
+    "pooledSpec": 0.902624,
+    "plr": 8.88351,
+    "nlr": 0.149515,
+    "dor": 59.415336,
+    "I2_sens": 0,
+    "I2_spec": 73.991,
+    "tau2_spec": 0.106264
+  },
+  "tolerance": 0.0001,
+  "project_path": "C:\\Projects\\metasprint-dta",
+  "created_by": "create_baselines.py"
+}

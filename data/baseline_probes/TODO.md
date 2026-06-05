@@ -68,6 +68,15 @@ from this decayed slug list. Rows below are preserved as the historical record.
   (`-d42b956d`), **mission-critical** (`-06fb513a`) — each probes its own DL
   random-effects engine on dat.bcg; all reproduce metafor DL EXACTLY
   (est/mu/log_rr=−0.714117, τ²=0.308758, Q=152.23, I²=92.1).
+- ✅ **metasprint-dta** (`-5dffce53`) — DTA bivariate-DL pooling on the BNP-for-HF
+  dataset; matches the project's own R/mada `validation_reference.json` within its
+  stated tolerances (Sens 0.865/Spec 0.903; I²_spec=73.99 exact).
+
+> Remaining Python-engine candidates are not faithful targets: transcendent-ma-lab's
+> `pool_quantum` is an explicitly experimental method (no ground truth);
+> evidence-forecast loads studies from data (not self-contained); cora/dclnma/lec
+> modules are atlas/linkage/absent, not clean pooling. The clean cross-checkable
+> harvest (8 baselines) is complete; the rest of the 167 are JS dashboards (node probes).
 
 > NOTE on the wider BASELINE_SPECS list: many pre-existing specs still carry stale
 > 2026-04 paths (e.g. `C:\Models\…`, `C:\overmind`). Repair a spec's path (and any
