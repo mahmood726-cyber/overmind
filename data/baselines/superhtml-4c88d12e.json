@@ -1,0 +1,20 @@
+{
+  "command": "\"C:\\Program Files\\nodejs\\node.EXE\" C:\\Users\\mahmo\\code\\overmind\\data\\baseline_probes\\probe_superhtml.js",
+  "values": {
+    "bcg_k": 13,
+    "bcg_re_es": -0.716725,
+    "bcg_re_tau2": 0.31045,
+    "bcg_re_Q": 153.001554,
+    "bcg_re_I2": 92.156942,
+    "bcg_re_disp": 0.488349,
+    "bcg_re_lo": 0.343754,
+    "bcg_re_hi": 0.693765,
+    "bcg_egger_int": -2.124239,
+    "hk_es": 3,
+    "hk_se": 2,
+    "hk_tau2": 7.733333
+  },
+  "tolerance": 0.0001,
+  "project_path": "C:\\Projects\\Superhtml-",
+  "created_by": "create_baselines.py"
+}

@@ -1,0 +1,21 @@
+{
+  "command": "\"C:\\Program Files\\nodejs\\node.EXE\" C:\\Users\\mahmo\\code\\overmind\\data\\baseline_probes\\probe_htmlnma-geometry.js",
+  "values": {
+    "aggNodes": 3,
+    "aggEdges": 3,
+    "aggComponents": 1,
+    "aggConnected": 1,
+    "aggFeasible": 1,
+    "aggTotalStudies": 7,
+    "aggAbEdgeN": 5,
+    "aggDensity": 1,
+    "starHubDegree": 4,
+    "discComponents": 2,
+    "discFeasible": 0,
+    "checklistTotal": 5,
+    "checklistUnconfirmed": 5
+  },
+  "tolerance": 0.0001,
+  "project_path": "C:\\Projects\\htmlnma-geometry",
+  "created_by": "create_baselines.py"
+}

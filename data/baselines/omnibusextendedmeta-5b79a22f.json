@@ -1,0 +1,21 @@
+{
+  "command": "\"C:\\Program Files\\nodejs\\node.EXE\" C:\\Users\\mahmo\\code\\overmind\\data\\baseline_probes\\probe_omnibusextendedmeta.js",
+  "values": {
+    "bcg_est": -0.714117,
+    "bcg_tau2": 0.308758,
+    "bcg_Q": 152.2268,
+    "bcg_i2": 0.92117,
+    "rve_est": 0.2,
+    "rve_se": 0.2,
+    "ml_est": 0.2,
+    "ml_I2total": 0,
+    "nma_A_est": 0.5,
+    "nma_A_se": 0.223607,
+    "nma_tau2": 0,
+    "mat_trace": 3,
+    "mat_D00": 4
+  },
+  "tolerance": 0.0001,
+  "project_path": "C:\\Projects\\Omnibusextendedmeta",
+  "created_by": "create_baselines.py"
+}

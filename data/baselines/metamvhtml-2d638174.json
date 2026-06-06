@@ -1,0 +1,20 @@
+{
+  "command": "\"C:\\Program Files\\nodejs\\node.EXE\" C:\\Users\\mahmo\\code\\overmind\\data\\baseline_probes\\probe_metamvhtml.js",
+  "values": {
+    "matInv00": -0.5,
+    "matInv11": -0.666667,
+    "matIdent00": 1,
+    "mdFixedES": 5.470588,
+    "mdFixedSE": 0.650791,
+    "orPooledES": -0.81093,
+    "orDisplay": 0.444444,
+    "mlI2": 93.37745,
+    "mlTau2b": 3.423265,
+    "mlTau2w": 0.336715,
+    "mlSeRobust": 1.321284,
+    "mlPVal": 0.004748
+  },
+  "tolerance": 0.0001,
+  "project_path": "C:\\Projects\\Metamvhtml",
+  "created_by": "create_baselines.py"
+}

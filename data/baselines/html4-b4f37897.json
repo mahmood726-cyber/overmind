@@ -1,0 +1,20 @@
+{
+  "command": "\"C:\\Program Files\\nodejs\\node.EXE\" C:\\Users\\mahmo\\code\\overmind\\data\\baseline_probes\\probe_html4.js",
+  "values": {
+    "bcg_es": -0.714117,
+    "bcg_tau2": 0.308758,
+    "bcg_Q": 12.2639,
+    "bcg_I2": 2.152,
+    "bcg_se": 0.178741,
+    "bcg_ciLo": -1.06445,
+    "bcg_ciHi": -0.363784,
+    "bcg_hksj_se": 0.180697,
+    "bcg_egger_int": -2.111967,
+    "g3_es": 0.463636,
+    "g3_tau2": 0.0525,
+    "g3_I2": 15.1235
+  },
+  "tolerance": 0.0001,
+  "project_path": "C:\\Projects\\HTML4",
+  "created_by": "create_baselines.py"
+}

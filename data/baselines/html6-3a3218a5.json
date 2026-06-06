@@ -1,0 +1,21 @@
+{
+  "command": "\"C:\\Program Files\\nodejs\\node.EXE\" C:\\Users\\mahmo\\code\\overmind\\data\\baseline_probes\\probe_html6.js",
+  "values": {
+    "thA": 0.433333,
+    "thB": -0.066667,
+    "thC": -0.366667,
+    "varAB": 0.006667,
+    "psA": 1,
+    "psSum": 1.5,
+    "pooledAB": 0.56,
+    "varPooled": 0.008,
+    "Q": 0.8,
+    "pnorm975": 0.975,
+    "qnorm975": 1.959964,
+    "i2": 90,
+    "inv00": 0.6
+  },
+  "tolerance": 0.0001,
+  "project_path": "C:\\Projects\\HTML6",
+  "created_by": "create_baselines.py"
+}
