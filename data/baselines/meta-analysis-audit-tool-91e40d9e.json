@@ -1,0 +1,20 @@
+{
+  "command": "\"C:\\Program Files\\nodejs\\node.EXE\" C:\\Users\\mahmo\\code\\overmind\\data\\baseline_probes\\probe_meta-analysis-audit-tool.js",
+  "values": {
+    "bcg_dl_effect": -0.714117,
+    "bcg_dl_se": 0.178741,
+    "bcg_dl_tau2": 0.308758,
+    "bcg_dl_Q": 152.2268,
+    "bcg_dl_I2": 92.117,
+    "bcg_reml_tau2": 0.280028,
+    "bcg_hksj_se": 0.180697,
+    "bcg_pi_lower": -1.998833,
+    "bcg_tau2ci_upper": 1.1115,
+    "bcg_egger_p": 0.188723,
+    "s2_dl_effect": -0.290704,
+    "s2_dl_tau2": 0.006579
+  },
+  "tolerance": 0.0001,
+  "project_path": "C:\\Projects\\Meta-analysis-audit-tool",
+  "created_by": "create_baselines.py"
+}

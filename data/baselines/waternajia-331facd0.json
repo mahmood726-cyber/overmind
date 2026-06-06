@@ -1,0 +1,20 @@
+{
+  "command": "\"C:\\Program Files\\nodejs\\node.EXE\" C:\\Users\\mahmo\\code\\overmind\\data\\baseline_probes\\probe_waternajia.js",
+  "values": {
+    "g1_piped_P": 0.047715,
+    "g2_surface_P": 0.579607,
+    "g3_flood12_P": 0.662842,
+    "g4_flood72_P": 0.313101,
+    "g3_min": 0.474481,
+    "g3_max": 0.800592,
+    "g2_confidence": 0.618916,
+    "g3_missing": 0,
+    "g3_is_high": 1,
+    "sigmoid0": 0.5,
+    "logit_005": -2.944439,
+    "decay12": 0.716531
+  },
+  "tolerance": 0.0001,
+  "project_path": "C:\\Projects\\waternajia",
+  "created_by": "create_baselines.py"
+}

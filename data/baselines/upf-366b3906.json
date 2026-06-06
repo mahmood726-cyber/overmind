@@ -1,0 +1,20 @@
+{
+  "command": "\"C:\\Program Files\\nodejs\\node.EXE\" C:\\Users\\mahmo\\code\\overmind\\data\\baseline_probes\\probe_upf.js",
+  "values": {
+    "fe_hr": 1.11363,
+    "fe_lo": 1.041338,
+    "fe_hi": 1.190941,
+    "fe_p": 0.001673,
+    "fe_I2": 0,
+    "idn_hr": 1.1,
+    "idn_lo": 0.805497,
+    "idn_hi": 1.502177,
+    "idn_crit": 12.706,
+    "re_hr": 1.098079,
+    "re_I2": 85.413238,
+    "re_crit": 12.706
+  },
+  "tolerance": 0.0001,
+  "project_path": "C:\\Projects\\UPF",
+  "created_by": "create_baselines.py"
+}

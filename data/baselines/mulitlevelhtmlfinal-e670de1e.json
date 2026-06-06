@@ -1,0 +1,20 @@
+{
+  "command": "\"C:\\Program Files\\nodejs\\node.EXE\" C:\\Users\\mahmo\\code\\overmind\\data\\baseline_probes\\probe_mulitlevelhtmlfinal.js",
+  "values": {
+    "mat_inv00": -0.5,
+    "mat_inv11": -0.666667,
+    "mat_ident_trace": 2,
+    "md_es": 5.470588,
+    "md_se": 0.650791,
+    "md_lo": 4.195037,
+    "md_hi": 6.746139,
+    "or_es": -0.81093,
+    "or_disp": 0.444444,
+    "ml_i2": 93.37745,
+    "ml_se_r": 1.321284,
+    "egg_intercept": -5.0299
+  },
+  "tolerance": 0.0001,
+  "project_path": "C:\\Projects\\Mulitlevelhtmlfinal",
+  "created_by": "create_baselines.py"
+}

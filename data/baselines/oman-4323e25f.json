@@ -1,0 +1,24 @@
+{
+  "command": "\"C:\\Program Files\\nodejs\\node.EXE\" C:\\Users\\mahmo\\code\\overmind\\data\\baseline_probes\\probe_oman.js",
+  "values": {
+    "nma_t1_logOR": 0.81093,
+    "nma_t1_or": 2.25,
+    "nma_t1_se": 0.416667,
+    "nma_pscore_t1": 97.418666,
+    "nma_pscore_sum": 100,
+    "nma_ntreat": 2,
+    "calc_logor": 0.81093,
+    "calc_var": 0.173611,
+    "normcdf_196": 0.975002,
+    "markov_cost": 1000,
+    "markov_qaly": 10,
+    "markov_disc_cost": 735.850084,
+    "markov_disc_qaly": 5.571436,
+    "rng_d1": 0.979728,
+    "rng_d2": 0.306752,
+    "rng_d3": 0.484205
+  },
+  "tolerance": 0.0001,
+  "project_path": "C:\\Projects\\oman",
+  "created_by": "create_baselines.py"
+}

@@ -1760,6 +1760,24 @@ console.log(JSON.stringify({
     {"project_id_prefix": "metamvhtml", "project_path": r"C:\Projects\Metamvhtml", "lang": "node", "tolerance": 1e-4},
     {"project_id_prefix": "omnibusextendedmeta", "project_path": r"C:\Projects\Omnibusextendedmeta", "lang": "node", "tolerance": 1e-4},
     {"project_id_prefix": "superhtml", "project_path": r"C:\Projects\Superhtml-", "lang": "node", "tolerance": 1e-4},
+    # ---- 16 engines registered by an overmind scan on 2026-06-06. Lipid and
+    #      lipid- both reduce to slug "lipid", so those two pin project_id. ---
+    {"project_id_prefix": "afmodel", "project_path": r"C:\Projects\AFmodel", "lang": "node", "tolerance": 1e-4},
+    {"project_id_prefix": "bivariatehtml", "project_path": r"C:\Projects\Bivariatehtml-", "lang": "node", "tolerance": 1e-4},
+    {"project_id_prefix": "eplerenone", "project_path": r"C:\Projects\Eplerenone", "lang": "node", "tolerance": 1e-4},
+    {"project_id_prefix": "equipose", "project_path": r"C:\Projects\Equipose", "lang": "node", "tolerance": 1e-4},
+    {"project_id_prefix": "c-stream", "project_path": r"C:\Projects\C-Stream", "lang": "node", "tolerance": 1e-4},
+    {"project_id_prefix": "csr", "project_path": r"C:\Projects\CSR", "lang": "node", "tolerance": 1e-4},
+    {"project_id_prefix": "lipidcap", "project_id": "lipid-53656528", "project_path": r"C:\Projects\Lipid", "lang": "node", "tolerance": 1e-4},
+    {"project_id_prefix": "lipiddash", "project_id": "lipid-51e9ef6d", "project_path": r"C:\Projects\lipid-", "lang": "node", "tolerance": 1e-4},
+    {"project_id_prefix": "meta-analysis-audit-tool", "project_path": r"C:\Projects\Meta-analysis-audit-tool", "lang": "node", "tolerance": 1e-4},
+    {"project_id_prefix": "metaenginereading", "project_path": r"C:\Projects\Metaenginereading", "lang": "node", "tolerance": 1e-4},
+    {"project_id_prefix": "mulitlevelhtmlfinal", "project_path": r"C:\Projects\Mulitlevelhtmlfinal", "lang": "node", "tolerance": 1e-4},
+    {"project_id_prefix": "neurosynth", "project_path": r"C:\Projects\neurosynth", "lang": "node", "tolerance": 1e-4},
+    {"project_id_prefix": "oman", "project_path": r"C:\Projects\oman", "lang": "node", "tolerance": 1e-4},
+    {"project_id_prefix": "omniinfoloss1", "project_path": r"C:\Projects\Omniinfoloss1", "lang": "node", "tolerance": 1e-4},
+    {"project_id_prefix": "upf", "project_path": r"C:\Projects\UPF", "lang": "node", "tolerance": 1e-4},
+    {"project_id_prefix": "waternajia", "project_path": r"C:\Projects\waternajia", "lang": "node", "tolerance": 1e-4},
 ]
 
 
@@ -1887,7 +1905,9 @@ def main() -> None:
         prefix = spec["project_id_prefix"]
         if only is not None and prefix not in only:
             continue
-        project_id = find_project_id(db_path, prefix)
+        # A spec may pin the exact project_id (needed when two projects share a
+        # slug, e.g. "Lipid" and "lipid-" both -> prefix "lipid").
+        project_id = spec.get("project_id") or find_project_id(db_path, prefix)
 
         print(f"[{prefix}]", end=" ")
         baseline = create_baseline(spec, dry_run=args.dry_run)

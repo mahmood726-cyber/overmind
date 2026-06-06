@@ -1,0 +1,19 @@
+{
+  "command": "\"C:\\Program Files\\nodejs\\node.EXE\" C:\\Users\\mahmo\\code\\overmind\\data\\baseline_probes\\probe_csr.js",
+  "values": {
+    "lambda1": 1.4,
+    "lambda2": 0.8,
+    "gap": 1.75,
+    "Neff": 2.142857,
+    "Cab": 0.666667,
+    "kf_mu0": 0.801587,
+    "kf_P0": 0.200397,
+    "kf_mu1": 1.34925,
+    "kf_P1": 0.114248,
+    "finalMu": 1.34925,
+    "DSI": 0.174581
+  },
+  "tolerance": 0.0001,
+  "project_path": "C:\\Projects\\CSR",
+  "created_by": "create_baselines.py"
+}

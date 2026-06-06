@@ -1,0 +1,19 @@
+{
+  "command": "\"C:\\Program Files\\nodejs\\node.EXE\" C:\\Users\\mahmo\\code\\overmind\\data\\baseline_probes\\probe_eplerenone.js",
+  "values": {
+    "bcg_k": 13,
+    "bcg_est": -0.714117,
+    "bcg_tau2": 0.308758,
+    "bcg_Q": 152.2268,
+    "bcg_I2": 92.117,
+    "bcg_pSE": 0.178741,
+    "bcg_lci": 0.34492,
+    "bcg_uci": 0.695037,
+    "het_Q": 1.263179,
+    "het_tau2": 0.006579,
+    "het_pOR": 0.747737
+  },
+  "tolerance": 0.0001,
+  "project_path": "C:\\Projects\\Eplerenone",
+  "created_by": "create_baselines.py"
+}

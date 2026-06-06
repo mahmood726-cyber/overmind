@@ -1,0 +1,20 @@
+{
+  "command": "\"C:\\Program Files\\nodejs\\node.EXE\" C:\\Users\\mahmo\\code\\overmind\\data\\baseline_probes\\probe_lipidcap.js",
+  "values": {
+    "combo_potency": 0.672,
+    "delta_ldl_mmol": 1.5516,
+    "patient_rr": 0.680102,
+    "box_muller": -1.17741,
+    "proj_mean_arr": 0.03198981,
+    "proj_mean_rrr": 0.319898,
+    "proj_n_prevented": 3,
+    "proj_n_inevitable": 7,
+    "proj_n_healthy": 90,
+    "proj_het_mean_rrr": 0.373572,
+    "eze_mean_rrr": 0.109216,
+    "nnt": 31
+  },
+  "tolerance": 0.0001,
+  "project_path": "C:\\Projects\\Lipid",
+  "created_by": "create_baselines.py"
+}

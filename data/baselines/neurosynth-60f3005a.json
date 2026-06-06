@@ -1,0 +1,20 @@
+{
+  "command": "\"C:\\Program Files\\nodejs\\node.EXE\" C:\\Users\\mahmo\\code\\overmind\\data\\baseline_probes\\probe_neurosynth.js",
+  "values": {
+    "reml_mu": -0.714533,
+    "reml_se_pool": 0.179781,
+    "reml_tau2": 0.313243,
+    "reml_forest_lo0": -2.007688,
+    "reml_forest_hi0": 0.229066,
+    "reml_k": 13,
+    "reml_matches_metafor_reml_tau2": 1,
+    "reml_matches_metafor_dl_tau2": 1,
+    "ord_shift_cat0": 0.207289,
+    "ord_shift_sum": 1,
+    "odds_abs_or2_base03": 0.161538,
+    "odds_abs_or05_base05": -0.166667
+  },
+  "tolerance": 0.0001,
+  "project_path": "C:\\Projects\\neurosynth",
+  "created_by": "create_baselines.py"
+}

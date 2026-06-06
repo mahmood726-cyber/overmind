@@ -1,0 +1,24 @@
+{
+  "command": "\"C:\\Program Files\\nodejs\\node.EXE\" C:\\Users\\mahmo\\code\\overmind\\data\\baseline_probes\\probe_equipose.js",
+  "values": {
+    "bcg_mu": -0.714117,
+    "bcg_se_pool": 0.178741,
+    "bcg_tau2": 0.308758,
+    "bcg_I2": 92.117024,
+    "bcg_pred_lo": -1.85817,
+    "bcg_pred_hi": 0.429935,
+    "bcg_egger_intercept": -0.971458,
+    "egger_sym_intercept": -0.2,
+    "two_mu": -0.189508,
+    "two_se_pool": 0.038411,
+    "het_tau2": 0.17,
+    "het_I2": 94.444444,
+    "prob_zero": 0,
+    "prob_half": -0.019592,
+    "hist_bins": 20,
+    "hist_sum": 901
+  },
+  "tolerance": 0.0001,
+  "project_path": "C:\\Projects\\Equipose",
+  "created_by": "create_baselines.py"
+}

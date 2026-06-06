@@ -1,0 +1,22 @@
+{
+  "command": "\"C:\\Program Files\\nodejs\\node.EXE\" C:\\Users\\mahmo\\code\\overmind\\data\\baseline_probes\\probe_omniinfoloss1.js",
+  "values": {
+    "bcg_est": -0.714117,
+    "bcg_tau2": 0.308758,
+    "bcg_Q": 152.226766,
+    "bcg_i2": 92.117024,
+    "bcg_hk_se": 0.63662,
+    "p2_est": 0.5,
+    "p2_tau2": 0.25,
+    "mat_inv11": 0.25,
+    "mat_I_diag": 2,
+    "info_gain": 3.5,
+    "rve_se": 0.061642,
+    "ml_I2tot": 57.142857,
+    "nma_B": 0.56,
+    "nma_C": 0.776
+  },
+  "tolerance": 0.0001,
+  "project_path": "C:\\Projects\\Omniinfoloss1",
+  "created_by": "create_baselines.py"
+}

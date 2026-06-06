@@ -1,0 +1,21 @@
+{
+  "command": "\"C:\\Program Files\\nodejs\\node.EXE\" C:\\Users\\mahmo\\code\\overmind\\data\\baseline_probes\\probe_lipiddash.js",
+  "values": {
+    "full_avgRRR": 0.291544,
+    "full_avgARR": 0.028642,
+    "full_nnt": 35,
+    "full_active": 10,
+    "dedil_avgRRR": 0.212301,
+    "dedil_avgARR": 0.039792,
+    "dedil_nnt": 25,
+    "dedil_active": 4,
+    "mort_avgRRR": 0.127194,
+    "nnt_guard_pos": 50,
+    "nnt_guard_zero": 1,
+    "n_trials": 10,
+    "n_filter_excl": 4
+  },
+  "tolerance": 0.0001,
+  "project_path": "C:\\Projects\\lipid-",
+  "created_by": "create_baselines.py"
+}

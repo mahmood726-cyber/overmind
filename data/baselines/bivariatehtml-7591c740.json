@@ -1,0 +1,20 @@
+{
+  "command": "\"C:\\Program Files\\nodejs\\node.EXE\" C:\\Users\\mahmo\\code\\overmind\\data\\baseline_probes\\probe_bivariatehtml.js",
+  "values": {
+    "dl_Q": 4.418068,
+    "dl_tau2": 0.085452,
+    "dl_I2": 77.365673,
+    "dl_mu": -0.49006,
+    "dl_se": 0.232825,
+    "reml_tau2": 0.005481,
+    "pm_tau2": 0.003391,
+    "dlfull_tau2": 0.006094,
+    "qchisq_975_3": 9.348404,
+    "qchisq_025_3": 0.215795,
+    "conf_det": 0.000802,
+    "trans_aggSMD0": 0.42387
+  },
+  "tolerance": 0.0001,
+  "project_path": "C:\\Projects\\Bivariatehtml-",
+  "created_by": "create_baselines.py"
+}

@@ -1,0 +1,21 @@
+{
+  "command": "\"C:\\Program Files\\nodejs\\node.EXE\" C:\\Users\\mahmo\\code\\overmind\\data\\baseline_probes\\probe_afmodel.js",
+  "values": {
+    "het_mu": -0.290704,
+    "het_tau2": 0.006579,
+    "het_I2": 20.8346,
+    "het_se": 0.110577,
+    "bcg_mu": -0.714117,
+    "bcg_tau2": 0.308758,
+    "bcg_I2": 92.117,
+    "fnma_A_mean": -0.4,
+    "subgrp_fxa_effect": -0.21,
+    "league_BvA_or": 1.349859,
+    "hetrisk_I2": 70,
+    "dose_slope": -0.01,
+    "ncb": 0.0325
+  },
+  "tolerance": 0.0001,
+  "project_path": "C:\\Projects\\AFmodel",
+  "created_by": "create_baselines.py"
+}

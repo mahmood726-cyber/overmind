@@ -1,0 +1,20 @@
+{
+  "command": "\"C:\\Program Files\\nodejs\\node.EXE\" C:\\Users\\mahmo\\code\\overmind\\data\\baseline_probes\\probe_metaenginereading.js",
+  "values": {
+    "fe_effect": 0.784876,
+    "fe_Q": 1.290491,
+    "fe_I2": 22.510128,
+    "fe_p": 0,
+    "bcg_logEffect": -0.714117,
+    "bcg_tau2": 0.308758,
+    "bcg_Q": 152.2268,
+    "bcg_I2": 92.117024,
+    "bcg_df": 12,
+    "tcrit_df10": 2.228,
+    "ncdf_196": 0.975002,
+    "nq_975": 1.959964
+  },
+  "tolerance": 0.0001,
+  "project_path": "C:\\Projects\\Metaenginereading",
+  "created_by": "create_baselines.py"
+}
