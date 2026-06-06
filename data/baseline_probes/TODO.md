@@ -94,11 +94,33 @@ resolves against the probe file, not cwd). All 4 verified SKIP→PASS via the re
   strong(40,60,5,95) FI=21 and border(20,80,9,91) FI=1 match the project's own
   tests.js; main(20,80,6,94) FI=4, p0=0.005427, FQ=0.02.
 
-> ~35 more JS engine.js dashboards remain (C:\Projects, all node-requireable with
-> a tests.js). Next batches: betablocker, culpritcontroversy, livingmetacolchicine,
-> Metamvhtml, pairwisepro-proportion, Omnibusextendedmeta, html4/5/6, htmlnma-geometry.
-> Skip (not in Overmind DB — need a scan first): Eplerenone, Bivariatehtml-,
-> Mulitlevelhtmlfinal, neurosynth.
+### JS-dashboard sweep COMPLETE (2026-06-06) — 39 node baselines
+
+All `engine.js` dashboards under C:\Projects are now baselined (SKIP->PASS via the
+real NumericalWitness, all deterministic on re-run). 39 node baselines total:
+
+- First 4 (prev session): htmlpairwise-repro, html1-effectsize, html2-tsa, html3-fragility.
+- 6 poolers (dat.bcg, metafor-DL-exact): blood, ecmo, culpritcontroversy, iabp,
+  livingmetacolchicine, as.
+- 13 in-DB: pairwisepro-proportion, betablocker, html5, journal-prisma,
+  786miiipairfinal, cbammr-bayes, hfnma, html4, html6, metamvhtml, superhtml,
+  htmlnma-geometry, omnibusextendedmeta.
+- 16 added by an `overmind scan` on 2026-06-06: afmodel, bivariatehtml, eplerenone,
+  equipose, c-stream, csr, Lipid + lipid- (slug collision -> pinned project_id),
+  meta-analysis-audit-tool, metaenginereading, mulitlevelhtmlfinal, neurosynth,
+  oman, omniinfoloss1, upf, waternajia.
+
+Bug found + fixed during the sweep: **neurosynth** runREML had a mis-specified REML
+Fisher information (dropped the sum(w^3) term, went negative for large weights ->
+tau2 diverged to ~6e14 on dat.bcg). Fixed in C:\Projects\neurosynth\engine.js
+(commit 354d5b2); now reproduces metafor REML exactly (tau2=0.313243); 29 tests pass.
+
+Pre-existing FAIL, NOT part of this sweep, left as-is (out of scope): the
+`dataextractor-9c5488b5` baseline (probe.cjs) requires the full RCTExtractor module
+graph, whose `RCTExtractor_v4_8_AI.js:25` does `require('./RCTExtractor_v4_7.js')` —
+a file that was NEVER committed to that repo. That probe has been broken since it
+was added; fixing needs reconstructing/removing the phantom v4_7 dependency, which
+is a decision for the Dataextractor maintainer.
 
 > Remaining Python-engine candidates are not faithful targets: transcendent-ma-lab's
 > `pool_quantum` is an explicitly experimental method (no ground truth);
