@@ -1,0 +1,14 @@
+{
+  "command": "\"C:\\Program Files\\nodejs\\node.EXE\" C:\\Users\\mahmo\\code\\overmind\\data\\baseline_probes\\probe_as.js",
+  "values": {
+    "pooledLogHR": -0.714117,
+    "pooledHR": 0.489624,
+    "tau2": 0.308758,
+    "Q": 152.2268,
+    "df": 12,
+    "I2": 92.117
+  },
+  "tolerance": 0.0001,
+  "project_path": "C:\\Projects\\AS",
+  "created_by": "create_baselines.py"
+}

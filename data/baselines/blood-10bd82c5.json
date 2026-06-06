@@ -1,0 +1,15 @@
+{
+  "command": "\"C:\\Program Files\\nodejs\\node.EXE\" C:\\Users\\mahmo\\code\\overmind\\data\\baseline_probes\\probe_blood.js",
+  "values": {
+    "k": 13,
+    "mean": -0.714117,
+    "se": 0.178741,
+    "tau2": 0.308758,
+    "Q": 152.2268,
+    "lo": -1.06445,
+    "hi": -0.363784
+  },
+  "tolerance": 0.0001,
+  "project_path": "C:\\Projects\\blood",
+  "created_by": "create_baselines.py"
+}

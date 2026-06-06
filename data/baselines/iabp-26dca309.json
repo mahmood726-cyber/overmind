@@ -1,0 +1,14 @@
+{
+  "command": "\"C:\\Program Files\\nodejs\\node.EXE\" C:\\Users\\mahmo\\code\\overmind\\data\\baseline_probes\\probe_iabp.js",
+  "values": {
+    "k": 13,
+    "or": 0.489624,
+    "lo": 0.330267,
+    "hi": 0.725874,
+    "tau2": 0.308758,
+    "I2": 92.117
+  },
+  "tolerance": 0.0001,
+  "project_path": "C:\\Projects\\IABP",
+  "created_by": "create_baselines.py"
+}

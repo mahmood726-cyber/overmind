@@ -1,0 +1,13 @@
+{
+  "command": "\"C:\\Program Files\\nodejs\\node.EXE\" C:\\Users\\mahmo\\code\\overmind\\data\\baseline_probes\\probe_culpritcontroversy.js",
+  "values": {
+    "mu": -0.714117,
+    "se_pool": 0.180697,
+    "tau2": 0.308758,
+    "I2": 92.117,
+    "tInv975_12": 2.179
+  },
+  "tolerance": 0.0001,
+  "project_path": "C:\\Projects\\culpritcontroversy",
+  "created_by": "create_baselines.py"
+}

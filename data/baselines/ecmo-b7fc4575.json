@@ -1,0 +1,14 @@
+{
+  "command": "\"C:\\Program Files\\nodejs\\node.EXE\" C:\\Users\\mahmo\\code\\overmind\\data\\baseline_probes\\probe_ecmo.js",
+  "values": {
+    "k": 13,
+    "logHR": -0.714117,
+    "seLogHR": 0.178741,
+    "tau2": 0.308758,
+    "I2": 92.117,
+    "HR": 0.489624
+  },
+  "tolerance": 0.0001,
+  "project_path": "C:\\Projects\\ECMO",
+  "created_by": "create_baselines.py"
+}

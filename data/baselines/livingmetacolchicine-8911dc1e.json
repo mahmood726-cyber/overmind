@@ -1,0 +1,14 @@
+{
+  "command": "\"C:\\Program Files\\nodejs\\node.EXE\" C:\\Users\\mahmo\\code\\overmind\\data\\baseline_probes\\probe_livingmetacolchicine.js",
+  "values": {
+    "k": 13,
+    "thetaRE": -0.714117,
+    "seRE": 0.180697,
+    "tau2": 0.308758,
+    "I2": 92.117,
+    "Q": 152.2268
+  },
+  "tolerance": 0.0001,
+  "project_path": "C:\\Projects\\livingmetacolchicine",
+  "created_by": "create_baselines.py"
+}

@@ -1628,19 +1628,147 @@ console.log(JSON.stringify({
 }));
 ''',
     },
+    # ---- JS pooling engines fed metadat dat.bcg (all reproduce metafor DL
+    #      EXACTLY: est=-0.714117, tau2=0.308758, Q=152.2268, I2=92.117). Each
+    #      takes the same 13 log-RR studies in its own field-name shape. ------
+    {
+        "project_id_prefix": "blood",
+        "project_path": r"C:\Projects\blood",
+        "lang": "node",
+        "tolerance": 1e-4,
+        "probe": '''
+const path = require('path');
+const api = require(path.resolve(process.cwd(), 'engine.js'));
+const r = (x, n) => { const p = Math.pow(10, n == null ? 6 : n); return Math.round(x * p) / p; };
+const yi = [-0.889311,-1.585389,-1.348073,-1.441551,-0.217547,-0.786116,-1.620898,0.011952,-0.469418,-1.371345,-0.339359,0.445913,-0.017314];
+const vi = [0.325585,0.194581,0.415368,0.02001,0.05121,0.006906,0.223017,0.003962,0.056434,0.073025,0.012412,0.532506,0.071405];
+const res = api.metaAnalysisDL(yi.map((y, i) => ({ logRR: y, varLogRR: vi[i] })));
+console.log(JSON.stringify({
+  k: res.k, mean: r(res.mean), se: r(res.se), tau2: r(res.tau2), Q: r(res.Q, 4),
+  lo: r(res.lo), hi: r(res.hi)
+}));
+''',
+    },
+    {
+        "project_id_prefix": "ecmo",
+        "project_path": r"C:\Projects\ECMO",
+        "lang": "node",
+        "tolerance": 1e-4,
+        "probe": '''
+const path = require('path');
+const api = require(path.resolve(process.cwd(), 'engine.js'));
+const r = (x, n) => { const p = Math.pow(10, n == null ? 6 : n); return Math.round(x * p) / p; };
+const yi = [-0.889311,-1.585389,-1.348073,-1.441551,-0.217547,-0.786116,-1.620898,0.011952,-0.469418,-1.371345,-0.339359,0.445913,-0.017314];
+const vi = [0.325585,0.194581,0.415368,0.02001,0.05121,0.006906,0.223017,0.003962,0.056434,0.073025,0.012412,0.532506,0.071405];
+const se = vi.map(Math.sqrt);
+const res = api.calculatePooled(yi.map((y, i) => ({ logHR: y, seLogHR: se[i], hr: Math.exp(y), hr_lower: Math.exp(y - 1.96 * se[i]), hr_upper: Math.exp(y + 1.96 * se[i]), n: 100 })));
+console.log(JSON.stringify({
+  k: res.k, logHR: r(res.logHR), seLogHR: r(res.seLogHR), tau2: r(res.tau2),
+  I2: r(res.I2, 4), HR: r(res.HR)
+}));
+''',
+    },
+    {
+        "project_id_prefix": "culpritcontroversy",
+        "project_path": r"C:\Projects\culpritcontroversy",
+        "lang": "node",
+        "tolerance": 1e-4,
+        "probe": '''
+const path = require('path');
+const api = require(path.resolve(process.cwd(), 'engine.js'));
+const r = (x, n) => { const p = Math.pow(10, n == null ? 6 : n); return Math.round(x * p) / p; };
+const yi = [-0.889311,-1.585389,-1.348073,-1.441551,-0.217547,-0.786116,-1.620898,0.011952,-0.469418,-1.371345,-0.339359,0.445913,-0.017314];
+const vi = [0.325585,0.194581,0.415368,0.02001,0.05121,0.006906,0.223017,0.003962,0.056434,0.073025,0.012412,0.532506,0.071405];
+const se = vi.map(Math.sqrt);
+const res = api.runHKSJ(yi.map((y, i) => ({ e: y, s: se[i], id: 'S' + i, active: true })), 'e', 's');
+console.log(JSON.stringify({
+  mu: r(res.mu), se_pool: r(res.se_pool), tau2: r(res.tau2), I2: r(res.I2, 4),
+  tInv975_12: r(api.tInv975(12))
+}));
+''',
+    },
+    {
+        "project_id_prefix": "iabp",
+        "project_path": r"C:\Projects\IABP",
+        "lang": "node",
+        "tolerance": 1e-4,
+        "probe": '''
+const path = require('path');
+const api = require(path.resolve(process.cwd(), 'engine.js'));
+const r = (x, n) => { const p = Math.pow(10, n == null ? 6 : n); return Math.round(x * p) / p; };
+const yi = [-0.889311,-1.585389,-1.348073,-1.441551,-0.217547,-0.786116,-1.620898,0.011952,-0.469418,-1.371345,-0.339359,0.445913,-0.017314];
+const vi = [0.325585,0.194581,0.415368,0.02001,0.05121,0.006906,0.223017,0.003962,0.056434,0.073025,0.012412,0.532506,0.071405];
+const se = vi.map(Math.sqrt);
+const res = api.runHKSJ(yi.map((y, i) => ({ logOR: y, se: se[i], id: 'S' + i })), 'logOR', 'se');
+console.log(JSON.stringify({
+  k: res.k, or: r(res.or), lo: r(res.lo), hi: r(res.hi), tau2: r(res.tau2), I2: r(res.I2, 4)
+}));
+''',
+    },
+    {
+        "project_id_prefix": "livingmetacolchicine",
+        "project_path": r"C:\Projects\livingmetacolchicine",
+        "lang": "node",
+        "tolerance": 1e-4,
+        "probe": '''
+const path = require('path');
+const api = require(path.resolve(process.cwd(), 'engine.js'));
+const r = (x, n) => { const p = Math.pow(10, n == null ? 6 : n); return Math.round(x * p) / p; };
+const yi = [-0.889311,-1.585389,-1.348073,-1.441551,-0.217547,-0.786116,-1.620898,0.011952,-0.469418,-1.371345,-0.339359,0.445913,-0.017314];
+const vi = [0.325585,0.194581,0.415368,0.02001,0.05121,0.006906,0.223017,0.003962,0.056434,0.073025,0.012412,0.532506,0.071405];
+const se = vi.map(Math.sqrt);
+const res = api.analyze(yi.map((y, i) => ({ log_or: y, se: se[i] })));
+console.log(JSON.stringify({
+  k: res.k, thetaRE: r(res.thetaRE), seRE: r(res.seRE), tau2: r(res.tau2),
+  I2: r(res.I2, 4), Q: r(res.Q, 4)
+}));
+''',
+    },
+    {
+        "project_id_prefix": "as",
+        "project_path": r"C:\Projects\AS",
+        "lang": "node",
+        "tolerance": 1e-4,
+        "probe": '''
+const path = require('path');
+const api = require(path.resolve(process.cwd(), 'engine.js'));
+const r = (x, n) => { const p = Math.pow(10, n == null ? 6 : n); return Math.round(x * p) / p; };
+const yi = [-0.889311,-1.585389,-1.348073,-1.441551,-0.217547,-0.786116,-1.620898,0.011952,-0.469418,-1.371345,-0.339359,0.445913,-0.017314];
+const vi = [0.325585,0.194581,0.415368,0.02001,0.05121,0.006906,0.223017,0.003962,0.056434,0.073025,0.012412,0.532506,0.071405];
+const se = vi.map(Math.sqrt);
+const res = api.calculateMetaAnalysis(yi.map((y, i) => ({ hr: Math.exp(y), ci_lower: Math.exp(y - 1.96 * se[i]), ci_upper: Math.exp(y + 1.96 * se[i]), n: 100 })));
+console.log(JSON.stringify({
+  pooledLogHR: r(res.pooledLogHR), pooledHR: r(res.pooledHR), tau2: r(res.tau2),
+  Q: r(res.Q, 4), df: res.df, I2: r(res.I2, 4)
+}));
+''',
+    },
 ]
 
 
 def find_project_id(db_path: Path, prefix: str) -> str | None:
-    """Look up the full project_id from the Overmind DB by prefix."""
+    """Look up the full project_id from the Overmind DB by prefix.
+
+    project_ids are `<slug>-<hex hash>`. Match the prefix as the FULL slug
+    (exact, or slug followed by `-<hash>`) rather than a bare startswith —
+    otherwise a short slug like "as" matches "asa-..." / "asreview-..." first
+    (the duplicate-prefix trap that mis-routed the AS baseline, 2026-06-06).
+    """
+    import re as _re
+    suffixed = _re.compile(rf"^{_re.escape(prefix)}-[0-9a-f]{{6,}}$")
     try:
         from overmind.storage.db import StateDatabase
         db = StateDatabase(db_path)
+        match = None
         for p in db.list_projects():
-            if p.project_id.startswith(prefix):
-                db.close()
-                return p.project_id
+            if p.project_id == prefix:
+                match = p.project_id
+                break
+            if match is None and suffixed.match(p.project_id):
+                match = p.project_id
         db.close()
+        if match:
+            return match
     except Exception:
         pass
     return prefix
