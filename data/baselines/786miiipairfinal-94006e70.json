@@ -1,0 +1,20 @@
+{
+  "command": "\"C:\\Program Files\\nodejs\\node.EXE\" C:\\Users\\mahmo\\code\\overmind\\data\\baseline_probes\\probe_786miiipairfinal.js",
+  "values": {
+    "bcg_es": -0.716725,
+    "bcg_tau2": 0.31045,
+    "bcg_Q": 153.001554,
+    "bcg_I2": 92.156942,
+    "bcg_se": 0.179134,
+    "bcg_disp": 0.488349,
+    "bcg_pval": 6.3e-05,
+    "egger_int": -2.124239,
+    "md_es": 5.470588,
+    "md_Q": 0.588235,
+    "md_lo": 4.195037,
+    "md_hi": 6.746139
+  },
+  "tolerance": 0.0001,
+  "project_path": "C:\\Projects\\786MIIIPairfinal-",
+  "created_by": "create_baselines.py"
+}

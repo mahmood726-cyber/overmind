@@ -1743,6 +1743,23 @@ console.log(JSON.stringify({
 }));
 ''',
     },
+    # ---- JS engines with standalone probe files (probe authored as
+    #      data/baseline_probes/probe_<prefix>.js rather than inline). Each
+    #      probe replicates the project's own tests.js inputs so the captured
+    #      values equal the project's validated expectations (the cross-check).
+    {"project_id_prefix": "pairwisepro-proportion", "project_path": r"C:\Projects\pairwisepro-proportion", "lang": "node", "tolerance": 1e-4},
+    {"project_id_prefix": "betablocker", "project_path": r"C:\Projects\betablocker", "lang": "node", "tolerance": 1e-4},
+    {"project_id_prefix": "html5", "project_path": r"C:\Projects\HTML5", "lang": "node", "tolerance": 1e-4},
+    {"project_id_prefix": "journal-prisma", "project_path": r"C:\Projects\journal-prisma", "lang": "node", "tolerance": 1e-4},
+    {"project_id_prefix": "786miiipairfinal", "project_path": r"C:\Projects\786MIIIPairfinal-", "lang": "node", "tolerance": 1e-4},
+    {"project_id_prefix": "cbammr-bayes", "project_path": r"C:\Projects\cbammr-bayes", "lang": "node", "tolerance": 1e-4},
+    {"project_id_prefix": "hfnma", "project_path": r"C:\Projects\HFNMA", "lang": "node", "tolerance": 1e-4},
+    {"project_id_prefix": "html4", "project_path": r"C:\Projects\HTML4", "lang": "node", "tolerance": 1e-4},
+    {"project_id_prefix": "html6", "project_path": r"C:\Projects\HTML6", "lang": "node", "tolerance": 1e-4},
+    {"project_id_prefix": "htmlnma-geometry", "project_path": r"C:\Projects\htmlnma-geometry", "lang": "node", "tolerance": 1e-4},
+    {"project_id_prefix": "metamvhtml", "project_path": r"C:\Projects\Metamvhtml", "lang": "node", "tolerance": 1e-4},
+    {"project_id_prefix": "omnibusextendedmeta", "project_path": r"C:\Projects\Omnibusextendedmeta", "lang": "node", "tolerance": 1e-4},
+    {"project_id_prefix": "superhtml", "project_path": r"C:\Projects\Superhtml-", "lang": "node", "tolerance": 1e-4},
 ]
 
 
@@ -1778,17 +1795,24 @@ def create_baseline(spec: dict, dry_run: bool = False) -> dict | None:
     """Create a baseline JSON for one project. Returns the baseline dict or None on failure."""
     project_path = spec["project_path"]
     prefix = spec["project_id_prefix"]
-    probe_code = spec["probe"].strip()
+    probe_code = spec.get("probe")
     tolerance = spec["tolerance"]
     lang = spec.get("lang", "python")
 
     # Write probe script (.py for python probes, .js for node probes).
     # Node probes target JS-dashboard engines; the runner ("node") is
     # allowlisted in subprocess_utils so the NumericalWitness can re-run them.
+    # A spec may omit "probe" to reuse an EXISTING probe_<prefix>.<ext> file
+    # (useful when the probe JS is authored as a standalone file rather than
+    # embedded inline).
     PROBES_DIR.mkdir(parents=True, exist_ok=True)
     ext = "js" if lang == "node" else "py"
     probe_path = PROBES_DIR / f"probe_{prefix}.{ext}"
-    probe_path.write_text(probe_code, encoding="utf-8")
+    if probe_code is not None:
+        probe_path.write_text(probe_code.strip(), encoding="utf-8")
+    elif not probe_path.is_file():
+        print(f"  FAIL: {prefix} — no inline probe and no probe file at {probe_path.name}")
+        return None
 
     if lang == "node":
         # Resolve node to an ABSOLUTE path and quote it. The NumericalWitness's

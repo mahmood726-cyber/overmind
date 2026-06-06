@@ -1,0 +1,24 @@
+{
+  "command": "\"C:\\Program Files\\nodejs\\node.EXE\" C:\\Users\\mahmo\\code\\overmind\\data\\baseline_probes\\probe_cbammr-bayes.js",
+  "values": {
+    "muMean": 0.28199,
+    "muMedian": 0.27927,
+    "muCrILo": -0.0191,
+    "muCrIHi": 0.59724,
+    "predMean": 0.28199,
+    "predCrILo": -0.686,
+    "predCrIHi": 1.2654,
+    "tauMean": 0.43559,
+    "tauMedian": 0.40925,
+    "muHatFE": 0.168591,
+    "fitFEMuHat": 0.168591,
+    "dnorm0": 0.398942,
+    "trapzN01": 1,
+    "halfCauchy0": 1.27324,
+    "k": 10,
+    "noError": 1
+  },
+  "tolerance": 0.0001,
+  "project_path": "C:\\Projects\\cbammr-bayes",
+  "created_by": "create_baselines.py"
+}

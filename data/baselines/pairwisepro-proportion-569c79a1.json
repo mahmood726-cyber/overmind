@@ -1,0 +1,25 @@
+{
+  "command": "\"C:\\Program Files\\nodejs\\node.EXE\" C:\\Users\\mahmo\\code\\overmind\\data\\baseline_probes\\probe_pairwisepro-proportion.js",
+  "values": {
+    "k": 8,
+    "logit_mu": -1.5577,
+    "logit_est": 0.173977,
+    "logit_lo": 0.138842,
+    "logit_hi": 0.215775,
+    "logit_tau2": 0,
+    "logit_I2": 0,
+    "logit_Q": 4.832544,
+    "ft_mu": 0.40932,
+    "ft_est": 0.14884,
+    "ft_lo": 0.104741,
+    "ft_hi": 0.198503,
+    "ft_tau2": 0.002601,
+    "ft_I2": 33.031091,
+    "ft_Q": 10.452612,
+    "qnorm_975": 1.959964,
+    "isq_ft_check": 33.031091
+  },
+  "tolerance": 0.0001,
+  "project_path": "C:\\Projects\\pairwisepro-proportion",
+  "created_by": "create_baselines.py"
+}

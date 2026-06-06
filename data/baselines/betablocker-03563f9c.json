@@ -1,0 +1,18 @@
+{
+  "command": "\"C:\\Program Files\\nodejs\\node.EXE\" C:\\Users\\mahmo\\code\\overmind\\data\\baseline_probes\\probe_betablocker.js",
+  "values": {
+    "A_logHR": 0,
+    "A_varLogHR": 0.016,
+    "B_logHR": -0.693147,
+    "B_varLogHR": 0.13,
+    "D_logHR": -2.302585,
+    "D_varLogHR": 2.16,
+    "erf1": 0.842701,
+    "bayes_i0_probHarm": 0.671639,
+    "bayes_i60_probHarm": 1,
+    "freq_i16_snapped": 1
+  },
+  "tolerance": 0.0001,
+  "project_path": "C:\\Projects\\betablocker",
+  "created_by": "create_baselines.py"
+}

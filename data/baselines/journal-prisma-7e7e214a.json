@@ -1,0 +1,21 @@
+{
+  "command": "\"C:\\Program Files\\nodejs\\node.EXE\" C:\\Users\\mahmo\\code\\overmind\\data\\baseline_probes\\probe_journal-prisma.js",
+  "values": {
+    "recordsDb": 800,
+    "recordsOther": 200,
+    "duplicatesRemoved": 300,
+    "derivedScreened": 700,
+    "derivedAssessed": 90,
+    "derivedIncluded": 45,
+    "sumExcluded": 45,
+    "sumExcludedReasons": 45,
+    "warningsCount": 0,
+    "stagesCount": 5,
+    "inclStageN": 45,
+    "inclExitsCount": 3,
+    "checklistLength": 27
+  },
+  "tolerance": 0.0001,
+  "project_path": "C:\\Projects\\journal-prisma",
+  "created_by": "create_baselines.py"
+}

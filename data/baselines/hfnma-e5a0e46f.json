@@ -1,0 +1,23 @@
+{
+  "command": "\"C:\\Program Files\\nodejs\\node.EXE\" C:\\Users\\mahmo\\code\\overmind\\data\\baseline_probes\\probe_hfnma.js",
+  "values": {
+    "n_treatments": 6,
+    "n_trials": 5,
+    "w_sglt2": 7.586804,
+    "w_topcat_off": 5.799093,
+    "w_topcat_on": 6.39693,
+    "net_total_hr": 0.61944,
+    "net_real_hr": 1,
+    "net_safety": 8,
+    "bridged_arni_composite": 0.8265,
+    "bridged_arni_mortality": 0.931,
+    "total_events_off": 4917,
+    "total_events_on": 5187,
+    "era_span": 24.5,
+    "connected_full": 1,
+    "connected_arni_isolated": 0
+  },
+  "tolerance": 0.0001,
+  "project_path": "C:\\Projects\\HFNMA",
+  "created_by": "create_baselines.py"
+}

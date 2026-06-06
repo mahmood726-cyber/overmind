@@ -1,0 +1,20 @@
+{
+  "command": "\"C:\\Program Files\\nodejs\\node.EXE\" C:\\Users\\mahmo\\code\\overmind\\data\\baseline_probes\\probe_html5.js",
+  "values": {
+    "pooled_sens": 0.805145,
+    "pooled_spec": 0.892122,
+    "pooled_dor": 34.170674,
+    "sens_tau2": 0,
+    "spec_tau2": 0,
+    "biv_corr": -0.993614,
+    "sroc_auc": 0.902512,
+    "sroc_qstar": 0.864707,
+    "sroc_alpha": 3.709902,
+    "threshold_rho": 1,
+    "deeks_slope": -0.237789,
+    "k": 3
+  },
+  "tolerance": 0.0001,
+  "project_path": "C:\\Projects\\HTML5",
+  "created_by": "create_baselines.py"
+}
