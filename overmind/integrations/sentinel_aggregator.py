@@ -30,10 +30,22 @@ from pathlib import Path
 from typing import Callable, Iterable
 
 # Append, not insert-0, so real overmind imports don't get shadowed.
-# Resolves via Path.home() (cross-platform); env var override for CI/testing.
+# Discovery roots are config-driven (NO machine-specific path baked into the
+# source) to survive cross-machine drift: push_all_repos.py has lived in
+# different dirs on different machines, and a stale hard default once produced
+# a silent ModuleNotFoundError -> 0-scan (2026-06-07 health review). Set
+# OVERMIND_DISCOVER_IMPORT_ROOT to the dir containing push_all_repos.py (an
+# os.pathsep-separated list is allowed); home is the always-tried fallback.
 import os as _os
 _DEFAULT_DISCOVER_IMPORT_ROOT = _os.environ.get(
     "OVERMIND_DISCOVER_IMPORT_ROOT", str(Path.home())
+)
+# Ordered candidate roots tried until one contains push_all_repos.py.
+_DISCOVER_IMPORT_CANDIDATES = tuple(
+    r for r in (
+        *_DEFAULT_DISCOVER_IMPORT_ROOT.split(_os.pathsep),
+        str(Path.home()),
+    ) if r
 )
 
 _RX_BLOCK = re.compile(r"^## \[BLOCK\] (\S+)", re.MULTILINE)
@@ -57,11 +69,17 @@ def _first_existing(root: Path, names: Iterable[str]) -> Path | None:
 
 
 def _default_discover_repos() -> list[str]:
-    """Import push_all_repos.discover_repos from the home dir. Returns empty
-    list (plus raises on caller's side? no — we wrap in collect()) if not
-    available."""
-    if _DEFAULT_DISCOVER_IMPORT_ROOT not in sys.path:
-        sys.path.append(_DEFAULT_DISCOVER_IMPORT_ROOT)
+    """Import push_all_repos.discover_repos from the first candidate root that
+    actually contains push_all_repos.py. Raises ModuleNotFoundError (caller
+    wraps + records in the nightly) if no candidate has it — fail-loud, never a
+    silent 0-scan."""
+    for root in _DISCOVER_IMPORT_CANDIDATES:
+        if not root:
+            continue
+        if (Path(root) / "push_all_repos.py").exists():
+            if root not in sys.path:
+                sys.path.append(root)
+            break
     from push_all_repos import discover_repos
     return list(discover_repos())
 
