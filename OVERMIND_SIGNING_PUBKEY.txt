@@ -1,0 +1,10 @@
+Overmind / TruthCert release signing key — Ed25519 PUBLIC key (safe to share)
+Algorithm: Ed25519
+Encoding:  base64(raw 32-byte public key)
+Key:       u6fQ+Kogvuk8RoMDr0Uz7wiqsxzKK9uWOglgEDfSpTs=
+Added:     2026-06-07
+
+This is the PUBLIC half only. It cannot sign — it only verifies. Use it to
+confirm that a signed Overmind/TruthCert bundle was produced by this project
+and not tampered with. See VERIFYING.md for the procedure. The private half
+never leaves the author's machine and is gitignored.

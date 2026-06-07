@@ -51,3 +51,10 @@ data/nightly_reports/inspect_format/
 # machine-local overmind scan roots (P3-a)
 config/roots.local.yaml
 
+
+# Ed25519 signing keys — private keys must NEVER be committed (2026-06-07)
+*_ed25519
+*.pem
+*.key
+keys/
+.overmind/
