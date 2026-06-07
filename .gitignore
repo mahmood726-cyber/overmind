@@ -40,6 +40,12 @@ data/nightly_reports/watchdog_*.alert
 data/nightly_reports/watchdog_crash.log
 sentinel-findings.md
 sentinel-findings.jsonl
+# Sentinel/Overmind hook output (folded in from the local-sync branch, 2026-06-06)
+STUCK_FAILURES.md
+STUCK_FAILURES.jsonl
+sentinel-findings.sarif
+review-findings.md
+review-findings.jsonl
 data/nightly_reports/inspect_format/
 
 # machine-local overmind scan roots (P3-a)
