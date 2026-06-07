@@ -115,12 +115,19 @@ Fisher information (dropped the sum(w^3) term, went negative for large weights -
 tau2 diverged to ~6e14 on dat.bcg). Fixed in C:\Projects\neurosynth\engine.js
 (commit 354d5b2); now reproduces metafor REML exactly (tau2=0.313243); 29 tests pass.
 
-Pre-existing FAIL, NOT part of this sweep, left as-is (out of scope): the
-`dataextractor-9c5488b5` baseline (probe.cjs) requires the full RCTExtractor module
-graph, whose `RCTExtractor_v4_8_AI.js:25` does `require('./RCTExtractor_v4_7.js')` —
-a file that was NEVER committed to that repo. That probe has been broken since it
-was added; fixing needs reconstructing/removing the phantom v4_7 dependency, which
-is a decision for the Dataextractor maintainer.
+REMOVED 2026-06-07 (was a perpetual false-FAIL): the `dataextractor-9c5488b5`
+baseline. Root cause: C:\Projects\Dataextractor is missing its CORE engine.
+`RCTExtractor_v4_8_AI.js` (the AI/NMA enhancement layer) destructures
+`V47Extractor` from `require('./RCTExtractor_v4_7.js')` at module top (line 25) and
+delegates the actual extraction (`extract`/`flatten`/`getSummary`) to it — but
+`RCTExtractor_v4_7.js` was NEVER committed (absent on disk, in git history, reflog,
+the single-commit GitHub clone, and the whole portfolio). So the module throws on
+load: the entire npm package (index.js, pdf_extractor.js, probe.cjs) is
+non-functional. The baseline was deleted (git-restorable; baseline content was at
+overmind commit c201cecf) to return the project to honest numerical-SKIP rather
+than fabricate a multi-thousand-line extraction engine. ACTION FOR MAINTAINER:
+recover RCTExtractor_v4_7.js from the machine where it was originally authored and
+commit it; then re-create the baseline.
 
 > Remaining Python-engine candidates are not faithful targets: transcendent-ma-lab's
 > `pool_quantum` is an explicitly experimental method (no ground truth);
