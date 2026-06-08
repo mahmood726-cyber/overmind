@@ -7,11 +7,19 @@ Description-Content-Type: text/markdown
 License-File: LICENSE
 Requires-Dist: psutil>=5.9
 Requires-Dist: PyYAML>=6.0
+Requires-Dist: cryptography>=41.0
 Provides-Extra: dev
 Requires-Dist: pytest>=8.0; extra == "dev"
 Requires-Dist: pytest-timeout>=2.0; extra == "dev"
 Provides-Extra: embeddings
 Requires-Dist: sentence-transformers>=2.2; extra == "embeddings"
+Provides-Extra: sigstore
+Requires-Dist: sigstore>=2.0; extra == "sigstore"
+Provides-Extra: browser
+Requires-Dist: selenium>=4.0; extra == "browser"
+Provides-Extra: benchmark
+Requires-Dist: pyreadr>=0.4; extra == "benchmark"
+Requires-Dist: pandas>=1.5; extra == "benchmark"
 Dynamic: license-file
 
 # OVERMIND v3.1.0

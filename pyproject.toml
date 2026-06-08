@@ -11,6 +11,11 @@ requires-python = ">=3.11"
 dependencies = [
   "psutil>=5.9",
   "PyYAML>=6.0",
+  # Ed25519 is the default bundle signer (overmind/verification/signers.py).
+  # Required on every install — without it the signer path fails closed and
+  # the Ed25519 signer tests error on a fresh machine. Floor 41.0 = modern,
+  # stable Ed25519 + serialization API.
+  "cryptography>=41.0",
 ]
 
 [project.optional-dependencies]
@@ -20,6 +25,22 @@ dev = [
 ]
 embeddings = [
   "sentence-transformers>=2.2",
+]
+# Keyless OIDC signing (CI/release attestation) — overmind/verification/signers.py.
+# Lazy-imported; only needed when OVERMIND_SIGN_METHOD=sigstore.
+sigstore = [
+  "sigstore>=2.0",
+]
+# Headless browser smoke checks — overmind/verification/browser_checks.py.
+# Lazy-imported; only needed when a browser verification profile runs.
+browser = [
+  "selenium>=4.0",
+]
+# Cochrane .rda gold-corpus reproduction — overmind/intelligence/gold_benchmark.py.
+# Guarded import; only needed to run the published-corpus benchmark.
+benchmark = [
+  "pyreadr>=0.4",
+  "pandas>=1.5",
 ]
 
 [project.scripts]
