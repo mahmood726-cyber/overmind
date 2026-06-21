@@ -26,12 +26,15 @@ never logged or echoed.
 from __future__ import annotations
 
 import json
+import logging
 import os
 import shutil
 import subprocess
 from dataclasses import dataclass
 from pathlib import Path
 from typing import Callable
+
+logger = logging.getLogger(__name__)
 
 from overmind.subprocess_utils import safe_subprocess_env, split_command
 
@@ -219,7 +222,7 @@ class FallbackBackend:
 
     def query(self, prompt: str) -> str:
         errors: list[str] = []
-        for backend in self.backends:
+        for position, backend in enumerate(self.backends):
             name = type(backend).__name__
             available = getattr(backend, "available", None)
             if callable(available) and not available():
@@ -227,6 +230,18 @@ class FallbackBackend:
                 continue
             response = backend.query(prompt)
             if not response.startswith(JUDGE_ERROR):
+                # Observability (agy review point): make a silent downgrade to a
+                # non-primary backend visible, so reduced advisory confidence is
+                # never hidden. INFO when primary served; WARNING when a later
+                # backend did because earlier ones were down/over-quota.
+                if position == 0:
+                    logger.info("judge served by primary backend %s", name)
+                else:
+                    logger.warning(
+                        "judge fell back to backend %s (position %d); "
+                        "earlier backends unavailable/failed: %s",
+                        name, position, " | ".join(errors),
+                    )
                 return response
             errors.append(f"{name}: {response}")
         return f"{JUDGE_ERROR} all judge backends failed [{' | '.join(errors) or 'none configured'}]"

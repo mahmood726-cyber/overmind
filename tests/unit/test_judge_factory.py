@@ -147,6 +147,17 @@ def test_fallback_first_usable_wins_short_circuits():
     assert second.calls == 0  # short-circuited after first success
 
 
+def test_fallback_to_secondary_warns(caplog):
+    """A silent downgrade to a non-primary backend must be observable (agy
+    review point): emit a WARNING naming the backend that actually served."""
+    import logging
+    over_quota = _FakeBackend("primary", f"{JUDGE_ERROR} 429")
+    secondary = _FakeBackend("secondary", "VERDICT: PASS")
+    with caplog.at_level(logging.WARNING, logger="overmind.verification.judge_backends"):
+        FallbackBackend(backends=[over_quota, secondary]).query("p")
+    assert any("fell back" in r.message or "fell back" in r.getMessage() for r in caplog.records)
+
+
 # ── end-to-end through LLMJudge.judge (no live call) ────────────────
 
 
