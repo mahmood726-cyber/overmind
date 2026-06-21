@@ -35,7 +35,8 @@ from overmind.tasks.prioritizer import Prioritizer
 from overmind.tasks.task_generator import TaskGenerator
 from overmind.tasks.task_models import build_baseline_task
 from overmind.tasks.task_queue import TaskQueue
-from overmind.verification.llm_judge import GeminiBackend, LLMJudge
+from overmind.verification.llm_judge import LLMJudge, QuorumJudge
+from overmind.verification.judge_factory import build_judge
 from overmind.verification.policy_guard import PolicyGuard
 from overmind.verification.trajectory_scorer import TrajectoryScorer
 from overmind.verification.verifier import VerificationEngine
@@ -802,10 +803,15 @@ class Orchestrator:
             trace_id=verification_result.trace_id,
         )
 
-    def _build_llm_judge(self) -> LLMJudge | None:
+    def _build_llm_judge(self) -> LLMJudge | QuorumJudge | None:
         if not self._judge_enabled():
             return None
-        return LLMJudge(backend=GeminiBackend())
+        # Engine-pluggable: OVERMIND_JUDGE_ENGINE selects among claude / codex /
+        # codex-noreen / agy / gemini / local (default: claude->gemini fallback
+        # chain), with OVERMIND_JUDGE_MODE=quorum for an ensemble. Falls back
+        # gracefully when the primary engine is down or over quota. See
+        # overmind.verification.judge_factory.
+        return build_judge()
 
     def _judge_enabled(self) -> bool:
         raw = os.environ.get("OVERMIND_ENABLE_LLM_JUDGE")

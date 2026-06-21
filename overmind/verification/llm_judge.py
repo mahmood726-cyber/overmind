@@ -119,6 +119,11 @@ class GeminiBackend:
                     return line.split("=", 1)[1].strip()
         return ""
 
+    def available(self) -> bool:
+        """True if an API key is resolvable — lets the fallback layer skip a
+        keyless Gemini backend without making a doomed call."""
+        return bool(self.api_key)
+
     # Retry transient network failures with bounded exponential backoff.
     _RETRY_ATTEMPTS = 3
     _RETRY_BACKOFF_SECONDS = (1.0, 2.0)
