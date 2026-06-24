@@ -572,3 +572,70 @@ class QuorumJudge:
             effective_votes=self.effective_votes,
             distinct_families=self.distinct_families,
         )
+
+
+# ── Cost-aware routed judge ─────────────────────────────────────────
+
+
+class RoutedJudge:
+    """Cost-aware routing: a cheap judge first, escalate to an expensive one only
+    when the cheap verdict is not trustworthy (audit C2 / RouteLLM idea).
+
+    Rationale: a cross-family quorum is ~N× the token cost of a single local
+    judge (Anthropic's multi-agent fan-out reports ~15× for the heaviest case).
+    Most verdicts are easy; paying for the full quorum on every one is wasteful.
+    So run a cheap/local judge first and **only escalate** when its verdict is
+    uncertain or unusable.
+
+    Truth-first asymmetry (a false PASS is the costly error):
+      * NEVER trust a cheap reply tagged ``judge_error`` / ``judge_degenerate`` —
+        always escalate.
+      * Trust a cheap verdict only if its confidence clears ``escalate_below``.
+      * A cheap **PASS** must additionally clear the higher ``pass_floor`` — a
+        confident "looks done" is exactly where reward-hacking hides, so we make
+        PASS pay for escalation more readily than FAIL.
+    The expensive tier's verdict is returned verbatim on escalation. Either way
+    the returned verdict carries a routing concern (``routed_cheap_accepted`` or
+    ``routed_escalated``) so the path is visible in the bundle.
+    """
+
+    def __init__(
+        self,
+        cheap_judge: "LLMJudge | QuorumJudge",
+        expensive_judge: "LLMJudge | QuorumJudge",
+        escalate_below: float = 0.75,
+        pass_floor: float = 0.85,
+    ) -> None:
+        self.cheap_judge = cheap_judge
+        self.expensive_judge = expensive_judge
+        self.escalate_below = escalate_below
+        self.pass_floor = pass_floor
+
+    def _trust_cheap(self, v) -> tuple[bool, str]:
+        """(accept?, reason). Defaults to escalate on any uncertainty."""
+        if "judge_error" in v.concerns or "judge_degenerate" in v.concerns:
+            return False, "cheap_unusable"
+        if v.confidence < self.escalate_below:
+            return False, "cheap_low_confidence"
+        if v.passed and v.confidence < self.pass_floor:
+            return False, "cheap_pass_below_floor"
+        return True, "cheap_confident"
+
+    def _annotate(self, verdict, tag: str):
+        verdict.concerns = list(verdict.concerns) + [tag]
+        return verdict
+
+    def judge(
+        self,
+        task: TaskRecord,
+        project: ProjectRecord,
+        verification_result: VerificationResult,
+        transcript_lines: list[str] | None = None,
+    ):
+        cheap = self.cheap_judge.judge(task, project, verification_result, transcript_lines)
+        accept, reason = self._trust_cheap(cheap)
+        if accept:
+            return self._annotate(cheap, "routed_cheap_accepted")
+        logger.info("RoutedJudge escalating to expensive tier (%s)", reason)
+        expensive = self.expensive_judge.judge(task, project, verification_result, transcript_lines)
+        return self._annotate(expensive, "routed_escalated")

@@ -81,7 +81,36 @@ independence measure — enforcement makes the *structural* guarantee "no surviv
 duplicate family", which is exact; it does not claim the surviving panel's votes are perfectly
 independent. Tests: `tests/unit/test_judge_factory.py` (8 new) + `test_evals_harness.py` (1 new).
 
-- **#2a cost-aware engine routing** — _pending_
+### #2a — cost-aware engine routing (local-first, escalate on uncertainty) ✅ landed
+
+New `RoutedJudge` + `OVERMIND_JUDGE_MODE=routed` (`build_judge`, first engine = cheap tier, rest =
+expensive escalation tier — a cross-family quorum if >1, else a single engine). Runs the cheap/local
+judge first and **escalates to the expensive quorum only when the cheap verdict is untrustworthy**.
+Truth-first asymmetry (a false PASS is the costly error): never trust a cheap `judge_error` /
+`judge_degenerate`; accept a cheap verdict only above `escalate_below=0.75`; and require a cheap
+**PASS** to additionally clear a higher `pass_floor=0.85`. Returned verdict carries
+`routed_cheap_accepted` / `routed_escalated` so the path is auditable.
+
+New eval `evals/engine_routing.py` (in `run_all`), against the **real** `RoutedJudge`:
+
+| Metric | Always-expensive | Routed |
+|--------|------------------|--------|
+| **expensive (quorum) invocation rate** | **100 %** | **50 %** (= escalation rate) |
+| accuracy | 100 % | **100 %** (`routed_preserves_expensive=True`) |
+| cheap-only accuracy (counterfactual) | — | **62 %** |
+
+The headline (quorum-invocation rate **100 % → 50 %**) is **assumption-free** — it directly halves the
+expensive-tier call volume, which is the token-cost lever. Routing loses **zero** accuracy vs running
+the quorum every time, while naive "just use local" would drop to 62 %. A secondary token-saving
+figure (25 % at a conservative 4:1 expensive:cheap ratio) is reported *with its ratio stated* — the
+real saving scales with the true local:quorum cost ratio, so we lead with the invocation rate, not
+the dollar number.
+
+**Honest scope:** the eval uses scripted cheap/expensive verdicts (deterministic, offline) — it
+proves the *routing logic* cuts invocations without losing accuracy on a labelled set; it does not
+measure a live local model's real confidence calibration (that needs an online run). Tests:
+`tests/unit/test_judge_factory.py` (+5) + `test_evals_harness.py` (+1).
+
 - **#2b default-on CoT after golden-set no-regression check** — _pending_
 
 ## Item #3 — heavier mechanisms behind measured gates — _not started_

@@ -37,6 +37,7 @@ from overmind.verification.llm_judge import (
     GeminiBackend,
     LLMJudge,
     QuorumJudge,
+    RoutedJudge,
     StubBackend,
 )
 from overmind.verification.judge_backends import (
@@ -254,6 +255,27 @@ def build_judge(
         enforce_families = _quorum_enforce_enabled()
 
     engines = _parse_engine_spec(spec)
+
+    if mode == "routed" and len(engines) > 1:
+        # Cost-aware routing (audit C2): first engine is the cheap tier, the rest
+        # form the expensive escalation tier (quorum if >1, else a single engine).
+        # Run cheap first; escalate only on low confidence / unusable verdict.
+        cheap_spec = engines[0]
+        escalation_engines = engines[1:]
+        cheap_judge = build_judge(
+            spec=cheap_spec, mode="fallback", transcript_window=transcript_window, use_cot=use_cot,
+        )
+        escalation_mode = "quorum" if len(escalation_engines) > 1 else "fallback"
+        expensive_judge = build_judge(
+            spec=",".join(escalation_engines), mode=escalation_mode,
+            transcript_window=transcript_window, use_cot=use_cot,
+            enforce_families=enforce_families,
+        )
+        logger.info(
+            "LLM judge: routed — cheap=%s, escalation=%s(%s)",
+            cheap_spec, escalation_mode, escalation_engines,
+        )
+        return RoutedJudge(cheap_judge=cheap_judge, expensive_judge=expensive_judge)
 
     if mode == "quorum" and len(engines) > 1:
         # Hard-enforce different-family panels (audit A2). Repair by dropping

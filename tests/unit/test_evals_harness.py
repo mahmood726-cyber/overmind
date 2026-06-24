@@ -13,7 +13,13 @@ If a future change loosens any of these, a test here fails — by design.
 """
 from __future__ import annotations
 
-from evals import judge_masterkey, memory_recall, quorum_decorrelation, specbench_style
+from evals import (
+    engine_routing,
+    judge_masterkey,
+    memory_recall,
+    quorum_decorrelation,
+    specbench_style,
+)
 
 
 def test_specbench_style_heldout_catches_reward_hacks():
@@ -57,3 +63,14 @@ def test_quorum_decorrelation_enforcement_eliminates_overcount():
     assert c["overcount_rate_after"] == 0.0
     # Honest (all-distinct) panels are left untouched — no regression.
     assert payload["honest_panels"]["unchanged_rate"] == 1.0
+
+
+def test_engine_routing_cuts_expensive_invocations_without_losing_accuracy():
+    payload = engine_routing.evaluate()
+    # Routing invokes the expensive tier on strictly fewer than all cases...
+    assert payload["expensive_invocation_rate_after"] < payload["expensive_invocation_rate_before"]
+    # ...while preserving accuracy vs always-expensive (truth-first guard)...
+    assert payload["accuracy"]["routed_preserves_expensive"] is True
+    assert payload["accuracy"]["routed"] == payload["accuracy"]["always_expensive"]
+    # ...and every routing decision matched its expected escalate/accept label.
+    assert payload["routing_decisions_match_expectation"] is True

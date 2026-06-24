@@ -20,7 +20,7 @@ from overmind.verification.judge_backends import (
     LocalModelBackend,
     JUDGE_ERROR,
 )
-from overmind.verification.llm_judge import GeminiBackend, LLMJudge, QuorumJudge, StubBackend
+from overmind.verification.llm_judge import GeminiBackend, LLMJudge, QuorumJudge, RoutedJudge, StubBackend
 
 
 # ── engine selection ────────────────────────────────────────────────
@@ -371,3 +371,74 @@ def test_quorum_enforce_env_toggle(monkeypatch):
     monkeypatch.setenv("OVERMIND_JUDGE_QUORUM_ENFORCE", "1")
     judge2 = jf.build_judge(spec="claude,codex,codex-noreen", mode="quorum")
     assert len(judge2.judges) == 2
+
+
+# ── C2 cost-aware routed judge ──────────────────────────────────────
+
+
+def _route_inputs():
+    from overmind.storage.models import ProjectRecord, TaskRecord, VerificationResult
+    task = TaskRecord(
+        task_id="t", project_id="p", title="x", task_type="verification",
+        source="auto", priority=0.8, risk="medium", expected_runtime_min=5,
+        expected_context_cost="low", required_verification=["tests"],
+    )
+    project = ProjectRecord(project_id="p", name="proj", root_path="C:\\tmp\\p")
+    vr = VerificationResult(task_id="t", success=True, required_checks=["tests"],
+                            completed_checks=["tests"], skipped_checks=[], details=[])
+    return task, project, vr
+
+
+def _resp(verdict, conf):
+    return f"VERDICT: {verdict}\nCONFIDENCE: {conf}\nREASONING: r\nCONCERNS: none\nMET: x\nMISSED: none"
+
+
+def test_build_judge_routed_mode_constructs_routed_judge():
+    judge = jf.build_judge(spec="local,claude,gemini", mode="routed")
+    assert isinstance(judge, RoutedJudge)
+    # escalation tier is a cross-family quorum (claude+gemini)
+    assert isinstance(judge.expensive_judge, QuorumJudge)
+    assert isinstance(judge.cheap_judge, LLMJudge)
+
+
+def test_routed_accepts_confident_cheap_no_escalation():
+    from overmind.verification.llm_judge import RoutedJudge as RJ
+    cheap = LLMJudge(backend=StubBackend(response=_resp("FAIL", 0.92)))
+    expensive = LLMJudge(backend=StubBackend(response=_resp("PASS", 0.99)))
+    routed = RJ(cheap_judge=cheap, expensive_judge=expensive)
+    v = routed.judge(*_route_inputs())
+    assert v.passed is False                      # cheap verdict used
+    assert "routed_cheap_accepted" in v.concerns
+    assert "routed_escalated" not in v.concerns
+
+
+def test_routed_escalates_on_low_confidence():
+    from overmind.verification.llm_judge import RoutedJudge as RJ
+    cheap = LLMJudge(backend=StubBackend(response=_resp("PASS", 0.55)))
+    expensive = LLMJudge(backend=StubBackend(response=_resp("FAIL", 0.95)))
+    routed = RJ(cheap_judge=cheap, expensive_judge=expensive)
+    v = routed.judge(*_route_inputs())
+    assert v.passed is False                      # expensive verdict used
+    assert "routed_escalated" in v.concerns
+
+
+def test_routed_pass_below_floor_escalates():
+    # A cheap PASS above the general threshold (0.75) but below the higher PASS
+    # floor (0.85) must still escalate — the truth-first asymmetry.
+    from overmind.verification.llm_judge import RoutedJudge as RJ
+    cheap = LLMJudge(backend=StubBackend(response=_resp("PASS", 0.80)))
+    expensive = LLMJudge(backend=StubBackend(response=_resp("FAIL", 0.95)))
+    routed = RJ(cheap_judge=cheap, expensive_judge=expensive)
+    v = routed.judge(*_route_inputs())
+    assert v.passed is False
+    assert "routed_escalated" in v.concerns
+
+
+def test_routed_escalates_on_degenerate_cheap():
+    from overmind.verification.llm_judge import RoutedJudge as RJ
+    cheap = LLMJudge(backend=StubBackend(response=""))   # degenerate
+    expensive = LLMJudge(backend=StubBackend(response=_resp("PASS", 0.95)))
+    routed = RJ(cheap_judge=cheap, expensive_judge=expensive)
+    v = routed.judge(*_route_inputs())
+    assert v.passed is True
+    assert "routed_escalated" in v.concerns

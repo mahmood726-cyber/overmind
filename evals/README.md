@@ -15,6 +15,7 @@ Three evals, each producing a real, reproducible score in
 | 2 | Judge master-key | `judge_masterkey.py` | judge false-PASS rate on adversarial inputs; accuracy on genuine |
 | 3 | Memory recall | `memory_recall.py` | recall/precision; suppression of superseded & expired facts |
 | 4 | Quorum decorrelation | `quorum_decorrelation.py` | correlated-panel overcount rate before→after hard family-enforcement (A2) |
+| 5 | Engine routing | `engine_routing.py` | expensive(quorum)-invocation rate cut + accuracy preserved under cost-aware routing (C2) |
 
 ## How to run
 

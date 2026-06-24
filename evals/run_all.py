@@ -12,7 +12,13 @@ from __future__ import annotations
 
 import json
 
-from evals import judge_masterkey, memory_recall, quorum_decorrelation, specbench_style
+from evals import (
+    engine_routing,
+    judge_masterkey,
+    memory_recall,
+    quorum_decorrelation,
+    specbench_style,
+)
 from evals.common import RESULTS_DIR, seed_everything, write_result
 
 
@@ -30,6 +36,8 @@ def main() -> int:
     mr = memory_recall.main()
     print("-" * 72)
     qd = quorum_decorrelation.main()
+    print("-" * 72)
+    er = engine_routing.main()
     print("=" * 72)
 
     summary = {
@@ -58,6 +66,13 @@ def main() -> int:
                 "overcount_rate_before": qd["correlated_panels"]["overcount_rate_before"],
                 "overcount_rate_after": qd["correlated_panels"]["overcount_rate_after"],
                 "honest_panels_unchanged_rate": qd["honest_panels"]["unchanged_rate"],
+            },
+            "engine_routing": {
+                "expensive_invocation_rate_before": er["expensive_invocation_rate_before"],
+                "expensive_invocation_rate_after": er["expensive_invocation_rate_after"],
+                "accuracy_routed": er["accuracy"]["routed"],
+                "accuracy_always_expensive": er["accuracy"]["always_expensive"],
+                "routed_preserves_expensive": er["accuracy"]["routed_preserves_expensive"],
             },
         },
     }
