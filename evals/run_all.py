@@ -13,13 +13,16 @@ from __future__ import annotations
 import json
 
 from evals import (
+    contract_impact,
     engine_routing,
     judge_cot_goldenset,
     judge_masterkey,
     memory_recall,
     memory_retraction,
     quorum_decorrelation,
+    sandbox_policy,
     specbench_style,
+    verdict_tracing,
 )
 from evals.common import RESULTS_DIR, seed_everything, write_result
 
@@ -44,6 +47,12 @@ def main() -> int:
     cg = judge_cot_goldenset.main()
     print("-" * 72)
     rt = memory_retraction.main()
+    print("-" * 72)
+    vt = verdict_tracing.main()
+    print("-" * 72)
+    sp = sandbox_policy.main()
+    print("-" * 72)
+    ci = contract_impact.main()
     print("=" * 72)
 
     summary = {
@@ -92,6 +101,24 @@ def main() -> int:
                 "transitive_recall_before": rt["improvement"]["transitive_recall_before"],
                 "transitive_recall_after": rt["improvement"]["transitive_recall_after"],
                 "D_preserved_both": rt["improvement"]["D_preserved_both"],
+            },
+            "verdict_tracing": {
+                "span_coverage_before": vt["span_coverage_before"],
+                "span_coverage_after": vt["span_coverage_after"],
+                "tree_consistent": vt["tree_consistent"],
+                "arbitrator_span_present": vt["arbitrator_span_present"],
+            },
+            "sandbox_policy": {
+                "untrusted_unisolated_counts_as_pass_rate_before":
+                    sp["untrusted_unisolated_counts_as_pass_rate_before"],
+                "untrusted_unisolated_counts_as_pass_rate_after":
+                    sp["untrusted_unisolated_counts_as_pass_rate_after"],
+                "trusted_unaffected": sp["trusted_unaffected"],
+            },
+            "contract_impact": {
+                "impact_recall_before": ci["impact_recall_before"],
+                "impact_recall_after": ci["impact_recall_after"],
+                "no_dependent_skipped": ci["no_dependent_skipped"],
             },
         },
     }

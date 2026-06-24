@@ -1,8 +1,13 @@
 {
   "_meta": {
-    "generated_at": "2026-06-24T22:44:54+00:00"
+    "generated_at": "2026-06-24T22:58:23+00:00"
   },
   "evals": {
+    "contract_impact": {
+      "impact_recall_after": 1.0,
+      "impact_recall_before": 0.6667,
+      "no_dependent_skipped": true
+    },
     "engine_routing": {
       "accuracy_always_expensive": 1.0,
       "accuracy_routed": 1.0,
@@ -40,12 +45,23 @@
       "overcount_rate_after": 0.0,
       "overcount_rate_before": 1.0
     },
+    "sandbox_policy": {
+      "trusted_unaffected": true,
+      "untrusted_unisolated_counts_as_pass_rate_after": 0.0,
+      "untrusted_unisolated_counts_as_pass_rate_before": 1.0
+    },
     "specbench_style": {
       "heldout_pass_rate": 0.3333,
       "reward_hack_heldout_catch_rate": 1.0,
       "specbench_gap": 0.3334,
       "validation_pass_rate": 0.6667,
       "visible_only_false_certifications": 5
+    },
+    "verdict_tracing": {
+      "arbitrator_span_present": true,
+      "span_coverage_after": 1.0,
+      "span_coverage_before": 0.0,
+      "tree_consistent": true
     }
   },
   "harness": "overmind-sentinel-measurement"

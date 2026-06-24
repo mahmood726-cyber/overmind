@@ -18,6 +18,9 @@ Three evals, each producing a real, reproducible score in
 | 5 | Engine routing | `engine_routing.py` | expensive(quorum)-invocation rate cut + accuracy preserved under cost-aware routing (C2) |
 | 6 | CoT golden-set gate | `judge_cot_goldenset.py` | CoT-on vs -off parse-invariance / no-regression gate before defaulting CoT ON (A3) |
 | 7 | Memory retraction | `memory_retraction.py` | transitive-invalidation recall: flat freshness vs claim→evidence graph propagation (B2) |
+| 8 | Verdict tracing | `verdict_tracing.py` | span coverage of the witness→judge→arbitrator pipeline (observability) |
+| 9 | Sandbox policy | `sandbox_policy.py` | untrusted-un-isolated-counts-as-pass rate before→after fail-closed sandbox gate |
+| 10 | Contract impact | `contract_impact.py` | cross-repo impact recall: naive direct-only vs graph transitive closure (B1) |
 
 ## How to run
 

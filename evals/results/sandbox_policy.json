@@ -1,0 +1,40 @@
+{
+  "_meta": {
+    "generated_at": "2026-06-24T22:58:23+00:00"
+  },
+  "decisions_no_isolation": [
+    {
+      "counts_toward_pass": true,
+      "decision": "host_ok",
+      "name": "test_suite",
+      "trust": "trusted"
+    },
+    {
+      "counts_toward_pass": true,
+      "decision": "host_ok",
+      "name": "smoke",
+      "trust": "trusted"
+    },
+    {
+      "counts_toward_pass": false,
+      "decision": "blocked_unisolated",
+      "name": "thirdparty_dep_tests",
+      "trust": "untrusted"
+    },
+    {
+      "counts_toward_pass": false,
+      "decision": "blocked_unisolated",
+      "name": "agent_generated_patch",
+      "trust": "untrusted"
+    }
+  ],
+  "eval": "sandbox_policy",
+  "n_trusted": 2,
+  "n_untrusted": 2,
+  "n_witnesses": 4,
+  "release_blocked_when_untrusted_unisolated": true,
+  "trusted_unaffected": true,
+  "untrusted_permitted_when_isolation_active": true,
+  "untrusted_unisolated_counts_as_pass_rate_after": 0.0,
+  "untrusted_unisolated_counts_as_pass_rate_before": 1.0
+}

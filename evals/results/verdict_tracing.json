@@ -1,0 +1,19 @@
+{
+  "_meta": {
+    "generated_at": "2026-06-24T22:58:23+00:00"
+  },
+  "arbitrator_span_present": true,
+  "arbitrator_verdict_attr": "CERTIFIED",
+  "eval": "verdict_tracing",
+  "expected_stages": [
+    "witness",
+    "judge",
+    "arbitrator"
+  ],
+  "n_spans": 4,
+  "span_coverage_after": 1.0,
+  "span_coverage_before": 0.0,
+  "total_tokens_captured": 1200,
+  "tree_consistent": true,
+  "verdict": "CERTIFIED"
+}

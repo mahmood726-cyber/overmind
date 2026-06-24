@@ -14,13 +14,16 @@ If a future change loosens any of these, a test here fails — by design.
 from __future__ import annotations
 
 from evals import (
+    contract_impact,
     engine_routing,
     judge_cot_goldenset,
     judge_masterkey,
     memory_recall,
     memory_retraction,
     quorum_decorrelation,
+    sandbox_policy,
     specbench_style,
+    verdict_tracing,
 )
 
 
@@ -110,3 +113,37 @@ def test_memory_retraction_propagates_to_dependents():
     assert imp["D_preserved_both"] is True
     assert payload["flat"]["over_propagated_D"] is False
     assert payload["graph"]["over_propagated_D"] is False
+
+
+def test_verdict_tracing_covers_pipeline_stages():
+    payload = verdict_tracing.evaluate()
+    # Untraced pipeline emits no spans; traced run covers every expected stage.
+    assert payload["span_coverage_before"] == 0.0
+    assert payload["span_coverage_after"] == 1.0
+    assert payload["tree_consistent"] is True
+    # The arbitrator span comes from the REAL Arbitrator and carries the verdict.
+    assert payload["arbitrator_span_present"] is True
+    assert payload["arbitrator_verdict_attr"] == payload["verdict"]
+
+
+def test_sandbox_policy_blocks_untrusted_unisolated_execution():
+    payload = sandbox_policy.evaluate()
+    # Before: every untrusted witness would have counted toward the pass...
+    assert payload["untrusted_unisolated_counts_as_pass_rate_before"] == 1.0
+    # ...after: none counts while un-isolated (fail-closed)...
+    assert payload["untrusted_unisolated_counts_as_pass_rate_after"] == 0.0
+    # ...trusted witnesses are untouched, and isolation flips untrusted to OK.
+    assert payload["trusted_unaffected"] is True
+    assert payload["release_blocked_when_untrusted_unisolated"] is True
+    assert payload["untrusted_permitted_when_isolation_active"] is True
+
+
+def test_contract_impact_selects_all_transitive_dependents():
+    payload = contract_impact.evaluate()
+    # Naive direct-only misses a transitive dependent; the graph closure catches all.
+    assert payload["impact_recall_before"] < payload["impact_recall_after"]
+    assert payload["impact_recall_after"] == 1.0
+    # Safety property: no dependent is skipped, and the independent repo is not selected.
+    assert payload["no_dependent_skipped"] is True
+    assert payload["independent_not_selected"] is True
+    assert payload["missed_by_graph"] == []

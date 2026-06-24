@@ -214,8 +214,78 @@ independent, same as today). Tests: `test_claim_graph.py` (+8, pure algorithm),
 `test_memory_source_hash.py` (+5: DB round-trip, flat-leaves-dependents, propagation closure,
 no-over-propagation) + `test_evals_harness.py` (+1).
 
-- **#3b** microVM/gVisor witness sandboxing — _pending_
-- **#3c** span-level verdict-pipeline tracing — _pending_
-- **#3d** cross-repo contract-impact verification — _pending_
+### #3c — span-level verdict-pipeline tracing ✅ landed (pre-merge)
+
+Closed the observability gap (good aggregate metrics + audit artifacts, but **no
+span-level trace** of a single verdict). New `overmind/verification/verdict_trace.py`:
+a dependency-free, OTel-shaped `VerdictTracer` (spans with ids/parents/timing/tokens/
+attributes, context-manager API, tree-consistency + coverage helpers). The **real**
+`cert_bundle.Arbitrator.arbitrate` now takes an optional `tracer` and emits an
+`arbitrator` span with the decision + witness count — zero behavior change when
+`tracer=None` (default).
+
+New eval `evals/verdict_tracing.py` (real Arbitrator in the loop):
+
+| Metric | Before (untraced) | After (traced) |
+|--------|-------------------|----------------|
+| **span coverage** (witness→judge→arbitrator) | **0 %** | **100 %** |
+| tree-consistent (every span closed, valid parents) | — | **True** |
+| tokens captured / arbitrator span carries verdict | — | **1200 / yes (`CERTIFIED`)** |
+
+**Honest scope:** this lands the tracing **primitive** and instruments the
+arbitrator boundary; the eval threads witness + judge spans through the same
+tracer to demonstrate an end-to-end trace. Instrumenting *every* backend/witness
+call site in the live orchestrator is incremental adoption of the same primitive
+(the API is now in place). Scored fields (coverage, tree-consistency, tokens) are
+deterministic; per-span `latency_ms` is wall-clock and never scored. Tests:
+`test_verdict_trace.py` (+6) + `test_evals_harness.py` (+1).
+
+### #3b — sandbox-requirement policy for untrusted witnesses ✅ landed (pre-merge)
+
+The execution-isolation gap: witnesses run as host subprocesses. Full microVM/gVisor
+is multi-session infra and depends on a runtime that may be absent. The
+machine-independent, fail-closed increment landed now: `overmind/verification/sandbox_policy.py`
+classifies each witness by trust (self-authored = trusted; third-party / agent-generated =
+untrusted) and **blocks an untrusted witness from counting toward a release pass unless it
+actually ran under isolation** — fail-closed, never relaxing the gate.
+
+New eval `evals/sandbox_policy.py`:
+
+| Metric | Before (no policy) | After (policy) |
+|--------|--------------------|----------------|
+| **untrusted-un-isolated counts-as-pass rate** | **100 %** | **0 %** |
+| trusted witnesses unaffected (run on host) | — | **True** |
+| untrusted permitted when isolation *is* active | — | **True** |
+
+**Honest scope (important):** this is **policy enforcement, not a microVM**. It guarantees
+untrusted code can't silently become a CERTIFIED pass while un-isolated; it does **not** itself
+provide isolation (that remains the existing `ContainerIsolation` skeleton + worktree fallback,
+still SKIP/stub for the actual container path). The real microVM execution path is the deferred
+infra piece — this gate makes its absence *safe* (fail-closed) rather than silently unsafe. Tests:
+`test_sandbox_policy.py` (+6) + `test_evals_harness.py` (+1).
+
+### #3d — cross-repo contract-impact fan-out ✅ landed (pre-merge)
+
+The one capability the industry standardized on in 2026 that we lacked (B1): when a **shared**
+module/schema changes, fan out to the **dependent** repos' witnesses. Overmind verified each
+project independently — a per-repo verifier that only re-checks *direct* consumers misses
+dependents-of-dependents (and the house lesson is explicit: never skip a repo whose upstream
+dependency changed). New `overmind/verification/contract_impact.py` (`ContractImpactGraph`) **reuses
+the same `ClaimGraph` transitive-closure primitive** as #3a — a dependent's relation to a shared
+module is exactly "depends_on" — so a change selects the transitive closure of impacted repos.
+
+New eval `evals/contract_impact.py` (M shared by A, C; B depends on A; D independent; M changes):
+
+| Metric | Naive (direct-only) | Graph (transitive closure) |
+|--------|---------------------|----------------------------|
+| **impact recall** | **67 %** (misses transitive B) | **100 %** (`{A,B,C}`) |
+| no dependent skipped (safety bar) | — | **True** |
+| independent D not selected (no over-fan-out) | — | **True** |
+
+**Honest scope:** computes the impact SET from an explicit dependency map; it does **not**
+auto-discover that map (an import/schema scanner across the portfolio is the follow-up). Given the
+map, the fan-out is exact and never skips a transitive dependent. Sequenced **before** any delta-skip
+(#4) so the skip-gate respects cross-repo impact. Tests: `test_contract_impact.py` (+6) +
+`test_evals_harness.py` (+1).
 
 ## Item #4 — cluster: build or mark deferred — _not started_

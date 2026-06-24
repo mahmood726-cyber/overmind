@@ -1,0 +1,29 @@
+{
+  "_meta": {
+    "generated_at": "2026-06-24T22:58:23+00:00"
+  },
+  "changed_module": "M",
+  "eval": "contract_impact",
+  "graph_impacted": [
+    "A",
+    "B",
+    "C"
+  ],
+  "impact_recall_after": 1.0,
+  "impact_recall_before": 0.6667,
+  "independent_not_selected": true,
+  "missed_by_graph": [],
+  "missed_by_naive": [
+    "B"
+  ],
+  "naive_impacted": [
+    "A",
+    "C"
+  ],
+  "no_dependent_skipped": true,
+  "should_impact": [
+    "A",
+    "B",
+    "C"
+  ]
+}

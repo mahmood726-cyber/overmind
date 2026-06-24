@@ -61,7 +61,22 @@ def _warn_once_unsigned() -> None:
 
 
 class Arbitrator:
-    def arbitrate(self, results: list[WitnessResult]) -> tuple[str, str]:
+    def arbitrate(self, results: list[WitnessResult], tracer=None) -> tuple[str, str]:
+        """Decide the final verdict from the witness results.
+
+        ``tracer`` (optional ``VerdictTracer``) records an ``arbitrator`` span with
+        the decision + witness counts when supplied; passing ``None`` (the default)
+        is a no-op, so existing callers are unaffected (span-level tracing, audit
+        observability gap).
+        """
+        if tracer is not None:
+            with tracer.span("arbitrator", witnesses=len(results)) as span:
+                verdict, reason = self._arbitrate(results)
+                span.attributes["verdict"] = verdict
+                return verdict, reason
+        return self._arbitrate(results)
+
+    def _arbitrate(self, results: list[WitnessResult]) -> tuple[str, str]:
         non_skip = [r for r in results if r.verdict != "SKIP"]
         skipped = [r for r in results if r.verdict == "SKIP"]
 
