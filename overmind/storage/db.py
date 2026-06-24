@@ -154,6 +154,7 @@ class StateDatabase:
             ("embedding", "TEXT"),
             ("source_path", "TEXT"),
             ("source_hash", "TEXT"),
+            ("derived_from", "TEXT"),
         ]
         for col_name, col_type in migrations:
             if col_name not in existing:
@@ -236,14 +237,16 @@ class StateDatabase:
     def upsert_memory(self, memory: MemoryRecord) -> None:
         encoded_tags = json.dumps(memory.tags)
         encoded_linked = json.dumps(memory.linked_memories)
+        encoded_derived = json.dumps(memory.derived_from)
         encoded_embedding = json.dumps(memory.embedding) if memory.embedding else None
         self.connection.execute(
             """
             INSERT INTO memories (id, memory_type, scope, title, content,
                 source_task_id, source_tick, relevance, confidence,
                 tags, linked_memories, created_at, updated_at, status,
-                valid_from, valid_until, embedding, source_path, source_hash)
-            VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+                valid_from, valid_until, embedding, source_path, source_hash,
+                derived_from)
+            VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
             ON CONFLICT(id) DO UPDATE SET
                 title = excluded.title,
                 content = excluded.content,
@@ -257,7 +260,8 @@ class StateDatabase:
                 valid_until = excluded.valid_until,
                 embedding = excluded.embedding,
                 source_path = excluded.source_path,
-                source_hash = excluded.source_hash
+                source_hash = excluded.source_hash,
+                derived_from = excluded.derived_from
             """,
             (
                 memory.memory_id, memory.memory_type, memory.scope,
@@ -268,6 +272,7 @@ class StateDatabase:
                 memory.created_at, memory.updated_at, memory.status,
                 memory.valid_from, memory.valid_until, encoded_embedding,
                 memory.source_path, memory.source_hash,
+                encoded_derived,
             ),
         )
         self.connection.commit()
@@ -442,6 +447,8 @@ class StateDatabase:
     def _row_to_memory(self, row: sqlite3.Row) -> MemoryRecord:
         tags = json.loads(row["tags"]) if isinstance(row["tags"], str) else row["tags"]
         linked = json.loads(row["linked_memories"]) if isinstance(row["linked_memories"], str) else row["linked_memories"]
+        raw_derived = row["derived_from"] if "derived_from" in row.keys() else None
+        derived = json.loads(raw_derived) if isinstance(raw_derived, str) else []
         raw_embedding = row["embedding"] if "embedding" in row.keys() else None
         emb = json.loads(raw_embedding) if isinstance(raw_embedding, str) else None
         return MemoryRecord(
@@ -456,6 +463,7 @@ class StateDatabase:
             confidence=row["confidence"],
             tags=tags,
             linked_memories=linked,
+            derived_from=derived,
             created_at=row["created_at"],
             updated_at=row["updated_at"],
             status=row["status"],

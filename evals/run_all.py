@@ -17,6 +17,7 @@ from evals import (
     judge_cot_goldenset,
     judge_masterkey,
     memory_recall,
+    memory_retraction,
     quorum_decorrelation,
     specbench_style,
 )
@@ -41,6 +42,8 @@ def main() -> int:
     er = engine_routing.main()
     print("-" * 72)
     cg = judge_cot_goldenset.main()
+    print("-" * 72)
+    rt = memory_retraction.main()
     print("=" * 72)
 
     summary = {
@@ -84,6 +87,11 @@ def main() -> int:
                 "no_regression": cg["no_regression"],
                 "cot_on_degenerate_false_pass_rate": cg["degenerate"]["cot_on_false_pass_rate"],
                 "quality_delta_measured": cg["quality_delta_measured"],
+            },
+            "memory_retraction": {
+                "transitive_recall_before": rt["improvement"]["transitive_recall_before"],
+                "transitive_recall_after": rt["improvement"]["transitive_recall_after"],
+                "D_preserved_both": rt["improvement"]["D_preserved_both"],
             },
         },
     }

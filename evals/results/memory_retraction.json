@@ -1,0 +1,32 @@
+{
+  "_meta": {
+    "generated_at": "2026-06-24T22:44:54+00:00"
+  },
+  "eval": "memory_retraction",
+  "flat": {
+    "invalidated": [
+      "A"
+    ],
+    "over_propagated_D": false,
+    "transitive_recall": 0.3333
+  },
+  "graph": {
+    "invalidated": [
+      "A",
+      "B",
+      "C"
+    ],
+    "over_propagated_D": false,
+    "transitive_recall": 1.0
+  },
+  "improvement": {
+    "D_preserved_both": true,
+    "transitive_recall_after": 1.0,
+    "transitive_recall_before": 0.3333
+  },
+  "should_invalidate": [
+    "A",
+    "B",
+    "C"
+  ]
+}

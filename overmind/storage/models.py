@@ -230,6 +230,12 @@ class MemoryRecord(SerializableModel):
     confidence: float = 0.5
     tags: list[str] = field(default_factory=list)
     linked_memories: list[str] = field(default_factory=list)
+    # Directed dependency edges: memory_ids / source keys this fact was DERIVED
+    # FROM (its premises/evidence). Distinct from linked_memories (generic
+    # association). Used by the claim→evidence retraction graph (audit B2): when a
+    # premise is invalidated, the transitive closure of dependents is invalidated
+    # too — formalizing "missing premise ⇒ invalidate dependents".
+    derived_from: list[str] = field(default_factory=list)
     created_at: str = field(default_factory=utc_now)
     updated_at: str = field(default_factory=utc_now)
     status: str = "active"

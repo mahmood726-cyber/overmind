@@ -18,6 +18,7 @@ from evals import (
     judge_cot_goldenset,
     judge_masterkey,
     memory_recall,
+    memory_retraction,
     quorum_decorrelation,
     specbench_style,
 )
@@ -96,3 +97,16 @@ def test_cot_goldenset_gate_passes_no_regression():
     assert payload["no_regression"] is True
     # Truth-first: we do NOT claim a measured quality gain here.
     assert payload["quality_delta_measured"] is False
+
+
+def test_memory_retraction_propagates_to_dependents():
+    payload = memory_retraction.evaluate()
+    imp = payload["improvement"]
+    # Flat freshness catches only the directly-stale fact; the graph catches the
+    # transitive closure of dependents.
+    assert imp["transitive_recall_before"] < imp["transitive_recall_after"]
+    assert imp["transitive_recall_after"] == 1.0
+    # Independent fact D is never invalidated by either path — no over-propagation.
+    assert imp["D_preserved_both"] is True
+    assert payload["flat"]["over_propagated_D"] is False
+    assert payload["graph"]["over_propagated_D"] is False

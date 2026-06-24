@@ -165,6 +165,11 @@ class MemoryStore:
 
         Returns the count of memories invalidated. Safe to call repeatedly —
         already-expired memories are untouched.
+
+        NOTE: this is the *flat* invalidation — it only expires memories whose own
+        source changed. It does NOT touch facts derived FROM a now-stale fact. Use
+        ``invalidate_stale_with_propagation`` for the claim→evidence graph version
+        that also invalidates the transitive closure of dependents (audit B2).
         """
         count = 0
         now = utc_now()
@@ -176,6 +181,76 @@ class MemoryStore:
                 self.db.upsert_memory(memory)
                 count += 1
         return count
+
+    def build_claim_graph(self, memories: list[MemoryRecord] | None = None):
+        """Build a ClaimGraph over active memories' ``derived_from`` edges.
+
+        Each edge ``claim.derived_from = [premise_id, ...]`` becomes a directed
+        dependency ``add_dependency(claim_id, depends_on=premise_id)``. Edges to
+        premises outside the supplied set are still recorded (the premise becomes a
+        node), so retracting an external source id still reaches its dependents.
+        """
+        from overmind.verification.claim_graph import ClaimGraph
+
+        if memories is None:
+            memories = self.list_all(status="active", limit=10_000)
+        graph = ClaimGraph()
+        for m in memories:
+            graph.add_node(m.memory_id)
+            for premise in m.derived_from:
+                if premise and premise != m.memory_id:
+                    graph.add_dependency(m.memory_id, depends_on=premise)
+        return graph
+
+    def propagate_retraction(self, seed_ids: list[str]) -> dict[str, list[str]]:
+        """Expire ``seed_ids`` and the transitive closure of facts derived from them.
+
+        Builds the claim→evidence graph over active memories, retracts the seeds,
+        and marks every dependent (and dependent-of-dependent) as ``expired`` with
+        a ``valid_until`` of now — formalizing "missing premise ⇒ invalidate
+        dependents". Returns ``{"retracted": [...], "invalidated": [...]}`` (the
+        downstream dependents that were expired). Seeds that are themselves stored
+        memories are also expired; pure-source seed ids (e.g. a file key) are not
+        memories, so only their dependents are expired.
+        """
+        graph = self.build_claim_graph()
+        result = graph.retract(*seed_ids)
+        now = utc_now()
+        # Expire downstream dependents + any seed that is itself a stored memory.
+        to_expire = list(result.invalidated)
+        for sid in result.retracted:
+            mem = self.db.get_memory(sid)
+            if mem is not None and sid not in to_expire:
+                to_expire.append(sid)
+        expired: list[str] = []
+        for mid in to_expire:
+            mem = self.db.get_memory(mid)
+            if mem is None or mem.status == "expired":
+                continue
+            mem.status = "expired"
+            mem.valid_until = now
+            mem.updated_at = now
+            self.db.upsert_memory(mem)
+            expired.append(mid)
+        return {"retracted": result.retracted, "invalidated": result.invalidated, "expired": expired}
+
+    def invalidate_stale_with_propagation(self) -> dict[str, int]:
+        """Source-staleness invalidation WITH retraction propagation (audit B2).
+
+        Finds source-grounded memories whose source changed (the flat seeds), then
+        propagates the retraction through the ``derived_from`` graph so dependents
+        are invalidated too. Returns ``{"direct": n_stale_seeds, "propagated":
+        n_dependents}``. This is the graph upgrade of ``invalidate_stale``: the
+        flat version would leave a fact derived from a now-stale premise standing.
+        """
+        stale_seeds = [m.memory_id for m in self.list_all(status="active", limit=10_000)
+                       if self.is_stale(m)]
+        if not stale_seeds:
+            return {"direct": 0, "propagated": 0}
+        outcome = self.propagate_retraction(stale_seeds)
+        direct = sum(1 for s in stale_seeds if s in outcome["expired"])
+        propagated = sum(1 for d in outcome["invalidated"] if d in outcome["expired"])
+        return {"direct": direct, "propagated": propagated}
 
     def save_insights(self, insights: list[InsightRecord]) -> None:
         for insight in insights:

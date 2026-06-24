@@ -180,5 +180,42 @@ output) — tracked, not overclaimed. Tests: `test_llm_judge.py` (+6: coerced-PA
 persona/canary abstain, FAIL-quoting-injection preserved, genuine-PASS not flagged, clean-planted
 boundary) + `test_evals_harness.py` (+3 assertions).
 
-## Item #3 — heavier mechanisms behind measured gates — _not started_
+### Item #2 + #2d — MERGED to master
+
+Commit `3e6e564` (merge) + `d62438c` (results correction). Gates met: full suite **831 passed, 8
+skipped**; each eval equal-or-better; Sentinel `--diff --base-ref master` **BLOCK=0**. A stale
+`summary.json` (showed injection_boundary 0.5 from a pre-#2d run) was corrected to the real 0.0 —
+truth-first: the published artifact must match the eval code.
+
+---
+
+## Item #3 — heavier mechanisms behind measured gates
+
+### #3a — claim→evidence dependency graph with retraction propagation ✅ landed (pre-merge)
+
+Replaces *flat* source-hash freshness with a **claim→evidence graph** (audit B2 / *Grounded
+Continuation* arXiv:2605.14175). New pure module `overmind/verification/claim_graph.py` (`ClaimGraph`,
+cycle-safe, deterministic BFS over reverse-dependency edges → transitive closure on `retract()`).
+`MemoryRecord` gains a `derived_from` edge (additive DB migration, JSON round-trip);
+`MemoryStore.propagate_retraction()` / `invalidate_stale_with_propagation()` expire the transitive
+closure when a premise goes stale — formalizing "missing premise ⇒ invalidate dependents".
+
+New eval `evals/memory_retraction.py` (real `MemoryStore`, A←B←C chain + independent D; A's source
+file mutated):
+
+| Metric | Flat (`invalidate_stale`) | Graph (`..._with_propagation`) |
+|--------|---------------------------|--------------------------------|
+| **transitive-invalidation recall** | **33 %** (catches `{A}`) | **100 %** (catches `{A,B,C}`) |
+| independent D preserved (no over-propagation) | yes | yes |
+
+**Honest scope:** the graph is built from explicit `derived_from` edges — it's exact over the edges
+it's given; it does not *infer* unrecorded dependencies (a fact with no `derived_from` is treated as
+independent, same as today). Tests: `test_claim_graph.py` (+8, pure algorithm),
+`test_memory_source_hash.py` (+5: DB round-trip, flat-leaves-dependents, propagation closure,
+no-over-propagation) + `test_evals_harness.py` (+1).
+
+- **#3b** microVM/gVisor witness sandboxing — _pending_
+- **#3c** span-level verdict-pipeline tracing — _pending_
+- **#3d** cross-repo contract-impact verification — _pending_
+
 ## Item #4 — cluster: build or mark deferred — _not started_

@@ -165,3 +165,78 @@ def test_dream_engine_skips_cluster_below_threshold(tmp_path):
         assert emitted == []
     finally:
         db.close()
+
+
+# ── Retraction propagation over derived_from (audit B2) ─────────────
+
+
+def test_derived_from_round_trips_through_db(tmp_path):
+    store, db = _store(tmp_path)
+    try:
+        store.save(MemoryRecord(
+            memory_id="b", memory_type="project_learning", scope="p",
+            title="t", content="c", derived_from=["a"],
+        ))
+        got = db.get_memory("b")
+        assert got is not None
+        assert got.derived_from == ["a"]
+    finally:
+        db.close()
+
+
+def _seed_chain(store, tmp_path):
+    source = tmp_path / "src.txt"
+    source.write_text("original", encoding="utf-8")
+    h = file_source_hash(source)
+    store.save_batch([
+        MemoryRecord(memory_id="A", memory_type="project_learning", scope="p",
+                     title="A", content="A", source_path=str(source), source_hash=h),
+        MemoryRecord(memory_id="B", memory_type="project_learning", scope="p",
+                     title="B", content="B", derived_from=["A"]),
+        MemoryRecord(memory_id="C", memory_type="project_learning", scope="p",
+                     title="C", content="C", derived_from=["B"]),
+        MemoryRecord(memory_id="D", memory_type="project_learning", scope="p",
+                     title="D", content="D"),
+    ])
+    return source
+
+
+def test_flat_invalidation_leaves_dependents_standing(tmp_path):
+    store, db = _store(tmp_path)
+    try:
+        source = _seed_chain(store, tmp_path)
+        source.write_text("CHANGED", encoding="utf-8")
+        store.invalidate_stale()
+        active = {m.memory_id for m in store.list_all(status="active", limit=100)}
+        # Only A expired; B and C (derived from A) wrongly remain active.
+        assert "A" not in active
+        assert "B" in active and "C" in active and "D" in active
+    finally:
+        db.close()
+
+
+def test_propagation_invalidates_transitive_dependents(tmp_path):
+    store, db = _store(tmp_path)
+    try:
+        source = _seed_chain(store, tmp_path)
+        source.write_text("CHANGED", encoding="utf-8")
+        out = store.invalidate_stale_with_propagation()
+        active = {m.memory_id for m in store.list_all(status="active", limit=100)}
+        # A (stale) + B + C (transitively derived) all expired; D preserved.
+        assert active == {"D"}
+        assert out["direct"] == 1
+        assert out["propagated"] == 2
+    finally:
+        db.close()
+
+
+def test_propagate_retraction_does_not_touch_independent(tmp_path):
+    store, db = _store(tmp_path)
+    try:
+        _seed_chain(store, tmp_path)
+        out = store.propagate_retraction(["A"])
+        active = {m.memory_id for m in store.list_all(status="active", limit=100)}
+        assert "D" in active
+        assert set(out["invalidated"]) == {"B", "C"}
+    finally:
+        db.close()
