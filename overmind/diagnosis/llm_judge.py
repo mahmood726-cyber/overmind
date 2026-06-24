@@ -6,12 +6,16 @@ produce structured diagnoses. Only invoked for UNKNOWN verdicts.
 from __future__ import annotations
 
 import json
+import logging
 import subprocess
 import sys
 from dataclasses import dataclass
 
 from overmind.diagnosis.judge import Diagnosis
 from overmind.subprocess_utils import split_command
+from overmind.verification.llm_judge import degenerate_response_reason
+
+logger = logging.getLogger(__name__)
 
 CLAUDE_CMD = "claude"
 
@@ -78,6 +82,15 @@ def llm_diagnose(
             capture_output=True, text=True, timeout=timeout,
         )
         if proc.returncode != 0:
+            return None
+
+        # Degenerate / master-key guard (arXiv:2507.08794): reject empty,
+        # punctuation-only, or generic-filler replies before parsing so a
+        # degenerate response can never upgrade an UNKNOWN diagnosis. Returning
+        # None keeps the original UNKNOWN (truth-first: no fabricated upgrade).
+        degenerate = degenerate_response_reason(proc.stdout)
+        if degenerate is not None:
+            logger.warning("diagnosis judge returned degenerate response (%s); ignoring", degenerate)
             return None
 
         # Parse JSON from response (strip any markdown fencing)

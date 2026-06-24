@@ -211,11 +211,19 @@ def consolidate_report(docs: list[MemoryDoc], roots: list[Path] | None = None,
     missing_from_index = [d.path.stem for d in docs
                           if d.path.stem.lower() not in indexed_names
                           and "templates" not in d.path.parts]
+    # Temporal validity (A5): facts that are no longer current — superseded,
+    # expired, or not-yet-valid. Surfaced so the consolidation pass can prune
+    # the index / archive them instead of letting stale facts mislead recall.
+    non_current = [
+        {"slug": d.slug, "reason": historical_reason(d.fields)}
+        for d in docs if not is_current(d.fields)
+    ]
     return {
         "doc_count": len(docs),
         "near_duplicates": dups,
         "stale": stale,
         "undated_no_review_field": undated,
+        "non_current": non_current,
         "orphan_links": [{"from": s, "missing_target": t} for s, t in graph["orphans"]],
         "missing_from_MEMORY_md": missing_from_index,
     }
@@ -238,9 +246,20 @@ def cmd_index(roots: list[Path] | None = None) -> dict:
 
 
 def cmd_recall(query: str, k: int = 5, roots: list[Path] | None = None) -> dict:
+    """Recall over markdown facts, preferring *current* facts.
+
+    Temporal validity: facts that are expired (``valid_until`` past), not yet
+    valid (``valid_from`` in the future), or ``superseded_by`` another fact are
+    excluded from ``results`` and reported separately under ``historical`` (with
+    a reason) so a stale fact never silently surfaces as current. Fieldless
+    facts are always treated as current (back-compat).
+    """
     docs = load_docs(roots)
     graph = build_link_graph(docs)
-    hits = bm25_recall(docs, query, k=k)
+    current = [d for d in docs if is_current(d.fields)]
+    historical = [d for d in docs if not is_current(d.fields)]
+    hits = bm25_recall(current, query, k=k)
+    hist_hits = bm25_recall(historical, query, k=k)
     return {
         "query": query,
         "results": [
@@ -254,17 +273,65 @@ def cmd_recall(query: str, k: int = 5, roots: list[Path] | None = None) -> dict:
             }
             for d, score in hits
         ],
+        "historical": [
+            {
+                "slug": d.slug,
+                "type": d.mtype,
+                "score": round(score, 3),
+                "reason": historical_reason(d.fields),
+                "path": str(d.path),
+            }
+            for d, score in hist_hits
+        ],
     }
 
 
-def _is_expired(fields: dict) -> bool:
-    raw = fields.get("valid_until")
+def _parse_date(raw) -> date | None:
+    """Parse a YYYY-MM-DD (optionally with a time suffix) frontmatter date."""
     if not raw:
-        return False
+        return None
     try:
-        return datetime.strptime(str(raw)[:10], "%Y-%m-%d").date() < date.today()
+        return datetime.strptime(str(raw)[:10], "%Y-%m-%d").date()
     except ValueError:
-        return False
+        return None
+
+
+def _is_expired(fields: dict) -> bool:
+    d = _parse_date(fields.get("valid_until"))
+    return d is not None and d < date.today()
+
+
+def _not_yet_valid(fields: dict) -> bool:
+    """A fact whose ``valid_from`` is in the future is not yet current."""
+    d = _parse_date(fields.get("valid_from"))
+    return d is not None and d > date.today()
+
+
+def _is_superseded(fields: dict) -> bool:
+    """A fact carrying a non-empty ``superseded_by`` has been replaced and is
+    historical (the value names the fact that replaces it)."""
+    return bool(str(fields.get("superseded_by", "")).strip())
+
+
+def is_current(fields: dict) -> bool:
+    """True if a fact is valid *right now*: not expired (``valid_until`` past),
+    not future-dated (``valid_from`` ahead), and not ``superseded_by`` another.
+
+    Back-compat: a fact with none of these fields is always current — existing
+    fieldless memory files are never filtered out.
+    """
+    return not (_is_expired(fields) or _not_yet_valid(fields) or _is_superseded(fields))
+
+
+def historical_reason(fields: dict) -> str | None:
+    """Why a fact is not current (for recall observability), else None."""
+    if _is_superseded(fields):
+        return f"superseded_by {str(fields.get('superseded_by')).strip()}"
+    if _is_expired(fields):
+        return f"expired (valid_until {fields.get('valid_until')})"
+    if _not_yet_valid(fields):
+        return f"not yet valid (valid_from {fields.get('valid_from')})"
+    return None
 
 
 def archive_stale(roots: list[Path] | None = None, stale_days: int = 365) -> list[dict]:
