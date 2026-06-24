@@ -1,0 +1,83 @@
+{
+  "_meta": {
+    "generated_at": "2026-06-24T21:59:40+00:00"
+  },
+  "accuracy": {
+    "always_expensive": 1.0,
+    "cheap_only": 0.625,
+    "routed": 1.0,
+    "routed_preserves_expensive": true
+  },
+  "cases": [
+    {
+      "escalate_matches_expectation": true,
+      "escalated": false,
+      "expected_escalate": false,
+      "name": "cheap_conf_pass",
+      "routed_correct": true
+    },
+    {
+      "escalate_matches_expectation": true,
+      "escalated": false,
+      "expected_escalate": false,
+      "name": "cheap_conf_fail",
+      "routed_correct": true
+    },
+    {
+      "escalate_matches_expectation": true,
+      "escalated": false,
+      "expected_escalate": false,
+      "name": "cheap_conf_pass2",
+      "routed_correct": true
+    },
+    {
+      "escalate_matches_expectation": true,
+      "escalated": false,
+      "expected_escalate": false,
+      "name": "cheap_conf_fail2",
+      "routed_correct": true
+    },
+    {
+      "escalate_matches_expectation": true,
+      "escalated": true,
+      "expected_escalate": true,
+      "name": "cheap_lowconf_wrong",
+      "routed_correct": true
+    },
+    {
+      "escalate_matches_expectation": true,
+      "escalated": true,
+      "expected_escalate": true,
+      "name": "cheap_pass_below_floor",
+      "routed_correct": true
+    },
+    {
+      "escalate_matches_expectation": true,
+      "escalated": true,
+      "expected_escalate": true,
+      "name": "cheap_degenerate",
+      "routed_correct": true
+    },
+    {
+      "escalate_matches_expectation": true,
+      "escalated": true,
+      "expected_escalate": true,
+      "name": "cheap_judge_error",
+      "routed_correct": true
+    }
+  ],
+  "escalation_rate": 0.5,
+  "eval": "engine_routing",
+  "expensive_invocation_rate_after": 0.5,
+  "expensive_invocation_rate_before": 1.0,
+  "n": 8,
+  "routing_decisions_match_expectation": true,
+  "token_cost_model": {
+    "cheap_cost": 1,
+    "cost_always_expensive": 32,
+    "cost_routed": 24,
+    "expensive_cost": 4,
+    "note": "token_saving assumes expensive:cheap = 4:1; the assumption-free number is the expensive-invocation rate. Real saving scales with the true local:quorum cost ratio.",
+    "token_saving_at_ratio": 0.25
+  }
+}

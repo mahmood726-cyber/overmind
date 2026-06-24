@@ -20,7 +20,7 @@ from overmind.verification.judge_backends import (
     LocalModelBackend,
     JUDGE_ERROR,
 )
-from overmind.verification.llm_judge import GeminiBackend, LLMJudge, QuorumJudge, StubBackend
+from overmind.verification.llm_judge import GeminiBackend, LLMJudge, QuorumJudge, RoutedJudge, StubBackend
 
 
 # ── engine selection ────────────────────────────────────────────────
@@ -161,12 +161,21 @@ def test_fallback_to_secondary_warns(caplog):
 # ── CoT + rubric prompt toggle (A3) ─────────────────────────────────
 
 
-def test_cot_off_by_default_uses_base_prompt():
+def test_cot_on_by_default(monkeypatch):
+    # A3: CoT defaults ON after the golden-set no-regression gate.
+    monkeypatch.delenv("OVERMIND_JUDGE_COT", raising=False)
+    judge = jf.build_judge(spec="stub")
+    assert judge.use_cot is True
+
+
+def test_cot_disabled_via_env(monkeypatch):
+    monkeypatch.setenv("OVERMIND_JUDGE_COT", "0")
     judge = jf.build_judge(spec="stub")
     assert judge.use_cot is False
 
 
-def test_cot_enabled_via_param():
+def test_cot_param_overrides_env(monkeypatch):
+    monkeypatch.setenv("OVERMIND_JUDGE_COT", "0")
     judge = jf.build_judge(spec="stub", use_cot=True)
     assert judge.use_cot is True
 
@@ -245,7 +254,11 @@ def test_quorum_verdict_carries_effective_votes(caplog):
     from overmind.storage.models import ProjectRecord, TaskRecord, VerificationResult
 
     with caplog.at_level(logging.WARNING, logger="overmind.verification.judge_factory"):
-        judge = jf.build_judge(spec="claude,codex,codex-noreen", mode="quorum")
+        # enforce_families=False: this test exercises the warn-only effective-vote
+        # SURFACING path (a correlated panel still runs). Hard enforcement is
+        # covered separately in test_quorum_enforcement_*.
+        judge = jf.build_judge(spec="claude,codex,codex-noreen", mode="quorum",
+                               enforce_families=False)
     # Build-time warning fired about correlated panel.
     assert any("effective" in r.getMessage() or "correlated" in r.getMessage()
                for r in caplog.records)
@@ -299,3 +312,142 @@ def test_judge_uses_fallback_secondary_for_real_verdict():
     assert verdict.passed is True
     assert verdict.confidence == pytest.approx(0.91)
     assert "judge_error" not in verdict.concerns
+
+
+# ── A2 hard-enforcement of different-family quorum panels ────────────
+
+
+def test_enforce_distinct_families_drops_same_family_redundancy():
+    e = jf.enforce_distinct_families(["claude", "codex", "codex-noreen"])
+    assert e.action == "repaired"
+    assert e.rejected_quorum is False
+    assert e.repaired == ["claude", "codex"]      # one per family, order-preserving
+    assert e.dropped == ["codex-noreen"]
+
+
+def test_enforce_distinct_families_rejects_single_family():
+    e = jf.enforce_distinct_families(["claude", "claude"])
+    assert e.action == "rejected"
+    assert e.rejected_quorum is True
+    assert e.repaired == ["claude"]
+
+
+def test_enforce_distinct_families_passthrough_when_all_distinct():
+    e = jf.enforce_distinct_families(["claude", "codex", "gemini"])
+    assert e.action == "unchanged"
+    assert e.repaired == ["claude", "codex", "gemini"]
+    assert e.dropped == []
+
+
+def test_enforce_agy_and_gemini_collapse():
+    # agy and gemini are both Google -> only one survives.
+    e = jf.enforce_distinct_families(["agy", "gemini", "codex"])
+    assert e.action == "repaired"
+    assert e.repaired == ["agy", "codex"]
+
+
+def test_build_judge_default_enforces_distinct_family_quorum():
+    # Default (enforce on): a 3-engine / 2-family panel is repaired to 2 judges,
+    # and the surviving quorum no longer overcounts independence.
+    judge = jf.build_judge(spec="claude,codex,codex-noreen", mode="quorum")
+    assert isinstance(judge, QuorumJudge)
+    assert len(judge.judges) == 2
+    assert judge.distinct_families == 2
+    assert judge.effective_votes == judge.nominal_votes == 2
+
+
+def test_build_judge_enforce_rejects_single_family_quorum_to_fallback():
+    # A same-family-only "quorum" is not a real quorum: enforcement falls back to
+    # a single-engine chain rather than advertising false independence.
+    judge = jf.build_judge(spec="codex,codex-noreen", mode="quorum")
+    assert isinstance(judge, LLMJudge)
+    assert isinstance(judge.backend, FallbackBackend)
+
+
+def test_build_judge_enforce_off_preserves_correlated_panel():
+    # Escape hatch: enforce_families=False keeps the old warn-only behavior.
+    judge = jf.build_judge(spec="claude,codex,codex-noreen", mode="quorum",
+                           enforce_families=False)
+    assert isinstance(judge, QuorumJudge)
+    assert len(judge.judges) == 3
+
+
+def test_quorum_enforce_env_toggle(monkeypatch):
+    monkeypatch.setenv("OVERMIND_JUDGE_QUORUM_ENFORCE", "0")
+    judge = jf.build_judge(spec="claude,codex,codex-noreen", mode="quorum")
+    assert isinstance(judge, QuorumJudge)
+    assert len(judge.judges) == 3
+    monkeypatch.setenv("OVERMIND_JUDGE_QUORUM_ENFORCE", "1")
+    judge2 = jf.build_judge(spec="claude,codex,codex-noreen", mode="quorum")
+    assert len(judge2.judges) == 2
+
+
+# ── C2 cost-aware routed judge ──────────────────────────────────────
+
+
+def _route_inputs():
+    from overmind.storage.models import ProjectRecord, TaskRecord, VerificationResult
+    task = TaskRecord(
+        task_id="t", project_id="p", title="x", task_type="verification",
+        source="auto", priority=0.8, risk="medium", expected_runtime_min=5,
+        expected_context_cost="low", required_verification=["tests"],
+    )
+    project = ProjectRecord(project_id="p", name="proj", root_path="C:\\tmp\\p")
+    vr = VerificationResult(task_id="t", success=True, required_checks=["tests"],
+                            completed_checks=["tests"], skipped_checks=[], details=[])
+    return task, project, vr
+
+
+def _resp(verdict, conf):
+    return f"VERDICT: {verdict}\nCONFIDENCE: {conf}\nREASONING: r\nCONCERNS: none\nMET: x\nMISSED: none"
+
+
+def test_build_judge_routed_mode_constructs_routed_judge():
+    judge = jf.build_judge(spec="local,claude,gemini", mode="routed")
+    assert isinstance(judge, RoutedJudge)
+    # escalation tier is a cross-family quorum (claude+gemini)
+    assert isinstance(judge.expensive_judge, QuorumJudge)
+    assert isinstance(judge.cheap_judge, LLMJudge)
+
+
+def test_routed_accepts_confident_cheap_no_escalation():
+    from overmind.verification.llm_judge import RoutedJudge as RJ
+    cheap = LLMJudge(backend=StubBackend(response=_resp("FAIL", 0.92)))
+    expensive = LLMJudge(backend=StubBackend(response=_resp("PASS", 0.99)))
+    routed = RJ(cheap_judge=cheap, expensive_judge=expensive)
+    v = routed.judge(*_route_inputs())
+    assert v.passed is False                      # cheap verdict used
+    assert "routed_cheap_accepted" in v.concerns
+    assert "routed_escalated" not in v.concerns
+
+
+def test_routed_escalates_on_low_confidence():
+    from overmind.verification.llm_judge import RoutedJudge as RJ
+    cheap = LLMJudge(backend=StubBackend(response=_resp("PASS", 0.55)))
+    expensive = LLMJudge(backend=StubBackend(response=_resp("FAIL", 0.95)))
+    routed = RJ(cheap_judge=cheap, expensive_judge=expensive)
+    v = routed.judge(*_route_inputs())
+    assert v.passed is False                      # expensive verdict used
+    assert "routed_escalated" in v.concerns
+
+
+def test_routed_pass_below_floor_escalates():
+    # A cheap PASS above the general threshold (0.75) but below the higher PASS
+    # floor (0.85) must still escalate — the truth-first asymmetry.
+    from overmind.verification.llm_judge import RoutedJudge as RJ
+    cheap = LLMJudge(backend=StubBackend(response=_resp("PASS", 0.80)))
+    expensive = LLMJudge(backend=StubBackend(response=_resp("FAIL", 0.95)))
+    routed = RJ(cheap_judge=cheap, expensive_judge=expensive)
+    v = routed.judge(*_route_inputs())
+    assert v.passed is False
+    assert "routed_escalated" in v.concerns
+
+
+def test_routed_escalates_on_degenerate_cheap():
+    from overmind.verification.llm_judge import RoutedJudge as RJ
+    cheap = LLMJudge(backend=StubBackend(response=""))   # degenerate
+    expensive = LLMJudge(backend=StubBackend(response=_resp("PASS", 0.95)))
+    routed = RJ(cheap_judge=cheap, expensive_judge=expensive)
+    v = routed.judge(*_route_inputs())
+    assert v.passed is True
+    assert "routed_escalated" in v.concerns

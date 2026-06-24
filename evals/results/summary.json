@@ -1,0 +1,45 @@
+{
+  "_meta": {
+    "generated_at": "2026-06-24T21:59:40+00:00"
+  },
+  "evals": {
+    "engine_routing": {
+      "accuracy_always_expensive": 1.0,
+      "accuracy_routed": 1.0,
+      "expensive_invocation_rate_after": 0.5,
+      "expensive_invocation_rate_before": 1.0,
+      "routed_preserves_expensive": true
+    },
+    "judge_cot_goldenset": {
+      "cot_on_degenerate_false_pass_rate": 0.0,
+      "no_regression": true,
+      "parse_agreement_rate": 1.0,
+      "quality_delta_measured": false
+    },
+    "judge_masterkey": {
+      "degenerate_false_pass_rate": 0.0,
+      "genuine_accuracy": 1.0,
+      "injection_boundary_false_pass_rate": 0.5
+    },
+    "memory_recall": {
+      "expired_fact_suppressed": true,
+      "naive_stale_leak_rate": 1.0,
+      "precision": 1.0,
+      "recall": 1.0,
+      "stale_suppression_rate": 1.0
+    },
+    "quorum_decorrelation": {
+      "honest_panels_unchanged_rate": 1.0,
+      "overcount_rate_after": 0.0,
+      "overcount_rate_before": 1.0
+    },
+    "specbench_style": {
+      "heldout_pass_rate": 0.3333,
+      "reward_hack_heldout_catch_rate": 1.0,
+      "specbench_gap": 0.3334,
+      "validation_pass_rate": 0.6667,
+      "visible_only_false_certifications": 5
+    }
+  },
+  "harness": "overmind-sentinel-measurement"
+}

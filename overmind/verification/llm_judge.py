@@ -257,8 +257,17 @@ MISSED: comma-separated list of requirements missed (or "none")
 
 
 def _cot_enabled() -> bool:
-    """Whether the CoT + rubric judge prompt is enabled (env OVERMIND_JUDGE_COT)."""
-    return os.environ.get("OVERMIND_JUDGE_COT", "").strip().lower() in {"1", "true", "yes", "on"}
+    """Whether the CoT + rubric judge prompt is enabled (env OVERMIND_JUDGE_COT).
+
+    Default **ON** (audit A3): the CoT golden-set gate
+    (``evals/judge_cot_goldenset.py``) confirms it does not regress the judge —
+    parse-invariant on the golden set, degenerate guard intact, output contract
+    preserved — and the literature (arXiv:2604.23178) supports a reasoning-quality
+    gain. Set ``OVERMIND_JUDGE_COT=0`` (or off/false/no) to restore the base
+    prompt. The reasoning-quality *gain* itself is not measured offline — see the
+    eval's honest-limit note."""
+    val = os.environ.get("OVERMIND_JUDGE_COT", "1").strip().lower()
+    return val not in {"0", "false", "no", "off"}
 
 
 # ── LLM Judge ───────────────────────────────────────────────────────
@@ -369,6 +378,24 @@ class LLMJudge:
         except ValueError:
             confidence = 0.5
 
+        # Injection / planted-verdict guard (arXiv:2507.08794 boundary; injection
+        # SoK). A regex output-parser cannot tell a genuine `VERDICT: PASS` from
+        # one an attacker planted in the witness/transcript that the judge echoed.
+        # Truth-first asymmetry: a *coerced PASS* is the dangerous direction, so if
+        # the reply carries injection/override/exfil signatures we REFUSE to honor a
+        # PASS and abstain (judge_error → escalate / tests-only). A FAIL is the safe
+        # direction and is left intact, and hard evidence (canary/exfil) abstains
+        # regardless of verdict.
+        tamper = injection_tamper_reason(response, verdict_passed=passed)
+        if tamper is not None:
+            logger.warning("judge reply shows injection/tamper signature (%s); abstaining", tamper)
+            return JudgeVerdict(
+                passed=False,
+                confidence=0.0,
+                reasoning=f"Judge reply rejected — injection/tamper signature ({tamper}): {response[:200]!r}",
+                concerns=["judge_error", "judge_injection_suspected", tamper],
+            )
+
         reasoning = fields.get("REASONING", "No reasoning provided.")
         concerns = _parse_csv(fields.get("CONCERNS", "none"))
         met = _parse_csv(fields.get("MET", "none"))
@@ -445,6 +472,50 @@ def degenerate_response_reason(response: str) -> str | None:
     opener = stripped.lstrip(_EDGE_NOISE)
     if not _VERDICT_TOKEN_RE.search(stripped) and _FILLER_OPENER_RE.match(opener):
         return "filler_without_verdict"
+    return None
+
+
+# ── Injection / planted-verdict guard (input-side sanitization) ──────
+#
+# A regex output-parser honours any line that starts with `VERDICT: PASS`. If an
+# attacker plants that line inside the witness output / transcript that gets
+# echoed into (or paraphrased by) the judge, the parser would certify it. We
+# reuse the existing PromptInjectionScanner signatures to detect a *contaminated*
+# judge reply and refuse to honour a coerced PASS.
+#
+# Honest boundary: this catches replies that carry an injection SIGNATURE
+# (override phrasing, canary echo, exfil scaffold, persona swap). A perfectly
+# clean planted `VERDICT: PASS` with no attack phrase is indistinguishable from a
+# genuine verdict by output scanning — defending that needs a trusted output
+# channel (structured tool-call output), tracked separately. The eval reports
+# both so the boundary is visible, not hidden.
+
+from overmind.verification.prompt_injection_scanner import PromptInjectionScanner
+
+_INJECTION_SCANNER = PromptInjectionScanner()
+
+
+def injection_tamper_reason(response: str, verdict_passed: bool) -> str | None:
+    """Return a reason if ``response`` shows injection/tamper signatures that make
+    a parsed verdict untrustworthy, else None.
+
+    Asymmetric by design: hard evidence (canary echo / exfil scaffold) abstains
+    regardless of verdict; a soft instruction-override / persona-swap signature
+    abstains only when the verdict is PASS (the dangerous direction) so a genuine
+    FAIL that merely *quotes* an injection attempt as a concern is not suppressed.
+    """
+    if not response or not response.strip():
+        return None
+    findings = _INJECTION_SCANNER.scan(response.splitlines())
+    if not findings:
+        return None
+    if _INJECTION_SCANNER.has_hard_evidence(findings):
+        # canary echo or exfil scaffold — abstain no matter the verdict
+        hard = next(f for f in findings if f.category in {"canary_echoed", "data_exfil_pattern"})
+        return f"injection_{hard.category}"
+    # soft signal (instruction_override / role_confusion): only block a coerced PASS
+    if verdict_passed:
+        return f"injection_{findings[0].category}"
     return None
 
 
@@ -572,3 +643,70 @@ class QuorumJudge:
             effective_votes=self.effective_votes,
             distinct_families=self.distinct_families,
         )
+
+
+# ── Cost-aware routed judge ─────────────────────────────────────────
+
+
+class RoutedJudge:
+    """Cost-aware routing: a cheap judge first, escalate to an expensive one only
+    when the cheap verdict is not trustworthy (audit C2 / RouteLLM idea).
+
+    Rationale: a cross-family quorum is ~N× the token cost of a single local
+    judge (Anthropic's multi-agent fan-out reports ~15× for the heaviest case).
+    Most verdicts are easy; paying for the full quorum on every one is wasteful.
+    So run a cheap/local judge first and **only escalate** when its verdict is
+    uncertain or unusable.
+
+    Truth-first asymmetry (a false PASS is the costly error):
+      * NEVER trust a cheap reply tagged ``judge_error`` / ``judge_degenerate`` —
+        always escalate.
+      * Trust a cheap verdict only if its confidence clears ``escalate_below``.
+      * A cheap **PASS** must additionally clear the higher ``pass_floor`` — a
+        confident "looks done" is exactly where reward-hacking hides, so we make
+        PASS pay for escalation more readily than FAIL.
+    The expensive tier's verdict is returned verbatim on escalation. Either way
+    the returned verdict carries a routing concern (``routed_cheap_accepted`` or
+    ``routed_escalated``) so the path is visible in the bundle.
+    """
+
+    def __init__(
+        self,
+        cheap_judge: "LLMJudge | QuorumJudge",
+        expensive_judge: "LLMJudge | QuorumJudge",
+        escalate_below: float = 0.75,
+        pass_floor: float = 0.85,
+    ) -> None:
+        self.cheap_judge = cheap_judge
+        self.expensive_judge = expensive_judge
+        self.escalate_below = escalate_below
+        self.pass_floor = pass_floor
+
+    def _trust_cheap(self, v) -> tuple[bool, str]:
+        """(accept?, reason). Defaults to escalate on any uncertainty."""
+        if "judge_error" in v.concerns or "judge_degenerate" in v.concerns:
+            return False, "cheap_unusable"
+        if v.confidence < self.escalate_below:
+            return False, "cheap_low_confidence"
+        if v.passed and v.confidence < self.pass_floor:
+            return False, "cheap_pass_below_floor"
+        return True, "cheap_confident"
+
+    def _annotate(self, verdict, tag: str):
+        verdict.concerns = list(verdict.concerns) + [tag]
+        return verdict
+
+    def judge(
+        self,
+        task: TaskRecord,
+        project: ProjectRecord,
+        verification_result: VerificationResult,
+        transcript_lines: list[str] | None = None,
+    ):
+        cheap = self.cheap_judge.judge(task, project, verification_result, transcript_lines)
+        accept, reason = self._trust_cheap(cheap)
+        if accept:
+            return self._annotate(cheap, "routed_cheap_accepted")
+        logger.info("RoutedJudge escalating to expensive tier (%s)", reason)
+        expensive = self.expensive_judge.judge(task, project, verification_result, transcript_lines)
+        return self._annotate(expensive, "routed_escalated")
