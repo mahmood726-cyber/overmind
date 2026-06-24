@@ -1,0 +1,201 @@
+{
+  "_meta": {
+    "generated_at": "2026-06-24T21:46:02+00:00"
+  },
+  "correlated_panels": {
+    "n": 5,
+    "overcount_after": 0,
+    "overcount_before": 5,
+    "overcount_rate_after": 0.0,
+    "overcount_rate_before": 1.0
+  },
+  "eval": "quorum_decorrelation",
+  "honest_panels": {
+    "n": 3,
+    "unchanged": 3,
+    "unchanged_rate": 1.0
+  },
+  "n_panels": 8,
+  "panels": [
+    {
+      "after": {
+        "kind": "fallback",
+        "overcounts": false
+      },
+      "before": {
+        "distinct_families": 1,
+        "effective_votes": 1.25,
+        "kind": "quorum",
+        "n_judges": 2,
+        "nominal_votes": 2,
+        "overcounts": true
+      },
+      "correlated": true,
+      "distinct_families": 1,
+      "honest_panel_unchanged": false,
+      "name": "two_openai_seats",
+      "nominal": 2,
+      "spec": "codex,codex-noreen"
+    },
+    {
+      "after": {
+        "kind": "fallback",
+        "overcounts": false
+      },
+      "before": {
+        "distinct_families": 1,
+        "effective_votes": 1.25,
+        "kind": "quorum",
+        "n_judges": 2,
+        "nominal_votes": 2,
+        "overcounts": true
+      },
+      "correlated": true,
+      "distinct_families": 1,
+      "honest_panel_unchanged": false,
+      "name": "two_google",
+      "nominal": 2,
+      "spec": "agy,gemini"
+    },
+    {
+      "after": {
+        "distinct_families": 2,
+        "effective_votes": 2.0,
+        "kind": "quorum",
+        "n_judges": 2,
+        "nominal_votes": 2,
+        "overcounts": false
+      },
+      "before": {
+        "distinct_families": 2,
+        "effective_votes": 2.25,
+        "kind": "quorum",
+        "n_judges": 3,
+        "nominal_votes": 3,
+        "overcounts": true
+      },
+      "correlated": true,
+      "distinct_families": 2,
+      "honest_panel_unchanged": false,
+      "name": "claude_plus_two_openai",
+      "nominal": 3,
+      "spec": "claude,codex,codex-noreen"
+    },
+    {
+      "after": {
+        "kind": "fallback",
+        "overcounts": false
+      },
+      "before": {
+        "distinct_families": 1,
+        "effective_votes": 1.25,
+        "kind": "quorum",
+        "n_judges": 2,
+        "nominal_votes": 2,
+        "overcounts": true
+      },
+      "correlated": true,
+      "distinct_families": 1,
+      "honest_panel_unchanged": false,
+      "name": "claude_x2",
+      "nominal": 2,
+      "spec": "claude,claude"
+    },
+    {
+      "after": {
+        "distinct_families": 2,
+        "effective_votes": 2.0,
+        "kind": "quorum",
+        "n_judges": 2,
+        "nominal_votes": 2,
+        "overcounts": false
+      },
+      "before": {
+        "distinct_families": 2,
+        "effective_votes": 2.25,
+        "kind": "quorum",
+        "n_judges": 3,
+        "nominal_votes": 3,
+        "overcounts": true
+      },
+      "correlated": true,
+      "distinct_families": 2,
+      "honest_panel_unchanged": false,
+      "name": "google_x2_plus_openai",
+      "nominal": 3,
+      "spec": "agy,gemini,codex"
+    },
+    {
+      "after": {
+        "distinct_families": 2,
+        "effective_votes": 2.0,
+        "kind": "quorum",
+        "n_judges": 2,
+        "nominal_votes": 2,
+        "overcounts": false
+      },
+      "before": {
+        "distinct_families": 2,
+        "effective_votes": 2.0,
+        "kind": "quorum",
+        "n_judges": 2,
+        "nominal_votes": 2,
+        "overcounts": false
+      },
+      "correlated": false,
+      "distinct_families": 2,
+      "honest_panel_unchanged": true,
+      "name": "anthropic_openai",
+      "nominal": 2,
+      "spec": "claude,codex"
+    },
+    {
+      "after": {
+        "distinct_families": 3,
+        "effective_votes": 3.0,
+        "kind": "quorum",
+        "n_judges": 3,
+        "nominal_votes": 3,
+        "overcounts": false
+      },
+      "before": {
+        "distinct_families": 3,
+        "effective_votes": 3.0,
+        "kind": "quorum",
+        "n_judges": 3,
+        "nominal_votes": 3,
+        "overcounts": false
+      },
+      "correlated": false,
+      "distinct_families": 3,
+      "honest_panel_unchanged": true,
+      "name": "three_families",
+      "nominal": 3,
+      "spec": "claude,codex,gemini"
+    },
+    {
+      "after": {
+        "distinct_families": 2,
+        "effective_votes": 2.0,
+        "kind": "quorum",
+        "n_judges": 2,
+        "nominal_votes": 2,
+        "overcounts": false
+      },
+      "before": {
+        "distinct_families": 2,
+        "effective_votes": 2.0,
+        "kind": "quorum",
+        "n_judges": 2,
+        "nominal_votes": 2,
+        "overcounts": false
+      },
+      "correlated": false,
+      "distinct_families": 2,
+      "honest_panel_unchanged": true,
+      "name": "anthropic_google",
+      "nominal": 2,
+      "spec": "claude,gemini"
+    }
+  ]
+}

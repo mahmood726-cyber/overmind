@@ -14,6 +14,7 @@ Three evals, each producing a real, reproducible score in
 | 1 | SpecBench-style | `specbench_style.py` | validation-minus-held-out gap (reward-hacking signal) |
 | 2 | Judge master-key | `judge_masterkey.py` | judge false-PASS rate on adversarial inputs; accuracy on genuine |
 | 3 | Memory recall | `memory_recall.py` | recall/precision; suppression of superseded & expired facts |
+| 4 | Quorum decorrelation | `quorum_decorrelation.py` | correlated-panel overcount rate before→after hard family-enforcement (A2) |
 
 ## How to run
 

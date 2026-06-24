@@ -13,7 +13,7 @@ If a future change loosens any of these, a test here fails — by design.
 """
 from __future__ import annotations
 
-from evals import judge_masterkey, memory_recall, specbench_style
+from evals import judge_masterkey, memory_recall, quorum_decorrelation, specbench_style
 
 
 def test_specbench_style_heldout_catches_reward_hacks():
@@ -46,3 +46,14 @@ def test_memory_recall_suppresses_superseded():
     # The defense is the temporal filter: a naive search WOULD leak the stale fact.
     assert payload["naive_stale_leak_rate"] == 1.0
     assert payload["expired_probe"]["expired_fact_suppressed"] is True
+
+
+def test_quorum_decorrelation_enforcement_eliminates_overcount():
+    payload = quorum_decorrelation.evaluate()
+    c = payload["correlated_panels"]
+    # Before enforcement every correlated panel overcounts its independence...
+    assert c["overcount_rate_before"] == 1.0
+    # ...after hard enforcement none does (repaired to one-per-family or rejected).
+    assert c["overcount_rate_after"] == 0.0
+    # Honest (all-distinct) panels are left untouched — no regression.
+    assert payload["honest_panels"]["unchanged_rate"] == 1.0

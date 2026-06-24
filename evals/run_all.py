@@ -12,7 +12,7 @@ from __future__ import annotations
 
 import json
 
-from evals import judge_masterkey, memory_recall, specbench_style
+from evals import judge_masterkey, memory_recall, quorum_decorrelation, specbench_style
 from evals.common import RESULTS_DIR, seed_everything, write_result
 
 
@@ -28,6 +28,8 @@ def main() -> int:
     jm = judge_masterkey.main()
     print("-" * 72)
     mr = memory_recall.main()
+    print("-" * 72)
+    qd = quorum_decorrelation.main()
     print("=" * 72)
 
     summary = {
@@ -51,6 +53,11 @@ def main() -> int:
                 "stale_suppression_rate": mr["stale_suppression_rate"],
                 "naive_stale_leak_rate": mr["naive_stale_leak_rate"],
                 "expired_fact_suppressed": mr["expired_probe"]["expired_fact_suppressed"],
+            },
+            "quorum_decorrelation": {
+                "overcount_rate_before": qd["correlated_panels"]["overcount_rate_before"],
+                "overcount_rate_after": qd["correlated_panels"]["overcount_rate_after"],
+                "honest_panels_unchanged_rate": qd["honest_panels"]["unchanged_rate"],
             },
         },
     }

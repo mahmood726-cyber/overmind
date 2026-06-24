@@ -56,7 +56,31 @@ Command: `python -m evals.run_all` → `evals/results/summary.json`.
 Each sub-item lands as its own tested commit with its measured eval delta. Status below updates as
 they land.
 
-- **#2c hard-enforce different-family quorum** — _pending_
+### #2c — hard-enforce different-family quorum panels ✅ landed
+
+Was **warn-only**: a `claude,codex,codex-noreen` panel ran as a "3-judge" quorum, flagged but live,
+advertising ~2.25 effective votes as if 3. Now **hard-enforced** by default
+(`OVERMIND_JUDGE_QUORUM_ENFORCE=1`, escape hatch `0/off/warn`): `build_judge` repairs a correlated
+panel by dropping same-family redundancy (one judge per family), and if **<2 families** remain it is
+not a real quorum, so it falls back to a single-engine chain instead of advertising false
+independence.
+
+New eval `evals/quorum_decorrelation.py` (now in `run_all`), run against the **real** `build_judge`:
+
+| Metric | Before (warn-only) | After (enforced) |
+|--------|--------------------|------------------|
+| **correlated-panel overcount rate** | **100 %** (5/5) | **0 %** (0/5) |
+| honest-panel unchanged rate (no-regression) | 100 % (3/3) | 100 % (3/3) |
+
+"Overcount" = a panel that runs as a `QuorumJudge` whose `effective_votes < nominal_votes`. After
+enforcement every surviving quorum has `effective_votes == nominal_votes` (all distinct families);
+the rest correctly fall back. Honest (all-distinct) panels are provably untouched.
+
+**Honest scope:** the effective-vote estimate is a heuristic (0.25/redundant-judge), not a calibrated
+independence measure — enforcement makes the *structural* guarantee "no surviving quorum spans a
+duplicate family", which is exact; it does not claim the surviving panel's votes are perfectly
+independent. Tests: `tests/unit/test_judge_factory.py` (8 new) + `test_evals_harness.py` (1 new).
+
 - **#2a cost-aware engine routing** — _pending_
 - **#2b default-on CoT after golden-set no-regression check** — _pending_
 

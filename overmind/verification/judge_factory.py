@@ -133,6 +133,78 @@ def estimate_effective_votes(engines: list[str]) -> EffectiveVotes:
     )
 
 
+@dataclass(slots=True)
+class PanelEnforcement:
+    """Result of enforcing different-family quorum (audit A2 hard-enforcement)."""
+    original: list[str]                # engines as requested
+    repaired: list[str]                # engines after dropping same-family redundancy
+    dropped: list[str] = field(default_factory=list)  # redundant same-family engines removed
+    rejected_quorum: bool = False      # True when too few families remain for a real quorum
+    action: str = "unchanged"          # "unchanged" | "repaired" | "rejected"
+    note: str | None = None
+
+
+def enforce_distinct_families(engines: list[str]) -> PanelEnforcement:
+    """Repair a quorum panel so every member is an independent model family.
+
+    Same-family judges share correlated failure modes (arXiv:2605.29800), so a
+    panel that lists two OpenAI seats is not two independent votes. Hard
+    enforcement (vs the prior warn-only path) keeps the FIRST engine of each
+    family (order-preserving) and drops later same-family duplicates. If fewer
+    than two distinct families remain, the panel cannot be a genuine
+    decorrelated quorum and is flagged ``rejected_quorum`` so the caller can
+    fall back rather than advertise false independence.
+    """
+    seen_families: set[str] = set()
+    repaired: list[str] = []
+    dropped: list[str] = []
+    for e in engines:
+        fam = family_for_engine(e)
+        if fam in seen_families:
+            dropped.append(e)
+            continue
+        seen_families.add(fam)
+        repaired.append(e)
+
+    if len(seen_families) < 2:
+        return PanelEnforcement(
+            original=list(engines),
+            repaired=repaired,
+            dropped=dropped,
+            rejected_quorum=True,
+            action="rejected",
+            note=(
+                f"panel {engines} spans only {len(seen_families)} model "
+                f"{'family' if len(seen_families) == 1 else 'families'}; a quorum "
+                "needs >=2 independent families — falling back to a single-engine "
+                "chain instead of advertising false independence."
+            ),
+        )
+    if dropped:
+        return PanelEnforcement(
+            original=list(engines),
+            repaired=repaired,
+            dropped=dropped,
+            rejected_quorum=False,
+            action="repaired",
+            note=(
+                f"dropped same-family redundant judges {dropped}; kept one per "
+                f"family -> {repaired} ({len(seen_families)} independent families)."
+            ),
+        )
+    return PanelEnforcement(
+        original=list(engines), repaired=repaired, action="unchanged",
+    )
+
+
+def _quorum_enforce_enabled() -> bool:
+    """Whether different-family quorum enforcement is ON (env
+    OVERMIND_JUDGE_QUORUM_ENFORCE, default ON). Set to 0/off/warn to restore the
+    prior warn-only behavior (same-family panels run, just flagged)."""
+    val = os.environ.get("OVERMIND_JUDGE_QUORUM_ENFORCE", "1").strip().lower()
+    return val not in {"0", "false", "no", "off", "warn"}
+
+
 def build_backend(engine: str) -> object:
     """Build a single backend by engine name (raises KeyError if unknown)."""
     return ENGINE_BUILDERS[engine.strip().lower()]()
@@ -159,6 +231,7 @@ def build_judge(
     mode: str | None = None,
     transcript_window: int = 80,
     use_cot: bool | None = None,
+    enforce_families: bool | None = None,
 ) -> LLMJudge | QuorumJudge:
     """Construct the judge from an engine spec + mode.
 
@@ -166,17 +239,45 @@ def build_judge(
             default chain). mode: "fallback" (default) or "quorum"
             (defaults to env OVERMIND_JUDGE_MODE). use_cot: enable the
             CoT + rubric prompt (defaults to env OVERMIND_JUDGE_COT; None lets
-            each LLMJudge read the env itself).
+            each LLMJudge read the env itself). enforce_families: hard-enforce
+            different-family quorum panels (default env
+            OVERMIND_JUDGE_QUORUM_ENFORCE, ON) — drop same-family redundant
+            judges, and fall back to a single-engine chain if <2 families remain
+            rather than advertise false independence.
     """
     if spec is None:
         spec = os.environ.get("OVERMIND_JUDGE_ENGINE")
     if mode is None:
         mode = os.environ.get("OVERMIND_JUDGE_MODE", "fallback")
     mode = (mode or "fallback").strip().lower()
+    if enforce_families is None:
+        enforce_families = _quorum_enforce_enabled()
 
     engines = _parse_engine_spec(spec)
 
     if mode == "quorum" and len(engines) > 1:
+        # Hard-enforce different-family panels (audit A2). Repair by dropping
+        # same-family redundancy; if <2 families remain it is not a real quorum,
+        # so fall through to the fallback chain instead of claiming independence.
+        if enforce_families:
+            enforcement = enforce_distinct_families(engines)
+            if enforcement.action != "unchanged":
+                logger.warning("LLM judge quorum enforcement: %s", enforcement.note)
+            if enforcement.rejected_quorum:
+                logger.warning(
+                    "LLM judge: quorum rejected (only %d family); using fallback chain %s",
+                    len(set(family_for_engine(e) for e in engines)), enforcement.repaired,
+                )
+                engines = enforcement.repaired
+                # drop into the fallback path below with the de-duplicated chain
+                backends = [build_backend(e) for e in engines]
+                return LLMJudge(
+                    backend=FallbackBackend(backends=backends),
+                    transcript_window=transcript_window,
+                    use_cot=use_cot,
+                )
+            engines = enforcement.repaired
+
         judges = [
             LLMJudge(backend=build_backend(e), transcript_window=transcript_window, use_cot=use_cot)
             for e in engines

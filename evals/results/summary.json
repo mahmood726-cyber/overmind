@@ -1,6 +1,6 @@
 {
   "_meta": {
-    "generated_at": "2026-06-24T21:34:37+00:00"
+    "generated_at": "2026-06-24T21:46:02+00:00"
   },
   "evals": {
     "judge_masterkey": {
@@ -14,6 +14,11 @@
       "precision": 1.0,
       "recall": 1.0,
       "stale_suppression_rate": 1.0
+    },
+    "quorum_decorrelation": {
+      "honest_panels_unchanged_rate": 1.0,
+      "overcount_rate_after": 0.0,
+      "overcount_rate_before": 1.0
     },
     "specbench_style": {
       "heldout_pass_rate": 0.3333,

@@ -245,7 +245,11 @@ def test_quorum_verdict_carries_effective_votes(caplog):
     from overmind.storage.models import ProjectRecord, TaskRecord, VerificationResult
 
     with caplog.at_level(logging.WARNING, logger="overmind.verification.judge_factory"):
-        judge = jf.build_judge(spec="claude,codex,codex-noreen", mode="quorum")
+        # enforce_families=False: this test exercises the warn-only effective-vote
+        # SURFACING path (a correlated panel still runs). Hard enforcement is
+        # covered separately in test_quorum_enforcement_*.
+        judge = jf.build_judge(spec="claude,codex,codex-noreen", mode="quorum",
+                               enforce_families=False)
     # Build-time warning fired about correlated panel.
     assert any("effective" in r.getMessage() or "correlated" in r.getMessage()
                for r in caplog.records)
@@ -299,3 +303,71 @@ def test_judge_uses_fallback_secondary_for_real_verdict():
     assert verdict.passed is True
     assert verdict.confidence == pytest.approx(0.91)
     assert "judge_error" not in verdict.concerns
+
+
+# ── A2 hard-enforcement of different-family quorum panels ────────────
+
+
+def test_enforce_distinct_families_drops_same_family_redundancy():
+    e = jf.enforce_distinct_families(["claude", "codex", "codex-noreen"])
+    assert e.action == "repaired"
+    assert e.rejected_quorum is False
+    assert e.repaired == ["claude", "codex"]      # one per family, order-preserving
+    assert e.dropped == ["codex-noreen"]
+
+
+def test_enforce_distinct_families_rejects_single_family():
+    e = jf.enforce_distinct_families(["claude", "claude"])
+    assert e.action == "rejected"
+    assert e.rejected_quorum is True
+    assert e.repaired == ["claude"]
+
+
+def test_enforce_distinct_families_passthrough_when_all_distinct():
+    e = jf.enforce_distinct_families(["claude", "codex", "gemini"])
+    assert e.action == "unchanged"
+    assert e.repaired == ["claude", "codex", "gemini"]
+    assert e.dropped == []
+
+
+def test_enforce_agy_and_gemini_collapse():
+    # agy and gemini are both Google -> only one survives.
+    e = jf.enforce_distinct_families(["agy", "gemini", "codex"])
+    assert e.action == "repaired"
+    assert e.repaired == ["agy", "codex"]
+
+
+def test_build_judge_default_enforces_distinct_family_quorum():
+    # Default (enforce on): a 3-engine / 2-family panel is repaired to 2 judges,
+    # and the surviving quorum no longer overcounts independence.
+    judge = jf.build_judge(spec="claude,codex,codex-noreen", mode="quorum")
+    assert isinstance(judge, QuorumJudge)
+    assert len(judge.judges) == 2
+    assert judge.distinct_families == 2
+    assert judge.effective_votes == judge.nominal_votes == 2
+
+
+def test_build_judge_enforce_rejects_single_family_quorum_to_fallback():
+    # A same-family-only "quorum" is not a real quorum: enforcement falls back to
+    # a single-engine chain rather than advertising false independence.
+    judge = jf.build_judge(spec="codex,codex-noreen", mode="quorum")
+    assert isinstance(judge, LLMJudge)
+    assert isinstance(judge.backend, FallbackBackend)
+
+
+def test_build_judge_enforce_off_preserves_correlated_panel():
+    # Escape hatch: enforce_families=False keeps the old warn-only behavior.
+    judge = jf.build_judge(spec="claude,codex,codex-noreen", mode="quorum",
+                           enforce_families=False)
+    assert isinstance(judge, QuorumJudge)
+    assert len(judge.judges) == 3
+
+
+def test_quorum_enforce_env_toggle(monkeypatch):
+    monkeypatch.setenv("OVERMIND_JUDGE_QUORUM_ENFORCE", "0")
+    judge = jf.build_judge(spec="claude,codex,codex-noreen", mode="quorum")
+    assert isinstance(judge, QuorumJudge)
+    assert len(judge.judges) == 3
+    monkeypatch.setenv("OVERMIND_JUDGE_QUORUM_ENFORCE", "1")
+    judge2 = jf.build_judge(spec="claude,codex,codex-noreen", mode="quorum")
+    assert len(judge2.judges) == 2
