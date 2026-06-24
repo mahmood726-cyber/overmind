@@ -161,12 +161,21 @@ def test_fallback_to_secondary_warns(caplog):
 # ── CoT + rubric prompt toggle (A3) ─────────────────────────────────
 
 
-def test_cot_off_by_default_uses_base_prompt():
+def test_cot_on_by_default(monkeypatch):
+    # A3: CoT defaults ON after the golden-set no-regression gate.
+    monkeypatch.delenv("OVERMIND_JUDGE_COT", raising=False)
+    judge = jf.build_judge(spec="stub")
+    assert judge.use_cot is True
+
+
+def test_cot_disabled_via_env(monkeypatch):
+    monkeypatch.setenv("OVERMIND_JUDGE_COT", "0")
     judge = jf.build_judge(spec="stub")
     assert judge.use_cot is False
 
 
-def test_cot_enabled_via_param():
+def test_cot_param_overrides_env(monkeypatch):
+    monkeypatch.setenv("OVERMIND_JUDGE_COT", "0")
     judge = jf.build_judge(spec="stub", use_cot=True)
     assert judge.use_cot is True
 

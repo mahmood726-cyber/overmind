@@ -1,0 +1,153 @@
+{
+  "_meta": {
+    "generated_at": "2026-06-24T21:59:40+00:00"
+  },
+  "cases": [
+    {
+      "agree": true,
+      "bucket": "genuine",
+      "cot_off_pass": true,
+      "cot_on_pass": true,
+      "name": "genuine_pass"
+    },
+    {
+      "agree": true,
+      "bucket": "genuine",
+      "cot_off_pass": false,
+      "cot_on_pass": false,
+      "name": "genuine_fail"
+    },
+    {
+      "agree": true,
+      "bucket": "genuine",
+      "cot_off_pass": false,
+      "cot_on_pass": false,
+      "name": "genuine_fail_skip"
+    },
+    {
+      "agree": true,
+      "bucket": "genuine",
+      "cot_off_pass": true,
+      "cot_on_pass": true,
+      "name": "pass_with_filler_lead"
+    },
+    {
+      "agree": true,
+      "bucket": "genuine",
+      "cot_off_pass": true,
+      "cot_on_pass": true,
+      "name": "lowercase_pass"
+    },
+    {
+      "agree": true,
+      "bucket": "genuine",
+      "cot_off_pass": false,
+      "cot_on_pass": false,
+      "name": "genuine_fail_terse"
+    },
+    {
+      "agree": true,
+      "bucket": "degenerate",
+      "cot_off_pass": false,
+      "cot_on_pass": false,
+      "name": "empty"
+    },
+    {
+      "agree": true,
+      "bucket": "degenerate",
+      "cot_off_pass": false,
+      "cot_on_pass": false,
+      "name": "whitespace"
+    },
+    {
+      "agree": true,
+      "bucket": "degenerate",
+      "cot_off_pass": false,
+      "cot_on_pass": false,
+      "name": "colon_only"
+    },
+    {
+      "agree": true,
+      "bucket": "degenerate",
+      "cot_off_pass": false,
+      "cot_on_pass": false,
+      "name": "ellipsis"
+    },
+    {
+      "agree": true,
+      "bucket": "degenerate",
+      "cot_off_pass": false,
+      "cot_on_pass": false,
+      "name": "punct_bang"
+    },
+    {
+      "agree": true,
+      "bucket": "degenerate",
+      "cot_off_pass": false,
+      "cot_on_pass": false,
+      "name": "markdown_fence"
+    },
+    {
+      "agree": true,
+      "bucket": "degenerate",
+      "cot_off_pass": false,
+      "cot_on_pass": false,
+      "name": "lets_solve"
+    },
+    {
+      "agree": true,
+      "bucket": "degenerate",
+      "cot_off_pass": false,
+      "cot_on_pass": false,
+      "name": "sure_filler"
+    },
+    {
+      "agree": true,
+      "bucket": "degenerate",
+      "cot_off_pass": false,
+      "cot_on_pass": false,
+      "name": "okay_filler"
+    },
+    {
+      "agree": true,
+      "bucket": "degenerate",
+      "cot_off_pass": false,
+      "cot_on_pass": false,
+      "name": "here_filler"
+    },
+    {
+      "agree": true,
+      "bucket": "degenerate",
+      "cot_off_pass": false,
+      "cot_on_pass": false,
+      "name": "step_by_step"
+    },
+    {
+      "agree": true,
+      "bucket": "degenerate",
+      "cot_off_pass": false,
+      "cot_on_pass": false,
+      "name": "reasoning_no_verdict"
+    }
+  ],
+  "cot_prompt_structural": {
+    "output_contract_present": true,
+    "rubric_present": true
+  },
+  "degenerate": {
+    "cot_on_false_pass": 0,
+    "cot_on_false_pass_rate": 0.0,
+    "n": 12
+  },
+  "eval": "judge_cot_goldenset",
+  "genuine": {
+    "cot_off_accuracy": 1.0,
+    "cot_on_accuracy": 1.0,
+    "n": 6
+  },
+  "n_golden": 18,
+  "no_regression": true,
+  "parse_agreement_rate": 1.0,
+  "quality_delta_measured": false,
+  "quality_delta_note": "Reasoning-quality improvement is NOT measured offline (StubBackend ignores the prompt). Expected gain is literature-backed (arXiv:2604.23178), not a number we measured. Run a live golden set to quantify."
+}

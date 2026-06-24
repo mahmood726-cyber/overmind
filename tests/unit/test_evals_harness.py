@@ -15,6 +15,7 @@ from __future__ import annotations
 
 from evals import (
     engine_routing,
+    judge_cot_goldenset,
     judge_masterkey,
     memory_recall,
     quorum_decorrelation,
@@ -43,6 +44,14 @@ def test_judge_masterkey_guard_holds():
     # Genuine verdicts classified correctly and never misflagged as degenerate.
     assert payload["genuine"]["accuracy"] == 1.0
     assert payload["genuine"]["misflagged_as_degenerate"] == 0
+    # #2d input-side tamper guard: the original planted-VERDICT cases and the
+    # extra signature-bearing ones no longer become an effective PASS.
+    assert payload["injection_boundary"]["false_pass_rate"] == 0.0
+    assert payload["injection_signature"]["false_pass_rate"] == 0.0
+    # HONEST: a clean planted PASS (no attack phrase) is still an open boundary —
+    # output scanning cannot catch it. We assert it leaks so the limit stays
+    # visible and is not silently "fixed" by an over-broad guard.
+    assert payload["injection_clean_boundary"]["false_pass_rate"] == 1.0
 
 
 def test_memory_recall_suppresses_superseded():
@@ -74,3 +83,16 @@ def test_engine_routing_cuts_expensive_invocations_without_losing_accuracy():
     assert payload["accuracy"]["routed"] == payload["accuracy"]["always_expensive"]
     # ...and every routing decision matched its expected escalate/accept label.
     assert payload["routing_decisions_match_expectation"] is True
+
+
+def test_cot_goldenset_gate_passes_no_regression():
+    payload = judge_cot_goldenset.evaluate()
+    # CoT on vs off classify the golden set identically (parser/guard untouched).
+    assert payload["parse_agreement_rate"] == 1.0
+    # Degenerate guard still holds with CoT on; rubric + output contract intact.
+    assert payload["degenerate"]["cot_on_false_pass_rate"] == 0.0
+    assert payload["cot_prompt_structural"]["rubric_present"] is True
+    assert payload["cot_prompt_structural"]["output_contract_present"] is True
+    assert payload["no_regression"] is True
+    # Truth-first: we do NOT claim a measured quality gain here.
+    assert payload["quality_delta_measured"] is False

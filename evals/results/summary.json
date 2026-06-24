@@ -1,8 +1,21 @@
 {
   "_meta": {
-    "generated_at": "2026-06-24T21:46:02+00:00"
+    "generated_at": "2026-06-24T21:59:40+00:00"
   },
   "evals": {
+    "engine_routing": {
+      "accuracy_always_expensive": 1.0,
+      "accuracy_routed": 1.0,
+      "expensive_invocation_rate_after": 0.5,
+      "expensive_invocation_rate_before": 1.0,
+      "routed_preserves_expensive": true
+    },
+    "judge_cot_goldenset": {
+      "cot_on_degenerate_false_pass_rate": 0.0,
+      "no_regression": true,
+      "parse_agreement_rate": 1.0,
+      "quality_delta_measured": false
+    },
     "judge_masterkey": {
       "degenerate_false_pass_rate": 0.0,
       "genuine_accuracy": 1.0,

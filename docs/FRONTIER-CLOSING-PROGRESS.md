@@ -111,7 +111,74 @@ proves the *routing logic* cuts invocations without losing accuracy on a labelle
 measure a live local model's real confidence calibration (that needs an online run). Tests:
 `tests/unit/test_judge_factory.py` (+5) + `test_evals_harness.py` (+1).
 
-- **#2b default-on CoT after golden-set no-regression check** — _pending_
+### #2b — default-on CoT+rubric judge, gated by a golden-set no-regression check ✅ landed
+
+The roadmap's precondition for flipping `OVERMIND_JUDGE_COT` ON was "a golden-set check shows it
+doesn't regress." Built that check as a **reproducible eval** (`evals/judge_cot_goldenset.py`), then
+flipped the default.
+
+Golden-set gate (CoT **off** vs **on**, same labelled judge outputs):
+
+| Check | Result |
+|-------|--------|
+| **parse-agreement (CoT-on vs CoT-off classify golden set identically)** | **100 %** |
+| genuine accuracy (off / on) | 100 % / 100 % |
+| degenerate false-PASS with CoT **on** | **0 %** (guard intact) |
+| rubric (RELEVANCE/ACCURACY/EVIDENCE/LOGIC) + 6-line output contract present | **yes / yes** |
+| → **`no_regression`** | **True** |
+
+With the gate green, `_cot_enabled()` now defaults **ON** (`OVERMIND_JUDGE_COT=0` to opt out).
+
+**Honest scope (important):** this gate proves CoT is **safe** to enable — the prompt change is
+parse-invariant, the degenerate guard still holds, and the output contract the parser depends on is
+intact. It does **NOT** measure CoT's reasoning-quality *improvement*: the StubBackend ignores the
+prompt, so a `quality_delta_measured=False` flag is carried in the result on purpose. The expected
+gain (+~11pp, arXiv:2604.23178) is literature-backed, **not** a number we measured. To quantify it,
+run a live golden set against a real backend — tracked as follow-up. Tests:
+`test_judge_factory.py` (CoT-default-on / opt-out / param-override) + `test_evals_harness.py` (+1).
+
+---
+
+### Item #2 summary — measured deltas
+
+| Switch | Eval | Before → After | Truth-first caveat |
+|--------|------|----------------|--------------------|
+| #2c hard-enforce family quorum | `quorum_decorrelation` | overcount rate **100 % → 0 %** | structural guarantee, not calibrated independence |
+| #2a cost-aware routing | `engine_routing` | quorum invocation **100 % → 50 %**, accuracy 100 %→100 % | scripted verdicts; live calibration unmeasured |
+| #2b default-on CoT | `judge_cot_goldenset` | no-regression gate **True**; default OFF → ON | quality gain literature-backed, not measured offline |
+
+All three are real, reproducible, and honest about their limits. None makes a PASS easier on
+missing/degenerate evidence; each only adds strictness, cuts cost without losing accuracy, or is
+gated on a no-regression proof.
+
+### #2d — input-side injection sanitization (the named first target: 50% injection-boundary) ✅ landed
+
+The baseline's clearest open measured gap was `injection_boundary_false_pass_rate = 50 %`: an
+attacker-planted, well-formed `VERDICT: PASS` echoed into the judge reply sailed past the regex
+*output*-parser. Added an **input-side tamper guard** (`injection_tamper_reason`,
+`overmind/verification/llm_judge.py`) that reuses the existing `PromptInjectionScanner` signatures
+(instruction-override / persona-swap / canary-echo / exfil). Truth-first asymmetry: a **coerced
+PASS** is refused (abstain → `judge_error` + `judge_injection_suspected`); a **FAIL** that merely
+*quotes* an injection attempt is left intact; hard evidence (canary/exfil) abstains regardless.
+Also strengthened the scanner's `ignore_previous` regex — it previously matched only a *single*
+qualifier and silently missed the canonical "ignore **all previous** instructions" (two qualifiers).
+
+Measured (`evals/judge_masterkey.py`, real `LLMJudge`):
+
+| Metric | Before | After |
+|--------|--------|-------|
+| **injection_boundary false-PASS** (original 2 planted cases) | **50 %** (1/2) | **0 %** (0/2) |
+| injection_signature false-PASS (override/persona/canary) | — (new) | **0 %** (0/3) |
+| genuine accuracy / misflagged (no-regression) | 100 % / 0 | **100 % / 0** |
+| degenerate false-PASS (unchanged) | 0 % | **0 %** |
+| **injection_clean_boundary false-PASS** (no attack phrase) | — | **100 %** (1/1) — *honest open gap* |
+
+**Honest boundary (not claimed solved):** a planted `VERDICT: PASS` with **no** attack phrase is
+indistinguishable from a genuine verdict by output scanning, so it still leaks (1/1). The eval
+asserts that leak on purpose, and closing it needs a **trusted output channel** (structured tool-call
+output) — tracked, not overclaimed. Tests: `test_llm_judge.py` (+6: coerced-PASS abstains,
+persona/canary abstain, FAIL-quoting-injection preserved, genuine-PASS not flagged, clean-planted
+boundary) + `test_evals_harness.py` (+3 assertions).
 
 ## Item #3 — heavier mechanisms behind measured gates — _not started_
 ## Item #4 — cluster: build or mark deferred — _not started_

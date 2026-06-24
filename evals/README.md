@@ -16,6 +16,7 @@ Three evals, each producing a real, reproducible score in
 | 3 | Memory recall | `memory_recall.py` | recall/precision; suppression of superseded & expired facts |
 | 4 | Quorum decorrelation | `quorum_decorrelation.py` | correlated-panel overcount rate before→after hard family-enforcement (A2) |
 | 5 | Engine routing | `engine_routing.py` | expensive(quorum)-invocation rate cut + accuracy preserved under cost-aware routing (C2) |
+| 6 | CoT golden-set gate | `judge_cot_goldenset.py` | CoT-on vs -off parse-invariance / no-regression gate before defaulting CoT ON (A3) |
 
 ## How to run
 
