@@ -21,6 +21,7 @@ Three evals, each producing a real, reproducible score in
 | 8 | Verdict tracing | `verdict_tracing.py` | span coverage of the witness→judge→arbitrator pipeline (observability) |
 | 9 | Sandbox policy | `sandbox_policy.py` | untrusted-un-isolated-counts-as-pass rate before→after fail-closed sandbox gate |
 | 10 | Contract impact | `contract_impact.py` | cross-repo impact recall: naive direct-only vs graph transitive closure (B1) |
+| 11 | Cluster delta-skip | `cluster_delta_skip.py` | safe incremental skip rate + zero impacted-dependent skips + real parallel dispatch (§9) |
 
 ## How to run
 

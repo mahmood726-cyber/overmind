@@ -1,8 +1,14 @@
 {
   "_meta": {
-    "generated_at": "2026-06-24T22:58:23+00:00"
+    "generated_at": "2026-06-24T23:12:48+00:00"
   },
   "evals": {
+    "cluster_delta_skip": {
+      "impacted_dependents_skipped_naive": 3,
+      "remote_transport_deferred": true,
+      "safe_no_impacted_skipped": true,
+      "skip_rate": 0.4
+    },
     "contract_impact": {
       "impact_recall_after": 1.0,
       "impact_recall_before": 0.6667,

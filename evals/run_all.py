@@ -13,6 +13,7 @@ from __future__ import annotations
 import json
 
 from evals import (
+    cluster_delta_skip,
     contract_impact,
     engine_routing,
     judge_cot_goldenset,
@@ -53,6 +54,8 @@ def main() -> int:
     sp = sandbox_policy.main()
     print("-" * 72)
     ci = contract_impact.main()
+    print("-" * 72)
+    cl = cluster_delta_skip.main()
     print("=" * 72)
 
     summary = {
@@ -119,6 +122,12 @@ def main() -> int:
                 "impact_recall_before": ci["impact_recall_before"],
                 "impact_recall_after": ci["impact_recall_after"],
                 "no_dependent_skipped": ci["no_dependent_skipped"],
+            },
+            "cluster_delta_skip": {
+                "skip_rate": cl["skip_rate"],
+                "safe_no_impacted_skipped": cl["safe_no_impacted_skipped"],
+                "impacted_dependents_skipped_naive": cl["impacted_dependents_skipped_naive"],
+                "remote_transport_deferred": cl["remote_transport_deferred"],
             },
         },
     }

@@ -1,0 +1,32 @@
+{
+  "_meta": {
+    "generated_at": "2026-06-24T23:12:48+00:00"
+  },
+  "changed_sources": [
+    "M"
+  ],
+  "dispatch_errors": 0,
+  "dispatch_results": 3,
+  "dispatched": 3,
+  "eval": "cluster_delta_skip",
+  "impacted_dependents_skipped_graph": 0,
+  "impacted_dependents_skipped_naive": 3,
+  "n_repos": 5,
+  "pulled_in_by_impact": [
+    "R1",
+    "R2",
+    "R3"
+  ],
+  "remote_transport_deferred": true,
+  "safe_no_impacted_skipped": true,
+  "skip_rate": 0.4,
+  "skipped": [
+    "R4",
+    "R5"
+  ],
+  "to_run": [
+    "R1",
+    "R2",
+    "R3"
+  ]
+}

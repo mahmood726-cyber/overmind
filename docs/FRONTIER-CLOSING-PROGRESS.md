@@ -288,4 +288,58 @@ map, the fan-out is exact and never skips a transitive dependent. Sequenced **be
 (#4) so the skip-gate respects cross-repo impact. Tests: `test_contract_impact.py` (+6) +
 `test_evals_harness.py` (+1).
 
-## Item #4 — cluster: build or mark deferred — _not started_
+## Item #4 — cluster: codified capability + honestly-deferred transport ✅ landed (pre-merge)
+
+Per §0 of the benchmark, the "multi-node Tailscale cluster" was an **undocumented aspiration** — no
+registry, no dispatch, no remote runner in code. Rather than leave it as an unbacked claim, it is now
+a **codified capability** with the remote transport **explicitly marked deferred** (not pretended).
+
+New `overmind/cluster/` package:
+- `NodeRegistry` — declared executor nodes (local now; `register_remote` records intent but binds the
+  **deferred** `RemoteExecutor`).
+- `Dispatcher` — **real** parallel fan-out across local executors (thread pool sized to node
+  parallelism; deterministic sorted output; per-job error isolation).
+- `LocalExecutor` — real in-process executor (works today). `RemoteExecutor` — **raises
+  `NotImplementedError`** with a clear "Tailscale transport deferred" message rather than silently
+  pretending to run remotely.
+- `DeltaSkipGate` — content-hash gate that skips repos unchanged since their last green verdict,
+  **routing the changed set through the #3d `ContractImpactGraph`** so a repo whose cross-repo
+  dependency changed is **never** skipped.
+
+New eval `evals/cluster_delta_skip.py` (shared module M changes; R1,R2 consume M; R3 depends on R1;
+R4,R5 independent — all repo contents unchanged):
+
+| Metric | Result |
+|--------|--------|
+| **safe skip rate** (work saved) | **40 %** (R4,R5 skipped) |
+| **impacted dependents skipped (graph gate)** | **0** — *safety bar met* |
+| impacted dependents skipped (naive hash-only) | **3** (would unsafely skip R1,R2,R3) |
+| real parallel dispatch over to-run set | **3/3 results, 0 errors** |
+| remote transport deferred (raises, not pretended) | **True** |
+
+**Honest scope (the whole point of #4):** the **local** capability is real and measured — node
+registry, parallel dispatch, and a *safe* delta-skip that respects cross-repo impact. The **multi-node
+Tailscale transport is DEFERRED**: the `Executor` interface is in place so an `SSHExecutor`/
+`HTTPExecutor` can land without touching the dispatcher or gate, and `RemoteExecutor` fails loudly
+until it does. This converts an undocumented claim into "codified + measured locally, transport
+honestly pending." Tests: `test_cluster.py` (+9) + `test_evals_harness.py` (+1).
+
+---
+
+## Summary — all measured deltas (one table)
+
+| Item | Eval | Before → After |
+|------|------|----------------|
+| #2c family quorum | `quorum_decorrelation` | overcount **100 % → 0 %** |
+| #2a cost routing | `engine_routing` | quorum invocation **100 % → 50 %** (acc 100 %=100 %) |
+| #2b CoT default | `judge_cot_goldenset` | no-regression gate **True** (OFF → ON) |
+| #2d injection guard | `judge_masterkey` | injection-boundary **50 % → 0 %** |
+| #3a claim graph | `memory_retraction` | transitive recall **33 % → 100 %** |
+| #3c tracing | `verdict_tracing` | span coverage **0 % → 100 %** |
+| #3b sandbox policy | `sandbox_policy` | untrusted-un-isolated-pass **100 % → 0 %** |
+| #3d cross-repo impact | `contract_impact` | impact recall **67 % → 100 %** |
+| #4 cluster delta-skip | `cluster_delta_skip` | **40 %** safe skip, **0** impacted skipped (naive: 3) |
+
+Every number is produced by `python -m evals.run_all`. Honest limits (saturated fixtures, heuristic
+estimates, policy-not-microVM, explicit-map-not-auto-discovery, deferred remote transport) are
+documented per item above and never papered over.

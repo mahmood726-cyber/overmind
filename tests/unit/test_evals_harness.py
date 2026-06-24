@@ -14,6 +14,7 @@ If a future change loosens any of these, a test here fails — by design.
 from __future__ import annotations
 
 from evals import (
+    cluster_delta_skip,
     contract_impact,
     engine_routing,
     judge_cot_goldenset,
@@ -147,3 +148,17 @@ def test_contract_impact_selects_all_transitive_dependents():
     assert payload["no_dependent_skipped"] is True
     assert payload["independent_not_selected"] is True
     assert payload["missed_by_graph"] == []
+
+
+def test_cluster_delta_skip_saves_work_without_skipping_impacted():
+    payload = cluster_delta_skip.evaluate()
+    # Some repos are safely skipped (work saved)...
+    assert payload["skip_rate"] > 0.0
+    # ...but ZERO impacted dependents are skipped (safety), while a naive hash-only
+    # gate would have unsafely skipped them.
+    assert payload["safe_no_impacted_skipped"] is True
+    assert payload["impacted_dependents_skipped_graph"] == 0
+    assert payload["impacted_dependents_skipped_naive"] > 0
+    # Real parallel dispatch ran every to-run job; remote transport is deferred.
+    assert payload["dispatch_results"] == payload["dispatched"]
+    assert payload["remote_transport_deferred"] is True
