@@ -1,6 +1,6 @@
 {
   "_meta": {
-    "generated_at": "2026-06-24T21:59:40+00:00"
+    "generated_at": "2026-06-24T22:36:00+00:00"
   },
   "evals": {
     "engine_routing": {
@@ -19,7 +19,9 @@
     "judge_masterkey": {
       "degenerate_false_pass_rate": 0.0,
       "genuine_accuracy": 1.0,
-      "injection_boundary_false_pass_rate": 0.5
+      "injection_boundary_false_pass_rate": 0.0,
+      "injection_clean_boundary_false_pass_rate": 1.0,
+      "injection_signature_false_pass_rate": 0.0
     },
     "memory_recall": {
       "expired_fact_suppressed": true,
