@@ -1,0 +1,64 @@
+{
+  "_meta": {
+    "generated_at": "2026-06-24T21:10:19+00:00"
+  },
+  "eval": "memory_recall",
+  "expired_probe": {
+    "expired_fact_suppressed": true,
+    "query": "nightly token budget",
+    "returned_ids": []
+  },
+  "n_supersession_probes": 4,
+  "naive_baseline_note": "naive_stale_leak_rate = fraction of probes where an FTS search WITHOUT the active+temporal filter returns the superseded fact. Superseded facts share title/keywords with the current one, so a high naive leak vs a low real stale-leak shows the temporal filter (not keyword mismatch) is doing the suppression.",
+  "naive_stale_leak_rate": 1.0,
+  "precision": 1.0,
+  "probes": [
+    {
+      "current_recalled": true,
+      "naive_would_leak_stale": true,
+      "query": "PairwisePro suite runtime seconds",
+      "returned_ids": [
+        "mem_pp_new"
+      ],
+      "stale_leaked": false,
+      "top1_is_current": true,
+      "topic": "pairwisepro_runtime"
+    },
+    {
+      "current_recalled": true,
+      "naive_would_leak_stale": true,
+      "query": "MetaAudit deploy target",
+      "returned_ids": [
+        "mem_dt_new"
+      ],
+      "stale_leaked": false,
+      "top1_is_current": true,
+      "topic": "deploy_target"
+    },
+    {
+      "current_recalled": true,
+      "naive_would_leak_stale": true,
+      "query": "portfolio project count",
+      "returned_ids": [
+        "mem_pc_new"
+      ],
+      "stale_leaked": false,
+      "top1_is_current": true,
+      "topic": "portfolio_count"
+    },
+    {
+      "current_recalled": true,
+      "naive_would_leak_stale": true,
+      "query": "CertBundle default signer",
+      "returned_ids": [
+        "mem_cs_new"
+      ],
+      "stale_leaked": false,
+      "top1_is_current": true,
+      "topic": "certbundle_signer"
+    }
+  ],
+  "recall": 1.0,
+  "stale_suppression_rate": 1.0,
+  "top1_is_current_rate": 1.0
+}
