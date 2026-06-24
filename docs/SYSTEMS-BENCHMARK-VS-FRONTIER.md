@@ -2,7 +2,7 @@
 
 **Date:** 2026-06-24
 **Author:** evidence-grounded benchmark (Claude Code) for Mahmood
-**Method:** read our actual code (`F:\overmind`, `F:\Sentinel`, `F:\Beast`, agent memory) + the
+**Method:** read our actual code (the `overmind`, `Sentinel`, `Beast` repos + agent memory) + the
 [AI-FRONTIER-ADOPTION.md](AI-FRONTIER-ADOPTION.md) survey, then web-searched current (mid-2026)
 public agentic-engineering work. Every "ahead/parity/behind" call is justified against **what our
 code does today**, not what it aspires to.
@@ -17,7 +17,7 @@ code does today**, not what it aspires to.
 ## 0. The single most important honesty flag (read first)
 
 **The "multi-node Tailscale cluster" does not exist in any readable form.** A full-text search across
-`F:\overmind`, `F:\Beast`, `F:\Sentinel`, `C:\Users\mahmo\.claude\` (CLAUDE.md, AGENTS.md,
+the `overmind`, `Beast`, `Sentinel` repos, the Claude config dir (`~/.claude/`: CLAUDE.md, AGENTS.md,
 LIVE_CONTEXT.md, rules/) and the agent memory dir for `tailscale | cluster | multi-node | worker |
 distributed | remote runner | fleet` returned **no topology, no node count, no deploy script, no
 remote-runner code**. Overmind today is a **single-process, single-machine, sequential nightly

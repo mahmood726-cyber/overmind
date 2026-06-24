@@ -34,7 +34,7 @@ Command: `python -m evals.run_all` → `evals/results/summary.json`.
 
 ### Honest reading of the baseline
 
-- **What's genuinely strong & now *proven* (not asserted):** the degenerate-guard (0 % false-PASS),
+- **What's genuinely strong & now *measured on the fixture set* (not asserted):** the degenerate-guard (0 % false-PASS),
   the held-out-baseline reward-hack defense (100 % catch of the 5 the visible-only verifier misses),
   and the temporal-memory suppression (100 % stale-suppression vs 100 % naive leak — the filter, not
   keyword luck, is doing the work). These three were "robust by construction"; they are now **robust
@@ -107,7 +107,7 @@ real saving scales with the true local:quorum cost ratio, so we lead with the in
 the dollar number.
 
 **Honest scope:** the eval uses scripted cheap/expensive verdicts (deterministic, offline) — it
-proves the *routing logic* cuts invocations without losing accuracy on a labelled set; it does not
+shows the *routing logic* cuts invocations without losing accuracy on a labelled set; it does not
 measure a live local model's real confidence calibration (that needs an online run). Tests:
 `tests/unit/test_judge_factory.py` (+5) + `test_evals_harness.py` (+1).
 
@@ -129,7 +129,7 @@ Golden-set gate (CoT **off** vs **on**, same labelled judge outputs):
 
 With the gate green, `_cot_enabled()` now defaults **ON** (`OVERMIND_JUDGE_COT=0` to opt out).
 
-**Honest scope (important):** this gate proves CoT is **safe** to enable — the prompt change is
+**Honest scope (important):** this gate shows CoT is **safe** to enable — the prompt change is
 parse-invariant, the degenerate guard still holds, and the output contract the parser depends on is
 intact. It does **NOT** measure CoT's reasoning-quality *improvement*: the StubBackend ignores the
 prompt, so a `quality_delta_measured=False` flag is carried in the result on purpose. The expected
