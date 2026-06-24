@@ -37,3 +37,58 @@ def test_consolidate_apply_noop_reports_cleanly(tmp_path):
     report = fi.cmd_consolidate(roots=[tmp_path], apply=True)
     assert report["archived"] == []
     assert "nothing expired or stale" in report["note"]
+
+
+# ── Temporal validity: valid_from / superseded_by (A5) ──────────────
+
+
+def test_superseded_fact_not_surfaced_as_current(tmp_path):
+    _write(tmp_path / "old.md", "old-fact", "  type: project\n  superseded_by: new-fact\n")
+    _write(tmp_path / "new.md", "new-fact", "  type: project\n")
+    payload = fi.cmd_recall("fact", k=5, roots=[tmp_path])
+    current_slugs = [r["slug"] for r in payload["results"]]
+    historical_slugs = [r["slug"] for r in payload["historical"]]
+    assert "new-fact" in current_slugs
+    assert "old-fact" not in current_slugs
+    assert "old-fact" in historical_slugs
+    # The historical entry explains why.
+    reason = next(r["reason"] for r in payload["historical"] if r["slug"] == "old-fact")
+    assert "superseded_by new-fact" in reason
+
+
+def test_valid_from_in_future_not_current(tmp_path):
+    _write(tmp_path / "future.md", "future-fact", "  type: project\n  valid_from: 2999-01-01\n")
+    _write(tmp_path / "now.md", "now-fact", "  type: project\n")
+    payload = fi.cmd_recall("fact", k=5, roots=[tmp_path])
+    current_slugs = [r["slug"] for r in payload["results"]]
+    historical_slugs = [r["slug"] for r in payload["historical"]]
+    assert "now-fact" in current_slugs
+    assert "future-fact" not in current_slugs
+    assert "future-fact" in historical_slugs
+
+
+def test_valid_from_in_past_is_current(tmp_path):
+    _write(tmp_path / "active.md", "active-fact", "  type: project\n  valid_from: 2020-01-01\n")
+    payload = fi.cmd_recall("fact", k=5, roots=[tmp_path])
+    assert "active-fact" in [r["slug"] for r in payload["results"]]
+
+
+def test_fieldless_files_always_current_backcompat(tmp_path):
+    # No valid_from / valid_until / superseded_by → always current.
+    _write(tmp_path / "plain.md", "plain-fact", "  type: project\n")
+    assert fi.is_current({}) is True
+    payload = fi.cmd_recall("fact", k=5, roots=[tmp_path])
+    assert "plain-fact" in [r["slug"] for r in payload["results"]]
+    assert payload["historical"] == []
+
+
+def test_is_current_helper_matrix():
+    assert fi.is_current({}) is True
+    assert fi.is_current({"superseded_by": "x"}) is False
+    assert fi.is_current({"superseded_by": "  "}) is True  # blank = not superseded
+    assert fi.is_current({"valid_from": "2999-01-01"}) is False
+    assert fi.is_current({"valid_from": "2000-01-01"}) is True
+    assert fi.is_current({"valid_until": "2000-01-01"}) is False
+    assert fi.is_current({"valid_until": "2999-01-01"}) is True
+    # Malformed dates are ignored (treated as current, not crash).
+    assert fi.is_current({"valid_from": "not-a-date"}) is True

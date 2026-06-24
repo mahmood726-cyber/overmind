@@ -5,7 +5,15 @@ from __future__ import annotations
 import sys
 
 from overmind.storage.models import ProjectRecord, TaskRecord, VerificationResult
-from overmind.verification.llm_judge import GeminiBackend, JudgeVerdict, LLMJudge, StubBackend, SubprocessBackend, _parse_csv
+from overmind.verification.llm_judge import (
+    GeminiBackend,
+    JudgeVerdict,
+    LLMJudge,
+    StubBackend,
+    SubprocessBackend,
+    _parse_csv,
+    degenerate_response_reason,
+)
 from overmind.verification.compound_judge import CompoundJudge, JudgeStep
 
 
@@ -120,6 +128,72 @@ def test_parse_verdict_handles_garbage_response():
     assert verdict.confidence == 0.0
     assert "judge_error" in verdict.concerns
     assert "judge_parse_error" in verdict.concerns
+
+
+# ── Degenerate / master-key output guard (arXiv:2507.08794) ─────────
+
+
+def test_degenerate_reason_detects_each_case():
+    # empty / whitespace-only
+    assert degenerate_response_reason("") is not None
+    assert degenerate_response_reason("   \n\t  ") is not None
+    # punctuation / markup only
+    assert degenerate_response_reason(":") is not None
+    assert degenerate_response_reason("...") is not None
+    assert degenerate_response_reason("``` ```") is not None
+    # generic filler with no verdict token
+    assert degenerate_response_reason("Let's solve this step by step.") is not None
+    assert degenerate_response_reason("Sure, I'll help with that.") is not None
+
+
+def test_degenerate_reason_passes_through_real_and_ordinary_replies():
+    # A genuine verdict is never flagged as degenerate.
+    assert degenerate_response_reason("VERDICT: PASS\nCONFIDENCE: 0.9") is None
+    assert degenerate_response_reason("VERDICT: FAIL\nREASONING: missing tests") is None
+    # A filler-opener that still carries a verdict token is a real verdict.
+    assert degenerate_response_reason("Let me check.\nVERDICT: PASS\nCONFIDENCE: 0.8") is None
+    # An ordinary unparseable reply is left to the parser (keeps judge_parse_error).
+    assert degenerate_response_reason("I don't understand the format") is None
+
+
+def _degenerate_verdict(response: str) -> JudgeVerdict:
+    return LLMJudge(backend=StubBackend(response=response)).judge(_task(), _project(), _result())
+
+
+def test_empty_response_does_not_pass():
+    verdict = _degenerate_verdict("")
+    assert verdict.passed is False
+    assert verdict.confidence == 0.0
+    assert "judge_error" in verdict.concerns
+    assert "judge_degenerate" in verdict.concerns
+
+
+def test_whitespace_only_response_does_not_pass():
+    verdict = _degenerate_verdict("   \n\t   ")
+    assert verdict.passed is False
+    assert "judge_degenerate" in verdict.concerns
+
+
+def test_punctuation_only_response_does_not_pass():
+    verdict = _degenerate_verdict(":")
+    assert verdict.passed is False
+    assert "judge_degenerate" in verdict.concerns
+
+
+def test_filler_boilerplate_without_verdict_does_not_pass():
+    verdict = _degenerate_verdict("Let's solve this step by step.")
+    assert verdict.passed is False
+    assert "judge_degenerate" in verdict.concerns
+    # Must NOT be a silent low-confidence pass.
+    assert verdict.confidence == 0.0
+
+
+def test_real_pass_still_parses_after_guard():
+    """Regression: the guard must not eat a legitimate PASS that opens with filler."""
+    verdict = _degenerate_verdict("Let me think.\nVERDICT: PASS\nCONFIDENCE: 0.95\nREASONING: ok")
+    assert verdict.passed is True
+    assert "judge_degenerate" not in verdict.concerns
+    assert verdict.confidence >= 0.9
 
 
 def test_parse_csv_filters_none():

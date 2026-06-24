@@ -30,6 +30,7 @@ from __future__ import annotations
 
 import logging
 import os
+from dataclasses import dataclass, field
 from typing import Callable
 
 from overmind.verification.llm_judge import (
@@ -63,6 +64,74 @@ KNOWN_ENGINES = frozenset(ENGINE_BUILDERS)
 
 DEFAULT_ENGINE_CHAIN = ("claude", "gemini")
 
+# Map each engine to its underlying model family. Judges in the SAME family share
+# correlated failure modes, so they do not count as independent votes (audit A2 /
+# arXiv:2605.29800 "Nine Judges, Two Effective Votes"). agy and gemini are both
+# Google/Gemini; codex (both seats) is OpenAI; claude is Anthropic.
+ENGINE_FAMILY: dict[str, str] = {
+    "claude": "anthropic",
+    "codex": "openai",
+    "codex-noreen": "openai",
+    "agy": "google",
+    "gemini": "google",
+    "local": "local",
+    "stub": "stub",
+}
+
+# Each extra judge beyond the first in a family adds only a small fraction of an
+# independent vote (diminishing, correlated). Heuristic, not a calibrated number —
+# it exists to make over-counted panels visible, not to be precise.
+_REDUNDANT_VOTE_WEIGHT = 0.25
+
+
+@dataclass(slots=True)
+class EffectiveVotes:
+    """Independence estimate for a quorum panel."""
+    nominal: int                       # how many judges
+    distinct_families: int             # how many independent model families
+    families: dict[str, int] = field(default_factory=dict)  # family -> count
+    effective_votes: float = 0.0       # decorrelated estimate
+    warning: str | None = None         # set when the panel over-counts independence
+
+
+def family_for_engine(engine: str) -> str:
+    """Model family for an engine name (unknown engines map to their own name)."""
+    return ENGINE_FAMILY.get(engine.strip().lower(), engine.strip().lower())
+
+
+def estimate_effective_votes(engines: list[str]) -> EffectiveVotes:
+    """Estimate how many *independent* votes a quorum of these engines really has.
+
+    Same-family judges share correlated errors, so a 3-engine quorum that is all
+    Claude is ~1 effective vote, not 3. Returns the nominal count, the distinct
+    family count, the per-family breakdown, a (heuristic) effective-vote estimate,
+    and a warning string when nominal overstates independence.
+    """
+    families: dict[str, int] = {}
+    for e in engines:
+        fam = family_for_engine(e)
+        families[fam] = families.get(fam, 0) + 1
+    nominal = len(engines)
+    distinct = len(families)
+    redundant = nominal - distinct
+    effective = distinct + _REDUNDANT_VOTE_WEIGHT * redundant
+    warning = None
+    if nominal > 1 and distinct < nominal:
+        warning = (
+            f"quorum of {nominal} judges spans only {distinct} model "
+            f"{'family' if distinct == 1 else 'families'} ({families}); "
+            f"same-family judges share correlated failure modes, so this is "
+            f"~{effective:.1f} effective independent votes — do not treat it as "
+            f"{nominal} independent checks. Prefer different-family engines."
+        )
+    return EffectiveVotes(
+        nominal=nominal,
+        distinct_families=distinct,
+        families=families,
+        effective_votes=effective,
+        warning=warning,
+    )
+
 
 def build_backend(engine: str) -> object:
     """Build a single backend by engine name (raises KeyError if unknown)."""
@@ -89,12 +158,15 @@ def build_judge(
     spec: str | None = None,
     mode: str | None = None,
     transcript_window: int = 80,
+    use_cot: bool | None = None,
 ) -> LLMJudge | QuorumJudge:
     """Construct the judge from an engine spec + mode.
 
     spec  : engine names (defaults to env OVERMIND_JUDGE_ENGINE, then the
             default chain). mode: "fallback" (default) or "quorum"
-            (defaults to env OVERMIND_JUDGE_MODE).
+            (defaults to env OVERMIND_JUDGE_MODE). use_cot: enable the
+            CoT + rubric prompt (defaults to env OVERMIND_JUDGE_COT; None lets
+            each LLMJudge read the env itself).
     """
     if spec is None:
         spec = os.environ.get("OVERMIND_JUDGE_ENGINE")
@@ -105,13 +177,32 @@ def build_judge(
     engines = _parse_engine_spec(spec)
 
     if mode == "quorum" and len(engines) > 1:
-        judges = [LLMJudge(backend=build_backend(e), transcript_window=transcript_window) for e in engines]
-        logger.info("LLM judge: quorum over %s", engines)
-        return QuorumJudge(judges=judges)
+        judges = [
+            LLMJudge(backend=build_backend(e), transcript_window=transcript_window, use_cot=use_cot)
+            for e in engines
+        ]
+        effective = estimate_effective_votes(engines)
+        if effective.warning:
+            logger.warning("LLM judge quorum: %s", effective.warning)
+        logger.info(
+            "LLM judge: quorum over %s (%d engines, ~%.1f effective independent votes across %d families)",
+            engines, len(engines), effective.effective_votes, effective.distinct_families,
+        )
+        return QuorumJudge(
+            judges=judges,
+            nominal_votes=effective.nominal,
+            effective_votes=effective.effective_votes,
+            distinct_families=effective.distinct_families,
+            panel_warning=effective.warning,
+        )
 
     # Fallback chain (also the single-engine path: a 1-element chain still gets
     # the FallbackBackend wrapper so availability gating + clean degradation
     # apply uniformly).
     backends = [build_backend(e) for e in engines]
     logger.info("LLM judge: fallback chain %s", engines)
-    return LLMJudge(backend=FallbackBackend(backends=backends), transcript_window=transcript_window)
+    return LLMJudge(
+        backend=FallbackBackend(backends=backends),
+        transcript_window=transcript_window,
+        use_cot=use_cot,
+    )

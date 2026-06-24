@@ -158,6 +158,118 @@ def test_fallback_to_secondary_warns(caplog):
     assert any("fell back" in r.message or "fell back" in r.getMessage() for r in caplog.records)
 
 
+# ── CoT + rubric prompt toggle (A3) ─────────────────────────────────
+
+
+def test_cot_off_by_default_uses_base_prompt():
+    judge = jf.build_judge(spec="stub")
+    assert judge.use_cot is False
+
+
+def test_cot_enabled_via_param():
+    judge = jf.build_judge(spec="stub", use_cot=True)
+    assert judge.use_cot is True
+
+
+def test_cot_enabled_via_env(monkeypatch):
+    monkeypatch.setenv("OVERMIND_JUDGE_COT", "1")
+    judge = jf.build_judge(spec="stub")
+    assert judge.use_cot is True
+
+
+def test_cot_prompt_contains_rubric_and_reasoning():
+    from overmind.storage.models import ProjectRecord, TaskRecord, VerificationResult
+
+    backend = StubBackend()
+    judge = LLMJudge(backend=backend, use_cot=True)
+    task = TaskRecord(
+        task_id="t1", project_id="p1", title="do a thing", task_type="verification",
+        source="auto", priority=0.8, risk="medium", expected_runtime_min=5,
+        expected_context_cost="low", required_verification=["tests pass"],
+    )
+    project = ProjectRecord(project_id="p1", name="proj", root_path="C:\\tmp\\p")
+    vr = VerificationResult(task_id="t1", success=True, required_checks=["tests"],
+                            completed_checks=["tests"], skipped_checks=[], details=[])
+    judge.judge(task, project, vr)
+    assert backend.last_prompt is not None
+    assert "Think step by step" in backend.last_prompt
+    assert "RELEVANCE" in backend.last_prompt and "EVIDENCE" in backend.last_prompt
+    # The structured output contract must remain so _parse_verdict still works.
+    assert "VERDICT: PASS or FAIL" in backend.last_prompt
+
+
+def test_quorum_propagates_cot_flag():
+    judge = jf.build_judge(spec="stub,gemini,claude", mode="quorum", use_cot=True)
+    assert isinstance(judge, QuorumJudge)
+    assert all(j.use_cot for j in judge.judges)
+
+
+# ── effective-vote / different-family decorrelation (A2) ─────────────
+
+
+def test_same_family_quorum_flags_low_effective_votes():
+    # claude (anthropic) + codex (openai) + codex-noreen (openai): 3 nominal,
+    # 2 families → fewer effective votes than nominal.
+    ev = jf.estimate_effective_votes(["claude", "codex", "codex-noreen"])
+    assert ev.nominal == 3
+    assert ev.distinct_families == 2
+    assert ev.effective_votes < ev.nominal
+    assert ev.warning is not None
+
+
+def test_all_same_family_quorum_warns_hardest():
+    ev = jf.estimate_effective_votes(["claude", "claude", "claude"])
+    assert ev.distinct_families == 1
+    assert ev.effective_votes < 3
+    assert "correlated" in ev.warning
+
+
+def test_all_different_families_no_warning():
+    # claude (anthropic) + gemini (google) + local (local): fully decorrelated.
+    ev = jf.estimate_effective_votes(["claude", "gemini", "local"])
+    assert ev.distinct_families == 3
+    assert ev.effective_votes == 3
+    assert ev.warning is None
+
+
+def test_agy_and_gemini_are_same_family():
+    # Both ride Google/Gemini — must not be counted as independent.
+    assert jf.family_for_engine("agy") == jf.family_for_engine("gemini")
+    ev = jf.estimate_effective_votes(["agy", "gemini"])
+    assert ev.distinct_families == 1
+    assert ev.warning is not None
+
+
+def test_quorum_verdict_carries_effective_votes(caplog):
+    import logging
+    from overmind.storage.models import ProjectRecord, TaskRecord, VerificationResult
+
+    with caplog.at_level(logging.WARNING, logger="overmind.verification.judge_factory"):
+        judge = jf.build_judge(spec="claude,codex,codex-noreen", mode="quorum")
+    # Build-time warning fired about correlated panel.
+    assert any("effective" in r.getMessage() or "correlated" in r.getMessage()
+               for r in caplog.records)
+    assert judge.nominal_votes == 3
+    assert judge.effective_votes < 3
+    assert judge.distinct_families == 2
+
+    # Swap the live backends for deterministic stubs so the verdict is offline.
+    for j in judge.judges:
+        j.backend = StubBackend()
+    task = TaskRecord(
+        task_id="t1", project_id="p1", title="x", task_type="verification",
+        source="auto", priority=0.8, risk="medium", expected_runtime_min=5,
+        expected_context_cost="low", required_verification=["tests"],
+    )
+    project = ProjectRecord(project_id="p1", name="proj", root_path="C:\\tmp\\p")
+    vr = VerificationResult(task_id="t1", success=True, required_checks=["tests"],
+                            completed_checks=["tests"], skipped_checks=[], details=[])
+    verdict = judge.judge(task, project, vr)
+    assert verdict.nominal_votes == 3
+    assert verdict.effective_votes < 3
+    assert "quorum_correlated_panel" in verdict.concerns
+
+
 # ── end-to-end through LLMJudge.judge (no live call) ────────────────
 
 
