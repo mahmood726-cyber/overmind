@@ -343,3 +343,63 @@ honestly pending." Tests: `test_cluster.py` (+9) + `test_evals_harness.py` (+1).
 Every number is produced by `python -m evals.run_all`. Honest limits (saturated fixtures, heuristic
 estimates, policy-not-microVM, explicit-map-not-auto-discovery, deferred remote transport) are
 documented per item above and never papered over.
+
+---
+
+## Item #5 — Cross-engine corroboration + backend hardening (2026-06-25)
+
+### Auth status (real exec, not --version)
+
+| Engine | Family | Available (binary+dir) | Live query result | Notes |
+|--------|--------|----------------------|-------------------|-------|
+| claude | anthropic | ✅ | ❌ JUDGE_ERROR: exit 1 | No `ANTHROPIC_API_KEY` in this session; OAuth can't be subprocessed |
+| agy (Gemini flash) | google | ✅ | ✅ Returns 'PASS' | Daemon pid=20420; responds in ~4–8s |
+| codex (mahmood726) | openai | ✅ | ❌ TimeoutExpired (cmd /c fix works; 401 hangs) | Both seats expired — need interactive re-auth |
+| codex-noreen | openai | ✅ (dir exists) | ❌ Same 401 | |
+
+**Quorum build:** `['claude','agy','codex']` → families `['anthropic','google','openai']`,
+`effective_votes=3.0`, `distinct_families=3`. Configuration is correct; runtime auth is partially
+blocked.
+
+**Action required for full quorum:** run `CODEX_HOME=~/.codex codex` and
+`CODEX_HOME=~/.codex-noreen codex` interactively to trigger browser OAuth re-login. For claude in
+subprocess, set `ANTHROPIC_API_KEY` in the shell where Overmind runs.
+
+### Backend fixes landed (commit `edfc9e0`)
+
+| Fix | File | What changed |
+|-----|------|-------------|
+| **ANTHROPIC_API_KEY allowlisted** | `subprocess_utils.py` | Added `ANTHROPIC_API_KEY` + `AGY_DRIVER_PATH` to `SAFE_ENV_ALLOWLIST` so the claude CLI can inherit auth when the user has the key set |
+| **Windows .CMD execution** | `judge_backends.py` | `CodexBackend.query()` now detects `.CMD`/`.BAT` resolved executables and wraps them with `['cmd','/c']`, fixing `FileNotFoundError: [WinError 2]` on Windows |
+| All 58 unit tests pass | — | No regressions |
+
+### Methods cross-engine corroboration
+
+**AdaptShrink-NMA Phase 2 (B + C):**
+
+| Verifier | B1 max\|TE diff\| | B2 beta (smoking) | C Q_inc diff (tau²=0) | Verdict |
+|----------|-------------------|-------------------|-----------------------|---------|
+| R netmeta | — | reference | — | ✅ reference |
+| this engine | ~1e-15 | = | ~1e-13 | ✅ (test) |
+| Claude Sonnet 4.6 (independent) | **4.8–5e-11** | **−1.369127** (exact) | **3–8e-13** | **✅ PASS** |
+| Codex seats | — | — | — | ❌ blocked (401) |
+| agy/Gemini | — | — | — | ❌ blocked (PLANNER_RESPONSE stall) |
+
+See `nma/verify/claude_phase2_nma.py` + `claude_phase2_RESULT.md` (commit `6de1377`).
+
+**AdaptShrink-DTA Phase 2 (HSROC GLMM):**
+
+| Verifier | all_mine_le_glmer | worst Se/Sp vs glmer | Verdict |
+|----------|-------------------|----------------------|---------|
+| ubcma.dta.reitsma | ✅ | 9.06e-7 | ✅ |
+| Codex mahmood726 | ✅ | 9.03e-7 | ✅ |
+| Codex noreenahmad01 | ✅ | 9.07e-7 | ✅ |
+| agy/Gemini (41-node GH, multi-start) | **✅ True** | **3.29e-2** | **✅ PASS** |
+
+Note: agy's larger Se/Sp difference (~3.3 %) vs codex's (~9e-7) is expected — the exact 41-node GH
+likelihood has different curvature than glmer's Laplace approximation, so the MLE is slightly
+different. The deviance check (`nll_mine ≤ nll_glmer`) is the authoritative criterion and passes.
+Previous report entry `agy: 9.07e-7` was an error (duplicated codex_noreen value from a stalled run);
+corrected in commit `b7ab50f`.
+
+See `truth-recovery-dta/verify_hsroc_agy.py` + `verify_hsroc_agy_result.json`.
