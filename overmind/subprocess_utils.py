@@ -24,6 +24,15 @@ SAFE_ENV_ALLOWLIST = frozenset({
     "LANG", "LC_ALL", "LC_CTYPE",
     "PYTHONIOENCODING", "PYTHONUTF8",
     "VIRTUAL_ENV",
+    # Auth env vars for subprocess judge backends:
+    # ANTHROPIC_API_KEY is required for `claude -p` when running outside an
+    # interactive Claude Code session.  It is explicitly allow-listed so the
+    # ClaudeCodeBackend inherits it when the user has it set; it is never
+    # written to logs (secret scrubbing in the logger is the caller's concern).
+    "ANTHROPIC_API_KEY",
+    # AGY_DRIVER_PATH lets the deployer override the agy driver location without
+    # relying on the default ~/agy-driver path.
+    "AGY_DRIVER_PATH",
 })
 
 

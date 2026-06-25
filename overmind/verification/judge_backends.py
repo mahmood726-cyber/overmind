@@ -30,6 +30,7 @@ import logging
 import os
 import shutil
 import subprocess
+import sys
 from dataclasses import dataclass
 from pathlib import Path
 from typing import Callable
@@ -114,7 +115,12 @@ class CodexBackend:
         return shutil.which(self.command) is not None and self._codex_home().is_dir()
 
     def query(self, prompt: str) -> str:
-        argv = [self.command, "exec", "--skip-git-repo-check", "--sandbox", "read-only", "-"]
+        cmd = shutil.which(self.command) or self.command
+        argv = [cmd, "exec", "--skip-git-repo-check", "--sandbox", "read-only", "-"]
+        # On Windows, .CMD / .BAT files cannot be executed directly by subprocess
+        # without shell=True.  Wrap with `cmd /c` so the runner stays shell=False.
+        if sys.platform == "win32" and cmd.upper().endswith((".CMD", ".BAT")):
+            argv = ["cmd", "/c"] + argv
         return self.runner(argv, prompt, {"CODEX_HOME": str(self._codex_home())}, self.timeout)
 
 
