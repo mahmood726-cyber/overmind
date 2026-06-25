@@ -1,0 +1,36 @@
+{
+  "_comment": "Seed cluster topology. Capabilities here are DECLARED; the health prober refreshes engines/cores/load live (see docs/CLUSTER.md). Data volumes are config-trusted. ssh_key_path supports ~ and env-var expansion so it stays portable. Verified on pc2 2026-06-25: ubcma + finerenone repo present, AACT NOT present on pc2, 4 cores / 17 GB. Copy to <data>/cluster/nodes.json and edit, or use `overmind cluster add-node`.",
+  "local_node": "pc2",
+  "nodes": [
+    {
+      "name": "pc2",
+      "kind": "local",
+      "max_parallel": 4,
+      "hostname": "pc2",
+      "tailscale_ip": "100.90.160.4",
+      "ssh_user": "mahmo",
+      "ssh_key_path": "~/.ssh/node2_ed25519",
+      "capabilities": {
+        "engines": ["claude", "agy"],
+        "data_volumes": ["ubcma", "finerenone"],
+        "cores": 4,
+        "ram_gb": 17.0
+      }
+    },
+    {
+      "name": "mahmood",
+      "kind": "remote",
+      "max_parallel": 4,
+      "hostname": "mahmood",
+      "tailscale_ip": "100.80.183.43",
+      "ssh_user": "mahmo",
+      "ssh_key_path": "~/.ssh/node2_ed25519",
+      "capabilities": {
+        "engines": [],
+        "data_volumes": [],
+        "cores": 0,
+        "ram_gb": 0.0
+      }
+    }
+  ]
+}

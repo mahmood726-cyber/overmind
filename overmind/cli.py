@@ -349,6 +349,35 @@ def build_parser() -> argparse.ArgumentParser:
         help="Run the canary fixture through TruthCertEngine to assert the verifier is healthy.",
     )
 
+    # Cluster: node registry + capability-aware job dispatch over Tailscale/SSH.
+    cluster_parser = subparsers.add_parser(
+        "cluster",
+        help="Multi-node verification fleet: list/health/add-node/dispatch (see docs/CLUSTER.md).",
+    )
+    cluster_parser.add_argument("--cluster-config", default=None,
+                                help="Path to nodes.json (default: <data>/cluster/nodes.json, else seed).")
+    cluster_sub = cluster_parser.add_subparsers(dest="cluster_action", required=True)
+
+    cluster_sub.add_parser("list", help="Show declared nodes + live state (read-only).")
+
+    cluster_sub.add_parser("health", help="Probe nodes (ping+ssh+load) and mark online/offline.")
+
+    add_node_p = cluster_sub.add_parser("add-node", help="Authorize key, probe, and register a new node.")
+    add_node_p.add_argument("--name", required=True)
+    add_node_p.add_argument("--host", required=True, help="hostname or Tailscale IP")
+    add_node_p.add_argument("--user", required=True, help="SSH user")
+    add_node_p.add_argument("--ip", default=None, help="Tailscale IP (defaults to --host)")
+    add_node_p.add_argument("--key", required=True, help="SSH private key path (public key path + .pub)")
+    add_node_p.add_argument("--max-parallel", type=int, default=4)
+    add_node_p.add_argument("--engine", action="append", default=[], help="declared authed engine (repeatable)")
+    add_node_p.add_argument("--data", action="append", default=[], help="declared data volume tag (repeatable)")
+    add_node_p.add_argument("--no-authorize", action="store_true",
+                            help="skip pushing the public key (node already trusts it)")
+
+    dispatch_p = cluster_sub.add_parser("dispatch", help="Schedule jobs (JSON) across online nodes.")
+    dispatch_p.add_argument("--jobs", required=True, help="JSON file: list of {repo,needs_engines,needs_data,command}")
+    dispatch_p.add_argument("--no-health", action="store_true", help="skip the pre-dispatch health probe")
+
     # Watch-fs: poll indexed projects for file changes and queue verification.
     watch_fs_parser = subparsers.add_parser(
         "watch-fs",
@@ -438,6 +467,10 @@ def main(argv: list[str] | None = None) -> int:
     if args.command == "nma-check":
         from overmind.intelligence.nma_check import check_json
         return _emit_payload(check_json(args.spec))
+
+    if args.command == "cluster":
+        from overmind.cluster.cli_cluster import dispatch as cluster_dispatch
+        return _emit_payload(cluster_dispatch(args))
 
     config = AppConfig.from_directory(
         config_dir=args.config_dir,

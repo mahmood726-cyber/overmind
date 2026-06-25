@@ -15,6 +15,7 @@ from __future__ import annotations
 
 from evals import (
     cluster_delta_skip,
+    cluster_dispatch,
     contract_impact,
     engine_routing,
     judge_cot_goldenset,
@@ -159,6 +160,23 @@ def test_cluster_delta_skip_saves_work_without_skipping_impacted():
     assert payload["safe_no_impacted_skipped"] is True
     assert payload["impacted_dependents_skipped_graph"] == 0
     assert payload["impacted_dependents_skipped_naive"] > 0
-    # Real parallel dispatch ran every to-run job; remote transport is deferred.
+    # Real parallel dispatch ran every to-run job; remote SSH transport is real.
     assert payload["dispatch_results"] == payload["dispatched"]
-    assert payload["remote_transport_deferred"] is True
+    assert payload["remote_transport_real"] is True
+
+
+def test_cluster_dispatch_all_guarantees_hold():
+    payload = cluster_dispatch.evaluate()
+    # routing + data-locality
+    assert payload["routing"]["routed_correct_rate"] == 1.0
+    assert payload["routing"]["data_locality_respected"] is True
+    assert payload["routing"]["uncapable_job_unschedulable"] is True
+    # least-loaded balancing
+    assert payload["load_balancing"]["load_balanced_to_idle"] is True
+    # delta-skip safety
+    assert payload["delta_skip"]["safe_no_impacted_skipped"] is True
+    assert payload["delta_skip"]["dispatched_only_to_run"] is True
+    # requeue on offline node
+    assert payload["requeue"]["work_not_lost"] is True
+    assert payload["requeue"]["alpha_marked_offline"] is True
+    assert payload["all_guarantees_hold"] is True

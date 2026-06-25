@@ -24,7 +24,7 @@ set (works today; the remote Tailscale transport is explicitly DEFERRED — the
 """
 from __future__ import annotations
 
-from overmind.cluster import DeltaSkipGate, Dispatcher, NodeRegistry, RemoteExecutor
+from overmind.cluster import DeltaSkipGate, Dispatcher, NodeRegistry, SSHExecutor, SSHTransport
 from overmind.cluster.registry import Node
 from overmind.verification.contract_impact import ContractImpactGraph
 
@@ -73,12 +73,16 @@ def evaluate() -> dict:
     jobs = [{"repo": r} for r in g.to_run]
     dr = disp.dispatch(jobs, _runner)
 
-    # Remote transport is deferred — confirm it raises rather than pretends.
-    remote_deferred = False
-    try:
-        RemoteExecutor(Node(name="rpi", kind="remote")).run({"repo": "R1"}, _runner)
-    except NotImplementedError:
-        remote_deferred = True
+    # Remote transport is now REAL (was a NotImplementedError stub). Confirm the
+    # SSH executor actually runs a remote command via an injected transport (the
+    # live multi-machine path additionally needs a reachable, key-authorized node).
+    remote_transport_real = False
+    fake_transport = SSHTransport(run_fn=lambda argv, t: (0, '{"repo":"R1","verdict":"PASS"}', ""))
+    node = Node(name="rpi", kind="remote", tailscale_ip="100.0.0.9", ssh_user="u")
+    rout = SSHExecutor(node, transport=fake_transport).run(
+        {"repo": "R1", "command": "python -m pytest -q"}, _runner
+    )
+    remote_transport_real = rout.get("verdict") == "PASS" and rout.get("node") == "rpi"
 
     payload = {
         "eval": "cluster_delta_skip",
@@ -96,7 +100,7 @@ def evaluate() -> dict:
         "dispatched": dr.dispatched,
         "dispatch_results": len(dr.results),
         "dispatch_errors": len(dr.errors),
-        "remote_transport_deferred": remote_deferred,
+        "remote_transport_real": remote_transport_real,
     }
     return payload
 
@@ -113,7 +117,7 @@ def main() -> dict:
           f"-> safe={payload['safe_no_impacted_skipped']}")
     print(f"[cluster_delta_skip] parallel dispatch: {payload['dispatch_results']}/"
           f"{payload['dispatched']} results, {payload['dispatch_errors']} errors; "
-          f"remote transport deferred (raises): {payload['remote_transport_deferred']}")
+          f"remote transport real (SSH executor runs): {payload['remote_transport_real']}")
     print(f"[cluster_delta_skip] -> {path}")
     return payload
 

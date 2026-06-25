@@ -1,13 +1,21 @@
 {
   "_meta": {
-    "generated_at": "2026-06-24T23:12:48+00:00"
+    "generated_at": "2026-06-25T13:48:53+00:00"
   },
   "evals": {
     "cluster_delta_skip": {
       "impacted_dependents_skipped_naive": 3,
-      "remote_transport_deferred": true,
+      "remote_transport_real": true,
       "safe_no_impacted_skipped": true,
       "skip_rate": 0.4
+    },
+    "cluster_dispatch": {
+      "all_guarantees_hold": true,
+      "data_locality_respected": true,
+      "delta_skip_safe_no_impacted_skipped": true,
+      "load_balanced_to_idle": true,
+      "requeue_work_not_lost": true,
+      "routed_correct_rate": 1.0
     },
     "contract_impact": {
       "impact_recall_after": 1.0,
