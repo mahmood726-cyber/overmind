@@ -9,13 +9,22 @@ from overmind.cluster import (
     LocalExecutor,
     NodeRegistry,
     RemoteExecutor,
+    SSHExecutor,
+    SSHTransport,
 )
 from overmind.cluster.registry import Node
+from overmind.cluster.transport import RemoteTransientError, TransportResult, UnsafeCommandError
 from overmind.verification.contract_impact import ContractImpactGraph
 
 
 def _runner(job):
     return {"repo": job["repo"], "verdict": "PASS"}
+
+
+def _fake_transport(returncode=0, stdout='{"verdict": "PASS"}', stderr="", transient=False):
+    def run_fn(argv, timeout):
+        return (returncode, stdout, stderr)
+    return SSHTransport(run_fn=run_fn)
 
 
 # ── registry / executors ────────────────────────────────────────────
@@ -27,9 +36,29 @@ def test_local_executor_runs_job():
     assert out["executor"] == "local"
 
 
-def test_remote_executor_is_deferred():
-    with pytest.raises(NotImplementedError):
-        RemoteExecutor(Node(name="n", kind="remote")).run({"repo": "X"}, _runner)
+def test_ssh_executor_runs_remote_command():
+    node = Node(name="r", kind="remote", tailscale_ip="100.0.0.1", ssh_user="u",
+                ssh_key_path="/k/id_ed25519")
+    ex = SSHExecutor(node, transport=_fake_transport(stdout='{"repo":"X","verdict":"PASS"}'))
+    out = ex.run({"repo": "X", "command": "python -m pytest"}, _runner)
+    assert out["verdict"] == "PASS" and out["node"] == "r" and out["executor"] == "ssh:r"
+
+
+def test_ssh_executor_transient_raises_for_requeue():
+    node = Node(name="r", kind="remote", tailscale_ip="100.0.0.1", ssh_user="u")
+    ex = SSHExecutor(node, transport=_fake_transport(returncode=255, stderr="Connection refused"))
+    with pytest.raises(RemoteTransientError):
+        ex.run({"repo": "X", "command": "python -m pytest"}, _runner)
+
+
+def test_ssh_executor_refuses_missing_command():
+    node = Node(name="r", kind="remote", tailscale_ip="100.0.0.1", ssh_user="u")
+    with pytest.raises(UnsafeCommandError):
+        SSHExecutor(node, transport=_fake_transport()).run({"repo": "X"}, _runner)
+
+
+def test_remote_executor_alias_is_ssh_executor():
+    assert RemoteExecutor is SSHExecutor
 
 
 def test_registry_tracks_local_and_remote():

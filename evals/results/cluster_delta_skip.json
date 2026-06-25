@@ -1,6 +1,6 @@
 {
   "_meta": {
-    "generated_at": "2026-06-24T23:12:48+00:00"
+    "generated_at": "2026-06-25T13:48:53+00:00"
   },
   "changed_sources": [
     "M"
@@ -17,7 +17,7 @@
     "R2",
     "R3"
   ],
-  "remote_transport_deferred": true,
+  "remote_transport_real": true,
   "safe_no_impacted_skipped": true,
   "skip_rate": 0.4,
   "skipped": [

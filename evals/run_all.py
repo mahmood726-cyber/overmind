@@ -14,6 +14,7 @@ import json
 
 from evals import (
     cluster_delta_skip,
+    cluster_dispatch,
     contract_impact,
     engine_routing,
     judge_cot_goldenset,
@@ -56,6 +57,8 @@ def main() -> int:
     ci = contract_impact.main()
     print("-" * 72)
     cl = cluster_delta_skip.main()
+    print("-" * 72)
+    cd = cluster_dispatch.main()
     print("=" * 72)
 
     summary = {
@@ -127,7 +130,15 @@ def main() -> int:
                 "skip_rate": cl["skip_rate"],
                 "safe_no_impacted_skipped": cl["safe_no_impacted_skipped"],
                 "impacted_dependents_skipped_naive": cl["impacted_dependents_skipped_naive"],
-                "remote_transport_deferred": cl["remote_transport_deferred"],
+                "remote_transport_real": cl["remote_transport_real"],
+            },
+            "cluster_dispatch": {
+                "routed_correct_rate": cd["routing"]["routed_correct_rate"],
+                "data_locality_respected": cd["routing"]["data_locality_respected"],
+                "load_balanced_to_idle": cd["load_balancing"]["load_balanced_to_idle"],
+                "delta_skip_safe_no_impacted_skipped": cd["delta_skip"]["safe_no_impacted_skipped"],
+                "requeue_work_not_lost": cd["requeue"]["work_not_lost"],
+                "all_guarantees_hold": cd["all_guarantees_hold"],
             },
         },
     }

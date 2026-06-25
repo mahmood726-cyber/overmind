@@ -1,0 +1,56 @@
+{
+  "_meta": {
+    "generated_at": "2026-06-25T13:48:53+00:00"
+  },
+  "all_guarantees_hold": true,
+  "delta_skip": {
+    "dispatched_only_to_run": true,
+    "impacted_dependents_skipped": 0,
+    "safe_no_impacted_skipped": true,
+    "skip_rate": 0.4,
+    "skipped": [
+      "R4",
+      "R5"
+    ],
+    "to_run": [
+      "R1",
+      "R2",
+      "R3"
+    ]
+  },
+  "eval": "cluster_dispatch",
+  "load_balancing": {
+    "busy_running": 2,
+    "idle_running": 0,
+    "least_loaded_chosen": "idle",
+    "load_balanced_to_idle": true
+  },
+  "requeue": {
+    "alpha_marked_offline": true,
+    "errors": [],
+    "landed_on": "bravo",
+    "requeue_count": 1,
+    "requeued": [
+      {
+        "from_node": "alpha",
+        "reason": "transient SSH failure to node 'alpha' (rc=255): Connection refused",
+        "repo": "j"
+      }
+    ],
+    "requeued_from_alpha": true,
+    "work_not_lost": true
+  },
+  "routing": {
+    "assignments": {
+      "aact-job": "data",
+      "ubcma-job": "gpu"
+    },
+    "data_locality_respected": true,
+    "no_misroute_of_uncapable": true,
+    "routed_correct_rate": 1.0,
+    "uncapable_job_unschedulable": true,
+    "unschedulable": [
+      "needs-codex"
+    ]
+  }
+}
