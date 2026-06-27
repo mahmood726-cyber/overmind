@@ -136,7 +136,32 @@ def parse_args() -> argparse.Namespace:
                              "When set, the report is written to rerun_<date>_<HHMMSS>.json "
                              "instead of nightly_<date>.json so manual reruns do not "
                              "clobber the canonical scheduled-nightly artifact.")
-    return parser.parse_args()
+    # QW-2: USD budget ceiling for the LLM repair/upgrade phase
+    parser.add_argument("--budget-usd", type=float, default=None, metavar="FLOAT",
+                        help="Halt LLM repair/upgrade calls when cumulative estimated "
+                             "spend reaches this ceiling (USD). Does not stop the whole "
+                             "run — only the LLM phase. Required when --loop-mode is set.")
+    # QW-2: loop mode (requires --budget-usd; enforced below)
+    parser.add_argument("--loop-mode", action="store_true",
+                        help="Re-invoke the verification pass up to max_iterations while "
+                             "goal not met. Requires --budget-usd to guard spend.")
+    # QW-4: bypass SAFE_FIX_ACTIONS allowlist (default: restricted to safe types)
+    parser.add_argument("--unsafe-fixes", action="store_true",
+                        help="Bypass the SAFE_FIX_ACTIONS allowlist and allow all "
+                             "auto-fix types (default: only BASELINE_UPDATE / "
+                             "FLOAT_PRECISION / FORMULA_ERROR are attempted).")
+    # QW-5: mark this as a human-initiated manual run (sets verified_in_manual_run
+    # on promoted recipes, required by PromotionGate when manual_run_required=True)
+    parser.add_argument("--manual", action="store_true",
+                        help="Mark this as a manually-triggered run. Recipes resolved "
+                             "in a manual run satisfy the manual_run_required gate in "
+                             "PromotionGate.")
+    args = parser.parse_args()
+    # QW-2: loop-mode requires an explicit budget ceiling
+    if args.loop_mode and args.budget_usd is None:
+        parser.error("--loop-mode requires --budget-usd (e.g. --budget-usd 1.0) "
+                     "to guard against unbounded spend")
+    return args
 
 
 # Phase-4 M-2: heavy verification driver moved to overmind.nightly.runner.
