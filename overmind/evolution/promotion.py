@@ -86,8 +86,13 @@ class SkillArchive:
 class PromotionGate:
     """Evaluate skills against a policy, archive the evidence, promote on pass.
 
-    `clock` is injectable (callable -> float) so tests and deterministic runs
+    ``clock`` is injectable (callable -> float) so tests and deterministic runs
     don't depend on wall-clock time.
+
+    ``manual_run_required`` (QW-5, default False): when True, a skill is only
+    eligible for promotion if it carries ``verified_in_manual_run=True``, set
+    by the nightly runner when invoked with ``--manual``.  Default OFF
+    preserves current promotion behaviour.
     """
 
     def __init__(
@@ -97,11 +102,13 @@ class PromotionGate:
         archive: Optional[SkillArchive] = None,
         *,
         clock=None,
+        manual_run_required: bool = False,
     ) -> None:
         self.library = library
         self.policy = policy or PromotionPolicy()
         self.archive = archive
         self._clock = clock or (lambda: 0.0)
+        self.manual_run_required = manual_run_required
 
     def evaluate(self, skill) -> EvidenceBundle:
         """Pure decision: build the evidence bundle for one skill. No side effects."""
@@ -110,6 +117,20 @@ class PromotionGate:
         succeeded = skill.times_succeeded
         sr = skill.success_rate
         dur = skill.durability
+
+        # QW-5: manual-run gate (default OFF — only active when manual_run_required=True)
+        if self.manual_run_required and not getattr(skill, "verified_in_manual_run", False):
+            return EvidenceBundle(
+                skill_id=skill.skill_id,
+                decision="hold",
+                reason="manual_run_required: skill not yet verified in a --manual run",
+                times_used=uses,
+                times_succeeded=succeeded,
+                success_rate=round(sr, 4),
+                durability=round(dur, 4),
+                policy=asdict(p),
+                ts=self._clock(),
+            )
 
         if uses < p.min_uses:
             decision, reason = "hold", f"needs >={p.min_uses} uses (have {uses})"

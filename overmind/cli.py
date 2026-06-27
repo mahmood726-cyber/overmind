@@ -387,6 +387,30 @@ def build_parser() -> argparse.ArgumentParser:
     watch_fs_parser.add_argument("--iterations", type=int, default=None,
                                  help="Stop after N poll ticks (default: run forever).")
 
+    # QW-5: charter — instantiate LOOP_CHARTER_TEMPLATE.md for a run
+    charter_parser = subparsers.add_parser(
+        "charter",
+        help="Manage loop charters (structured per-run contracts). "
+             "See overmind/activation/LOOP_CHARTER_TEMPLATE.md.",
+    )
+    charter_sub = charter_parser.add_subparsers(dest="charter_action", required=True)
+    charter_init = charter_sub.add_parser(
+        "init",
+        help="Instantiate LOOP_CHARTER_TEMPLATE.md → data/charter_{date}.md.",
+    )
+    charter_init.add_argument("--goal", default="all high-risk projects CERTIFIED or circuit-open",
+                              help="Measurable done condition for this run.")
+    charter_init.add_argument("--budget-usd", type=float, default=None,
+                              help="LLM spend ceiling to embed in the charter.")
+    charter_init.add_argument("--limit", type=int, default=50,
+                              help="Project limit to embed in the charter.")
+    charter_init.add_argument("--min-risk", default="medium",
+                              help="Risk floor to embed in the charter.")
+    charter_init.add_argument("--paths-filter", default="(none)",
+                              help="Path filter description to embed in the charter.")
+    charter_init.add_argument("--circuit-threshold", type=int, default=5,
+                              help="Circuit-open count above which the loop blocks.")
+
     return parser
 
 
@@ -471,6 +495,21 @@ def main(argv: list[str] | None = None) -> int:
     if args.command == "cluster":
         from overmind.cluster.cli_cluster import dispatch as cluster_dispatch
         return _emit_payload(cluster_dispatch(args))
+
+    if args.command == "charter":
+        # QW-5: charter init — instantiate the loop charter template
+        from overmind.activation.charter import init_charter
+        from overmind.nightly.paths import DATA_DIR
+        out = init_charter(
+            data_dir=DATA_DIR,
+            goal=args.goal,
+            budget_usd=args.budget_usd,
+            limit=args.limit,
+            min_risk=args.min_risk,
+            paths_filter=args.paths_filter,
+            circuit_threshold=args.circuit_threshold,
+        )
+        return _emit_payload({"charter_path": str(out), "status": "written"})
 
     config = AppConfig.from_directory(
         config_dir=args.config_dir,

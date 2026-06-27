@@ -40,6 +40,8 @@ class Skill:
     tags: list[str] = field(default_factory=list)
     trusted: bool = False           # evidence-gated promotion (set by PromotionGate)
     promoted_ts: float = 0.0
+    # QW-5: True when the source recipe was resolved in a --manual run
+    verified_in_manual_run: bool = False
 
     @property
     def success_rate(self) -> float:
@@ -64,6 +66,7 @@ class Skill:
             "tags": self.tags,
             "trusted": self.trusted,
             "promoted_ts": self.promoted_ts,
+            "verified_in_manual_run": self.verified_in_manual_run,
         }
 
 
@@ -95,6 +98,8 @@ class SkillLibrary:
             contrastive_diff=recipe.contrastive_diff,
             created_from_recipe=recipe.recipe_id,
             tags=[recipe.failure_type, recipe.pattern[:20]],
+            # QW-5: carry manual-run verification flag from recipe to skill
+            verified_in_manual_run=getattr(recipe, "verified_in_manual_run", False),
         )
         self.skills[skill.skill_id] = skill
         self._save()

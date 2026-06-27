@@ -24,6 +24,8 @@ class Recipe:
     contrastive_diff: str = ""
     # Mem^p: two-level abstraction
     abstract_strategy: str = ""
+    # QW-5: True when this recipe was resolved in a --manual (human-initiated) run
+    verified_in_manual_run: bool = False
 
     def __post_init__(self):
         if not self.last_seen:

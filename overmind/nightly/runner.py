@@ -952,6 +952,10 @@ def _run_verification(db: StateDatabase, args: argparse.Namespace, run_start: da
     skill_lib = SkillLibrary(Path("C:/overmind/wiki/SKILLS.json"))
     promoted = 0
     recipes = evo_mgr._load_recipes()
+    # QW-5: stamp verified_in_manual_run on all recipes when --manual flag is set
+    if getattr(args, "manual", False):
+        for recipe in recipes:
+            recipe.verified_in_manual_run = True
     for recipe in recipes:
         if recipe.is_proven():
             skill = skill_lib.promote_recipe(recipe)
