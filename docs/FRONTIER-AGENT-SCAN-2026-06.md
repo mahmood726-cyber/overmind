@@ -16,6 +16,7 @@ marked PENDING where results were not yet received from the web-fetch agent at c
 | B | Recent AI-agent developments 2025-2026 | PENDING — research agent not yet returned |
 | C | Tower repo (`F:\Tower`, also `mahmood726-cyber/tower` on GitHub) | YES — read locally + GitHub scan |
 | D | "Loop Engineering: The Anatomy of an Autonomous Loop" (zostaff, Jun 2026) | YES — full text provided by user; mapped against Overmind direct reads |
+| E | "Loop Engineering" — incremental patterns (Raytar, Jun 2026) | YES — full principles provided by user; incremental additions only (no duplication of article D) |
 
 ---
 
@@ -350,111 +351,398 @@ Windows Task Scheduler.
 
 ---
 
+## Source E — "Loop Engineering" — incremental patterns (Raytar, Jun 2026)
+
+Full text provided by user. This section covers only patterns **not already in Source D** —
+no duplication. Mapped against Overmind via direct source reads.
+
+---
+
+### E1 — Loop Charter Template (reusable skill)
+
+> A structured charter with six mandatory sections that every loop must instantiate before
+> running: GOAL (measurable "done") / WHERE THE WORK IS / HOW TO WORK / HOW TO CHECK
+> YOURSELF (evidence, not confidence) / HOW TO REMEMBER (a LOOP-STATE.md read first,
+> written last) / WHEN TO STOP (+ short report: done / blocked / needs-me).
+
+**Overmind status: MISSING**
+
+No per-run charter file exists. `data/loop_goal.json` (proposed in BB-2) covers only the
+GOAL section. The HOW TO CHECK YOURSELF, HOW TO REMEMBER, and WHEN TO STOP sections have
+no structured home.
+
+**Alignment with existing Overmind concepts:**
+
+| Charter section | Closest Overmind concept | Gap |
+|----------------|--------------------------|-----|
+| GOAL | `data/loop_goal.json` (proposed BB-2) | Partially covered if BB-2 is built |
+| WHERE THE WORK IS | `nightly/selection.py:select_projects()` | Implicit in project list; not in a charter |
+| HOW TO WORK | `nightly/runner.py` main loop | Behaviour only; no charter declaration |
+| HOW TO CHECK YOURSELF | `llm_judge.py` + witnesses | Implemented; not declared per-run |
+| HOW TO REMEMBER | `.progress_{date}.json` + `MemoryStore` | Machine-readable; not a LOOP-STATE.md |
+| WHEN TO STOP | Hard timeout + project limit | No goal-based stop; no "done / blocked / needs-me" report |
+
+**Implementation sketch (ADDITIVE, S effort):**
+Add `overmind/activation/LOOP_CHARTER_TEMPLATE.md` as a versioned skill file:
+```markdown
+# Overmind Loop Charter — {date}
+## GOAL
+Measurable done condition: {e.g. "all high-risk projects CERTIFIED or circuit-open"}
+## WHERE THE WORK IS
+Projects: {select_projects result count}, path filter: {paths_filter}
+## HOW TO WORK
+Runner: nightly/runner.py --limit {N} --budget-usd {X} --max-retries 3
+## HOW TO CHECK YOURSELF
+Witnesses required: test_suite + smoke + (tier-3) numerical. Judge: QuorumJudge (cross-family).
+Measurable bar: CERTIFIED verdict, not "tests pass".
+## HOW TO REMEMBER
+State file: data/LOOP-STATE_{date}.md (read at start, written after each project)
+Crash-resume: data/.progress_{date}.json
+## WHEN TO STOP
+- Done: GoalChecker returns YES
+- Blocked: circuit-open count > {threshold}; write NEEDS_ME_{date}.md; halt LLM phase
+- Needs-me: items in NEEDS_ME_{date}.md await human action
+```
+Add `overmind charter init` CLI command that instantiates the template for a given run.
+The charter is written to `data/charter_{date}.md` and read by `on_session_start.py`.
+
+---
+
+### E2 — "NEEDS ME" list
+
+> Items requiring a human-only decision (spend money, delete, email a person) are parked on
+> a NEEDS_ME list; the loop continues with the rest — never blocks the whole run, never
+> self-authorizes.
+
+**Overmind status: PARTIAL**
+
+The risk checker (`nightly/runner.py:694-699`) skips high-risk projects with
+`print(f"[SKIP] {proj.name}: {risk.reason}")` — the skip is silent. There is no structured
+NEEDS_ME file that accumulates these for human review. The comprehension-debt gate (BB-1
+proposed) blocks the loop, which is the opposite of the "never blocks the whole run" principle.
+
+**Alignment with Sentinel prohibited-action classes:**
+The Raytar article's NEEDS_ME list maps directly to Sentinel's explicit-permission gate:
+actions that Sentinel marks BLOCK (delete, spend, push with bypass) must go to a NEEDS_ME
+file, not silently skip and not block the run.
+
+**Implementation sketch (ADDITIVE, S effort):**
+In `nightly/runner.py:694-699` where `risk.skip` is logged silently, also append to
+`data/NEEDS_ME_{date}.md`:
+```markdown
+# NEEDS ME — {date}
+Actions below require explicit human authorization before the next nightly run can attempt them.
+The loop continued past these items; no action was taken.
+
+## Blocked by risk gate
+- {proj.name} [{risk.reason}] — suggested action: {risk.suggested_action}
+
+## Circuit-open (unfixable without human intervention)
+- {proj.name} — {N} consecutive nights FAIL, class: {failure_class}
+```
+The nightly report already prints summaries — this adds a persistent, human-readable file.
+The loop does NOT block; it appends and continues. `NEEDS_ME_{date}.md` is linked from the
+morning dashboard.
+
+Note: this is distinct from BB-1 (comprehension-debt gate), which *does* block promotion.
+NEEDS_ME is non-blocking; the comprehension-debt gate is the blocking escalation for the
+most serious cases (> THRESHOLD unresolved failures).
+
+---
+
+### E3 — Per-item retry cap (3 tries → blocked)
+
+> Three tries per item, then log "blocked" and move on. A per-item circuit breaker,
+> complementary to the global one (QW-1) which operates across nights.
+
+**Overmind status: PARTIAL**
+
+The global `LLMRepairer` cap is 5 calls per entire nightly run (`runner.py:724`: `for diag
+in unfixed_diags[:5]`). This is a per-run cap, not a per-project cap. A single project can
+consume all 5 slots. There is no 3-try per-project limit within a run.
+
+**Relationship to QW-1 (circuit breaker):**
+
+| Scope | Mechanism | Current Overmind |
+|-------|-----------|-----------------|
+| Per-item, within one night | 3 tries → log blocked, move on | PARTIAL (5 global slots, not per-project) |
+| Per-item, across nights | N nights FAIL same class → circuit open | MISSING (QW-1 proposes this) |
+
+**Implementation sketch (ADDITIVE, S effort):**
+In `nightly/runner.py:716-742`, add `per_project_attempts: dict[str, int] = {}` before the
+repair loop. Inside the loop, increment `per_project_attempts[diag.project_id]`; if count
+reaches `MAX_RETRIES_PER_PROJECT` (default 3), append to `NEEDS_ME_{date}.md` and
+`continue`. This is independent of the 5-call global LLM cap and complementary to QW-1.
+
+---
+
+### E4 — Self-check: second model copy confirming against the measurable bar after every turn
+
+> A second copy of the model (separate instance) confirms against the measurable bar after
+> every turn/project, not just at the end. This is the /goal pattern made per-item. Key
+> distinction from article D: the bar is *measurable* (green tests, baseline within
+> tolerance) — not the agent's own confidence that it's done.
+
+**Overmind status: PARTIAL**
+
+`LLMJudge` + `QuorumJudge` already implement the independent-verifier pattern per project
+(`llm_judge.py`). The existing judge IS the self-check. What Raytar adds:
+
+1. The check should be against the **measurable bar** (does CERTIFIED verdict exist AND
+   does it satisfy the goal condition?), not just "did the judge return PASS?".
+2. The self-check should happen after **every item/turn**, not just at the end of the batch.
+
+Gap: The judge is called once per project; it judges whether the project passes, but it does
+not check whether passing this project advances the overall loop goal. The GoalChecker
+proposed in BB-2 would close this, but only runs at end of the full run, not per-project.
+
+**Implementation sketch (ADDITIVE, S effort — incremental to BB-2):**
+In `_run_verification()` after each project bundle is written, add a lightweight
+`GoalChecker.check_project(proj, bundle, loop_goal)` call that returns:
+- `ADVANCES_GOAL` — project contributes to the fixpoint (e.g. was CERTIFIED and is high-risk)
+- `NEUTRAL` — does not advance or regress the goal
+- `REGRESSES_GOAL` — was previously CERTIFIED and is now FAIL
+
+Log the per-project goal-delta to `data/LOOP-STATE_{date}.md`. This does not change the
+verdict; it is observability only (fully ADDITIVE). The end-of-run GoalChecker can then
+consume these per-project signals for a faster convergence check.
+
+---
+
+### E5 — When NOT to loop: decision rule
+
+> One-off tasks → plain prompt (cheaper); vague goals → define the measurable goal first;
+> honest cost note: a self-checking loop runs the model several times per item → burns
+> usage faster than a plain run.
+
+**Overmind status: N/A (documentation)**
+
+Raytar's decision rule, codified for Overmind context:
+
+| Situation | Use | Rationale |
+|-----------|-----|-----------|
+| Single project, ad-hoc check | `overmind verify <path>` (plain) | One model call per witness; no loop overhead |
+| Known project list, run once | `nightly/runner.py` (batch) | Current model; no re-entry needed |
+| Goal-directed campaign ("get all tier-3 green") | `--loop-mode` (BB-2) | Re-entry loop justified; measurable fixpoint exists |
+| Vague goal ("make things better") | **Do not loop yet** | Define measurable done condition first; write charter |
+| Goal provably unachievable this run | Circuit open / NEEDS_ME | Stop LLM spend; surface to human |
+
+**Honest cost note for Overmind:**
+A nightly run with QuorumJudge (2 backends) + LLMRepairer (up to 5 calls) can consume
+7-12 LLM calls per failing project. In `--loop-mode` with 3 iterations over 50 projects
+that start failing, this is 1,000-1,800 calls. The budget ceiling (QW-2) is the primary
+guard. Loop mode should only be enabled with an explicit `--budget-usd` flag set.
+
+---
+
+## No-Regression Framework
+
+**Hard constraint:** No recommendation in this document may be adopted if it regresses the
+current eval scores. This section defines how to apply that constraint.
+
+### Baseline scores (from `evals/results/summary.json`, generated 2026-06-25)
+
+Critical gauges — any adoption that moves these in the wrong direction is **blocked**:
+
+| Eval | Metric | Baseline | Direction |
+|------|--------|---------|-----------|
+| `judge_masterkey` | `degenerate_false_pass_rate` | **0.0** | must stay 0.0 |
+| `judge_masterkey` | `genuine_accuracy` | **1.0** | must stay 1.0 |
+| `judge_masterkey` | `injection_boundary_false_pass_rate` | **0.0** | must stay 0.0 |
+| `judge_masterkey` | `injection_signature_false_pass_rate` | **0.0** | must stay 0.0 |
+| `quorum_decorrelation` | `overcount_rate_after` | **0.0** | must stay 0.0 |
+| `quorum_decorrelation` | `honest_panels_unchanged_rate` | **1.0** | must stay 1.0 |
+| `engine_routing` | `accuracy_routed` | **1.0** | must stay 1.0 |
+| `engine_routing` | `routed_preserves_expensive` | **true** | must stay true |
+| `memory_recall` | `recall` | **1.0** | must stay 1.0 |
+| `memory_recall` | `stale_suppression_rate` | **1.0** | must stay 1.0 |
+| `sandbox_policy` | `untrusted_unisolated_counts_as_pass_rate_after` | **0.0** | must stay 0.0 |
+| `judge_cot_goldenset` | `no_regression` | **true** | must stay true |
+| `verdict_tracing` | `tree_consistent` | **true** | must stay true |
+
+Known weak score (not a regression target — this is a known gap):
+- `specbench_style.heldout_pass_rate` = 0.3333 (specbench_gap = 0.3334; visible_only_false_certifications = 5)
+
+### ADDITIVE vs INVASIVE classification
+
+**ADDITIVE** — new module, new flag, or new file output; zero change to existing code
+paths; existing evals are unaffected by definition. These can be implemented directly
+on master after a pass of `python -m evals.run_all` to confirm no test infra side-effects.
+
+**INVASIVE** — touches existing judge/quorum/verification/memory paths; could change the
+behaviour of a path covered by an existing eval. These **must**:
+1. Be developed on a branch (not master).
+2. Have `python -m evals.run_all` run before the change and after, with scores recorded.
+3. Be adopted only if every critical gauge above holds or improves.
+4. Be gated behind a config flag (default OFF) until the branch eval scores are confirmed.
+
+---
+
 ## Consolidated Findings Table
 
-| # | Source | What it is | Transferable idea | Overmind mapping | Have? | Effort | Benefit |
-|---|--------|-----------|-------------------|-----------------|-------|--------|---------|
-| 1 | Tower C3-1 | Circuit breaker (CLOSED/OPEN/HALF-OPEN) | Stop retrying a broken project after N nights | `AutoFixer` + `LLMRepairer` in `nightly/runner.py:666-742` | MISSING | S | Prevents runaway auto-fix; addresses Loop Engineering Death #1 |
-| 2 | Loop-D P5 | Budget ceiling (USD/phase) | Add `--budget-usd` flag; estimate token cost per LLM call | `nightly/runner.py` LLM repair phase | MISSING | S | Caps runaway cost; addresses Death #1 |
-| 3 | Loop-D P5 | Liveness heartbeat | Write liveness file every 60s inside `_verify_with_timeout` | `nightly/runner.py:93-95` poll loop | PARTIAL | S | Detects silent death; addresses Death #2 |
-| 4 | Loop-D P5 | AutoFixer blast radius | Require worktree isolation for all auto-fix writes | `auto_fixer.py`, `isolation/worktree_manager.py` | PARTIAL | S | Limits blast radius to isolated branch |
-| 5 | Tower C3-6 | Night-runner action allowlist | Restrict auto-fix to `SAFE_FIX_ACTIONS` frozenset | `nightly/runner.py:666` | PARTIAL | S | Prevents non-safe actions during scheduled runs |
-| 6 | Loop-D P3 | STATUS.md per iteration | Write human-readable Done/In-progress/Next/NEVER-touch after each project | `nightly/reporting.py` | MISSING | S | Enables fresh-context re-entry; addresses Death #2 |
-| 7 | Loop-D P7 | Manual-run gate before skill promotion | Block recipe promotion unless validated in a manual run | `evolution/promotion.py` | PARTIAL | S | Enforces prove-then-automate order |
-| 8 | Loop-D P1 | Maker/judge cross-family enforcement | Assert maker engine ≠ judge family in `judge_factory.py` | `judge_factory.py:265-282` | PARTIAL | S | Closes remaining self-grading gap |
-| 9 | Tower C3-4 | Human comprehension-debt gate | Block wiki/skill updates until human acks repeated failures | `nightly/runner.py` post-fix phase | MISSING | M | Prevents shipping unread failure cascades; Death #4 |
-| 10 | Loop-D P2 | Goal-directed stop condition | `GoalChecker` + `loop_goal.json`; Haiku model returns yes/no+reason | `activation/hooks/on_session_stop.py` | MISSING | M | Converts batch→loop; enables provable completion |
-| 11 | Tower C3-3 | Hash-chained evidence ledger | Append cross-project `evidence_ledger.jsonl` with prev_hash | `nightly/reporting.py` after each bundle | PARTIAL | M | Full audit trail across projects; tamper detection |
-| 12 | Tower C3-5 | Agent capability model + routing | Route verifications by `quality_score / latency` per judge | `verification/judge_factory.py` + `runners/q_router.py` | PARTIAL | M | Cost-optimized multi-judge dispatch |
-| 13 | Tower SPEC | Witness grading (A/B/C tiers) | Grade witnesses by credibility (A=human/baseline, B=automated, C=inferred) | `verification/scope_lock.py`, `cert_bundle.py` | PARTIAL | M | Finer verdict calibration than binary pass/fail |
-| 14 | Tower Orchestrator | Blackboard shared-state for quorum | Let QuorumJudge backends share prior findings before final vote | `verification/llm_judge.py:542-645` | MISSING | L | Judges inform each other; reduces decorrelated disagreement |
-| 15 | Tower SLO | Verification SLO monitoring | Track judge accuracy, consensus rate, latency SLOs as metrics | `nightly/reporting.py` + new `verification/slo.py` | MISSING | L | First-class observability for verification health |
+All items from Sources C, D, and E. ADDITIVE/INVASIVE classification and regression-safety
+plan added.
+
+| # | Source | What it is | Overmind mapping | Have? | Effort | ADDITIVE / INVASIVE | Regression-safety plan |
+|---|--------|-----------|-----------------|-------|--------|---------------------|------------------------|
+| 1 | Tower C3-1 | Circuit breaker (CLOSED/OPEN/HALF-OPEN, cross-night) | New `verification/loop_brakes.py`; gate before `AutoFixer` + `LLMRepairer` calls (`runner.py:400`, `:716`) | MISSING | S | **ADDITIVE** — new module + gate; does not touch judge/quorum/witness paths | Run `evals.run_all` before + after as sanity check; expect no change (no judge path touched) |
+| 2 | Loop-D P5 | Budget ceiling (USD/phase) | New `--budget-usd` flag; running cost accumulator in `runner.py` LLM repair phase | MISSING | S | **ADDITIVE** — flag-gated; halts only when flag is set | Run `evals.run_all` before + after; expect no change |
+| 3 | Loop-D P5 | Liveness heartbeat | 2 lines inside `_verify_with_timeout` poll loop (`runner.py:93-95`) | PARTIAL | S | **ADDITIVE** — writes a file; no logic change | Run `evals.run_all` before + after; expect no change |
+| 4 | Loop-D P5 | AutoFixer blast radius | `OVERMIND_AUTOFIXER_WORKTREE=1` env flag; require worktree for auto-fix writes | PARTIAL | S | **ADDITIVE** — env-flag-gated, default OFF | Run `evals.run_all` before + after; expect no change |
+| 5 | Tower C3-6 | Night-runner action allowlist | `SAFE_FIX_ACTIONS` frozenset gate in `runner.py:666`; `--unsafe-fixes` re-enables | PARTIAL | S | **ADDITIVE** — restricts fix scope; does not change verification logic | Run `evals.run_all` before + after; expect no change (fix phase not covered by current evals) |
+| 6 | Loop-D P3 / E1 | STATUS.md + LOOP-STATE.md per iteration | New `write_status_md()` in `reporting.py`; `LOOP-STATE_{date}.md` written after each project | MISSING | S | **ADDITIVE** — new file output only | Run `evals.run_all` before + after; expect no change |
+| 7 | Loop-D P7 | Manual-run gate before skill promotion | `manual_run_required=True` flag in `evolution/promotion.py` | PARTIAL | S | **ADDITIVE** — flag-gated, default OFF until validated | Run `evals.run_all` before + after; expect no change (evolution paths not in current evals) |
+| 8 | E1 | Loop Charter Template | New `activation/LOOP_CHARTER_TEMPLATE.md` + `overmind charter init` CLI | MISSING | S | **ADDITIVE** — new files + CLI command only | No eval risk; documentation + new file |
+| 9 | E2 | NEEDS ME list | Append to `data/NEEDS_ME_{date}.md` when `risk_checker.check()` skips; non-blocking | PARTIAL | S | **ADDITIVE** — better logging of existing skips; no logic change | Run `evals.run_all` before + after; expect no change |
+| 10 | E3 | Per-item retry cap (3 tries → blocked) | `per_project_attempts` counter in `runner.py:716`; cap at 3; append to `NEEDS_ME` | PARTIAL | S | **ADDITIVE** — new per-project counter; complements global 5-call cap | Run `evals.run_all` before + after; expect no change |
+| 11 | Loop-D P6 / E4 | Human comprehension-debt gate | Write `data/HOLD_FOR_HUMAN.md`; block `skill_library` + wiki updates until `--ack-hold` | MISSING | M | **ADDITIVE** — new blocking file check; does not alter verification path itself | Run `evals.run_all` before + after; expect no change (promotion paths not in current evals) |
+| 12 | Loop-D P2 / E4 | Goal-directed stop condition + per-project self-check | New `activation/goal_checker.py`; `--loop-mode` flag; per-project goal-delta in `LOOP-STATE` | MISSING | M | **INVASIVE** — touches `on_session_stop.py` (memory extraction timing) | Branch required. Run `evals.run_all` before + after. Critical: `memory_recall.recall` (1.0) + `memory_retraction` must not regress. Gate behind `OVERMIND_LOOP_MODE=0` (default OFF). |
+| 13 | Tower C3-3 | Hash-chained evidence ledger | Append `evidence_ledger.jsonl` in `reporting.py` after each bundle | PARTIAL | M | **ADDITIVE** — new append-only file; no existing path changed | Run `evals.run_all` before + after; expect no change |
+| 14 | Loop-D P1 | Maker/judge cross-family enforcement | Assert `family_for_engine(maker) != family_for_engine(cheap_judge)` in `judge_factory.py:265-282` | PARTIAL | S | **INVASIVE** — touches `judge_factory.py`; could cause `judge_error` when only one model family is available | Branch required. Run `evals.run_all` before + after. Critical: `judge_masterkey.genuine_accuracy` (1.0) + `quorum_decorrelation.honest_panels_unchanged_rate` (1.0) must not regress. Gate behind `OVERMIND_MAKER_JUDGE_XFAMILY=0` (default OFF). |
+| 15 | Tower C3-5 | Agent capability model + routing | Route by `quality_score / latency` per judge via `q_router.py` | PARTIAL | M | **INVASIVE** — changes judge selection logic in `judge_factory.py` | Branch required. Run `evals.run_all` before + after. Critical: `engine_routing.accuracy_routed` (1.0) must not regress. |
+| 16 | Tower SPEC | Witness grading (A/B/C tiers) | Grade witnesses by credibility in `scope_lock.py` + `cert_bundle.py` | PARTIAL | M | **INVASIVE** — changes arbitration logic in `cert_bundle.py`; could alter CERTIFIED/REJECT verdicts | Branch required. Run full `evals.run_all`. Critical: `verdict_tracing.tree_consistent` (true) must hold. |
+| 17 | Tower Orchestrator | Blackboard shared-state for quorum | QuorumJudge backends share findings before final vote | MISSING | L | **INVASIVE** — changes `llm_judge.py:QuorumJudge`; alters verdict path | Branch required. Critical: `judge_masterkey` suite must hold at 0.0/1.0. High risk — defer. |
+| 18 | Tower SLO | Verification SLO monitoring | New `verification/slo.py`; metrics from nightly report | MISSING | L | **ADDITIVE** — new module reading existing outputs | Run `evals.run_all` before + after; expect no change |
+| 19 | E5 | "When NOT to loop" decision rule | Documentation only; `--loop-mode` requires `--budget-usd` | N/A | S | **ADDITIVE** — documentation + CLI constraint | No eval risk |
 
 ---
 
 ## Prioritised Adoption Shortlist
 
-### Top 5 Quick Wins (effort S, ≤1 day each)
+### Top 5 Quick Wins (effort S, ADDITIVE, safe for master)
 
-**QW-1 — Circuit breaker for auto-fix (Tower C3-1 + Loop-D P5 "runaway")**
-What: CLOSED/OPEN/HALF-OPEN state machine, tripped after 3 consecutive FAIL nights for same
-project+failure_type.
-Idea: Stop wasting nightly LLM budget on unfixable projects; surface them in `STUCK_FAILURES.md`.
-Module: New `overmind/verification/loop_brakes.py`; wire into `nightly/runner.py:400` (before
-`_verify_with_timeout`) and `runner.py:716` (after diagnose, before AutoFixer call).
-Evidence: `F:\Tower\addons\autoclaude\circuit_breaker.py` (state machine + persistence pattern).
+All five are ADDITIVE. Run `python -m evals.run_all` before and after implementing each;
+expect scores unchanged. Implement directly on master.
 
-**QW-2 — USD budget ceiling (Loop-D P5 "budget ceiling")**
-What: `--budget-usd FLOAT` flag; track cumulative LLM cost in nightly run; halt when exceeded.
-Idea: The only protection today is wall-clock timeout. A tight loop of cheap calls can burn
-hundreds of calls before the process-timeout fires.
-Module: `nightly/runner.py:parse_args()` + running `run_state.cost_usd` accumulator.
-Evidence: `F:\Tower\addons\autoclaude\llm_tracker.py` (cost calculation pattern).
+**QW-1 — Circuit breaker (cross-night) + per-item retry cap (QW-1 = items #1 + #10)**
+Sources: Tower C3-1 (cross-night CLOSED/OPEN/HALF-OPEN) + Raytar E3 (per-item 3-try cap)
+What: New `overmind/verification/loop_brakes.py`. Two classes:
+  - `NightCircuitBreaker` — trips after 3 consecutive FAIL nights for same project+failure_class;
+    persists to `data/circuit_states.json`.
+  - `ItemRetryCounter` — tracks per-project attempts within one run; caps at 3; on cap,
+    appends to `data/NEEDS_ME_{date}.md` and moves on.
+Modules: wire `NightCircuitBreaker` into `runner.py:400` (pre-verify) and `runner.py:716`
+(pre-fix). Wire `ItemRetryCounter` into the LLMRepairer loop at `runner.py:724`.
+Regression safety: ADDITIVE. Does not touch judge/quorum/witness paths.
 
-**QW-3 — Liveness heartbeat during verification (Loop-D P5 + Death #2)**
-What: Every 60s inside `_verify_with_timeout`'s poll loop, write
-`data/heartbeat_{project_id}.json` with `{ts, project, pid}`. Morning health-check greps
-for stale (> 90s) entries.
-Module: `nightly/runner.py:93-95` (2 lines inside existing poll loop).
-Evidence: Verified no such write exists. `nightly_started_*.flag` is written once at start only.
+**QW-2 — USD budget ceiling + honest cost note (items #2 + #19)**
+Sources: Tower `llm_tracker.py` + Raytar E5
+What: `--budget-usd FLOAT` flag in `runner.py:parse_args()`. Running `run_cost_usd`
+accumulator after each `upgrade_unknown` / `attempt_repair` call. Halt LLM phase (not whole
+run) when ceiling hit. `--loop-mode` must require `--budget-usd` (CLI validation error
+if loop mode attempted without budget).
+Regression safety: ADDITIVE. Flag-gated; no effect when flag absent.
 
-**QW-4 — AutoFixer action allowlist (Tower C3-6 + Loop-D P5 "blast radius")**
-What: Restrict scheduled nightly auto-fix to `SAFE_FIX_ACTIONS = {"BASELINE_UPDATE",
-"FLOAT_PRECISION", "FORMULA_ERROR"}`. Everything else deferred to manual `--unsafe-fixes` run.
-Module: `nightly/runner.py:666` before `auto_fixer.attempt_fix()`.
-Evidence: Current code has no action allowlist; `LLMRepairer` cap is 5 calls per run but
-covers any `failure_type` including destructive ones.
+**QW-3 — Liveness heartbeat + NEEDS ME list + STATUS/LOOP-STATE files (items #3 + #6 + #9)**
+Sources: Loop-D P5/P3 + Raytar E1/E2
+What: Three new outputs written inside the existing nightly loop; zero logic change:
+  1. `data/heartbeat_{project_id}.json` — every 60s in `_verify_with_timeout` poll loop.
+  2. `data/NEEDS_ME_{date}.md` — appended when `risk_checker.check()` skips a project,
+     when circuit opens, or when per-item retry cap is hit.
+  3. `data/LOOP-STATE_{date}.md` — written after each project with Done/In-progress/Next/
+     NEVER-touch + per-project goal-delta (ADVANCES_GOAL / NEUTRAL / REGRESSES_GOAL,
+     evaluated purely against the DB — no LLM call needed for this part).
+Regression safety: ADDITIVE (file outputs only).
 
-**QW-5 — STATUS.md per-iteration (Loop-D P3 "memory on disk")**
-What: After each project's bundle is written, append to `data/STATUS_{date}.md` with Done /
-In-progress / Next / NEVER-touch sections (readable by the next session's start hook).
-Module: `nightly/reporting.py` — new `write_status_md()` called alongside
-`_promote_progress_to_partial_report()`.
-Evidence: Verified no such file exists. `.progress_*.json` is machine-readable only.
+**QW-4 — AutoFixer blast radius + action allowlist (items #4 + #5)**
+Sources: Loop-D P5 + Tower C3-6
+What: Two env-flag-gated guards in `runner.py:666`:
+  1. `SAFE_FIX_ACTIONS = frozenset({"BASELINE_UPDATE", "FLOAT_PRECISION", "FORMULA_ERROR"})` —
+     skip `attempt_fix` for other types during scheduled runs; `--unsafe-fixes` re-enables.
+  2. `OVERMIND_AUTOFIXER_WORKTREE=1` env flag — require `WorktreeManager` for all auto-fix
+     writes; skip if project has no `.git` dir.
+Regression safety: ADDITIVE. Both flags default OFF; no change to existing scheduled runs
+unless explicitly set.
+
+**QW-5 — Loop Charter Template + manual-run gate (items #7 + #8)**
+Sources: Raytar E1 + Loop-D P7
+What:
+  1. `overmind/activation/LOOP_CHARTER_TEMPLATE.md` — versioned skill file with 6 sections.
+     `overmind charter init` CLI instantiates it to `data/charter_{date}.md`.
+  2. `evolution/promotion.py` — `manual_run_required=True` flag (default OFF). When ON, a
+     recipe requires `verified_in_manual_run=True` (set when `--manual` flag is present)
+     before promotion to `SKILLS.json`.
+Regression safety: ADDITIVE. Charter is a new file; promotion flag is additive opt-in.
 
 ---
 
-### Top 3 Bigger Bets (effort M, ≤1 week each)
+### Top 3 Bigger Bets (effort M, mixed ADDITIVE/INVASIVE)
 
-**BB-1 — Human comprehension-debt gate (Loop-D P6 Death #4 + Tower human_checkpoint.py)**
-What: After diagnosis/auto-fix phase, if the same projects have been FAIL/REJECT for ≥ 3
-consecutive nights, write `data/HOLD_FOR_HUMAN.md` and block wiki/skill-library updates
-until `overmind check --ack-hold` is run explicitly. The loop **cannot** skip this gate.
-Modules: `nightly/runner.py` post-fix phase (write gate file); `evolution/promotion.py` /
-`evolution/skill_library.py` (check gate file before promoting).
-Why: The article names this the most under-taught brake. A loop that self-repairs can
-accumulate "comprehension debt" — silently promoting bad fixes until the problem is too
-large to review.
+**BB-1 — Human comprehension-debt gate (item #11) — ADDITIVE**
+Sources: Loop-D P6 Death #4 + Tower `human_checkpoint.py` + Raytar E2
+What: After the auto-fix phase in `runner.py`, if the same projects are FAIL/REJECT for ≥ 3
+consecutive nights, write `data/HOLD_FOR_HUMAN.md`. Block `SkillLibrary.promote_recipe()`
+and wiki compilation until `overmind check --ack-hold` is run. The run itself completes;
+only the promotion/wiki phase is gated.
+Distinction from NEEDS_ME: NEEDS_ME is non-blocking (written and loop continues). The
+comprehension-debt gate is the escalation path for the most serious unresolved cases.
+Regression safety: ADDITIVE. New blocking file check; does not touch verification, judge,
+or quorum paths. Run `evals.run_all` before + after; expect no change.
 
-**BB-2 — Goal-directed stop condition (Loop-D P2)**
-What: `data/loop_goal.json` defines the fixpoint (e.g. "all high-risk projects CERTIFIED").
-`GoalChecker` in `overmind/activation/goal_checker.py` uses a cheap Haiku model call to
-evaluate yes/no+reason at the end of each nightly run. When no=yes, the reason is injected
-as context for the next run's start hook.
-Modules: New `overmind/activation/goal_checker.py`; `activation/hooks/on_session_stop.py`;
-`nightly/runner.py:main()` with `--loop-mode` flag.
-Why: Converts Overmind from batch ("run all projects once") to loop ("run until goal met").
-This is the architectural step that enables fully autonomous verification campaigns.
+**BB-2 — Goal-directed stop condition + self-check (item #12) — INVASIVE; branch + eval gate**
+Sources: Loop-D P2 + Raytar E4
+What: New `overmind/activation/goal_checker.py`. Reads `data/loop_goal.json`. After each
+project, records goal-delta to `LOOP-STATE_{date}.md` (no LLM call — DB only). After the
+full run, makes one cheap LLM call (Haiku via `SubprocessBackend`) returning yes/no+reason.
+If no, injects the reason into `on_session_stop.py` memory extraction as context. `--loop-mode`
+flag in `runner.py:main()` re-invokes the verification pass up to `max_iterations`.
+Invasive because: changes `on_session_stop.py` code path (adds GoalChecker call before
+DreamEngine); could affect memory extraction timing and what memories are created.
+Regression-safety plan:
+  1. Develop on branch `loop-engineering-goal-checker`.
+  2. Run `python -m evals.run_all` on master → record scores (baseline above).
+  3. Run `python -m evals.run_all` on branch.
+  4. Critical gauges: `memory_recall.recall` must stay 1.0; `memory_retraction.transitive_recall_after`
+     must stay 1.0; `judge_masterkey` suite must hold.
+  5. Gate behind `OVERMIND_LOOP_MODE=0` (default OFF). Only activate after eval gate passed.
+  6. Do NOT merge to master until eval gate confirmed.
 
-**BB-3 — Hash-chained evidence ledger (Tower SPEC/ledger + Loop-D P3 "memory")**
-What: In `nightly/reporting.py`, after each bundle is written, append to
-`data/evidence_ledger.jsonl` with `{id, ts, project_id, verdict, bundle_hash, prev_hash}`
-where `prev_hash = SHA256(prior event)`. This creates an append-only tamper-evident chain
-across the entire portfolio across time.
-Modules: `nightly/reporting.py`; new `verification/evidence_ledger.py`.
-Why: CertBundle signing already proves individual bundle integrity, but there is no proof
-that the *sequence* of verdicts (CERTIFIED → FAIL → CERTIFIED) is complete and unmodified.
-The ledger closes this gap and enables SLO queries ("what was the false-positive rate last
-30 days?").
+**BB-3 — Hash-chained evidence ledger (item #13) — ADDITIVE**
+Sources: Tower SPEC/`event_logger.py` + Loop-D P3
+What: New `overmind/verification/evidence_ledger.py`. After each bundle write in
+`reporting.py`, append `{id, ts, project_id, verdict, bundle_hash, prev_hash}` to
+`data/evidence_ledger.jsonl`. SHA-256 the canonical event (excluding `prev_hash`) and chain.
+Enables cross-run audit trail and SLO queries that the individual per-bundle signatures cannot.
+Regression safety: ADDITIVE. New append-only file; no existing path changed. Run `evals.run_all`
+before + after; expect no change.
+
+---
+
+### Invasive items deferred to branches (do not adopt on master without eval gate)
+
+| Item | Risk | Critical eval to protect | Branch name suggestion |
+|------|------|--------------------------|------------------------|
+| #14 — Maker/judge cross-family enforcement | Could cause `judge_error` when Gemini key absent; mono-backend setups fail differently | `judge_masterkey.genuine_accuracy = 1.0`; `quorum_decorrelation.honest_panels_unchanged_rate = 1.0` | `loop-eng-xfamily-judge` |
+| #15 — Agent capability model routing | Changes judge selection in `judge_factory.py` | `engine_routing.accuracy_routed = 1.0` | `loop-eng-judge-routing` |
+| #16 — Witness grading (A/B/C tiers) | Changes `cert_bundle.py` arbitration; could alter CERTIFIED/REJECT verdicts | `verdict_tracing.tree_consistent = true` | `loop-eng-witness-grading` |
+| #17 — Blackboard shared-state quorum | Major change to `llm_judge.py:QuorumJudge` | Entire `judge_masterkey` suite | Defer — high risk, low urgency |
 
 ---
 
 ## What to do next
 
-1. **Immediate (today):** Implement QW-1 (circuit breaker) + QW-3 (heartbeat) — both are
-   ≤ 30 lines each and address the two highest-risk failure modes (runaway + silent death).
-2. **This week:** QW-2 (budget ceiling) + QW-4 (action allowlist) + QW-5 (STATUS.md).
-3. **Next sprint:** BB-1 (comprehension-debt gate) — this is the hardest brake to add
-   because it crosses the loop/schedule boundary.
-4. **Update this doc** when the MRAgent (Source A) and external-research (Source B) agents
-   return their results.
+**Order enforced by the no-regression constraint and Loop Engineering P7 ("prove manual
+→ fold to skill → wrap in loop → schedule"):**
+
+1. **Today — run baseline evals and record them:**
+   ```
+   python -m evals.run_all > evals/results/baseline_pre_loop_engineering.txt
+   ```
+   This is the reference snapshot for all future comparisons.
+
+2. **This week — implement all ADDITIVE quick wins on master (QW-1 through QW-5):**
+   After each QW, run `python -m evals.run_all` and confirm critical gauges unchanged.
+   Commit order: QW-1 → QW-3 → QW-2 → QW-4 → QW-5 (brakes first).
+
+3. **Next sprint — BB-1 (comprehension-debt gate) on master (ADDITIVE):**
+   Then BB-3 (evidence ledger, also ADDITIVE). Both are safe for master.
+
+4. **Branch work (after brakes are in and stable):**
+   Open `loop-engineering-goal-checker` branch for BB-2. Run eval gate as described.
+   Only merge when `memory_recall.recall = 1.0` confirmed on branch.
+
+5. **Invasive items (#14-17):** Do NOT schedule until BB-2 is merged and the loop is
+   demonstrably stable. The brakes must be in before the horsepower.
+
+6. **Update this doc** when MRAgent (Source A) and external-research (Source B) agents
+   return their results — those sections remain PENDING.
