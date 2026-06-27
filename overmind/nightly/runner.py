@@ -22,6 +22,8 @@ from __future__ import annotations
 
 import argparse
 import json
+import os
+import subprocess
 import sys
 import time
 from collections import Counter
@@ -57,6 +59,38 @@ from overmind.nightly.integrations import (
     collect_bypass_findings,
 )
 
+# QW-4: action allowlist for the auto-fix phase.
+# Only these failure types are attempted when --unsafe-fixes is not set.
+SAFE_FIX_ACTIONS: frozenset[str] = frozenset({
+    "BASELINE_UPDATE",
+    "FLOAT_PRECISION",
+    "FORMULA_ERROR",
+})
+
+# Cost estimate per LLM repair call (claude-sonnet baseline; per QW-2).
+# Used when args.budget_usd is set to enforce a spend ceiling.
+_COST_PER_UPGRADE_USD: float = 0.009   # ~1.5k in + 300 out tokens
+_COST_PER_REPAIR_USD: float = 0.015    # ~2k in + 500 out tokens
+
+
+def _append_needs_me(date_str: str, section: str, line: str) -> None:
+    """Append one line to data/NEEDS_ME_{date_str}.md (non-blocking; QW-3)."""
+    try:
+        needs_me_path = DATA_DIR / f"NEEDS_ME_{date_str}.md"
+        DATA_DIR.mkdir(parents=True, exist_ok=True)
+        if not needs_me_path.exists():
+            needs_me_path.write_text(
+                f"# NEEDS ME — {date_str}\n"
+                "Actions below require explicit human authorization before the "
+                "next nightly run can attempt them.\n"
+                "The loop continued past these items; no action was taken.\n",
+                encoding="utf-8",
+            )
+        with needs_me_path.open("a", encoding="utf-8") as fh:
+            fh.write(f"\n## {section}\n- {line}\n")
+    except Exception:
+        pass  # File output is observability only; never crash the run
+
 
 def _verify_worker(baselines_dir, test_timeout, project_dict, result_queue):
     """Worker function for multiprocessing-based verification."""
@@ -71,11 +105,15 @@ def _verify_worker(baselines_dir, test_timeout, project_dict, result_queue):
         result_queue.put(("error", str(exc)))
 
 
-def _verify_with_timeout(engine, proj, timeout=900):
+def _verify_with_timeout(engine, proj, timeout=900, heartbeat_path=None):
     """Run engine.verify in a separate process with a hard timeout.
 
     If the process hangs, it gets killed after `timeout` seconds.
     Returns a CertBundle (real or synthetic FAIL).
+
+    ``heartbeat_path`` (QW-3): when provided, a liveness JSON is written
+    every 60 s during the poll loop so a morning health-check can detect
+    silence > 90 s as a hung project.  Defaults to None (no-op).
     """
     import multiprocessing
     from overmind.verification.scope_lock import WitnessResult
@@ -91,8 +129,23 @@ def _verify_with_timeout(engine, proj, timeout=900):
     # Poll is_alive() instead of join(timeout) — join hangs on Windows
     # when child subprocesses hold inherited pipe handles
     deadline = time.time() + timeout
+    _last_heartbeat = time.time()
     while worker.is_alive() and time.time() < deadline:
         time.sleep(2)
+        # QW-3: liveness heartbeat every 60 s
+        if heartbeat_path is not None:
+            _now = time.time()
+            if _now - _last_heartbeat >= 60:
+                try:
+                    _hb_tmp = heartbeat_path.with_suffix(".tmp")
+                    _hb_tmp.write_text(
+                        json.dumps({"ts": _now, "pid": worker.pid, "alive": True}),
+                        encoding="utf-8",
+                    )
+                    _hb_tmp.replace(heartbeat_path)
+                    _last_heartbeat = _now
+                except Exception:
+                    pass
 
     if worker.is_alive():
         # Windows pipe-handle survival: worker.terminate() can't always kill
@@ -381,6 +434,18 @@ def _run_verification(db: StateDatabase, args: argparse.Namespace, run_start: da
                     pass
     skipped_cached = 0
 
+    # QW-1: circuit breaker (cross-night) + per-item retry counter (per-run)
+    from overmind.verification.loop_brakes import NightCircuitBreaker, ItemRetryCounter
+    _circuit_breaker = NightCircuitBreaker(DATA_DIR / "circuit_states.json")
+    _item_counter = ItemRetryCounter(max_retries=3)
+
+    # QW-2: running cost accumulator (used when args.budget_usd is set)
+    _run_cost_usd: float = 0.0
+    _budget_usd: float | None = getattr(args, "budget_usd", None)
+
+    # QW-3: LOOP-STATE tracking
+    _done_projects: list[tuple[str, str, str]] = []  # (name, verdict, goal_delta)
+
     for i, proj in enumerate(projects, 1):
         if proj.project_id in completed_ids:
             print(f"[{i}/{len(projects)}] {proj.name}... SKIPPED (already verified)")
@@ -397,18 +462,44 @@ def _run_verification(db: StateDatabase, args: argparse.Namespace, run_start: da
                 certified += 1
                 continue
 
+        # QW-1: skip if circuit is open for this project
+        if _circuit_breaker.is_open(proj.project_id):
+            _cstate = _circuit_breaker.circuit_state(proj.project_id)
+            _cfails = _circuit_breaker.consecutive_fails(proj.project_id)
+            _cclass = _circuit_breaker.failure_class(proj.project_id)
+            print(f"[{i}/{len(projects)}] {proj.name}... SKIP (circuit {_cstate})")
+            _append_needs_me(
+                date_str,
+                "Circuit-open (unfixable without human intervention)",
+                f"{proj.name} — circuit {_cstate} after {_cfails} consecutive nights FAIL, "
+                f"class: {_cclass or 'unknown'}",
+            )
+            continue
+
         print(f"[{i}/{len(projects)}] {proj.name}...", end=" ", flush=True)
         start = time.time()
         # Per-project wall-clock timeout using multiprocessing (can kill hung subprocesses)
         # Per-project override (PROJECT_WORKER_TIMEOUTS) wins when present.
         proj_timeout = PROJECT_WORKER_TIMEOUTS.get(proj.project_id, args.worker_timeout)
-        bundle = _verify_with_timeout(engine, proj, timeout=proj_timeout)
+        # QW-3: heartbeat path for liveness monitoring
+        _heartbeat_path = DATA_DIR / f"heartbeat_{proj.project_id[:20]}.json"
+        bundle = _verify_with_timeout(
+            engine, proj, timeout=proj_timeout, heartbeat_path=_heartbeat_path,
+        )
         elapsed = time.time() - start
 
         results.append({"project": proj, "bundle": bundle, "elapsed": elapsed})
 
         verdict = bundle.verdict
         print(f"{verdict} ({elapsed:.1f}s) [{bundle.arbitration_reason}]")
+
+        # QW-1: update circuit breaker after each verify
+        if verdict in ("CERTIFIED", "PASS"):
+            _circuit_breaker.record_success(proj.project_id)
+        elif verdict in ("FAIL", "REJECT"):
+            _circuit_breaker.record_attempt(
+                proj.project_id, bundle.failure_class or verdict
+            )
 
         # Tally
         if verdict == "CERTIFIED":
@@ -506,6 +597,43 @@ def _run_verification(db: StateDatabase, args: argparse.Namespace, run_start: da
         # flag on successful completion. Helper is idempotent and a no-op on
         # already-canonical reports.
         _promote_progress_to_partial_report(date_str)
+
+        # QW-3: per-project goal-delta (DB-only; no LLM call)
+        _prev_certified = proj.project_id in yesterday_bundles
+        if verdict in ("CERTIFIED", "PASS") and not _prev_certified:
+            _goal_delta = "ADVANCES_GOAL"
+        elif verdict in ("FAIL", "REJECT") and _prev_certified:
+            _goal_delta = "REGRESSES_GOAL"
+        else:
+            _goal_delta = "NEUTRAL"
+        _done_projects.append((proj.name, verdict, _goal_delta))
+
+        # QW-3: write LOOP-STATE_{date}.md after each project
+        _remaining = [p.name for p in projects[i:]]
+        _never_touch = sorted(SKIP_PROJECTS)
+        try:
+            _loop_state_lines = [
+                f"# Overmind Loop State — {date_str}",
+                "",
+                "## Done",
+            ]
+            for _pn, _pv, _pg in _done_projects:
+                _loop_state_lines.append(f"- {_pn} {_pv} ({_pg})")
+            _loop_state_lines += [
+                "",
+                "## Next",
+                ", ".join(_remaining) if _remaining else "(none)",
+                "",
+                "## NEVER-touch",
+            ]
+            for _sk in _never_touch[:20]:
+                _loop_state_lines.append(f"- {_sk}")
+            _atomic_write_text(
+                DATA_DIR / f"LOOP-STATE_{date_str}.md",
+                "\n".join(_loop_state_lines) + "\n",
+            )
+        except Exception:
+            pass  # Observability only
 
     # Clean up progress file on successful completion
     if progress_path.exists():
@@ -650,7 +778,16 @@ def _run_verification(db: StateDatabase, args: argparse.Namespace, run_start: da
             upgraded = 0
             for i, diag in enumerate(diagnoses):
                 if diag.failure_type == "UNKNOWN":
+                    # QW-2: budget ceiling check before each LLM upgrade call
+                    if _budget_usd is not None and _run_cost_usd + _COST_PER_UPGRADE_USD > _budget_usd:
+                        print(
+                            f"\n  [BUDGET] LLM upgrade halted — run cost ${_run_cost_usd:.4f} "
+                            f"would exceed --budget-usd ${_budget_usd:.2f}",
+                            flush=True,
+                        )
+                        break
                     new_diag = upgrade_unknown_diagnosis(diag, timeout=30)
+                    _run_cost_usd += _COST_PER_UPGRADE_USD  # QW-2: accumulate
                     if new_diag.failure_type != "UNKNOWN":
                         diagnoses[i] = new_diag
                         upgraded += 1
@@ -694,7 +831,30 @@ def _run_verification(db: StateDatabase, args: argparse.Namespace, run_start: da
         risk = risk_checker.check(proj.root_path)
         if not risk.safe:
             print(f"  [SKIP] {proj.name}: {risk.reason}")
+            # QW-3: log risk-skipped projects to NEEDS_ME
+            _append_needs_me(
+                date_str,
+                "Blocked by risk gate",
+                f"{proj.name} [{risk.reason}]",
+            )
             continue
+
+        # QW-4: SAFE_FIX_ACTIONS allowlist gate (bypassed by --unsafe-fixes)
+        _unsafe_fixes = getattr(args, "unsafe_fixes", False)
+        if not _unsafe_fixes and diag.failure_type not in SAFE_FIX_ACTIONS:
+            _append_needs_me(
+                date_str,
+                "Blocked by action allowlist",
+                f"{proj.name} [{diag.failure_type}] — not in SAFE_FIX_ACTIONS; "
+                "pass --unsafe-fixes to allow",
+            )
+            continue
+
+        # QW-4: OVERMIND_AUTOFIXER_WORKTREE — skip projects with no .git dir
+        if os.environ.get("OVERMIND_AUTOFIXER_WORKTREE", "0") == "1":
+            if not Path(proj.root_path, ".git").exists():
+                print(f"  [SKIP] {proj.name}: OVERMIND_AUTOFIXER_WORKTREE=1 but no .git dir")
+                continue
 
         verify_fn = make_verify_fn(proj.test_commands[0], proj.root_path) if proj.test_commands else None
         result = auto_fixer.attempt_fix(diag, proj.root_path, verify_fn=verify_fn)
@@ -728,8 +888,30 @@ def _run_verification(db: StateDatabase, args: argparse.Namespace, run_start: da
                 risk = risk_checker.check(proj.root_path)
                 if not risk.safe:
                     continue
+
+                # QW-1: per-item retry cap (3 tries per project per run)
+                if _item_counter.is_capped(diag.project_id):
+                    _append_needs_me(
+                        date_str,
+                        "Per-item retry cap hit",
+                        f"{proj.name} — exceeded {_item_counter.max_retries} repair "
+                        f"attempts this run, failure_type: {diag.failure_type}",
+                    )
+                    continue
+                _item_counter.increment(diag.project_id)
+
+                # QW-2: budget ceiling — halt LLM phase if spend ceiling exceeded
+                if _budget_usd is not None and _run_cost_usd + _COST_PER_REPAIR_USD > _budget_usd:
+                    print(
+                        f"\n  [BUDGET] LLM repair halted — run cost ${_run_cost_usd:.4f} "
+                        f"would exceed --budget-usd ${_budget_usd:.2f}",
+                        flush=True,
+                    )
+                    break
+
                 verify_fn = make_verify_fn(proj.test_commands[0], proj.root_path) if proj.test_commands else None
                 llm_result = llm_repairer.attempt_repair(diag, proj.root_path, verify_fn=verify_fn)
+                _run_cost_usd += _COST_PER_REPAIR_USD  # QW-2: accumulate estimated cost
                 if llm_result.success:
                     llm_succeeded += 1
                     print(f"  [LLM-FIXED] {proj.name}: {llm_result.detail}")
@@ -770,6 +952,10 @@ def _run_verification(db: StateDatabase, args: argparse.Namespace, run_start: da
     skill_lib = SkillLibrary(Path("C:/overmind/wiki/SKILLS.json"))
     promoted = 0
     recipes = evo_mgr._load_recipes()
+    # QW-5: stamp verified_in_manual_run on all recipes when --manual flag is set
+    if getattr(args, "manual", False):
+        for recipe in recipes:
+            recipe.verified_in_manual_run = True
     for recipe in recipes:
         if recipe.is_proven():
             skill = skill_lib.promote_recipe(recipe)
