@@ -17,6 +17,7 @@ marked PENDING where results were not yet received from the web-fetch agent at c
 | C | Tower repo (`F:\Tower`, also `mahmood726-cyber/tower` on GitHub) | YES — read locally + GitHub scan |
 | D | "Loop Engineering: The Anatomy of an Autonomous Loop" (zostaff, Jun 2026) | YES — full text provided by user; mapped against Overmind direct reads |
 | E | "Loop Engineering" — incremental patterns (Raytar, Jun 2026) | YES — full principles provided by user; incremental additions only (no duplication of article D) |
+| F | "Vector RAG Isn't Enough — I Built a Context Graph Layer for Multi-Agent Memory" (Emmimal P Alexander, TDS, Jun 2026; repo github.com/Emmimal/context-graph-benchmark) | YES — key findings and numbers provided by user verbatim; Overmind memory layer verified by direct reads of `storage/models.py`, `memory/store.py`, `verification/claim_graph.py`, `storage/db.py`, `intelligence/portfolio_state.py` |
 
 ---
 
@@ -535,6 +536,89 @@ guard. Loop mode should only be enabled with an explicit `--budget-usd` flag set
 
 ---
 
+## Source F — "Vector RAG Isn't Enough — I Built a Context Graph Layer for Multi-Agent Memory" (Emmimal P Alexander, TDS, Jun 2026)
+
+Full text not provided; key findings given verbatim by user. Repo: `github.com/Emmimal/context-graph-benchmark`.
+
+### F.1 Benchmark results
+
+Multi-agent memory benchmark: 3 architectures, 18 graded queries (6 direct / 7 distant / 5 join), zero LLM calls, deterministic:
+
+| Architecture | Accuracy | Tokens/query | JOIN accuracy |
+|-------------|---------|-------------|--------------|
+| Context Graph (NetworkX→Neo4j, 2-hop traversal) | **88.9%** | **26.9** | **80%** |
+| Raw history (full context dump) | 61.1% | 490.9 | 40% |
+| Vector-only RAG (cosine similarity) | 50.0% | 75.9 | 20% |
+
+**The decisive gap is JOIN queries** — combining two separately-stated facts (e.g. "project A uses module X" + "module X has a security issue" → "project A has a security issue"). Vector similarity retrieves each fact independently but structurally cannot combine them. Graph traversal collapses the two-hop path in one query.
+
+### F.2 Two production bugs (directly relevant to Overmind)
+
+**Bug 1 — STALE-FACT supersession:** On restating a `(subject, predicate)` triple with a new object, you must DROP the old edge or the graph returns stale facts with full confidence. The fix requires predicate-match detection at write time, not just on explicit call.
+
+**Bug 2 — ENTITY-VOCABULARY mismatch:** "the auth module" ≠ node `AuthModule` without an alias/entity-linking step. In production this requires an LLM call at index time.
+
+### F.3 Truthful assessment against Overmind's current memory layer
+
+Verified by reading: `storage/models.py`, `memory/store.py`, `verification/claim_graph.py`, `storage/db.py`, `intelligence/portfolio_state.py`.
+
+---
+
+#### (a) Typed relationships enabling 2-hop / JOIN retrieval — MISSING
+
+`MemoryRecord` (models.py:221) has two edge fields:
+- `linked_memories: list[str]` — generic, untyped association by memory_id; no predicate label
+- `derived_from: list[str]` — directed dependency edges (claim depends on evidence); no predicate label beyond the directionality
+
+`ClaimGraph` (claim_graph.py) is a directed graph with only one edge semantics: "depends on". Its sole API is `retract()` — there is no retrieve-by-traversal or join-query path. It is never called during recall.
+
+The retrieval path in `MemoryStore` is:
+1. `search()` — SQLite FTS5 full-text search (`db.py:308-333`)
+2. `semantic_search_memories()` — cosine similarity over stored embeddings (`db.py:335-367`)
+3. `hybrid_search()` — FTS5 first; if < 3 results, augment with cosine; dedup (`store.py:94-118`)
+
+None of these paths traverse graph edges. **Overmind's retrieval is architecturally vector + FTS, matching the "Vector-only RAG" baseline in the benchmark (50.0% accuracy on JOINs: 20%).**
+
+A cross-project JOIN query — "project A is CERTIFIED; project A uses the cryptography module; what is the cryptography module's verdict?" — cannot be answered by the current retrieval layer. The two facts are stored as separate `MemoryRecord` rows with no typed relationship connecting them.
+
+---
+
+#### (b) Fact-supersession on restate — PARTIAL (explicit call only; no predicate-match detection)
+
+`MemoryStore.supersede(old_id, new_memory)` (store.py:120-138) correctly implements supersession: sets `old.valid_until = now`, `old.status = "expired"`, links `new_memory.linked_memories` to the old id. The underlying semantics are correct.
+
+**The gap vs. the article's Bug 1:** `supersede()` requires the caller to know `old_memory_id` explicitly. There is no automatic predicate-match lookup — nothing checks "does an active memory with the same (scope, predicate-equivalent-title) already exist before writing a new one?" The `extractor.py` / `dream_engine.py` pipeline that writes memories at session-stop does not call `supersede()` — it calls `save_batch()` which calls `upsert_memory()` directly (likely INSERT-or-UPDATE by `memory_id`, not by content-hash). So on restatement of a fact with a new value, an old conflicting memory can persist as `active` alongside the new one.
+
+Verified: `store.py:29-31` (`save()`/`save_batch()` → `db.upsert_memory()`); the upsert key is `memory_id`, not a content-derived predicate hash.
+
+---
+
+#### (c) Entity-linking / alias resolution — PARTIAL, project-scoped only
+
+`intelligence/portfolio_state.py:39-65` implements `project_identity_aliases()`: given a `ProjectRecord`, generates a frozenset of string aliases (slugify, lowercase, path normalization, id truncation). The `_project_identity_alias_map()` (line 137-143) builds a full alias→canonical_identity dict used to resolve scope mismatches when loading memories against bundles.
+
+This is **project-entity linking only** — it normalizes "EvidenceOracle" → "evidenceoracle" → "evidence-oracle" → "evidence_oracle" so that a memory scoped to one form is found when looking up another. It is not a general entity-linking layer. For general memory entities ("the auth module", "the judge backend", "the scoring heuristic") there is no alias/entity-linking step.
+
+---
+
+### F.4 Recommendation: `memory_join_recall` eval + optional context-graph retrieval layer
+
+**New eval first** (ADDITIVE, S effort): Before building any graph layer, add `evals/memory_join_recall.py` adapting the article's 18-query structure to Overmind's domain. Three query categories:
+
+| Category | Example Overmind query | Expected source |
+|---------|----------------------|----------------|
+| Direct (6) | "What is the verdict for project X?" | Single memory lookup |
+| Distant (7) | "What failure class occurred for project X two nights ago?" | Temporal scan over memories |
+| JOIN (5) | "Project A and project B share a test runner. What is that runner's success_rate_7d?" | Two-hop: project→runner→attribute |
+
+Benchmark all three current retrieval backends (FTS5, cosine, hybrid) against these 18 queries, deterministically, zero LLM calls. This gives a baseline before any graph layer is added. The eval harness pattern is already established in `evals/memory_recall.py` and `evals/memory_retraction.py`.
+
+**Graph retrieval layer** (ADDITIVE, M effort, flag-gated): New `overmind/memory/graph_store.py`. Uses NetworkX (already likely available; if not, pure-Python dict implementation of 2-hop traversal is trivial). Builds a typed-relationship graph **on top of** the existing SQLite store — does not replace it. On `save()`, optionally indexes `(scope, predicate, object)` triples extracted from memory content. On `recall_join()`, executes 2-hop traversal. Gate: `OVERMIND_GRAPH_MEMORY=0` (default OFF). When ON, `hybrid_search` gains a post-step: if FTS5+cosine returns < threshold results for a query that looks like a join (two entity mentions), also run `graph_store.recall_join()` and merge.
+
+**Supersession fix** (ADDITIVE, S effort): In `memory/extractor.py` or wherever facts are written at session-stop, add a `find_superseded(scope, title_hash)` pre-check before `save()`. If an active memory with the same normalized `(scope, title_key)` exists, call `supersede()` instead of `save()`. This closes Bug 1 without touching the retrieval path at all.
+
+---
+
 ## No-Regression Framework
 
 **Hard constraint:** No recommendation in this document may be adopted if it regresses the
@@ -604,6 +688,9 @@ plan added.
 | 17 | Tower Orchestrator | Blackboard shared-state for quorum | QuorumJudge backends share findings before final vote | MISSING | L | **INVASIVE** — changes `llm_judge.py:QuorumJudge`; alters verdict path | Branch required. Critical: `judge_masterkey` suite must hold at 0.0/1.0. High risk — defer. |
 | 18 | Tower SLO | Verification SLO monitoring | New `verification/slo.py`; metrics from nightly report | MISSING | L | **ADDITIVE** — new module reading existing outputs | Run `evals.run_all` before + after; expect no change |
 | 19 | E5 | "When NOT to loop" decision rule | Documentation only; `--loop-mode` requires `--budget-usd` | N/A | S | **ADDITIVE** — documentation + CLI constraint | No eval risk |
+| 20 | F (eval) | `memory_join_recall` — 18-query deterministic benchmark (direct/distant/join) | New `evals/memory_join_recall.py`; baselines FTS5 + cosine + hybrid on Overmind-domain queries | MISSING | S | **ADDITIVE** — new eval file; zero change to production paths | No eval regression risk; adds new measurement only |
+| 21 | F (Bug 1) | Supersession on restate — predicate-match pre-check before `save()` | `memory/extractor.py` or session-stop writer: `find_superseded(scope, title_hash)` → call `supersede()` instead of `save()` | PARTIAL (explicit call only) | S | **ADDITIVE** — new pre-check before write; does not alter retrieval or retraction paths | Run `evals.run_all` before + after; critical: `memory_recall.recall = 1.0` must hold |
+| 22 | F (core) | Context-graph retrieval layer (typed triples, 2-hop JOIN) | New `overmind/memory/graph_store.py`; augments `hybrid_search` post-step when `OVERMIND_GRAPH_MEMORY=1` | MISSING | M | **ADDITIVE** — new module + flag; default OFF; `hybrid_search` fallback unchanged when flag unset | Run `memory_join_recall` eval before + after enabling flag; also run `memory_recall` + `memory_retraction`; expect existing scores unchanged when flag OFF |
 
 ---
 
@@ -666,6 +753,24 @@ Regression safety: ADDITIVE. Charter is a new file; promotion flag is additive o
 
 ---
 
+**QW-6 — `memory_join_recall` eval + supersession pre-check (items #20 + #21)**
+Sources: Alexander F benchmark + Bug 1 fix
+What:
+  1. New `evals/memory_join_recall.py` — 18 deterministic queries (6 direct / 7 distant / 5 join)
+     adapted to Overmind domain (project→verdict, project→runner→attribute, runner→task→status).
+     Zero LLM calls; scores FTS5, cosine, and hybrid against each category. Added to
+     `evals/run_all.py` import list and `summary.json` output.
+  2. `memory/extractor.py` (or wherever `save_batch()` is called at session-stop): add
+     `_find_superseded(db, scope, title_key)` helper that runs
+     `SELECT memory_id FROM memories WHERE scope=? AND status='active' AND title_key=?`
+     before each write; if found, calls `store.supersede(old_id, new_memory)` instead of
+     `save()`. `title_key = hashlib.sha256(normalize(title)).hexdigest()[:12]`.
+Regression safety: eval addition is pure measurement. Supersession pre-check is ADDITIVE
+(changes write path from upsert-always to supersede-if-exists); run `memory_recall` +
+`memory_retraction` evals before + after; both must hold.
+
+---
+
 ### Top 3 Bigger Bets (effort M, mixed ADDITIVE/INVASIVE)
 
 **BB-1 — Human comprehension-debt gate (item #11) — ADDITIVE**
@@ -708,6 +813,27 @@ before + after; expect no change.
 
 ---
 
+**BB-4 — Context-graph retrieval layer (item #22) — ADDITIVE**
+Sources: Alexander F (NetworkX graph, 2-hop traversal)
+What: New `overmind/memory/graph_store.py`. In-memory NetworkX digraph with typed edges:
+  `add_edge(subject_id, object_id, predicate="USES"|"VERIFIED_BY"|"FAILS_WITH"|"DEPENDS_ON")`.
+  Populated on `save()` when `OVERMIND_GRAPH_MEMORY=1` by extracting typed triples from
+  `MemoryRecord.content` via a regex/heuristic extractor (no LLM needed for structural facts
+  like project→runner→verdict). Retrieval: `recall_join(entity_a, entity_b)` runs BFS up to
+  2 hops and returns paths. Augments `hybrid_search` as a post-step when the query contains
+  two distinct entity mentions and FTS5+cosine returns < 3 results.
+  Persistence: on process exit, serialize graph to `data/memory_graph.json` (adjacency list).
+  Load on init. Does NOT replace SQLite store — it is a supplementary index.
+Prerequisite: `memory_join_recall` eval (QW-6 item #20) must be written first to provide
+  the before/after measurement gate. Implement and measure baseline, then enable
+  `OVERMIND_GRAPH_MEMORY=1`, re-run, report JOIN accuracy delta.
+Regression safety: ADDITIVE, flag-gated (default OFF). When flag OFF, `hybrid_search`
+  behavior is byte-for-byte identical to current. Run full `evals.run_all` + `memory_join_recall`
+  before + after enabling the flag. Critical: `memory_recall.recall = 1.0` must hold;
+  `memory_retraction.transitive_recall_after = 1.0` must hold.
+
+---
+
 ### Invasive items deferred to branches (do not adopt on master without eval gate)
 
 | Item | Risk | Critical eval to protect | Branch name suggestion |
@@ -744,5 +870,10 @@ before + after; expect no change.
 5. **Invasive items (#14-17):** Do NOT schedule until BB-2 is merged and the loop is
    demonstrably stable. The brakes must be in before the horsepower.
 
-6. **Update this doc** when MRAgent (Source A) and external-research (Source B) agents
+6. **Source F — memory layer (after QW-1 through QW-5 are stable):**
+   Add QW-6 (`memory_join_recall` eval + supersession pre-check) as a low-risk
+   measurement step. The eval alone is sufficient to quantify the JOIN gap before committing
+   to BB-4. Implement BB-4 (context-graph layer) only after the eval baseline is in.
+
+7. **Update this doc** when MRAgent (Source A) and external-research (Source B) agents
    return their results — those sections remain PENDING.
