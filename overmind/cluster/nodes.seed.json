@@ -31,6 +31,21 @@
         "cores": 0,
         "ram_gb": 0.0
       }
+    },
+    {
+      "name": "baseimage",
+      "kind": "remote",
+      "max_parallel": 4,
+      "hostname": "baseimage",
+      "tailscale_ip": "100.127.107.46",
+      "ssh_user": "user",
+      "ssh_key_path": "~/.ssh/node2_ed25519",
+      "capabilities": {
+        "engines": ["claude", "codex"],
+        "data_volumes": [],
+        "cores": 4,
+        "ram_gb": 16.0
+      }
     }
   ]
 }
