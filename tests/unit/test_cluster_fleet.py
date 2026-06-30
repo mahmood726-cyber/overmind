@@ -287,9 +287,10 @@ def test_seed_config_loads_and_localizes_pc2():
     cfg = load_config(seed_config_path())
     assert cfg["local_node"] == "pc2"
     reg = build_registry(cfg, this_hostname="pc2")
-    assert {n.name for n in reg.nodes} == {"pc2", "mahmood"}
+    assert {n.name for n in reg.nodes} == {"pc2", "mahmood", "baseimage"}
     assert reg.get("pc2").kind == "local"        # localized
     assert reg.get("mahmood").kind == "remote"
+    assert reg.get("baseimage").kind == "remote"
     # data volume declared on pc2
     assert "ubcma" in reg.get("pc2").capabilities.data_volumes
 
