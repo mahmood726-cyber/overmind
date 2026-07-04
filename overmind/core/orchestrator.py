@@ -37,6 +37,7 @@ from overmind.tasks.task_models import build_baseline_task
 from overmind.tasks.task_queue import TaskQueue
 from overmind.verification.llm_judge import LLMJudge, QuorumJudge
 from overmind.verification.judge_factory import build_judge
+from overmind.verification.objective_gate import emit_audit as _emit_objective_gate_audit
 from overmind.verification.policy_guard import PolicyGuard
 from overmind.verification.trajectory_scorer import TrajectoryScorer
 from overmind.verification.verifier import VerificationEngine
@@ -793,7 +794,7 @@ class Orchestrator:
                 completed_checks = self._append_unique_check(completed_checks, "semantic_requirements")
                 details.append(f"judge: pass (conf={judge_verdict.confidence:.2f})")
 
-        return VerificationResult(
+        final_result = VerificationResult(
             task_id=verification_result.task_id,
             success=True,
             required_checks=required_checks,
@@ -802,6 +803,16 @@ class Orchestrator:
             details=details,
             trace_id=verification_result.trace_id,
         )
+        # T12a objective-gate floor audit (WORLD_CLASS_SPEC D2): SHADOW ONLY —
+        # classifies whether this success verdict rests on an objective witness
+        # or on judge/heuristic agreement alone, and WARN-logs the latter. Never
+        # mutates the verdict; wrapped so an audit bug can never wedge the hot
+        # path. Controlled by OVERMIND_OBJECTIVE_GATE_AUDIT (default 'shadow').
+        try:
+            _emit_objective_gate_audit(final_result)
+        except Exception:  # noqa: BLE001 — audit is advisory; never break verify
+            pass
+        return final_result
 
     def _build_llm_judge(self) -> LLMJudge | QuorumJudge | None:
         if not self._judge_enabled():

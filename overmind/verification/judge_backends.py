@@ -103,6 +103,10 @@ class CodexBackend:
     timeout: int = 180
     runner: Runner = _default_runner
     command: str = "codex"
+    # Reasoning-effort knob (T11 / WORLD_CLASS_SPEC D1). None => current behavior
+    # byte-for-byte (no config override appended). Use 'low' for the cheap
+    # availability/smoke probe, 'xhigh' for the real bug-hunt pass.
+    effort: str | None = None
 
     def _codex_home(self) -> Path:
         override = os.environ.get("OVERMIND_CODEX_HOME_" + self.seat.upper())
@@ -116,7 +120,12 @@ class CodexBackend:
 
     def query(self, prompt: str) -> str:
         cmd = shutil.which(self.command) or self.command
-        argv = [cmd, "exec", "--skip-git-repo-check", "--sandbox", "read-only", "-"]
+        argv = [cmd, "exec", "--skip-git-repo-check", "--sandbox", "read-only"]
+        if self.effort:
+            # codex config override for reasoning effort; appended only when set
+            # so the default (effort=None) argv is unchanged.
+            argv += ["--config", f"model_reasoning_effort={self.effort}"]
+        argv += ["-"]
         # On Windows, .CMD / .BAT files cannot be executed directly by subprocess
         # without shell=True.  Wrap with `cmd /c` so the runner stays shell=False.
         if sys.platform == "win32" and cmd.upper().endswith((".CMD", ".BAT")):
