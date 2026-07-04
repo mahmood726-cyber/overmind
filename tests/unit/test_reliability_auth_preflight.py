@@ -8,6 +8,7 @@ from overmind.reliability.auth_preflight import (
     live_vendors,
     preflight_agy,
     preflight_all,
+    preflight_claude,
     preflight_codex,
     summarize,
 )
@@ -60,23 +61,56 @@ def test_agy_unavailable():
     assert "unavailable" in p.detail
 
 
+def test_preflight_claude_live_on_oauth():
+    p = preflight_claude(backend=_Backend("READY"))
+    assert p.vendor == "claude" and p.seat == "oauth" and p.alive is True
+
+
+def test_preflight_claude_degraded_on_not_logged_in():
+    p = preflight_claude(backend=_Backend("Not logged in · Please run /login"))
+    assert p.alive is False
+    assert "not logged in" in p.detail.lower()
+
+
+def test_preflight_claude_degraded_on_401_bearer():
+    p = preflight_claude(backend=_Backend("Failed to authenticate. API Error: 401 Invalid bearer token"))
+    assert p.alive is False
+
+
+def test_preflight_claude_degraded_when_no_auth():
+    p = preflight_claude(backend=_Backend("x", available=False))
+    assert p.alive is False
+    assert "setup-token" in p.detail
+
+
+def test_preflight_all_includes_claude_first_class():
+    codex = {"mahmood": _Backend("READY"), "noreen": _Backend(f"{JUDGE_ERROR} 401")}
+    probes = preflight_all(codex_backends=codex, agy_backend=_Backend("42"),
+                           claude_backend=_Backend("READY"))
+    assert live_vendors(probes) == ["agy", "claude", "codex"]  # claude is first-class + live
+    dead = degraded_seats(probes)
+    assert [p.seat for p in dead] == ["noreen"]
+
+
 def test_preflight_all_composes():
     codex = {"mahmood": _Backend("READY"), "noreen": _Backend(f"{JUDGE_ERROR} 401")}
-    probes = preflight_all(codex_backends=codex, agy_backend=_Backend("42"))
-    assert live_vendors(probes) == ["agy", "codex"]  # codex has 1 live seat
+    probes = preflight_all(codex_backends=codex, agy_backend=_Backend("42"),
+                           claude_backend=_Backend("READY"))
+    assert "codex" in live_vendors(probes) and "claude" in live_vendors(probes)
     dead = degraded_seats(probes)
     assert [p.seat for p in dead] == ["noreen"]
 
 
 def test_summarize_string():
     codex = {"mahmood": _Backend("READY"), "noreen": _Backend("READY")}
-    probes = preflight_all(codex_backends=codex, agy_backend=_Backend("42"))
+    probes = preflight_all(codex_backends=codex, agy_backend=_Backend("42"), include_claude=False)
     s = summarize(probes)
     assert "live=" in s and "degraded=none" in s
 
 
 def test_all_degraded_no_live_vendors():
     codex = {"mahmood": _Backend(f"{JUDGE_ERROR} 401"), "noreen": _Backend(f"{JUDGE_ERROR} 401")}
-    probes = preflight_all(codex_backends=codex, agy_backend=_Backend(f"{JUDGE_ERROR} down"))
+    probes = preflight_all(codex_backends=codex, agy_backend=_Backend(f"{JUDGE_ERROR} down"),
+                           include_claude=False)
     assert live_vendors(probes) == []
     assert len(degraded_seats(probes)) == 3

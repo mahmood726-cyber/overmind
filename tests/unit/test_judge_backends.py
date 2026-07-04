@@ -33,6 +33,42 @@ def test_claude_backend_pipes_prompt_on_stdin():
     assert cap["argv"][0].lower().startswith("claude") or "claude" in cap["argv"][0].lower()
 
 
+def test_claude_backend_passes_oauth_token_not_api_key():
+    # subscription OAuth path: CLAUDE_CODE_OAUTH_TOKEN is passed as env override
+    cap: dict = {}
+    backend = ClaudeCodeBackend(oauth_token="sk-ant-oat01-EXAMPLE", runner=_capturing_runner(cap, "OK"))
+    backend.query("p")
+    assert cap["env"].get("CLAUDE_CODE_OAUTH_TOKEN") == "sk-ant-oat01-EXAMPLE"
+    assert "ANTHROPIC_API_KEY" not in cap["env"]   # no API key in the override
+
+
+def test_claude_backend_reads_token_from_env(monkeypatch):
+    monkeypatch.setenv("CLAUDE_CODE_OAUTH_TOKEN", "sk-ant-oat01-FROMENV")
+    cap: dict = {}
+    ClaudeCodeBackend(runner=_capturing_runner(cap, "OK")).query("p")
+    assert cap["env"]["CLAUDE_CODE_OAUTH_TOKEN"] == "sk-ant-oat01-FROMENV"
+
+
+def test_claude_backend_no_token_no_override(monkeypatch):
+    monkeypatch.delenv("CLAUDE_CODE_OAUTH_TOKEN", raising=False)
+    cap: dict = {}
+    ClaudeCodeBackend(runner=_capturing_runner(cap, "OK")).query("p")
+    assert "CLAUDE_CODE_OAUTH_TOKEN" not in cap["env"]
+
+
+def test_claude_backend_available_with_token(monkeypatch):
+    monkeypatch.setenv("CLAUDE_CODE_OAUTH_TOKEN", "sk-ant-oat01-X")
+    monkeypatch.delenv("ANTHROPIC_API_KEY", raising=False)
+    # available() requires the CLI on PATH; assert token-path logic via _oauth_token
+    b = ClaudeCodeBackend()
+    assert b._oauth_token() == "sk-ant-oat01-X"
+
+
+def test_oauth_token_allowlisted_for_subprocess():
+    from overmind.subprocess_utils import SAFE_ENV_ALLOWLIST
+    assert "CLAUDE_CODE_OAUTH_TOKEN" in SAFE_ENV_ALLOWLIST
+
+
 def test_codex_backend_sets_codex_home_and_readonly(tmp_path: Path, monkeypatch):
     monkeypatch.setenv("OVERMIND_CODEX_HOME_MAHMOOD", str(tmp_path))
     cap: dict = {}

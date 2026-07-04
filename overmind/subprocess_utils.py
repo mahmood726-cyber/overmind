@@ -25,10 +25,16 @@ SAFE_ENV_ALLOWLIST = frozenset({
     "PYTHONIOENCODING", "PYTHONUTF8",
     "VIRTUAL_ENV",
     # Auth env vars for subprocess judge backends:
-    # ANTHROPIC_API_KEY is required for `claude -p` when running outside an
-    # interactive Claude Code session.  It is explicitly allow-listed so the
-    # ClaudeCodeBackend inherits it when the user has it set; it is never
-    # written to logs (secret scrubbing in the logger is the caller's concern).
+    # CLAUDE_CODE_OAUTH_TOKEN is the PREFERRED headless-Claude auth: it runs
+    # `claude -p` on the SUBSCRIPTION (OAuth bearer), NOT an API key — no
+    # ANTHROPIC_API_KEY needed and subscription billing is preserved. Set per node
+    # via `claude setup-token` + `setx CLAUDE_CODE_OAUTH_TOKEN <token>`. Allow-listed
+    # so a subprocess `claude -p` actually receives it (without this it was stripped,
+    # which is why headless claude fell back to "not logged in").
+    "CLAUDE_CODE_OAUTH_TOKEN",
+    # ANTHROPIC_API_KEY is an ALTERNATE (key-based) path for `claude -p`; only used
+    # when no OAuth token is present. Allow-listed so the ClaudeCodeBackend inherits
+    # it when set; never written to logs (secret scrubbing is the caller's concern).
     "ANTHROPIC_API_KEY",
     # AGY_DRIVER_PATH lets the deployer override the agy driver location without
     # relying on the default ~/agy-driver path.

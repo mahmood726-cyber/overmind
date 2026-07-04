@@ -75,18 +75,34 @@ class ClaudeCodeBackend:
     """Judge via the Claude Code CLI (`claude -p`). Prompt on stdin.
 
     Model-selection: this is the default for correctness-critical judging —
-    Opus-class reasoning. No API key needed (uses the logged-in CLI session).
+    Opus-class reasoning. **Auth is the subscription OAuth token, NOT an API key:**
+    it resolves ``CLAUDE_CODE_OAUTH_TOKEN`` and passes it to the subprocess as a
+    bearer credential (subscription billing preserved). ``ANTHROPIC_API_KEY`` is
+    only a fallback when no OAuth token is present. Without a token the CLI reports
+    "Not logged in" (a headless subprocess does not inherit the interactive
+    session's keychain creds), so the token is the supported headless path.
     """
 
     command: str = "claude -p"
     timeout: int = 180
     runner: Runner = _default_runner
+    oauth_token: str | None = None       # explicit override; else CLAUDE_CODE_OAUTH_TOKEN
+
+    def _oauth_token(self) -> str | None:
+        return self.oauth_token or os.environ.get("CLAUDE_CODE_OAUTH_TOKEN") or None
+
+    def _auth_env(self) -> dict[str, str]:
+        token = self._oauth_token()
+        return {"CLAUDE_CODE_OAUTH_TOKEN": token} if token else {}
 
     def available(self) -> bool:
-        return shutil.which(self.command.split()[0]) is not None
+        # CLI present AND some auth path resolvable (OAuth token or API key).
+        if shutil.which(self.command.split()[0]) is None:
+            return False
+        return bool(self._oauth_token()) or bool(os.environ.get("ANTHROPIC_API_KEY"))
 
     def query(self, prompt: str) -> str:
-        return self.runner(split_command(self.command), prompt, {}, self.timeout)
+        return self.runner(split_command(self.command), prompt, self._auth_env(), self.timeout)
 
 
 @dataclass(slots=True)

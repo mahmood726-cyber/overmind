@@ -16,10 +16,31 @@ from __future__ import annotations
 from dataclasses import dataclass
 
 from overmind.verification.cross_vendor_check import smoke_probe_codex_seats
-from overmind.verification.judge_backends import JUDGE_ERROR, AgyBackend
+from overmind.verification.judge_backends import JUDGE_ERROR, AgyBackend, ClaudeCodeBackend
 
 # agy smoke: a real code-exec proof (SOP: `python -c "print(6*7)"` -> 42).
 AGY_SMOKE_PROMPT = "Run python to compute 6*7 and reply with only the number."
+# Claude smoke: a real `claude -p` completion on the subscription OAuth token.
+CLAUDE_SMOKE_PROMPT = "Reply with exactly the token READY and nothing else."
+
+# Markers that mean the CLI ran but auth failed (NOT a live seat).
+_CLAUDE_AUTH_FAIL_MARKERS = ("not logged in", "invalid bearer", "401", "please run /login", "authenticate")
+
+
+def preflight_claude(*, backend: object | None = None, probe_prompt: str = CLAUDE_SMOKE_PROMPT) -> VendorProbe:
+    """Real headless `claude -p` smoke on the SUBSCRIPTION OAuth token (not an API
+    key). Reports degraded on a missing/stale token (401 / not logged in) rather
+    than a false 'logged in'."""
+    backend = backend or ClaudeCodeBackend()
+    available = getattr(backend, "available", None)
+    if callable(available) and not available():
+        return VendorProbe("claude", "oauth", False,
+                           "no auth (set CLAUDE_CODE_OAUTH_TOKEN via `claude setup-token`)")
+    resp = backend.query(probe_prompt)
+    low = (resp or "").lower()
+    if not resp or resp.startswith(JUDGE_ERROR) or any(m in low for m in _CLAUDE_AUTH_FAIL_MARKERS):
+        return VendorProbe("claude", "oauth", False, (resp or "empty")[:120])
+    return VendorProbe("claude", "oauth", True, "ok")
 
 
 @dataclass(slots=True)
@@ -62,9 +83,17 @@ def preflight_all(
     codex_seats: tuple[str, ...] | list[str] = ("mahmood", "noreen"),
     codex_backends: dict[str, object] | None = None,
     agy_backend: object | None = None,
+    claude_backend: object | None = None,
+    include_claude: bool = True,
 ) -> list[VendorProbe]:
-    """Preflight every non-Claude vendor seat with a real exec smoke."""
-    probes = preflight_codex(codex_seats, backends=codex_backends)
+    """Preflight every vendor seat with a real exec smoke.
+
+    Headless Claude (subscription OAuth) is a FIRST-CLASS live vendor here — it is
+    NOT capped like Codex/agy, so it is the arm most likely to be live."""
+    probes: list[VendorProbe] = []
+    if include_claude:
+        probes.append(preflight_claude(backend=claude_backend))
+    probes.extend(preflight_codex(codex_seats, backends=codex_backends))
     probes.append(preflight_agy(backend=agy_backend))
     return probes
 

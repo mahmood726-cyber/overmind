@@ -31,22 +31,17 @@ OUT_DIR = DATA_DIR / "runs"
 
 
 def _live_vendors() -> dict:
-    """Which reviewer vendors respond to a real smoke right now."""
+    """Which reviewer vendors respond to a real smoke right now.
+
+    Uses the reliability preflight (real exec smokes): headless Claude
+    (subscription OAuth — NOT capped), both Codex seats, and agy. Plus a direct
+    Gemini probe."""
     live = {}
-    # Codex + agy via the reliability preflight (real exec smoke).
     try:
         from overmind.reliability.auth_preflight import preflight_all
-        for p in preflight_all():
+        for p in preflight_all():   # now includes first-class claude (OAuth)
             if p.alive:
                 live[p.vendor] = True
-    except Exception:  # noqa: BLE001
-        pass
-    # Claude subprocess (needs login / API key).
-    try:
-        from overmind.verification.judge_backends import ClaudeCodeBackend, JUDGE_ERROR
-        r = ClaudeCodeBackend().query("Reply READY")
-        if isinstance(r, str) and not r.startswith(JUDGE_ERROR) and "Not logged in" not in r and "READY" in r.upper():
-            live["claude"] = True
     except Exception:  # noqa: BLE001
         pass
     # Gemini direct API.
