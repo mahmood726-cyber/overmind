@@ -26,7 +26,19 @@ is byte-identical).
 
 ---
 
-## The first 3 steps from here (in order)
+## Milestone 1 — SHIPPED (the first 3 moves; additive, flagged, tests green)
+
+| Move | Modules | Flag (default) | Tests | Now measurable |
+|---|---|---|---|---|
+| **1. Accept-point provenance + WARN-cycle quantifier** (D7/D4/D2) | `verification/provenance.py` + orchestrator accept-point hook | `OVERMIND_PROVENANCE=off` | +18 | per verdict: worker vendor+family, deciding gate, would-ship-without-gate; aggregate % of ships resting on consensus alone |
+| **2. Cost-per-accepted-change at the accept point** (D5) | `telemetry/cost_accounting.py` (`cost_event_from_output`) + orchestrator per-run ledger | `OVERMIND_COST_ACCOUNTING=off` | +13 | real/estimated USD per accepted change, acceptance rate, below-break-even per loop |
+| **3. Cross-vendor check as recorded per-verdict field + cE>cN canary + Codex smoke probe** (D1) | `verification/cross_vendor_check.py` (`smoke_probe_codex_seats`, `CANARY_ARTIFACT`, `is_found_nothing_pass`) + orchestrator | `OVERMIND_CROSS_VENDOR_CHECK=off` | +8 | per verdict: did an independent different-family vendor review it + what it found; seat liveness; found-nothing-pass canary |
+
+Commits: `e1d882c` (1), `cff9fb7` (2), `373e4ee` (3). Full unit+integration **1043 passed / 9
+skipped** (Milestone-0 baseline 1022). No regression; every hook default-off and wrapped so it can
+never wedge the accept path.
+
+## The next steps from here (in order)
 
 ### Step 1 — Run the D2 objective-gate WARN cycle + thread the tracer (D4 prerequisite)
 - **Do:** run one full nightly with `OVERMIND_OBJECTIVE_GATE_AUDIT=shadow` on; collect the tally
