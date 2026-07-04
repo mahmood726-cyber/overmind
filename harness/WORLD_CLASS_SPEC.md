@@ -88,6 +88,12 @@ objective signal that proves it holds** (so none is a vibe).
   not a second agent agreeing"). It is what makes "consensus-or-flag" *sound*: consensus is only as
   strong as the objective witness beneath it. It directly fences the reward-hack where two optimists
   agree on a wrong answer.
+- **Cited empirical axiom (AN-1, arXiv:2604.12198, verified):** in a study reproducing 111 published
+  computational-physics papers, **96.6% of substantive critiques (85/88) surfaced only after the agent
+  actually re-ran the computation; the reading-only ceiling was 1.8%.** Text-only "a second agent read
+  it and agreed" empirically surfaces <2% of defects — the strongest published case for D2/D3. Accept
+  must be grounded in **re-execution, not review**; adopt the **Reproduce → Review → Reflect** shape as
+  the reference reproduction unit and record a **"% of claims within tolerance"** score per artifact.
 - **Proof signal:** the objective-gate audit reports **0 ships resting on consensus-without-a-floor**
   once promoted (starts as a measured WARN count; §2 increment 1).
 
@@ -117,6 +123,11 @@ objective signal that proves it holds** (so none is a vibe).
 - **Proof signal:** span coverage = 1.0 over the expected pipeline stages on a traced verdict; signed
   bundle verifies; `UNVERIFIED` is emitted (never a silent pass) when a witness SKIPs on a missing
   baseline.
+- **Symmetric cross-vendor provenance (AN-10, vendor releases — OpenAI SDK re-verified):** record each
+  lane's durable-execution identifier in the truth-ledger — Anthropic **workflow run-IDs**, OpenAI Agents
+  SDK **snapshot/RunState IDs** (control/compute split + snapshot/rehydrate, corroborated), Gemini
+  Agent-Runtime **op-IDs** — so provenance is symmetric across vendors, not Claude-only. (Adopt the
+  identifiers now; vendor-native checkpoint drivers are PV-tier, validated before enforce.)
 
 ### D5 — Cost-per-accepted-change economics made visible (and fenced)
 - **Claim:** The harness measures **cost-per-accepted-change** and **acceptance rate** per loop from
@@ -129,6 +140,12 @@ objective signal that proves it holds** (so none is a vibe).
   "burn tokens to look busy" reward-hack.
 - **Proof signal:** a cost-per-accepted-change number exists per loop for one nightly; the benchmark
   scores efficiency as a first-class axis, not a footnote.
+- **cost-per-accepted-reproduction + rework multiplier (AN-11, unitcostai methodology):** report
+  `cost_per_accepted = (subscription + api + fallback + infra) / accepted_reproductions` and the
+  **rework multiplier** (attempts / accepted — e.g. 72% acceptance ≈ 1.39 attempts/accepted) as
+  harness-health metrics; report cross-vendor consensus cost against this *accepted-reproduction*
+  denominator, not raw tokens. A hard **`budget.max_tokens_per_thread`** abort on the OpenAI/Codex lane
+  feeds the same unified ledger (an objective cost gate mirroring `total_cost_usd`).
 
 ### D6 — A private eval / ground-truth moat that grows with use
 - **Claim:** Superiority is scored against a **private, curated, truth-gated corpus** — AACT

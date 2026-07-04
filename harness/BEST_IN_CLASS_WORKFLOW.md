@@ -33,6 +33,11 @@ and "Right in the Right Way" (MIT, RLVR + human-demos anti-reward-hacking).
    path you don't fence off is a direction the optimizer sprints down."* The cross-vendor check is the
    harder-to-game complement to any single objective scalar (MIT finding: a lone verifiable reward gets
    hacked; a second, harder-to-game signal nearly eliminates it).
+4. **Gate-output contract (AN-8, Osmani "Agent Harness Engineering"):** **success is silent, failures
+   verbose** — a passing gate emits nothing; a failing gate re-injects verbose diagnostics (the failed
+   typecheck/diff/parity output) as the objective signal. And the **ratchet rule**: every harness rule
+   cites the specific failure that motivated it (formalizes `lessons.md`) — a rule with no cited failure
+   is not a rule.
 
 ---
 
@@ -94,6 +99,16 @@ Dispatch routes.
   under it** — test / byte-or-numeric diff / R-parity / `node --check` / Playwright. A judge/consensus
   agreement alone is **flagged, not shipped** (the shipped `objective_gate.py` audit; promoted to a
   hard requirement here). Disagreement between vendors **flags** for human-in-the-chair.
+- **check≠repair separation (AN-4, Proof Gates arXiv:2605.17998):** the verify stage is **read-only** —
+  it emits PASS/FAIL **+ a reproducibility snapshot** and may **never silently edit the artifact to
+  pass**. "Once the admission verifier becomes a worker, independent confirmation turns into
+  self-repair." A stage that produces no reproducibility snapshot is **downgraded one trust tier**.
+- **clean-context verification (AN-9, Cognition Apr 2026):** the verifier receives **artifact + objective
+  spec ONLY**, not the producer's reasoning trace — so it cannot inherit the generator's rationalizations.
+  Cross-vendor escalation is a **capability-router (delegate a hard call to a stronger *frontier* model),
+  not a difficulty-escalator** (never escalate to a weaker/cheaper model to get an easier pass).
+- **n_eff decorrelation sub-gate (AN-3):** cross-vendor agreement counts as consensus only if the
+  agreeing judges' Kish `n_eff ≥ 2` across ≥2 families; otherwise fall through to the objective witness.
 - **STOP:** Loop Library convergence/Clodex stop — *"only when both approve the same unchanged version"*
   / *"when the checker approves, only accepted findings remain, progress stalls, or the iteration cap is
   reached."*
