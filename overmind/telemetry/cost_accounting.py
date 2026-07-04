@@ -142,6 +142,37 @@ def _int(value: object) -> int:
         return 0
 
 
+def cost_event_from_output(
+    lines: object,
+    *,
+    engine: str = "claude",
+    loop: str = "",
+    label: str = "",
+) -> CostEvent:
+    """Best-effort cost event from a runner's output/transcript.
+
+    Prefers a REAL measured cost — scans for a `claude -p --output-format json`
+    result object carrying ``total_cost_usd``. When none is present (the common
+    interactive-runner case), falls back to a **labelled estimate** from output
+    length (output tokens only → a lower bound), marked ``measured=False`` so the
+    ledger keeps measured and estimated spend separate.
+    """
+    raw = "\n".join(str(x) for x in lines) if isinstance(lines, (list, tuple)) else str(lines or "")
+    measured = parse_claude_json_cost(raw, loop=loop, label=label)
+    if measured is not None:
+        return measured
+    out_tok = max(0, len(raw) // 4)
+    return CostEvent(
+        loop=loop,
+        engine=engine,
+        usd=estimate_usd(engine, 0, out_tok),
+        measured=False,
+        input_tokens=0,
+        output_tokens=out_tok,
+        label=label or "estimated_from_output",
+    )
+
+
 @dataclass(slots=True)
 class LoopEconomics:
     """Computed economics for one loop (or the whole ledger)."""

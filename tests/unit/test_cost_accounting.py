@@ -10,6 +10,7 @@ from overmind.telemetry.cost_accounting import (
     CostEvent,
     CostLedger,
     aggregate_events,
+    cost_event_from_output,
     estimate_usd,
     parse_claude_json_cost,
 )
@@ -170,6 +171,48 @@ def test_jsonl_persistence(tmp_path):
     assert len(lines) == 2
     kinds = [json.loads(ln)["kind"] for ln in lines]
     assert kinds == ["cost", "decision"]
+
+
+def test_cost_event_from_output_measured():
+    lines = ["progress line", json.dumps({"total_cost_usd": 0.07, "usage": {"output_tokens": 50}})]
+    ev = cost_event_from_output(lines, loop="L", label="t")
+    assert ev.measured is True
+    assert ev.usd == pytest.approx(0.07)
+    assert ev.loop == "L"
+
+
+def test_cost_event_from_output_estimated_fallback():
+    ev = cost_event_from_output(["just some interactive output", "no json here"], engine="claude", loop="L")
+    assert ev.measured is False
+    assert ev.output_tokens > 0
+    assert ev.usd >= 0.0
+    assert ev.label == "estimated_from_output"
+
+
+def test_cost_event_from_output_empty():
+    ev = cost_event_from_output([], loop="L")
+    assert ev.measured is False
+    assert ev.output_tokens == 0
+
+
+def test_cost_event_from_string():
+    ev = cost_event_from_output(json.dumps({"total_cost_usd": 0.01}), loop="L")
+    assert ev.measured is True and ev.usd == pytest.approx(0.01)
+
+
+def test_ledger_accept_flow_from_output():
+    # simulate two accepts (measured) + one reject (estimated) on one loop
+    ledger = CostLedger()
+    ledger.add_cost(cost_event_from_output([json.dumps({"total_cost_usd": 1.0})], loop="P"))
+    ledger.record_decision(True, loop="P")
+    ledger.add_cost(cost_event_from_output([json.dumps({"total_cost_usd": 1.0})], loop="P"))
+    ledger.record_decision(True, loop="P")
+    ledger.add_cost(cost_event_from_output(["noise"], loop="P"))
+    ledger.record_decision(False, loop="P")
+    econ = ledger.economics("P")
+    assert econ.accepted == 2
+    assert econ.cost_per_accepted_change == pytest.approx(econ.total_usd / 2)
+    assert econ.measured_usd == pytest.approx(2.0)
 
 
 def test_aggregate_events():

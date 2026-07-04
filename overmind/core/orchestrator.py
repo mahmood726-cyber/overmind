@@ -39,6 +39,7 @@ from overmind.verification.llm_judge import LLMJudge, QuorumJudge
 from overmind.verification.judge_factory import build_judge
 from overmind.verification.objective_gate import emit_audit as _emit_objective_gate_audit
 from overmind.verification.provenance import build_provenance, resolve_recorder
+from overmind.telemetry.cost_accounting import CostLedger, cost_event_from_output
 from overmind.verification.policy_guard import PolicyGuard
 from overmind.verification.trajectory_scorer import TrajectoryScorer
 from overmind.verification.verifier import VerificationEngine
@@ -201,6 +202,10 @@ class Orchestrator:
         self.session_manager.apply_interventions(interventions)
 
         verification_results = []
+        # D5 cost-per-accepted-change ledger (SHADOW): per-run accumulator, fed at
+        # the accept point, summarized at end of loop. None unless
+        # OVERMIND_COST_ACCOUNTING is enabled — default off => no behavior change.
+        cost_ledger = self._new_cost_ledger()
         for evidence in evidence_items:
             task = self.db.get_task(evidence.task_id)
             if not task:
@@ -298,6 +303,11 @@ class Orchestrator:
                     self._record_verdict_provenance(final_result, task, evidence)
                 except Exception:  # noqa: BLE001 — provenance is advisory
                     pass
+                # D5 attribute cost to this accept/reject decision (shadow).
+                try:
+                    self._record_cost(cost_ledger, final_result, task, output_lines)
+                except Exception:  # noqa: BLE001 — cost accounting is advisory
+                    pass
                 if final_result.success:
                     self.task_queue.transition(
                         evidence.task_id,
@@ -325,6 +335,12 @@ class Orchestrator:
                     result=final_result,
                     tick=self.tick_count,
                 )
+
+        # D5 emit cost-per-accepted-change + below-break-even per loop (shadow).
+        try:
+            self._emit_cost_summary(cost_ledger)
+        except Exception:  # noqa: BLE001 — cost summary is advisory
+            pass
 
         insights = self.insight_engine.extract(evidence_items, verification_results)
         self.memory_store.save_insights(insights)
@@ -847,6 +863,55 @@ class Orchestrator:
             project_id=getattr(task, "project_id", ""),
         )
         recorder.record(prov)
+
+    @staticmethod
+    def _cost_accounting_enabled() -> bool:
+        raw = os.environ.get("OVERMIND_COST_ACCOUNTING", "").strip().lower()
+        return raw in {"1", "true", "yes", "on", "shadow"}
+
+    def _new_cost_ledger(self) -> CostLedger | None:
+        """Per-run cost ledger, or None when cost accounting is disabled."""
+        if not self._cost_accounting_enabled():
+            return None
+        path = os.environ.get("OVERMIND_COST_ACCOUNTING_PATH")
+        jsonl = Path(path) if path else (self.config.data_dir / "cost" / "cost_events.jsonl")
+        return CostLedger(jsonl_path=jsonl)
+
+    def _record_cost(self, cost_ledger, final_result, task, output_lines) -> None:
+        """Attribute a cost event + accept/reject decision to this verdict (D5).
+
+        Cost comes from a real ``total_cost_usd`` in the runner output when the
+        runner emitted `--output-format json`; otherwise a labelled token
+        estimate. The loop key is the project id, so cost-per-accepted-change is
+        reported per project loop."""
+        if cost_ledger is None:
+            return
+        loop = getattr(task, "project_id", "") or ""
+        cost_ledger.add_cost(
+            cost_event_from_output(
+                output_lines or [], engine="claude", loop=loop, label=getattr(task, "task_id", ""),
+            )
+        )
+        cost_ledger.record_decision(bool(getattr(final_result, "success", False)), loop=loop)
+
+    def _emit_cost_summary(self, cost_ledger) -> None:
+        """Log cost-per-accepted-change + flag below-break-even loops (D5)."""
+        if cost_ledger is None:
+            return
+        for name in cost_ledger.loops():
+            econ = cost_ledger.economics(name)
+            cpac = econ.cost_per_accepted_change
+            cpac_s = "n/a" if cpac is None else f"${cpac:.4f}"
+            print(
+                f"  [COST] loop={name} accepted={econ.accepted} rejected={econ.rejected} "
+                f"total=${econ.total_usd:.4f} (measured=${econ.measured_usd:.4f}) "
+                f"cost/accepted={cpac_s}"
+            )
+            if econ.below_break_even:
+                print(
+                    f"  [COST] WARN loop={name} acceptance "
+                    f"{(econ.acceptance_rate or 0):.0%} below ~50% break-even (heuristic, not measured)"
+                )
 
     def _build_llm_judge(self) -> LLMJudge | QuorumJudge | None:
         if not self._judge_enabled():
