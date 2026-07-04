@@ -451,3 +451,53 @@ def test_routed_escalates_on_degenerate_cheap():
     v = routed.judge(*_route_inputs())
     assert v.passed is True
     assert "routed_escalated" in v.concerns
+
+
+# --- AN-3: Kish n_eff decorrelation sub-gate ---------------------------------
+
+def test_kish_neff_all_same_family_is_one():
+    from overmind.verification.judge_factory import kish_neff
+    # 3 Claude (all anthropic), rho=1 -> 1 effective vote
+    assert kish_neff(["claude", "claude", "claude"], rho=1.0) == 1.0
+
+
+def test_kish_neff_distinct_families():
+    from overmind.verification.judge_factory import kish_neff
+    # claude/codex/agy = 3 families, rho=1 -> 3 effective votes
+    assert kish_neff(["claude", "codex", "agy"], rho=1.0) == 3.0
+
+
+def test_kish_neff_rho_zero_counts_all():
+    from overmind.verification.judge_factory import kish_neff
+    assert kish_neff(["claude", "claude", "claude"], rho=0.0) == 3.0
+
+
+def test_decorrelation_gate_rejects_correlated_agreement():
+    from overmind.verification.judge_factory import decorrelation_gate
+    g = decorrelation_gate(["claude", "claude", "claude"])   # 1 family
+    assert g.consensus_counts is False
+    assert g.action == "fall_through_to_witness"
+    assert g.distinct_families == 1
+
+
+def test_decorrelation_gate_accepts_independent_agreement():
+    from overmind.verification.judge_factory import decorrelation_gate
+    g = decorrelation_gate(["claude", "codex", "agy"])       # 3 families
+    assert g.consensus_counts is True
+    assert g.action == "consensus"
+    assert g.neff >= 2.0
+
+
+def test_decorrelation_gate_two_families_borderline():
+    from overmind.verification.judge_factory import decorrelation_gate
+    g = decorrelation_gate(["claude", "codex"])              # 2 families, rho=0.9 -> neff 2.0
+    assert g.consensus_counts is True
+
+
+def test_provenance_records_neff(monkeypatch):
+    from overmind.storage.models import VerificationResult
+    from overmind.verification.provenance import build_provenance
+    vr = VerificationResult("t", True, ["build"], ["build"], [], [])
+    prov = build_provenance(vr, agreeing_engines=["claude", "claude"])   # correlated
+    assert prov.consensus_counts is False
+    assert prov.consensus_neff == 1.1  # 1 family, n=2, rho=0.9 -> 1+(1)(0.1)

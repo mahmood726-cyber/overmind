@@ -202,6 +202,15 @@ narrow Dispatch routing seat** (pure routing decisions). Every actual methods / 
 verification unit runs on a **frontier** model. A cheaper conductor is a *tested* cost lever, never a
 default.
 
+### 1.5.2b D1 decorrelation sub-gate — consensus is MEASURED, not assumed (AN-3)
+"Different vendor ⇒ independent" is an *assumption*; correlation is structural and can span families
+("artificial hivemind", arXiv:2605.29800). So D1 now **measures** effective independence: per verdict,
+compute a **Kish/design-effect `n_eff`** over the *agreeing* judges (`judge_factory.kish_neff` /
+`decorrelation_gate`, recorded on the provenance line as `consensus_neff` / `consensus_counts`). If
+`n_eff < 2.0` (or fewer than two distinct families agreed), the agreement does **not** count as
+consensus — the harness falls through to the D2 objective witness or abstains, never treating a
+correlated "agreement" as corroboration. Three same-family judges ⇒ `n_eff ≈ 1` ⇒ not consensus.
+
 ### 1.5.3 Benchmark implication — measure each vendor-model's MARGINAL value
 The consensus-or-flag eval (§3) must **measure the marginal verification value of each panel member**:
 a vendor-model that mostly errors, or mostly rubber-stamps (agrees without catching planted defects),

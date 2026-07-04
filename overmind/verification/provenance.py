@@ -67,6 +67,9 @@ class VerdictProvenance:
     cross_vendor_present: bool = False
     cross_vendor_decorrelated: bool | None = None
     cross_vendor_engine: str | None = None
+    # D1 Kish n_eff decorrelation sub-gate (AN-3) — optional
+    consensus_neff: float | None = None
+    consensus_counts: bool | None = None
     # economics (D5) — optional enrichment
     cost_usd: float | None = None
     # context
@@ -90,6 +93,8 @@ class VerdictProvenance:
             "cross_vendor_present": self.cross_vendor_present,
             "cross_vendor_decorrelated": self.cross_vendor_decorrelated,
             "cross_vendor_engine": self.cross_vendor_engine,
+            "consensus_neff": self.consensus_neff,
+            "consensus_counts": self.consensus_counts,
             "cost_usd": self.cost_usd,
             "trace_id": self.trace_id,
             "recorded_at": self.recorded_at,
@@ -123,9 +128,11 @@ def build_provenance(
     judge_vendors: list[str] | None = None,
     cross_vendor: object | None = None,
     cost_usd: float | None = None,
+    agreeing_engines: list[str] | None = None,
 ) -> VerdictProvenance:
     """Compose a provenance record from a ``VerificationResult`` + optional
-    enrichments. Derives the objective-gate posture via the audit taxonomy."""
+    enrichments. Derives the objective-gate posture via the audit taxonomy, and
+    (AN-3) the Kish n_eff decorrelation gate when ``agreeing_engines`` is given."""
     audit: ObjectiveGateAudit = audit_result(result)
     cv_present = False
     cv_decorrelated: bool | None = None
@@ -134,6 +141,15 @@ def build_provenance(
         cv_present = bool(getattr(cross_vendor, "present", False))
         cv_decorrelated = getattr(cross_vendor, "decorrelated", None)
         cv_engine = getattr(cross_vendor, "checker_engine", None)
+    neff: float | None = None
+    consensus_counts: bool | None = None
+    if agreeing_engines:
+        try:
+            from overmind.verification.judge_factory import decorrelation_gate
+            gate = decorrelation_gate(agreeing_engines)
+            neff, consensus_counts = gate.neff, gate.consensus_counts
+        except Exception:  # noqa: BLE001 — provenance must never hard-fail
+            pass
     return VerdictProvenance(
         task_id=audit.task_id,
         success=audit.success,
@@ -148,6 +164,8 @@ def build_provenance(
         cross_vendor_present=cv_present,
         cross_vendor_decorrelated=cv_decorrelated,
         cross_vendor_engine=cv_engine,
+        consensus_neff=neff,
+        consensus_counts=consensus_counts,
         cost_usd=cost_usd,
         project_id=project_id,
         trace_id=str(getattr(result, "trace_id", "") or ""),

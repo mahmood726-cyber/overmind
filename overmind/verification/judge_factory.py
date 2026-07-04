@@ -198,6 +198,66 @@ def enforce_distinct_families(engines: list[str]) -> PanelEnforcement:
     )
 
 
+# --- Kish n_eff decorrelation sub-gate (AN-3, arXiv:2605.29800 depth) -----------
+# Consensus counts only if the AGREEING judges are effectively independent. Judges
+# in the same family share correlated errors, so agreement among them is not
+# corroboration ("artificial hivemind"). We quantify effective independence with a
+# Kish/design-effect n_eff and only then treat agreement as consensus.
+_DEFAULT_WITHIN_FAMILY_RHO = 0.9   # high within-family correlation (conservative)
+_DEFAULT_MIN_NEFF = 2.0            # need >=2 effective independent votes for consensus
+
+
+def kish_neff(engines: list[str], *, rho: float = _DEFAULT_WITHIN_FAMILY_RHO) -> float:
+    """Effective number of independent votes among ``engines`` via a family
+    design-effect. Each family of size n_f contributes ``1 + (n_f-1)(1-rho)``
+    effective votes: at rho=1 (perfectly correlated within family) a family counts
+    as ONE vote (n_eff = distinct families); at rho=0, n_eff = total judges."""
+    if not engines:
+        return 0.0
+    rho = min(max(rho, 0.0), 1.0)
+    families: dict[str, int] = {}
+    for e in engines:
+        fam = family_for_engine(e)
+        families[fam] = families.get(fam, 0) + 1
+    return round(sum(1 + (n - 1) * (1 - rho) for n in families.values()), 4)
+
+
+@dataclass(slots=True)
+class DecorrelationGate:
+    """Result of the D1 decorrelation sub-gate on a set of AGREEING judges."""
+    engines: list[str]
+    neff: float
+    distinct_families: int
+    consensus_counts: bool           # True => agreement is real corroboration
+    action: str                      # "consensus" | "fall_through_to_witness"
+    note: str = ""
+
+    def to_dict(self) -> dict:
+        return {"engines": list(self.engines), "neff": self.neff,
+                "distinct_families": self.distinct_families,
+                "consensus_counts": self.consensus_counts, "action": self.action, "note": self.note}
+
+
+def decorrelation_gate(agreeing_engines: list[str], *, min_neff: float = _DEFAULT_MIN_NEFF,
+                       rho: float = _DEFAULT_WITHIN_FAMILY_RHO) -> DecorrelationGate:
+    """Decide whether agreement among ``agreeing_engines`` counts as consensus.
+
+    Low effective independence (n_eff < min_neff) ⇒ agreement is NOT consensus ⇒
+    the caller must fall through to the D2 objective witness or abstain — never
+    treat a correlated 'agreement' as corroboration."""
+    neff = kish_neff(agreeing_engines, rho=rho)
+    distinct = len({family_for_engine(e) for e in agreeing_engines})
+    counts = neff >= min_neff and distinct >= 2
+    if counts:
+        note = f"n_eff {neff} >= {min_neff} and {distinct} families — agreement counts as consensus"
+        action = "consensus"
+    else:
+        note = (f"n_eff {neff} < {min_neff} (or <2 families) — correlated agreement, NOT consensus; "
+                f"fall through to the D2 objective witness or abstain")
+        action = "fall_through_to_witness"
+    return DecorrelationGate(list(agreeing_engines), neff, distinct, counts, action, note)
+
+
 def _quorum_enforce_enabled() -> bool:
     """Whether different-family quorum enforcement is ON (env
     OVERMIND_JUDGE_QUORUM_ENFORCE, default ON). Set to 0/off/warn to restore the
