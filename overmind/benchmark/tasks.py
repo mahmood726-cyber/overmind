@@ -14,10 +14,26 @@ from dataclasses import dataclass, field
 from pathlib import Path
 
 # Task kinds.
-IMPOSSIBLE_CELL = "impossible_cell"   # a 2x2 table with events > N (witness-detectable)
-REPRODUCTION = "reproduction"          # a claimed pooled estimate to check vs metafor (witness-detectable)
-DIRECTION = "direction"                # a stated conclusion whose direction is wrong (reviewer-only)
 CLEAN = "clean"                        # a correct artifact (must NOT be flagged)
+# --- witness-detectable (a deterministic check on the data fires) ---
+IMPOSSIBLE_CELL = "impossible_cell"    # a 2x2 table with events > N
+REPRODUCTION = "reproduction"          # a claimed pooled estimate that doesn't match the data
+CI_INVALID = "ci_invalid"              # a confidence interval with lo>hi or not bracketing the point
+# --- reviewer-only (data passes every deterministic check; defect is in the narrative) ---
+DIRECTION = "direction"                # conclusion direction contradicts the data
+WRONG_MEASURE_LABEL = "wrong_measure_label"   # ratio data described as a continuous (MD) outcome, or MD->"RR"
+METHOD_MISMATCH = "method_mismatch"    # stated model/heterogeneity method inconsistent (e.g. naive pool where Copas needed)
+COMPARATOR_SWAP = "comparator_swap"    # narrative swaps treatment/control arms (comparator/HR mismatch)
+MISSING_REFERENCE = "missing_reference"        # claims borrowing/adjustment but the required null/reference arm is absent
+SUBGROUP_MISMATCH = "subgroup_mismatch"        # analysis label doesn't match the outcome/subgroup described
+
+WITNESS_DETECTABLE_KINDS = frozenset({IMPOSSIBLE_CELL, REPRODUCTION, CI_INVALID})
+REVIEWER_ONLY_KINDS = frozenset({
+    DIRECTION, WRONG_MEASURE_LABEL, METHOD_MISMATCH, COMPARATOR_SWAP,
+    MISSING_REFERENCE, SUBGROUP_MISMATCH,
+})
+DEFECT_KINDS = WITNESS_DETECTABLE_KINDS | REVIEWER_ONLY_KINDS
+ALL_KINDS = DEFECT_KINDS | {CLEAN}
 
 
 @dataclass(slots=True)

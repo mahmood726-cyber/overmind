@@ -94,9 +94,13 @@ def main() -> int:
                       results_path=OUT_DIR / "objective_ref.jsonl")
     ref_m = score_arm("objective-ref", ref_run.verdicts, ho_keys)
     arms_out.append({"arm": "objective-ref (witness-only floor)", "status": "RUN", "metrics": ref_m.to_dict()})
-    notes.append("Objective reference = Arm C floor with NO reviewers: catches witness-detectable "
-                 "defects (impossible_cell, reproduction) but structurally misses reviewer-only "
-                 "'direction' defects — that gap is what the cross-vendor panel must close.")
+    ro = sum(1 for t in held if t.id in ho_keys and ho_keys[t.id].has_defect
+             and t.kind in {"direction", "wrong_measure_label", "method_mismatch",
+                            "comparator_swap", "missing_reference", "subgroup_mismatch"})
+    notes.append(f"Objective reference = Arm C floor with NO reviewers: catches witness-detectable "
+                 f"defects (impossible_cell, reproduction, ci_invalid) but structurally misses the "
+                 f"{ro} reviewer-only defects in the held-out slice (6 classes) — that gap is what the "
+                 f"cross-vendor panel must close.")
 
     # 2) Arm C SHADOW dry-run with stub reviewers (plumbing proof, no quota).
     stub_a = StubReviewer({t.id: (True, "stub flags defect")

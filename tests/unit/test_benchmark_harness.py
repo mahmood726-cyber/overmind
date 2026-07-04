@@ -210,26 +210,36 @@ def test_run_arm_c_uses_witness_floor(tmp_path):
 
 def test_generate_produces_balanced_slice():
     from overmind.benchmark.generate import generate
+    from overmind.benchmark.tasks import ALL_KINDS
     tasks, keys = generate(max_fixtures=3)
-    assert len(tasks) == len(keys) == 12   # 3 fixtures x 4 kinds
-    kinds = {t.kind for t in tasks}
-    assert kinds == {CLEAN, IMPOSSIBLE_CELL, REPRODUCTION, DIRECTION}
+    assert len(tasks) == len(keys) == 30   # 3 fixtures x 10 kinds
+    assert {t.kind for t in tasks} == set(ALL_KINDS)
     kd = {k.id: k for k in keys}
-    # clean tasks are not defects; the other three are
     for t in tasks:
         assert kd[t.id].has_defect == (t.kind != CLEAN)
 
 
-def test_generated_witness_agrees_with_keys():
-    # the deterministic witness must match the sealed key on witness-detectable kinds
+def test_witness_integrity_fires_only_on_witness_detectable():
+    # THE honesty property: the kind-agnostic battery fires EXACTLY on
+    # witness-detectable kinds, and NEVER on reviewer-only or clean tasks (so
+    # reviewer-only defects genuinely pass the floor -> only a reviewer catches them).
     from overmind.benchmark.generate import generate
-    tasks, keys = generate(max_fixtures=4)
-    kd = {k.id: k for k in keys}
+    from overmind.benchmark.tasks import WITNESS_DETECTABLE_KINDS
+    tasks, _ = generate(max_fixtures=5)
     for t in tasks:
-        if t.kind in (IMPOSSIBLE_CELL, REPRODUCTION):
-            assert run_witness(t).defect == kd[t.id].has_defect
-        if t.kind == CLEAN:
-            assert run_witness(t).defect is False   # never false-alarm a clean fixture
+        assert run_witness(t).defect == (t.kind in WITNESS_DETECTABLE_KINDS), t.id
+
+
+def test_reviewer_only_kinds_pass_all_witnesses():
+    from overmind.benchmark.generate import generate
+    from overmind.benchmark.tasks import REVIEWER_ONLY_KINDS
+    tasks, keys = generate(max_fixtures=6)
+    kd = {k.id: k for k in keys}
+    ro = [t for t in tasks if t.kind in REVIEWER_ONLY_KINDS]
+    assert ro, "expected reviewer-only tasks"
+    for t in ro:
+        assert kd[t.id].has_defect is True          # it IS a defect
+        assert run_witness(t).defect is False        # but the floor cannot see it
 
 
 def test_scorecard_render():
