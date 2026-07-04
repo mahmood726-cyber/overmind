@@ -204,3 +204,41 @@ def test_run_arm_c_uses_witness_floor(tmp_path):
     run = run_arm(spec, tasks, results_path=tmp_path / "r.jsonl")
     assert run.verdicts["d1"].flag is True
     assert run.verdicts["d1"].deciding == "objective_gate_floor"
+
+
+# --- generator + scorecard ------------------------------------------------------
+
+def test_generate_produces_balanced_slice():
+    from overmind.benchmark.generate import generate
+    tasks, keys = generate(max_fixtures=3)
+    assert len(tasks) == len(keys) == 12   # 3 fixtures x 4 kinds
+    kinds = {t.kind for t in tasks}
+    assert kinds == {CLEAN, IMPOSSIBLE_CELL, REPRODUCTION, DIRECTION}
+    kd = {k.id: k for k in keys}
+    # clean tasks are not defects; the other three are
+    for t in tasks:
+        assert kd[t.id].has_defect == (t.kind != CLEAN)
+
+
+def test_generated_witness_agrees_with_keys():
+    # the deterministic witness must match the sealed key on witness-detectable kinds
+    from overmind.benchmark.generate import generate
+    tasks, keys = generate(max_fixtures=4)
+    kd = {k.id: k for k in keys}
+    for t in tasks:
+        if t.kind in (IMPOSSIBLE_CELL, REPRODUCTION):
+            assert run_witness(t).defect == kd[t.id].has_defect
+        if t.kind == CLEAN:
+            assert run_witness(t).defect is False   # never false-alarm a clean fixture
+
+
+def test_scorecard_render():
+    from overmind.benchmark.scorecard import render_markdown
+    sc = {"slice": "x", "held_out_n": 10,
+          "arms": [{"arm": "objective-ref", "status": "RUN",
+                    "metrics": {"caught_defect_rate": 0.65, "false_alarm_rate": 0.0,
+                                "parity_rate": 1.0, "agreement_soundness": 0.5,
+                                "accepted": 5, "cost_per_accepted_change": 0.0, "blended": 1.15}}],
+          "win_condition": None, "notes": ["a note"]}
+    md = render_markdown(sc)
+    assert "objective-ref" in md and "Pending" in md and "a note" in md

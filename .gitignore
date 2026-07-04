@@ -60,3 +60,7 @@ config/roots.local.yaml
 *.key
 keys/
 .overmind/
+
+# benchmark volatile run state (keep tasks/keys/scorecard; drop checkpoints + live arm logs)
+benchmark_data/checkpoints/
+benchmark_data/runs/arm_*.jsonl

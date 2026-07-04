@@ -1,0 +1,4956 @@
+{
+ "tasks": [
+  {
+   "id": "bcg_colditz1994_0__clean",
+   "kind": "clean",
+   "artifact": "Meta-analysis (RR, REML). Studies:\n  label | events(trt)/N(trt) | events(ctrl)/N(ctrl)\n  Aronson 1948 | 4/123 | 11/139\n  Ferguson & Simes 1949 | 6/306 | 29/303\n  Rosenthal 1960 | 3/231 | 11/220\n  Hart & Sutherland 1977 | 62/13598 | 248/12867\n  Frimodt-Moller 1973 | 33/5069 | 47/5808\n  Stein & Aronson 1953 | 180/1541 | 372/1451\n  Vandiviere 1973 | 8/2545 | 10/629\n  TPT Madras 1980 | 505/88391 | 499/88391\n  Coetzee & Berjak 1968 | 29/7499 | 45/7277\n  Rosenthal 1961 | 17/1716 | 65/1665\n  Comstock 1974 | 186/50634 | 141/27338\n  Comstock & Webster 1969 | 5/2498 | 3/2341\n  Comstock 1976 | 27/16913 | 29/17854\nClaimed pooled RR = 0.4894. Conclusion: treatment reduces the outcome.",
+   "data": {
+    "studies": [
+     {
+      "label": "Aronson 1948",
+      "ai": 4,
+      "n1": 123,
+      "ci": 11,
+      "n2": 139
+     },
+     {
+      "label": "Ferguson & Simes 1949",
+      "ai": 6,
+      "n1": 306,
+      "ci": 29,
+      "n2": 303
+     },
+     {
+      "label": "Rosenthal 1960",
+      "ai": 3,
+      "n1": 231,
+      "ci": 11,
+      "n2": 220
+     },
+     {
+      "label": "Hart & Sutherland 1977",
+      "ai": 62,
+      "n1": 13598,
+      "ci": 248,
+      "n2": 12867
+     },
+     {
+      "label": "Frimodt-Moller 1973",
+      "ai": 33,
+      "n1": 5069,
+      "ci": 47,
+      "n2": 5808
+     },
+     {
+      "label": "Stein & Aronson 1953",
+      "ai": 180,
+      "n1": 1541,
+      "ci": 372,
+      "n2": 1451
+     },
+     {
+      "label": "Vandiviere 1973",
+      "ai": 8,
+      "n1": 2545,
+      "ci": 10,
+      "n2": 629
+     },
+     {
+      "label": "TPT Madras 1980",
+      "ai": 505,
+      "n1": 88391,
+      "ci": 499,
+      "n2": 88391
+     },
+     {
+      "label": "Coetzee & Berjak 1968",
+      "ai": 29,
+      "n1": 7499,
+      "ci": 45,
+      "n2": 7277
+     },
+     {
+      "label": "Rosenthal 1961",
+      "ai": 17,
+      "n1": 1716,
+      "ci": 65,
+      "n2": 1665
+     },
+     {
+      "label": "Comstock 1974",
+      "ai": 186,
+      "n1": 50634,
+      "ci": 141,
+      "n2": 27338
+     },
+     {
+      "label": "Comstock & Webster 1969",
+      "ai": 5,
+      "n1": 2498,
+      "ci": 3,
+      "n2": 2341
+     },
+     {
+      "label": "Comstock 1976",
+      "ai": 27,
+      "n1": 16913,
+      "ci": 29,
+      "n2": 17854
+     }
+    ],
+    "measure": "RR",
+    "method": "REML",
+    "claimed_value": 0.4894,
+    "tolerance": 0.05
+   },
+   "source": "bcg_colditz1994"
+  },
+  {
+   "id": "bcg_colditz1994_0__impossible",
+   "kind": "impossible_cell",
+   "artifact": "Meta-analysis (RR, REML). Studies:\n  label | events(trt)/N(trt) | events(ctrl)/N(ctrl)\n  Aronson 1948 | 128/123 | 11/139\n  Ferguson & Simes 1949 | 6/306 | 29/303\n  Rosenthal 1960 | 3/231 | 11/220\n  Hart & Sutherland 1977 | 62/13598 | 248/12867\n  Frimodt-Moller 1973 | 33/5069 | 47/5808\n  Stein & Aronson 1953 | 180/1541 | 372/1451\n  Vandiviere 1973 | 8/2545 | 10/629\n  TPT Madras 1980 | 505/88391 | 499/88391\n  Coetzee & Berjak 1968 | 29/7499 | 45/7277\n  Rosenthal 1961 | 17/1716 | 65/1665\n  Comstock 1974 | 186/50634 | 141/27338\n  Comstock & Webster 1969 | 5/2498 | 3/2341\n  Comstock 1976 | 27/16913 | 29/17854\nClaimed pooled RR = 0.4894. Conclusion: treatment reduces the outcome.",
+   "data": {
+    "studies": [
+     {
+      "label": "Aronson 1948",
+      "ai": 128,
+      "n1": 123,
+      "ci": 11,
+      "n2": 139
+     },
+     {
+      "label": "Ferguson & Simes 1949",
+      "ai": 6,
+      "n1": 306,
+      "ci": 29,
+      "n2": 303
+     },
+     {
+      "label": "Rosenthal 1960",
+      "ai": 3,
+      "n1": 231,
+      "ci": 11,
+      "n2": 220
+     },
+     {
+      "label": "Hart & Sutherland 1977",
+      "ai": 62,
+      "n1": 13598,
+      "ci": 248,
+      "n2": 12867
+     },
+     {
+      "label": "Frimodt-Moller 1973",
+      "ai": 33,
+      "n1": 5069,
+      "ci": 47,
+      "n2": 5808
+     },
+     {
+      "label": "Stein & Aronson 1953",
+      "ai": 180,
+      "n1": 1541,
+      "ci": 372,
+      "n2": 1451
+     },
+     {
+      "label": "Vandiviere 1973",
+      "ai": 8,
+      "n1": 2545,
+      "ci": 10,
+      "n2": 629
+     },
+     {
+      "label": "TPT Madras 1980",
+      "ai": 505,
+      "n1": 88391,
+      "ci": 499,
+      "n2": 88391
+     },
+     {
+      "label": "Coetzee & Berjak 1968",
+      "ai": 29,
+      "n1": 7499,
+      "ci": 45,
+      "n2": 7277
+     },
+     {
+      "label": "Rosenthal 1961",
+      "ai": 17,
+      "n1": 1716,
+      "ci": 65,
+      "n2": 1665
+     },
+     {
+      "label": "Comstock 1974",
+      "ai": 186,
+      "n1": 50634,
+      "ci": 141,
+      "n2": 27338
+     },
+     {
+      "label": "Comstock & Webster 1969",
+      "ai": 5,
+      "n1": 2498,
+      "ci": 3,
+      "n2": 2341
+     },
+     {
+      "label": "Comstock 1976",
+      "ai": 27,
+      "n1": 16913,
+      "ci": 29,
+      "n2": 17854
+     }
+    ],
+    "measure": "RR",
+    "method": "REML"
+   },
+   "source": "bcg_colditz1994"
+  },
+  {
+   "id": "bcg_colditz1994_0__repro",
+   "kind": "reproduction",
+   "artifact": "Meta-analysis (RR, REML). Studies:\n  label | events(trt)/N(trt) | events(ctrl)/N(ctrl)\n  Aronson 1948 | 4/123 | 11/139\n  Ferguson & Simes 1949 | 6/306 | 29/303\n  Rosenthal 1960 | 3/231 | 11/220\n  Hart & Sutherland 1977 | 62/13598 | 248/12867\n  Frimodt-Moller 1973 | 33/5069 | 47/5808\n  Stein & Aronson 1953 | 180/1541 | 372/1451\n  Vandiviere 1973 | 8/2545 | 10/629\n  TPT Madras 1980 | 505/88391 | 499/88391\n  Coetzee & Berjak 1968 | 29/7499 | 45/7277\n  Rosenthal 1961 | 17/1716 | 65/1665\n  Comstock 1974 | 186/50634 | 141/27338\n  Comstock & Webster 1969 | 5/2498 | 3/2341\n  Comstock 1976 | 27/16913 | 29/17854\nClaimed pooled RR = 0.881. Conclusion: treatment affects the outcome.",
+   "data": {
+    "studies": [
+     {
+      "label": "Aronson 1948",
+      "ai": 4,
+      "n1": 123,
+      "ci": 11,
+      "n2": 139
+     },
+     {
+      "label": "Ferguson & Simes 1949",
+      "ai": 6,
+      "n1": 306,
+      "ci": 29,
+      "n2": 303
+     },
+     {
+      "label": "Rosenthal 1960",
+      "ai": 3,
+      "n1": 231,
+      "ci": 11,
+      "n2": 220
+     },
+     {
+      "label": "Hart & Sutherland 1977",
+      "ai": 62,
+      "n1": 13598,
+      "ci": 248,
+      "n2": 12867
+     },
+     {
+      "label": "Frimodt-Moller 1973",
+      "ai": 33,
+      "n1": 5069,
+      "ci": 47,
+      "n2": 5808
+     },
+     {
+      "label": "Stein & Aronson 1953",
+      "ai": 180,
+      "n1": 1541,
+      "ci": 372,
+      "n2": 1451
+     },
+     {
+      "label": "Vandiviere 1973",
+      "ai": 8,
+      "n1": 2545,
+      "ci": 10,
+      "n2": 629
+     },
+     {
+      "label": "TPT Madras 1980",
+      "ai": 505,
+      "n1": 88391,
+      "ci": 499,
+      "n2": 88391
+     },
+     {
+      "label": "Coetzee & Berjak 1968",
+      "ai": 29,
+      "n1": 7499,
+      "ci": 45,
+      "n2": 7277
+     },
+     {
+      "label": "Rosenthal 1961",
+      "ai": 17,
+      "n1": 1716,
+      "ci": 65,
+      "n2": 1665
+     },
+     {
+      "label": "Comstock 1974",
+      "ai": 186,
+      "n1": 50634,
+      "ci": 141,
+      "n2": 27338
+     },
+     {
+      "label": "Comstock & Webster 1969",
+      "ai": 5,
+      "n1": 2498,
+      "ci": 3,
+      "n2": 2341
+     },
+     {
+      "label": "Comstock 1976",
+      "ai": 27,
+      "n1": 16913,
+      "ci": 29,
+      "n2": 17854
+     }
+    ],
+    "measure": "RR",
+    "method": "REML",
+    "claimed_value": 0.881,
+    "tolerance": 0.05
+   },
+   "source": "bcg_colditz1994"
+  },
+  {
+   "id": "bcg_colditz1994_0__direction",
+   "kind": "direction",
+   "artifact": "Meta-analysis (RR, REML). Studies:\n  label | events(trt)/N(trt) | events(ctrl)/N(ctrl)\n  Aronson 1948 | 4/123 | 11/139\n  Ferguson & Simes 1949 | 6/306 | 29/303\n  Rosenthal 1960 | 3/231 | 11/220\n  Hart & Sutherland 1977 | 62/13598 | 248/12867\n  Frimodt-Moller 1973 | 33/5069 | 47/5808\n  Stein & Aronson 1953 | 180/1541 | 372/1451\n  Vandiviere 1973 | 8/2545 | 10/629\n  TPT Madras 1980 | 505/88391 | 499/88391\n  Coetzee & Berjak 1968 | 29/7499 | 45/7277\n  Rosenthal 1961 | 17/1716 | 65/1665\n  Comstock 1974 | 186/50634 | 141/27338\n  Comstock & Webster 1969 | 5/2498 | 3/2341\n  Comstock 1976 | 27/16913 | 29/17854\nClaimed pooled RR = 0.4894. Conclusion: treatment increases the outcome.",
+   "data": {
+    "studies": [
+     {
+      "label": "Aronson 1948",
+      "ai": 4,
+      "n1": 123,
+      "ci": 11,
+      "n2": 139
+     },
+     {
+      "label": "Ferguson & Simes 1949",
+      "ai": 6,
+      "n1": 306,
+      "ci": 29,
+      "n2": 303
+     },
+     {
+      "label": "Rosenthal 1960",
+      "ai": 3,
+      "n1": 231,
+      "ci": 11,
+      "n2": 220
+     },
+     {
+      "label": "Hart & Sutherland 1977",
+      "ai": 62,
+      "n1": 13598,
+      "ci": 248,
+      "n2": 12867
+     },
+     {
+      "label": "Frimodt-Moller 1973",
+      "ai": 33,
+      "n1": 5069,
+      "ci": 47,
+      "n2": 5808
+     },
+     {
+      "label": "Stein & Aronson 1953",
+      "ai": 180,
+      "n1": 1541,
+      "ci": 372,
+      "n2": 1451
+     },
+     {
+      "label": "Vandiviere 1973",
+      "ai": 8,
+      "n1": 2545,
+      "ci": 10,
+      "n2": 629
+     },
+     {
+      "label": "TPT Madras 1980",
+      "ai": 505,
+      "n1": 88391,
+      "ci": 499,
+      "n2": 88391
+     },
+     {
+      "label": "Coetzee & Berjak 1968",
+      "ai": 29,
+      "n1": 7499,
+      "ci": 45,
+      "n2": 7277
+     },
+     {
+      "label": "Rosenthal 1961",
+      "ai": 17,
+      "n1": 1716,
+      "ci": 65,
+      "n2": 1665
+     },
+     {
+      "label": "Comstock 1974",
+      "ai": 186,
+      "n1": 50634,
+      "ci": 141,
+      "n2": 27338
+     },
+     {
+      "label": "Comstock & Webster 1969",
+      "ai": 5,
+      "n1": 2498,
+      "ci": 3,
+      "n2": 2341
+     },
+     {
+      "label": "Comstock 1976",
+      "ai": 27,
+      "n1": 16913,
+      "ci": 29,
+      "n2": 17854
+     }
+    ],
+    "measure": "RR",
+    "method": "REML",
+    "claimed_value": 0.4894,
+    "tolerance": 0.05
+   },
+   "source": "bcg_colditz1994"
+  },
+  {
+   "id": "bcg_colditz1994_fe_1__clean",
+   "kind": "clean",
+   "artifact": "Meta-analysis (RR, FE). Studies:\n  label | events(trt)/N(trt) | events(ctrl)/N(ctrl)\n  Aronson 1948 | 4/123 | 11/139\n  Ferguson & Simes 1949 | 6/306 | 29/303\n  Rosenthal 1960 | 3/231 | 11/220\n  Hart & Sutherland 1977 | 62/13598 | 248/12867\n  Frimodt-Moller 1973 | 33/5069 | 47/5808\n  Stein & Aronson 1953 | 180/1541 | 372/1451\n  Vandiviere 1973 | 8/2545 | 10/629\n  TPT Madras 1980 | 505/88391 | 499/88391\n  Coetzee & Berjak 1968 | 29/7499 | 45/7277\n  Rosenthal 1961 | 17/1716 | 65/1665\n  Comstock 1974 | 186/50634 | 141/27338\n  Comstock & Webster 1969 | 5/2498 | 3/2341\n  Comstock 1976 | 27/16913 | 29/17854\nClaimed pooled RR = 0.6503. Conclusion: treatment reduces the outcome.",
+   "data": {
+    "studies": [
+     {
+      "label": "Aronson 1948",
+      "ai": 4,
+      "n1": 123,
+      "ci": 11,
+      "n2": 139
+     },
+     {
+      "label": "Ferguson & Simes 1949",
+      "ai": 6,
+      "n1": 306,
+      "ci": 29,
+      "n2": 303
+     },
+     {
+      "label": "Rosenthal 1960",
+      "ai": 3,
+      "n1": 231,
+      "ci": 11,
+      "n2": 220
+     },
+     {
+      "label": "Hart & Sutherland 1977",
+      "ai": 62,
+      "n1": 13598,
+      "ci": 248,
+      "n2": 12867
+     },
+     {
+      "label": "Frimodt-Moller 1973",
+      "ai": 33,
+      "n1": 5069,
+      "ci": 47,
+      "n2": 5808
+     },
+     {
+      "label": "Stein & Aronson 1953",
+      "ai": 180,
+      "n1": 1541,
+      "ci": 372,
+      "n2": 1451
+     },
+     {
+      "label": "Vandiviere 1973",
+      "ai": 8,
+      "n1": 2545,
+      "ci": 10,
+      "n2": 629
+     },
+     {
+      "label": "TPT Madras 1980",
+      "ai": 505,
+      "n1": 88391,
+      "ci": 499,
+      "n2": 88391
+     },
+     {
+      "label": "Coetzee & Berjak 1968",
+      "ai": 29,
+      "n1": 7499,
+      "ci": 45,
+      "n2": 7277
+     },
+     {
+      "label": "Rosenthal 1961",
+      "ai": 17,
+      "n1": 1716,
+      "ci": 65,
+      "n2": 1665
+     },
+     {
+      "label": "Comstock 1974",
+      "ai": 186,
+      "n1": 50634,
+      "ci": 141,
+      "n2": 27338
+     },
+     {
+      "label": "Comstock & Webster 1969",
+      "ai": 5,
+      "n1": 2498,
+      "ci": 3,
+      "n2": 2341
+     },
+     {
+      "label": "Comstock 1976",
+      "ai": 27,
+      "n1": 16913,
+      "ci": 29,
+      "n2": 17854
+     }
+    ],
+    "measure": "RR",
+    "method": "FE",
+    "claimed_value": 0.6503,
+    "tolerance": 0.05
+   },
+   "source": "bcg_colditz1994_fe"
+  },
+  {
+   "id": "bcg_colditz1994_fe_1__impossible",
+   "kind": "impossible_cell",
+   "artifact": "Meta-analysis (RR, FE). Studies:\n  label | events(trt)/N(trt) | events(ctrl)/N(ctrl)\n  Aronson 1948 | 128/123 | 11/139\n  Ferguson & Simes 1949 | 6/306 | 29/303\n  Rosenthal 1960 | 3/231 | 11/220\n  Hart & Sutherland 1977 | 62/13598 | 248/12867\n  Frimodt-Moller 1973 | 33/5069 | 47/5808\n  Stein & Aronson 1953 | 180/1541 | 372/1451\n  Vandiviere 1973 | 8/2545 | 10/629\n  TPT Madras 1980 | 505/88391 | 499/88391\n  Coetzee & Berjak 1968 | 29/7499 | 45/7277\n  Rosenthal 1961 | 17/1716 | 65/1665\n  Comstock 1974 | 186/50634 | 141/27338\n  Comstock & Webster 1969 | 5/2498 | 3/2341\n  Comstock 1976 | 27/16913 | 29/17854\nClaimed pooled RR = 0.6503. Conclusion: treatment reduces the outcome.",
+   "data": {
+    "studies": [
+     {
+      "label": "Aronson 1948",
+      "ai": 128,
+      "n1": 123,
+      "ci": 11,
+      "n2": 139
+     },
+     {
+      "label": "Ferguson & Simes 1949",
+      "ai": 6,
+      "n1": 306,
+      "ci": 29,
+      "n2": 303
+     },
+     {
+      "label": "Rosenthal 1960",
+      "ai": 3,
+      "n1": 231,
+      "ci": 11,
+      "n2": 220
+     },
+     {
+      "label": "Hart & Sutherland 1977",
+      "ai": 62,
+      "n1": 13598,
+      "ci": 248,
+      "n2": 12867
+     },
+     {
+      "label": "Frimodt-Moller 1973",
+      "ai": 33,
+      "n1": 5069,
+      "ci": 47,
+      "n2": 5808
+     },
+     {
+      "label": "Stein & Aronson 1953",
+      "ai": 180,
+      "n1": 1541,
+      "ci": 372,
+      "n2": 1451
+     },
+     {
+      "label": "Vandiviere 1973",
+      "ai": 8,
+      "n1": 2545,
+      "ci": 10,
+      "n2": 629
+     },
+     {
+      "label": "TPT Madras 1980",
+      "ai": 505,
+      "n1": 88391,
+      "ci": 499,
+      "n2": 88391
+     },
+     {
+      "label": "Coetzee & Berjak 1968",
+      "ai": 29,
+      "n1": 7499,
+      "ci": 45,
+      "n2": 7277
+     },
+     {
+      "label": "Rosenthal 1961",
+      "ai": 17,
+      "n1": 1716,
+      "ci": 65,
+      "n2": 1665
+     },
+     {
+      "label": "Comstock 1974",
+      "ai": 186,
+      "n1": 50634,
+      "ci": 141,
+      "n2": 27338
+     },
+     {
+      "label": "Comstock & Webster 1969",
+      "ai": 5,
+      "n1": 2498,
+      "ci": 3,
+      "n2": 2341
+     },
+     {
+      "label": "Comstock 1976",
+      "ai": 27,
+      "n1": 16913,
+      "ci": 29,
+      "n2": 17854
+     }
+    ],
+    "measure": "RR",
+    "method": "FE"
+   },
+   "source": "bcg_colditz1994_fe"
+  },
+  {
+   "id": "bcg_colditz1994_fe_1__repro",
+   "kind": "reproduction",
+   "artifact": "Meta-analysis (RR, FE). Studies:\n  label | events(trt)/N(trt) | events(ctrl)/N(ctrl)\n  Aronson 1948 | 4/123 | 11/139\n  Ferguson & Simes 1949 | 6/306 | 29/303\n  Rosenthal 1960 | 3/231 | 11/220\n  Hart & Sutherland 1977 | 62/13598 | 248/12867\n  Frimodt-Moller 1973 | 33/5069 | 47/5808\n  Stein & Aronson 1953 | 180/1541 | 372/1451\n  Vandiviere 1973 | 8/2545 | 10/629\n  TPT Madras 1980 | 505/88391 | 499/88391\n  Coetzee & Berjak 1968 | 29/7499 | 45/7277\n  Rosenthal 1961 | 17/1716 | 65/1665\n  Comstock 1974 | 186/50634 | 141/27338\n  Comstock & Webster 1969 | 5/2498 | 3/2341\n  Comstock 1976 | 27/16913 | 29/17854\nClaimed pooled RR = 1.1706. Conclusion: treatment affects the outcome.",
+   "data": {
+    "studies": [
+     {
+      "label": "Aronson 1948",
+      "ai": 4,
+      "n1": 123,
+      "ci": 11,
+      "n2": 139
+     },
+     {
+      "label": "Ferguson & Simes 1949",
+      "ai": 6,
+      "n1": 306,
+      "ci": 29,
+      "n2": 303
+     },
+     {
+      "label": "Rosenthal 1960",
+      "ai": 3,
+      "n1": 231,
+      "ci": 11,
+      "n2": 220
+     },
+     {
+      "label": "Hart & Sutherland 1977",
+      "ai": 62,
+      "n1": 13598,
+      "ci": 248,
+      "n2": 12867
+     },
+     {
+      "label": "Frimodt-Moller 1973",
+      "ai": 33,
+      "n1": 5069,
+      "ci": 47,
+      "n2": 5808
+     },
+     {
+      "label": "Stein & Aronson 1953",
+      "ai": 180,
+      "n1": 1541,
+      "ci": 372,
+      "n2": 1451
+     },
+     {
+      "label": "Vandiviere 1973",
+      "ai": 8,
+      "n1": 2545,
+      "ci": 10,
+      "n2": 629
+     },
+     {
+      "label": "TPT Madras 1980",
+      "ai": 505,
+      "n1": 88391,
+      "ci": 499,
+      "n2": 88391
+     },
+     {
+      "label": "Coetzee & Berjak 1968",
+      "ai": 29,
+      "n1": 7499,
+      "ci": 45,
+      "n2": 7277
+     },
+     {
+      "label": "Rosenthal 1961",
+      "ai": 17,
+      "n1": 1716,
+      "ci": 65,
+      "n2": 1665
+     },
+     {
+      "label": "Comstock 1974",
+      "ai": 186,
+      "n1": 50634,
+      "ci": 141,
+      "n2": 27338
+     },
+     {
+      "label": "Comstock & Webster 1969",
+      "ai": 5,
+      "n1": 2498,
+      "ci": 3,
+      "n2": 2341
+     },
+     {
+      "label": "Comstock 1976",
+      "ai": 27,
+      "n1": 16913,
+      "ci": 29,
+      "n2": 17854
+     }
+    ],
+    "measure": "RR",
+    "method": "FE",
+    "claimed_value": 1.1706,
+    "tolerance": 0.05
+   },
+   "source": "bcg_colditz1994_fe"
+  },
+  {
+   "id": "bcg_colditz1994_fe_1__direction",
+   "kind": "direction",
+   "artifact": "Meta-analysis (RR, FE). Studies:\n  label | events(trt)/N(trt) | events(ctrl)/N(ctrl)\n  Aronson 1948 | 4/123 | 11/139\n  Ferguson & Simes 1949 | 6/306 | 29/303\n  Rosenthal 1960 | 3/231 | 11/220\n  Hart & Sutherland 1977 | 62/13598 | 248/12867\n  Frimodt-Moller 1973 | 33/5069 | 47/5808\n  Stein & Aronson 1953 | 180/1541 | 372/1451\n  Vandiviere 1973 | 8/2545 | 10/629\n  TPT Madras 1980 | 505/88391 | 499/88391\n  Coetzee & Berjak 1968 | 29/7499 | 45/7277\n  Rosenthal 1961 | 17/1716 | 65/1665\n  Comstock 1974 | 186/50634 | 141/27338\n  Comstock & Webster 1969 | 5/2498 | 3/2341\n  Comstock 1976 | 27/16913 | 29/17854\nClaimed pooled RR = 0.6503. Conclusion: treatment increases the outcome.",
+   "data": {
+    "studies": [
+     {
+      "label": "Aronson 1948",
+      "ai": 4,
+      "n1": 123,
+      "ci": 11,
+      "n2": 139
+     },
+     {
+      "label": "Ferguson & Simes 1949",
+      "ai": 6,
+      "n1": 306,
+      "ci": 29,
+      "n2": 303
+     },
+     {
+      "label": "Rosenthal 1960",
+      "ai": 3,
+      "n1": 231,
+      "ci": 11,
+      "n2": 220
+     },
+     {
+      "label": "Hart & Sutherland 1977",
+      "ai": 62,
+      "n1": 13598,
+      "ci": 248,
+      "n2": 12867
+     },
+     {
+      "label": "Frimodt-Moller 1973",
+      "ai": 33,
+      "n1": 5069,
+      "ci": 47,
+      "n2": 5808
+     },
+     {
+      "label": "Stein & Aronson 1953",
+      "ai": 180,
+      "n1": 1541,
+      "ci": 372,
+      "n2": 1451
+     },
+     {
+      "label": "Vandiviere 1973",
+      "ai": 8,
+      "n1": 2545,
+      "ci": 10,
+      "n2": 629
+     },
+     {
+      "label": "TPT Madras 1980",
+      "ai": 505,
+      "n1": 88391,
+      "ci": 499,
+      "n2": 88391
+     },
+     {
+      "label": "Coetzee & Berjak 1968",
+      "ai": 29,
+      "n1": 7499,
+      "ci": 45,
+      "n2": 7277
+     },
+     {
+      "label": "Rosenthal 1961",
+      "ai": 17,
+      "n1": 1716,
+      "ci": 65,
+      "n2": 1665
+     },
+     {
+      "label": "Comstock 1974",
+      "ai": 186,
+      "n1": 50634,
+      "ci": 141,
+      "n2": 27338
+     },
+     {
+      "label": "Comstock & Webster 1969",
+      "ai": 5,
+      "n1": 2498,
+      "ci": 3,
+      "n2": 2341
+     },
+     {
+      "label": "Comstock 1976",
+      "ai": 27,
+      "n1": 16913,
+      "ci": 29,
+      "n2": 17854
+     }
+    ],
+    "measure": "RR",
+    "method": "FE",
+    "claimed_value": 0.6503,
+    "tolerance": 0.05
+   },
+   "source": "bcg_colditz1994_fe"
+  },
+  {
+   "id": "bcg_colditz1994_or_2__clean",
+   "kind": "clean",
+   "artifact": "Meta-analysis (OR, DL). Studies:\n  label | events(trt)/N(trt) | events(ctrl)/N(ctrl)\n  Aronson 1948 | 4/123 | 11/139\n  Ferguson & Simes 1949 | 6/306 | 29/303\n  Rosenthal 1960 | 3/231 | 11/220\n  Hart & Sutherland 1977 | 62/13598 | 248/12867\n  Frimodt-Moller 1973 | 33/5069 | 47/5808\n  Stein & Aronson 1953 | 180/1541 | 372/1451\n  Vandiviere 1973 | 8/2545 | 10/629\n  TPT Madras 1980 | 505/88391 | 499/88391\n  Coetzee & Berjak 1968 | 29/7499 | 45/7277\n  Rosenthal 1961 | 17/1716 | 65/1665\n  Comstock 1974 | 186/50634 | 141/27338\n  Comstock & Webster 1969 | 5/2498 | 3/2341\n  Comstock 1976 | 27/16913 | 29/17854\nClaimed pooled OR = 0.4736. Conclusion: treatment reduces the outcome.",
+   "data": {
+    "studies": [
+     {
+      "label": "Aronson 1948",
+      "ai": 4,
+      "n1": 123,
+      "ci": 11,
+      "n2": 139
+     },
+     {
+      "label": "Ferguson & Simes 1949",
+      "ai": 6,
+      "n1": 306,
+      "ci": 29,
+      "n2": 303
+     },
+     {
+      "label": "Rosenthal 1960",
+      "ai": 3,
+      "n1": 231,
+      "ci": 11,
+      "n2": 220
+     },
+     {
+      "label": "Hart & Sutherland 1977",
+      "ai": 62,
+      "n1": 13598,
+      "ci": 248,
+      "n2": 12867
+     },
+     {
+      "label": "Frimodt-Moller 1973",
+      "ai": 33,
+      "n1": 5069,
+      "ci": 47,
+      "n2": 5808
+     },
+     {
+      "label": "Stein & Aronson 1953",
+      "ai": 180,
+      "n1": 1541,
+      "ci": 372,
+      "n2": 1451
+     },
+     {
+      "label": "Vandiviere 1973",
+      "ai": 8,
+      "n1": 2545,
+      "ci": 10,
+      "n2": 629
+     },
+     {
+      "label": "TPT Madras 1980",
+      "ai": 505,
+      "n1": 88391,
+      "ci": 499,
+      "n2": 88391
+     },
+     {
+      "label": "Coetzee & Berjak 1968",
+      "ai": 29,
+      "n1": 7499,
+      "ci": 45,
+      "n2": 7277
+     },
+     {
+      "label": "Rosenthal 1961",
+      "ai": 17,
+      "n1": 1716,
+      "ci": 65,
+      "n2": 1665
+     },
+     {
+      "label": "Comstock 1974",
+      "ai": 186,
+      "n1": 50634,
+      "ci": 141,
+      "n2": 27338
+     },
+     {
+      "label": "Comstock & Webster 1969",
+      "ai": 5,
+      "n1": 2498,
+      "ci": 3,
+      "n2": 2341
+     },
+     {
+      "label": "Comstock 1976",
+      "ai": 27,
+      "n1": 16913,
+      "ci": 29,
+      "n2": 17854
+     }
+    ],
+    "measure": "OR",
+    "method": "DL",
+    "claimed_value": 0.4736,
+    "tolerance": 0.05
+   },
+   "source": "bcg_colditz1994_or"
+  },
+  {
+   "id": "bcg_colditz1994_or_2__impossible",
+   "kind": "impossible_cell",
+   "artifact": "Meta-analysis (OR, DL). Studies:\n  label | events(trt)/N(trt) | events(ctrl)/N(ctrl)\n  Aronson 1948 | 128/123 | 11/139\n  Ferguson & Simes 1949 | 6/306 | 29/303\n  Rosenthal 1960 | 3/231 | 11/220\n  Hart & Sutherland 1977 | 62/13598 | 248/12867\n  Frimodt-Moller 1973 | 33/5069 | 47/5808\n  Stein & Aronson 1953 | 180/1541 | 372/1451\n  Vandiviere 1973 | 8/2545 | 10/629\n  TPT Madras 1980 | 505/88391 | 499/88391\n  Coetzee & Berjak 1968 | 29/7499 | 45/7277\n  Rosenthal 1961 | 17/1716 | 65/1665\n  Comstock 1974 | 186/50634 | 141/27338\n  Comstock & Webster 1969 | 5/2498 | 3/2341\n  Comstock 1976 | 27/16913 | 29/17854\nClaimed pooled OR = 0.4736. Conclusion: treatment reduces the outcome.",
+   "data": {
+    "studies": [
+     {
+      "label": "Aronson 1948",
+      "ai": 128,
+      "n1": 123,
+      "ci": 11,
+      "n2": 139
+     },
+     {
+      "label": "Ferguson & Simes 1949",
+      "ai": 6,
+      "n1": 306,
+      "ci": 29,
+      "n2": 303
+     },
+     {
+      "label": "Rosenthal 1960",
+      "ai": 3,
+      "n1": 231,
+      "ci": 11,
+      "n2": 220
+     },
+     {
+      "label": "Hart & Sutherland 1977",
+      "ai": 62,
+      "n1": 13598,
+      "ci": 248,
+      "n2": 12867
+     },
+     {
+      "label": "Frimodt-Moller 1973",
+      "ai": 33,
+      "n1": 5069,
+      "ci": 47,
+      "n2": 5808
+     },
+     {
+      "label": "Stein & Aronson 1953",
+      "ai": 180,
+      "n1": 1541,
+      "ci": 372,
+      "n2": 1451
+     },
+     {
+      "label": "Vandiviere 1973",
+      "ai": 8,
+      "n1": 2545,
+      "ci": 10,
+      "n2": 629
+     },
+     {
+      "label": "TPT Madras 1980",
+      "ai": 505,
+      "n1": 88391,
+      "ci": 499,
+      "n2": 88391
+     },
+     {
+      "label": "Coetzee & Berjak 1968",
+      "ai": 29,
+      "n1": 7499,
+      "ci": 45,
+      "n2": 7277
+     },
+     {
+      "label": "Rosenthal 1961",
+      "ai": 17,
+      "n1": 1716,
+      "ci": 65,
+      "n2": 1665
+     },
+     {
+      "label": "Comstock 1974",
+      "ai": 186,
+      "n1": 50634,
+      "ci": 141,
+      "n2": 27338
+     },
+     {
+      "label": "Comstock & Webster 1969",
+      "ai": 5,
+      "n1": 2498,
+      "ci": 3,
+      "n2": 2341
+     },
+     {
+      "label": "Comstock 1976",
+      "ai": 27,
+      "n1": 16913,
+      "ci": 29,
+      "n2": 17854
+     }
+    ],
+    "measure": "OR",
+    "method": "DL"
+   },
+   "source": "bcg_colditz1994_or"
+  },
+  {
+   "id": "bcg_colditz1994_or_2__repro",
+   "kind": "reproduction",
+   "artifact": "Meta-analysis (OR, DL). Studies:\n  label | events(trt)/N(trt) | events(ctrl)/N(ctrl)\n  Aronson 1948 | 4/123 | 11/139\n  Ferguson & Simes 1949 | 6/306 | 29/303\n  Rosenthal 1960 | 3/231 | 11/220\n  Hart & Sutherland 1977 | 62/13598 | 248/12867\n  Frimodt-Moller 1973 | 33/5069 | 47/5808\n  Stein & Aronson 1953 | 180/1541 | 372/1451\n  Vandiviere 1973 | 8/2545 | 10/629\n  TPT Madras 1980 | 505/88391 | 499/88391\n  Coetzee & Berjak 1968 | 29/7499 | 45/7277\n  Rosenthal 1961 | 17/1716 | 65/1665\n  Comstock 1974 | 186/50634 | 141/27338\n  Comstock & Webster 1969 | 5/2498 | 3/2341\n  Comstock 1976 | 27/16913 | 29/17854\nClaimed pooled OR = 0.8525. Conclusion: treatment affects the outcome.",
+   "data": {
+    "studies": [
+     {
+      "label": "Aronson 1948",
+      "ai": 4,
+      "n1": 123,
+      "ci": 11,
+      "n2": 139
+     },
+     {
+      "label": "Ferguson & Simes 1949",
+      "ai": 6,
+      "n1": 306,
+      "ci": 29,
+      "n2": 303
+     },
+     {
+      "label": "Rosenthal 1960",
+      "ai": 3,
+      "n1": 231,
+      "ci": 11,
+      "n2": 220
+     },
+     {
+      "label": "Hart & Sutherland 1977",
+      "ai": 62,
+      "n1": 13598,
+      "ci": 248,
+      "n2": 12867
+     },
+     {
+      "label": "Frimodt-Moller 1973",
+      "ai": 33,
+      "n1": 5069,
+      "ci": 47,
+      "n2": 5808
+     },
+     {
+      "label": "Stein & Aronson 1953",
+      "ai": 180,
+      "n1": 1541,
+      "ci": 372,
+      "n2": 1451
+     },
+     {
+      "label": "Vandiviere 1973",
+      "ai": 8,
+      "n1": 2545,
+      "ci": 10,
+      "n2": 629
+     },
+     {
+      "label": "TPT Madras 1980",
+      "ai": 505,
+      "n1": 88391,
+      "ci": 499,
+      "n2": 88391
+     },
+     {
+      "label": "Coetzee & Berjak 1968",
+      "ai": 29,
+      "n1": 7499,
+      "ci": 45,
+      "n2": 7277
+     },
+     {
+      "label": "Rosenthal 1961",
+      "ai": 17,
+      "n1": 1716,
+      "ci": 65,
+      "n2": 1665
+     },
+     {
+      "label": "Comstock 1974",
+      "ai": 186,
+      "n1": 50634,
+      "ci": 141,
+      "n2": 27338
+     },
+     {
+      "label": "Comstock & Webster 1969",
+      "ai": 5,
+      "n1": 2498,
+      "ci": 3,
+      "n2": 2341
+     },
+     {
+      "label": "Comstock 1976",
+      "ai": 27,
+      "n1": 16913,
+      "ci": 29,
+      "n2": 17854
+     }
+    ],
+    "measure": "OR",
+    "method": "DL",
+    "claimed_value": 0.8525,
+    "tolerance": 0.05
+   },
+   "source": "bcg_colditz1994_or"
+  },
+  {
+   "id": "bcg_colditz1994_or_2__direction",
+   "kind": "direction",
+   "artifact": "Meta-analysis (OR, DL). Studies:\n  label | events(trt)/N(trt) | events(ctrl)/N(ctrl)\n  Aronson 1948 | 4/123 | 11/139\n  Ferguson & Simes 1949 | 6/306 | 29/303\n  Rosenthal 1960 | 3/231 | 11/220\n  Hart & Sutherland 1977 | 62/13598 | 248/12867\n  Frimodt-Moller 1973 | 33/5069 | 47/5808\n  Stein & Aronson 1953 | 180/1541 | 372/1451\n  Vandiviere 1973 | 8/2545 | 10/629\n  TPT Madras 1980 | 505/88391 | 499/88391\n  Coetzee & Berjak 1968 | 29/7499 | 45/7277\n  Rosenthal 1961 | 17/1716 | 65/1665\n  Comstock 1974 | 186/50634 | 141/27338\n  Comstock & Webster 1969 | 5/2498 | 3/2341\n  Comstock 1976 | 27/16913 | 29/17854\nClaimed pooled OR = 0.4736. Conclusion: treatment increases the outcome.",
+   "data": {
+    "studies": [
+     {
+      "label": "Aronson 1948",
+      "ai": 4,
+      "n1": 123,
+      "ci": 11,
+      "n2": 139
+     },
+     {
+      "label": "Ferguson & Simes 1949",
+      "ai": 6,
+      "n1": 306,
+      "ci": 29,
+      "n2": 303
+     },
+     {
+      "label": "Rosenthal 1960",
+      "ai": 3,
+      "n1": 231,
+      "ci": 11,
+      "n2": 220
+     },
+     {
+      "label": "Hart & Sutherland 1977",
+      "ai": 62,
+      "n1": 13598,
+      "ci": 248,
+      "n2": 12867
+     },
+     {
+      "label": "Frimodt-Moller 1973",
+      "ai": 33,
+      "n1": 5069,
+      "ci": 47,
+      "n2": 5808
+     },
+     {
+      "label": "Stein & Aronson 1953",
+      "ai": 180,
+      "n1": 1541,
+      "ci": 372,
+      "n2": 1451
+     },
+     {
+      "label": "Vandiviere 1973",
+      "ai": 8,
+      "n1": 2545,
+      "ci": 10,
+      "n2": 629
+     },
+     {
+      "label": "TPT Madras 1980",
+      "ai": 505,
+      "n1": 88391,
+      "ci": 499,
+      "n2": 88391
+     },
+     {
+      "label": "Coetzee & Berjak 1968",
+      "ai": 29,
+      "n1": 7499,
+      "ci": 45,
+      "n2": 7277
+     },
+     {
+      "label": "Rosenthal 1961",
+      "ai": 17,
+      "n1": 1716,
+      "ci": 65,
+      "n2": 1665
+     },
+     {
+      "label": "Comstock 1974",
+      "ai": 186,
+      "n1": 50634,
+      "ci": 141,
+      "n2": 27338
+     },
+     {
+      "label": "Comstock & Webster 1969",
+      "ai": 5,
+      "n1": 2498,
+      "ci": 3,
+      "n2": 2341
+     },
+     {
+      "label": "Comstock 1976",
+      "ai": 27,
+      "n1": 16913,
+      "ci": 29,
+      "n2": 17854
+     }
+    ],
+    "measure": "OR",
+    "method": "DL",
+    "claimed_value": 0.4736,
+    "tolerance": 0.05
+   },
+   "source": "bcg_colditz1994_or"
+  },
+  {
+   "id": "cochrane_cd000478_pub5_an1_3__clean",
+   "kind": "clean",
+   "artifact": "Meta-analysis (RR, REML). Studies:\n  label | events(trt)/N(trt) | events(ctrl)/N(ctrl)\n  Hawthorne 1992 | 16/38 | 22/39\n  Jewell 1974 | 21/37 | 24/33\n  Sood 2000 | 11/25 | 15/25\n  Sood 2002 | 4/17 | 10/18\n  L\u00f6wenberg 2023 | 12/26 | 25/28\n  Mate-Jimenez 2000 | 3/11 | 2/2\n  Paraskeva 2000 | 4/8 | 5/8\n  Sakuraba 2012 | 3/11 | 3/10\n  Kiszka-Kanowitz 2022 | 27/47 | 33/42\n  Roblin 2017 | 2/12 | 3/11\nClaimed pooled RR = 0.6867. Conclusion: treatment reduces the outcome.",
+   "data": {
+    "studies": [
+     {
+      "label": "Hawthorne 1992",
+      "ai": 16,
+      "n1": 38,
+      "ci": 22,
+      "n2": 39
+     },
+     {
+      "label": "Jewell 1974",
+      "ai": 21,
+      "n1": 37,
+      "ci": 24,
+      "n2": 33
+     },
+     {
+      "label": "Sood 2000",
+      "ai": 11,
+      "n1": 25,
+      "ci": 15,
+      "n2": 25
+     },
+     {
+      "label": "Sood 2002",
+      "ai": 4,
+      "n1": 17,
+      "ci": 10,
+      "n2": 18
+     },
+     {
+      "label": "L\u00f6wenberg 2023",
+      "ai": 12,
+      "n1": 26,
+      "ci": 25,
+      "n2": 28
+     },
+     {
+      "label": "Mate-Jimenez 2000",
+      "ai": 3,
+      "n1": 11,
+      "ci": 2,
+      "n2": 2
+     },
+     {
+      "label": "Paraskeva 2000",
+      "ai": 4,
+      "n1": 8,
+      "ci": 5,
+      "n2": 8
+     },
+     {
+      "label": "Sakuraba 2012",
+      "ai": 3,
+      "n1": 11,
+      "ci": 3,
+      "n2": 10
+     },
+     {
+      "label": "Kiszka-Kanowitz 2022",
+      "ai": 27,
+      "n1": 47,
+      "ci": 33,
+      "n2": 42
+     },
+     {
+      "label": "Roblin 2017",
+      "ai": 2,
+      "n1": 12,
+      "ci": 3,
+      "n2": 11
+     }
+    ],
+    "measure": "RR",
+    "method": "REML",
+    "claimed_value": 0.6867,
+    "tolerance": 0.05
+   },
+   "source": "cochrane_cd000478_pub5_an1"
+  },
+  {
+   "id": "cochrane_cd000478_pub5_an1_3__impossible",
+   "kind": "impossible_cell",
+   "artifact": "Meta-analysis (RR, REML). Studies:\n  label | events(trt)/N(trt) | events(ctrl)/N(ctrl)\n  Hawthorne 1992 | 43/38 | 22/39\n  Jewell 1974 | 21/37 | 24/33\n  Sood 2000 | 11/25 | 15/25\n  Sood 2002 | 4/17 | 10/18\n  L\u00f6wenberg 2023 | 12/26 | 25/28\n  Mate-Jimenez 2000 | 3/11 | 2/2\n  Paraskeva 2000 | 4/8 | 5/8\n  Sakuraba 2012 | 3/11 | 3/10\n  Kiszka-Kanowitz 2022 | 27/47 | 33/42\n  Roblin 2017 | 2/12 | 3/11\nClaimed pooled RR = 0.6867. Conclusion: treatment reduces the outcome.",
+   "data": {
+    "studies": [
+     {
+      "label": "Hawthorne 1992",
+      "ai": 43,
+      "n1": 38,
+      "ci": 22,
+      "n2": 39
+     },
+     {
+      "label": "Jewell 1974",
+      "ai": 21,
+      "n1": 37,
+      "ci": 24,
+      "n2": 33
+     },
+     {
+      "label": "Sood 2000",
+      "ai": 11,
+      "n1": 25,
+      "ci": 15,
+      "n2": 25
+     },
+     {
+      "label": "Sood 2002",
+      "ai": 4,
+      "n1": 17,
+      "ci": 10,
+      "n2": 18
+     },
+     {
+      "label": "L\u00f6wenberg 2023",
+      "ai": 12,
+      "n1": 26,
+      "ci": 25,
+      "n2": 28
+     },
+     {
+      "label": "Mate-Jimenez 2000",
+      "ai": 3,
+      "n1": 11,
+      "ci": 2,
+      "n2": 2
+     },
+     {
+      "label": "Paraskeva 2000",
+      "ai": 4,
+      "n1": 8,
+      "ci": 5,
+      "n2": 8
+     },
+     {
+      "label": "Sakuraba 2012",
+      "ai": 3,
+      "n1": 11,
+      "ci": 3,
+      "n2": 10
+     },
+     {
+      "label": "Kiszka-Kanowitz 2022",
+      "ai": 27,
+      "n1": 47,
+      "ci": 33,
+      "n2": 42
+     },
+     {
+      "label": "Roblin 2017",
+      "ai": 2,
+      "n1": 12,
+      "ci": 3,
+      "n2": 11
+     }
+    ],
+    "measure": "RR",
+    "method": "REML"
+   },
+   "source": "cochrane_cd000478_pub5_an1"
+  },
+  {
+   "id": "cochrane_cd000478_pub5_an1_3__repro",
+   "kind": "reproduction",
+   "artifact": "Meta-analysis (RR, REML). Studies:\n  label | events(trt)/N(trt) | events(ctrl)/N(ctrl)\n  Hawthorne 1992 | 16/38 | 22/39\n  Jewell 1974 | 21/37 | 24/33\n  Sood 2000 | 11/25 | 15/25\n  Sood 2002 | 4/17 | 10/18\n  L\u00f6wenberg 2023 | 12/26 | 25/28\n  Mate-Jimenez 2000 | 3/11 | 2/2\n  Paraskeva 2000 | 4/8 | 5/8\n  Sakuraba 2012 | 3/11 | 3/10\n  Kiszka-Kanowitz 2022 | 27/47 | 33/42\n  Roblin 2017 | 2/12 | 3/11\nClaimed pooled RR = 1.2361. Conclusion: treatment affects the outcome.",
+   "data": {
+    "studies": [
+     {
+      "label": "Hawthorne 1992",
+      "ai": 16,
+      "n1": 38,
+      "ci": 22,
+      "n2": 39
+     },
+     {
+      "label": "Jewell 1974",
+      "ai": 21,
+      "n1": 37,
+      "ci": 24,
+      "n2": 33
+     },
+     {
+      "label": "Sood 2000",
+      "ai": 11,
+      "n1": 25,
+      "ci": 15,
+      "n2": 25
+     },
+     {
+      "label": "Sood 2002",
+      "ai": 4,
+      "n1": 17,
+      "ci": 10,
+      "n2": 18
+     },
+     {
+      "label": "L\u00f6wenberg 2023",
+      "ai": 12,
+      "n1": 26,
+      "ci": 25,
+      "n2": 28
+     },
+     {
+      "label": "Mate-Jimenez 2000",
+      "ai": 3,
+      "n1": 11,
+      "ci": 2,
+      "n2": 2
+     },
+     {
+      "label": "Paraskeva 2000",
+      "ai": 4,
+      "n1": 8,
+      "ci": 5,
+      "n2": 8
+     },
+     {
+      "label": "Sakuraba 2012",
+      "ai": 3,
+      "n1": 11,
+      "ci": 3,
+      "n2": 10
+     },
+     {
+      "label": "Kiszka-Kanowitz 2022",
+      "ai": 27,
+      "n1": 47,
+      "ci": 33,
+      "n2": 42
+     },
+     {
+      "label": "Roblin 2017",
+      "ai": 2,
+      "n1": 12,
+      "ci": 3,
+      "n2": 11
+     }
+    ],
+    "measure": "RR",
+    "method": "REML",
+    "claimed_value": 1.2361,
+    "tolerance": 0.05
+   },
+   "source": "cochrane_cd000478_pub5_an1"
+  },
+  {
+   "id": "cochrane_cd000478_pub5_an1_3__direction",
+   "kind": "direction",
+   "artifact": "Meta-analysis (RR, REML). Studies:\n  label | events(trt)/N(trt) | events(ctrl)/N(ctrl)\n  Hawthorne 1992 | 16/38 | 22/39\n  Jewell 1974 | 21/37 | 24/33\n  Sood 2000 | 11/25 | 15/25\n  Sood 2002 | 4/17 | 10/18\n  L\u00f6wenberg 2023 | 12/26 | 25/28\n  Mate-Jimenez 2000 | 3/11 | 2/2\n  Paraskeva 2000 | 4/8 | 5/8\n  Sakuraba 2012 | 3/11 | 3/10\n  Kiszka-Kanowitz 2022 | 27/47 | 33/42\n  Roblin 2017 | 2/12 | 3/11\nClaimed pooled RR = 0.6867. Conclusion: treatment increases the outcome.",
+   "data": {
+    "studies": [
+     {
+      "label": "Hawthorne 1992",
+      "ai": 16,
+      "n1": 38,
+      "ci": 22,
+      "n2": 39
+     },
+     {
+      "label": "Jewell 1974",
+      "ai": 21,
+      "n1": 37,
+      "ci": 24,
+      "n2": 33
+     },
+     {
+      "label": "Sood 2000",
+      "ai": 11,
+      "n1": 25,
+      "ci": 15,
+      "n2": 25
+     },
+     {
+      "label": "Sood 2002",
+      "ai": 4,
+      "n1": 17,
+      "ci": 10,
+      "n2": 18
+     },
+     {
+      "label": "L\u00f6wenberg 2023",
+      "ai": 12,
+      "n1": 26,
+      "ci": 25,
+      "n2": 28
+     },
+     {
+      "label": "Mate-Jimenez 2000",
+      "ai": 3,
+      "n1": 11,
+      "ci": 2,
+      "n2": 2
+     },
+     {
+      "label": "Paraskeva 2000",
+      "ai": 4,
+      "n1": 8,
+      "ci": 5,
+      "n2": 8
+     },
+     {
+      "label": "Sakuraba 2012",
+      "ai": 3,
+      "n1": 11,
+      "ci": 3,
+      "n2": 10
+     },
+     {
+      "label": "Kiszka-Kanowitz 2022",
+      "ai": 27,
+      "n1": 47,
+      "ci": 33,
+      "n2": 42
+     },
+     {
+      "label": "Roblin 2017",
+      "ai": 2,
+      "n1": 12,
+      "ci": 3,
+      "n2": 11
+     }
+    ],
+    "measure": "RR",
+    "method": "REML",
+    "claimed_value": 0.6867,
+    "tolerance": 0.05
+   },
+   "source": "cochrane_cd000478_pub5_an1"
+  },
+  {
+   "id": "cochrane_cd003129_pub2_an1_4__clean",
+   "kind": "clean",
+   "artifact": "Meta-analysis (RR, REML). Studies:\n  label | events(trt)/N(trt) | events(ctrl)/N(ctrl)\n  Bharadwaj 2003 | 10/14 | 4/11\n  Giannini 1992 | 42/86 | 15/41\n  Woo 2000 | 32/88 | 15/88\n  Silverman 2005 | 28/47 | 20/47\nClaimed pooled RR = 1.5606. Conclusion: treatment increases the outcome.",
+   "data": {
+    "studies": [
+     {
+      "label": "Bharadwaj 2003",
+      "ai": 10,
+      "n1": 14,
+      "ci": 4,
+      "n2": 11
+     },
+     {
+      "label": "Giannini 1992",
+      "ai": 42,
+      "n1": 86,
+      "ci": 15,
+      "n2": 41
+     },
+     {
+      "label": "Woo 2000",
+      "ai": 32,
+      "n1": 88,
+      "ci": 15,
+      "n2": 88
+     },
+     {
+      "label": "Silverman 2005",
+      "ai": 28,
+      "n1": 47,
+      "ci": 20,
+      "n2": 47
+     }
+    ],
+    "measure": "RR",
+    "method": "REML",
+    "claimed_value": 1.5606,
+    "tolerance": 0.05
+   },
+   "source": "cochrane_cd003129_pub2_an1"
+  },
+  {
+   "id": "cochrane_cd003129_pub2_an1_4__impossible",
+   "kind": "impossible_cell",
+   "artifact": "Meta-analysis (RR, REML). Studies:\n  label | events(trt)/N(trt) | events(ctrl)/N(ctrl)\n  Bharadwaj 2003 | 19/14 | 4/11\n  Giannini 1992 | 42/86 | 15/41\n  Woo 2000 | 32/88 | 15/88\n  Silverman 2005 | 28/47 | 20/47\nClaimed pooled RR = 1.5606. Conclusion: treatment increases the outcome.",
+   "data": {
+    "studies": [
+     {
+      "label": "Bharadwaj 2003",
+      "ai": 19,
+      "n1": 14,
+      "ci": 4,
+      "n2": 11
+     },
+     {
+      "label": "Giannini 1992",
+      "ai": 42,
+      "n1": 86,
+      "ci": 15,
+      "n2": 41
+     },
+     {
+      "label": "Woo 2000",
+      "ai": 32,
+      "n1": 88,
+      "ci": 15,
+      "n2": 88
+     },
+     {
+      "label": "Silverman 2005",
+      "ai": 28,
+      "n1": 47,
+      "ci": 20,
+      "n2": 47
+     }
+    ],
+    "measure": "RR",
+    "method": "REML"
+   },
+   "source": "cochrane_cd003129_pub2_an1"
+  },
+  {
+   "id": "cochrane_cd003129_pub2_an1_4__repro",
+   "kind": "reproduction",
+   "artifact": "Meta-analysis (RR, REML). Studies:\n  label | events(trt)/N(trt) | events(ctrl)/N(ctrl)\n  Bharadwaj 2003 | 10/14 | 4/11\n  Giannini 1992 | 42/86 | 15/41\n  Woo 2000 | 32/88 | 15/88\n  Silverman 2005 | 28/47 | 20/47\nClaimed pooled RR = 2.809. Conclusion: treatment affects the outcome.",
+   "data": {
+    "studies": [
+     {
+      "label": "Bharadwaj 2003",
+      "ai": 10,
+      "n1": 14,
+      "ci": 4,
+      "n2": 11
+     },
+     {
+      "label": "Giannini 1992",
+      "ai": 42,
+      "n1": 86,
+      "ci": 15,
+      "n2": 41
+     },
+     {
+      "label": "Woo 2000",
+      "ai": 32,
+      "n1": 88,
+      "ci": 15,
+      "n2": 88
+     },
+     {
+      "label": "Silverman 2005",
+      "ai": 28,
+      "n1": 47,
+      "ci": 20,
+      "n2": 47
+     }
+    ],
+    "measure": "RR",
+    "method": "REML",
+    "claimed_value": 2.809,
+    "tolerance": 0.05
+   },
+   "source": "cochrane_cd003129_pub2_an1"
+  },
+  {
+   "id": "cochrane_cd003129_pub2_an1_4__direction",
+   "kind": "direction",
+   "artifact": "Meta-analysis (RR, REML). Studies:\n  label | events(trt)/N(trt) | events(ctrl)/N(ctrl)\n  Bharadwaj 2003 | 10/14 | 4/11\n  Giannini 1992 | 42/86 | 15/41\n  Woo 2000 | 32/88 | 15/88\n  Silverman 2005 | 28/47 | 20/47\nClaimed pooled RR = 1.5606. Conclusion: treatment reduces the outcome.",
+   "data": {
+    "studies": [
+     {
+      "label": "Bharadwaj 2003",
+      "ai": 10,
+      "n1": 14,
+      "ci": 4,
+      "n2": 11
+     },
+     {
+      "label": "Giannini 1992",
+      "ai": 42,
+      "n1": 86,
+      "ci": 15,
+      "n2": 41
+     },
+     {
+      "label": "Woo 2000",
+      "ai": 32,
+      "n1": 88,
+      "ci": 15,
+      "n2": 88
+     },
+     {
+      "label": "Silverman 2005",
+      "ai": 28,
+      "n1": 47,
+      "ci": 20,
+      "n2": 47
+     }
+    ],
+    "measure": "RR",
+    "method": "REML",
+    "claimed_value": 1.5606,
+    "tolerance": 0.05
+   },
+   "source": "cochrane_cd003129_pub2_an1"
+  },
+  {
+   "id": "cochrane_cd004508_pub5_an6_5__clean",
+   "kind": "clean",
+   "artifact": "Meta-analysis (RR, REML). Studies:\n  label | events(trt)/N(trt) | events(ctrl)/N(ctrl)\n  Balayla 2015 | 0/61 | 0/58\n  MacMillan 2000 | 0/67 | 1/72\n  Pearl 1998 | 3/92 | 7/103\nClaimed pooled RR = 0.4904. Conclusion: treatment reduces the outcome.",
+   "data": {
+    "studies": [
+     {
+      "label": "Balayla 2015",
+      "ai": 0,
+      "n1": 61,
+      "ci": 0,
+      "n2": 58
+     },
+     {
+      "label": "MacMillan 2000",
+      "ai": 0,
+      "n1": 67,
+      "ci": 1,
+      "n2": 72
+     },
+     {
+      "label": "Pearl 1998",
+      "ai": 3,
+      "n1": 92,
+      "ci": 7,
+      "n2": 103
+     }
+    ],
+    "measure": "RR",
+    "method": "REML",
+    "claimed_value": 0.4904,
+    "tolerance": 0.05
+   },
+   "source": "cochrane_cd004508_pub5_an6"
+  },
+  {
+   "id": "cochrane_cd004508_pub5_an6_5__impossible",
+   "kind": "impossible_cell",
+   "artifact": "Meta-analysis (RR, REML). Studies:\n  label | events(trt)/N(trt) | events(ctrl)/N(ctrl)\n  Balayla 2015 | 66/61 | 0/58\n  MacMillan 2000 | 0/67 | 1/72\n  Pearl 1998 | 3/92 | 7/103\nClaimed pooled RR = 0.4904. Conclusion: treatment reduces the outcome.",
+   "data": {
+    "studies": [
+     {
+      "label": "Balayla 2015",
+      "ai": 66,
+      "n1": 61,
+      "ci": 0,
+      "n2": 58
+     },
+     {
+      "label": "MacMillan 2000",
+      "ai": 0,
+      "n1": 67,
+      "ci": 1,
+      "n2": 72
+     },
+     {
+      "label": "Pearl 1998",
+      "ai": 3,
+      "n1": 92,
+      "ci": 7,
+      "n2": 103
+     }
+    ],
+    "measure": "RR",
+    "method": "REML"
+   },
+   "source": "cochrane_cd004508_pub5_an6"
+  },
+  {
+   "id": "cochrane_cd004508_pub5_an6_5__repro",
+   "kind": "reproduction",
+   "artifact": "Meta-analysis (RR, REML). Studies:\n  label | events(trt)/N(trt) | events(ctrl)/N(ctrl)\n  Balayla 2015 | 0/61 | 0/58\n  MacMillan 2000 | 0/67 | 1/72\n  Pearl 1998 | 3/92 | 7/103\nClaimed pooled RR = 0.8826. Conclusion: treatment affects the outcome.",
+   "data": {
+    "studies": [
+     {
+      "label": "Balayla 2015",
+      "ai": 0,
+      "n1": 61,
+      "ci": 0,
+      "n2": 58
+     },
+     {
+      "label": "MacMillan 2000",
+      "ai": 0,
+      "n1": 67,
+      "ci": 1,
+      "n2": 72
+     },
+     {
+      "label": "Pearl 1998",
+      "ai": 3,
+      "n1": 92,
+      "ci": 7,
+      "n2": 103
+     }
+    ],
+    "measure": "RR",
+    "method": "REML",
+    "claimed_value": 0.8826,
+    "tolerance": 0.05
+   },
+   "source": "cochrane_cd004508_pub5_an6"
+  },
+  {
+   "id": "cochrane_cd004508_pub5_an6_5__direction",
+   "kind": "direction",
+   "artifact": "Meta-analysis (RR, REML). Studies:\n  label | events(trt)/N(trt) | events(ctrl)/N(ctrl)\n  Balayla 2015 | 0/61 | 0/58\n  MacMillan 2000 | 0/67 | 1/72\n  Pearl 1998 | 3/92 | 7/103\nClaimed pooled RR = 0.4904. Conclusion: treatment increases the outcome.",
+   "data": {
+    "studies": [
+     {
+      "label": "Balayla 2015",
+      "ai": 0,
+      "n1": 61,
+      "ci": 0,
+      "n2": 58
+     },
+     {
+      "label": "MacMillan 2000",
+      "ai": 0,
+      "n1": 67,
+      "ci": 1,
+      "n2": 72
+     },
+     {
+      "label": "Pearl 1998",
+      "ai": 3,
+      "n1": 92,
+      "ci": 7,
+      "n2": 103
+     }
+    ],
+    "measure": "RR",
+    "method": "REML",
+    "claimed_value": 0.4904,
+    "tolerance": 0.05
+   },
+   "source": "cochrane_cd004508_pub5_an6"
+  },
+  {
+   "id": "cochrane_cd004667_pub6_an2_6__clean",
+   "kind": "clean",
+   "artifact": "Meta-analysis (RR, REML). Studies:\n  label | events(trt)/N(trt) | events(ctrl)/N(ctrl)\n  Begley 2011 | 163/1096 | 84/549\n  Biro 2000 | 100/488 | 91/480\n  Fernandez Turienzo 2020 | 51/168 | 49/163\n  Flint 1989 | 37/488 | 35/479\n  Gu 2013 | 18/53 | 30/53\n  Harvey 1996 | 4/105 | 14/97\n  Hicks 2003 | 9/81 | 14/92\n  Homer 2001 | 73/594 | 96/601\n  Kenny 1994 | 24/194 | 27/211\n  MacVicar 1993 | 144/2304 | 78/1206\n  McLachlan 2012 | 221/1146 | 285/1149\n  North Stafford 2000 | 137/770 | 128/735\n  Rowley 1995 | 52/388 | 59/397\n  Tracy 2013 | 183/851 | 204/841\n  Turnbull 1996 | 79/643 | 71/635\n  Waldenstrom 2001 | 55/484 | 56/496\nClaimed pooled RR = 0.9103. Conclusion: treatment reduces the outcome.",
+   "data": {
+    "studies": [
+     {
+      "label": "Begley 2011",
+      "ai": 163,
+      "n1": 1096,
+      "ci": 84,
+      "n2": 549
+     },
+     {
+      "label": "Biro 2000",
+      "ai": 100,
+      "n1": 488,
+      "ci": 91,
+      "n2": 480
+     },
+     {
+      "label": "Fernandez Turienzo 2020",
+      "ai": 51,
+      "n1": 168,
+      "ci": 49,
+      "n2": 163
+     },
+     {
+      "label": "Flint 1989",
+      "ai": 37,
+      "n1": 488,
+      "ci": 35,
+      "n2": 479
+     },
+     {
+      "label": "Gu 2013",
+      "ai": 18,
+      "n1": 53,
+      "ci": 30,
+      "n2": 53
+     },
+     {
+      "label": "Harvey 1996",
+      "ai": 4,
+      "n1": 105,
+      "ci": 14,
+      "n2": 97
+     },
+     {
+      "label": "Hicks 2003",
+      "ai": 9,
+      "n1": 81,
+      "ci": 14,
+      "n2": 92
+     },
+     {
+      "label": "Homer 2001",
+      "ai": 73,
+      "n1": 594,
+      "ci": 96,
+      "n2": 601
+     },
+     {
+      "label": "Kenny 1994",
+      "ai": 24,
+      "n1": 194,
+      "ci": 27,
+      "n2": 211
+     },
+     {
+      "label": "MacVicar 1993",
+      "ai": 144,
+      "n1": 2304,
+      "ci": 78,
+      "n2": 1206
+     },
+     {
+      "label": "McLachlan 2012",
+      "ai": 221,
+      "n1": 1146,
+      "ci": 285,
+      "n2": 1149
+     },
+     {
+      "label": "North Stafford 2000",
+      "ai": 137,
+      "n1": 770,
+      "ci": 128,
+      "n2": 735
+     },
+     {
+      "label": "Rowley 1995",
+      "ai": 52,
+      "n1": 388,
+      "ci": 59,
+      "n2": 397
+     },
+     {
+      "label": "Tracy 2013",
+      "ai": 183,
+      "n1": 851,
+      "ci": 204,
+      "n2": 841
+     },
+     {
+      "label": "Turnbull 1996",
+      "ai": 79,
+      "n1": 643,
+      "ci": 71,
+      "n2": 635
+     },
+     {
+      "label": "Waldenstrom 2001",
+      "ai": 55,
+      "n1": 484,
+      "ci": 56,
+      "n2": 496
+     }
+    ],
+    "measure": "RR",
+    "method": "REML",
+    "claimed_value": 0.9103,
+    "tolerance": 0.05
+   },
+   "source": "cochrane_cd004667_pub6_an2"
+  },
+  {
+   "id": "cochrane_cd004667_pub6_an2_6__impossible",
+   "kind": "impossible_cell",
+   "artifact": "Meta-analysis (RR, REML). Studies:\n  label | events(trt)/N(trt) | events(ctrl)/N(ctrl)\n  Begley 2011 | 1101/1096 | 84/549\n  Biro 2000 | 100/488 | 91/480\n  Fernandez Turienzo 2020 | 51/168 | 49/163\n  Flint 1989 | 37/488 | 35/479\n  Gu 2013 | 18/53 | 30/53\n  Harvey 1996 | 4/105 | 14/97\n  Hicks 2003 | 9/81 | 14/92\n  Homer 2001 | 73/594 | 96/601\n  Kenny 1994 | 24/194 | 27/211\n  MacVicar 1993 | 144/2304 | 78/1206\n  McLachlan 2012 | 221/1146 | 285/1149\n  North Stafford 2000 | 137/770 | 128/735\n  Rowley 1995 | 52/388 | 59/397\n  Tracy 2013 | 183/851 | 204/841\n  Turnbull 1996 | 79/643 | 71/635\n  Waldenstrom 2001 | 55/484 | 56/496\nClaimed pooled RR = 0.9103. Conclusion: treatment reduces the outcome.",
+   "data": {
+    "studies": [
+     {
+      "label": "Begley 2011",
+      "ai": 1101,
+      "n1": 1096,
+      "ci": 84,
+      "n2": 549
+     },
+     {
+      "label": "Biro 2000",
+      "ai": 100,
+      "n1": 488,
+      "ci": 91,
+      "n2": 480
+     },
+     {
+      "label": "Fernandez Turienzo 2020",
+      "ai": 51,
+      "n1": 168,
+      "ci": 49,
+      "n2": 163
+     },
+     {
+      "label": "Flint 1989",
+      "ai": 37,
+      "n1": 488,
+      "ci": 35,
+      "n2": 479
+     },
+     {
+      "label": "Gu 2013",
+      "ai": 18,
+      "n1": 53,
+      "ci": 30,
+      "n2": 53
+     },
+     {
+      "label": "Harvey 1996",
+      "ai": 4,
+      "n1": 105,
+      "ci": 14,
+      "n2": 97
+     },
+     {
+      "label": "Hicks 2003",
+      "ai": 9,
+      "n1": 81,
+      "ci": 14,
+      "n2": 92
+     },
+     {
+      "label": "Homer 2001",
+      "ai": 73,
+      "n1": 594,
+      "ci": 96,
+      "n2": 601
+     },
+     {
+      "label": "Kenny 1994",
+      "ai": 24,
+      "n1": 194,
+      "ci": 27,
+      "n2": 211
+     },
+     {
+      "label": "MacVicar 1993",
+      "ai": 144,
+      "n1": 2304,
+      "ci": 78,
+      "n2": 1206
+     },
+     {
+      "label": "McLachlan 2012",
+      "ai": 221,
+      "n1": 1146,
+      "ci": 285,
+      "n2": 1149
+     },
+     {
+      "label": "North Stafford 2000",
+      "ai": 137,
+      "n1": 770,
+      "ci": 128,
+      "n2": 735
+     },
+     {
+      "label": "Rowley 1995",
+      "ai": 52,
+      "n1": 388,
+      "ci": 59,
+      "n2": 397
+     },
+     {
+      "label": "Tracy 2013",
+      "ai": 183,
+      "n1": 851,
+      "ci": 204,
+      "n2": 841
+     },
+     {
+      "label": "Turnbull 1996",
+      "ai": 79,
+      "n1": 643,
+      "ci": 71,
+      "n2": 635
+     },
+     {
+      "label": "Waldenstrom 2001",
+      "ai": 55,
+      "n1": 484,
+      "ci": 56,
+      "n2": 496
+     }
+    ],
+    "measure": "RR",
+    "method": "REML"
+   },
+   "source": "cochrane_cd004667_pub6_an2"
+  },
+  {
+   "id": "cochrane_cd004667_pub6_an2_6__repro",
+   "kind": "reproduction",
+   "artifact": "Meta-analysis (RR, REML). Studies:\n  label | events(trt)/N(trt) | events(ctrl)/N(ctrl)\n  Begley 2011 | 163/1096 | 84/549\n  Biro 2000 | 100/488 | 91/480\n  Fernandez Turienzo 2020 | 51/168 | 49/163\n  Flint 1989 | 37/488 | 35/479\n  Gu 2013 | 18/53 | 30/53\n  Harvey 1996 | 4/105 | 14/97\n  Hicks 2003 | 9/81 | 14/92\n  Homer 2001 | 73/594 | 96/601\n  Kenny 1994 | 24/194 | 27/211\n  MacVicar 1993 | 144/2304 | 78/1206\n  McLachlan 2012 | 221/1146 | 285/1149\n  North Stafford 2000 | 137/770 | 128/735\n  Rowley 1995 | 52/388 | 59/397\n  Tracy 2013 | 183/851 | 204/841\n  Turnbull 1996 | 79/643 | 71/635\n  Waldenstrom 2001 | 55/484 | 56/496\nClaimed pooled RR = 1.6385. Conclusion: treatment affects the outcome.",
+   "data": {
+    "studies": [
+     {
+      "label": "Begley 2011",
+      "ai": 163,
+      "n1": 1096,
+      "ci": 84,
+      "n2": 549
+     },
+     {
+      "label": "Biro 2000",
+      "ai": 100,
+      "n1": 488,
+      "ci": 91,
+      "n2": 480
+     },
+     {
+      "label": "Fernandez Turienzo 2020",
+      "ai": 51,
+      "n1": 168,
+      "ci": 49,
+      "n2": 163
+     },
+     {
+      "label": "Flint 1989",
+      "ai": 37,
+      "n1": 488,
+      "ci": 35,
+      "n2": 479
+     },
+     {
+      "label": "Gu 2013",
+      "ai": 18,
+      "n1": 53,
+      "ci": 30,
+      "n2": 53
+     },
+     {
+      "label": "Harvey 1996",
+      "ai": 4,
+      "n1": 105,
+      "ci": 14,
+      "n2": 97
+     },
+     {
+      "label": "Hicks 2003",
+      "ai": 9,
+      "n1": 81,
+      "ci": 14,
+      "n2": 92
+     },
+     {
+      "label": "Homer 2001",
+      "ai": 73,
+      "n1": 594,
+      "ci": 96,
+      "n2": 601
+     },
+     {
+      "label": "Kenny 1994",
+      "ai": 24,
+      "n1": 194,
+      "ci": 27,
+      "n2": 211
+     },
+     {
+      "label": "MacVicar 1993",
+      "ai": 144,
+      "n1": 2304,
+      "ci": 78,
+      "n2": 1206
+     },
+     {
+      "label": "McLachlan 2012",
+      "ai": 221,
+      "n1": 1146,
+      "ci": 285,
+      "n2": 1149
+     },
+     {
+      "label": "North Stafford 2000",
+      "ai": 137,
+      "n1": 770,
+      "ci": 128,
+      "n2": 735
+     },
+     {
+      "label": "Rowley 1995",
+      "ai": 52,
+      "n1": 388,
+      "ci": 59,
+      "n2": 397
+     },
+     {
+      "label": "Tracy 2013",
+      "ai": 183,
+      "n1": 851,
+      "ci": 204,
+      "n2": 841
+     },
+     {
+      "label": "Turnbull 1996",
+      "ai": 79,
+      "n1": 643,
+      "ci": 71,
+      "n2": 635
+     },
+     {
+      "label": "Waldenstrom 2001",
+      "ai": 55,
+      "n1": 484,
+      "ci": 56,
+      "n2": 496
+     }
+    ],
+    "measure": "RR",
+    "method": "REML",
+    "claimed_value": 1.6385,
+    "tolerance": 0.05
+   },
+   "source": "cochrane_cd004667_pub6_an2"
+  },
+  {
+   "id": "cochrane_cd004667_pub6_an2_6__direction",
+   "kind": "direction",
+   "artifact": "Meta-analysis (RR, REML). Studies:\n  label | events(trt)/N(trt) | events(ctrl)/N(ctrl)\n  Begley 2011 | 163/1096 | 84/549\n  Biro 2000 | 100/488 | 91/480\n  Fernandez Turienzo 2020 | 51/168 | 49/163\n  Flint 1989 | 37/488 | 35/479\n  Gu 2013 | 18/53 | 30/53\n  Harvey 1996 | 4/105 | 14/97\n  Hicks 2003 | 9/81 | 14/92\n  Homer 2001 | 73/594 | 96/601\n  Kenny 1994 | 24/194 | 27/211\n  MacVicar 1993 | 144/2304 | 78/1206\n  McLachlan 2012 | 221/1146 | 285/1149\n  North Stafford 2000 | 137/770 | 128/735\n  Rowley 1995 | 52/388 | 59/397\n  Tracy 2013 | 183/851 | 204/841\n  Turnbull 1996 | 79/643 | 71/635\n  Waldenstrom 2001 | 55/484 | 56/496\nClaimed pooled RR = 0.9103. Conclusion: treatment increases the outcome.",
+   "data": {
+    "studies": [
+     {
+      "label": "Begley 2011",
+      "ai": 163,
+      "n1": 1096,
+      "ci": 84,
+      "n2": 549
+     },
+     {
+      "label": "Biro 2000",
+      "ai": 100,
+      "n1": 488,
+      "ci": 91,
+      "n2": 480
+     },
+     {
+      "label": "Fernandez Turienzo 2020",
+      "ai": 51,
+      "n1": 168,
+      "ci": 49,
+      "n2": 163
+     },
+     {
+      "label": "Flint 1989",
+      "ai": 37,
+      "n1": 488,
+      "ci": 35,
+      "n2": 479
+     },
+     {
+      "label": "Gu 2013",
+      "ai": 18,
+      "n1": 53,
+      "ci": 30,
+      "n2": 53
+     },
+     {
+      "label": "Harvey 1996",
+      "ai": 4,
+      "n1": 105,
+      "ci": 14,
+      "n2": 97
+     },
+     {
+      "label": "Hicks 2003",
+      "ai": 9,
+      "n1": 81,
+      "ci": 14,
+      "n2": 92
+     },
+     {
+      "label": "Homer 2001",
+      "ai": 73,
+      "n1": 594,
+      "ci": 96,
+      "n2": 601
+     },
+     {
+      "label": "Kenny 1994",
+      "ai": 24,
+      "n1": 194,
+      "ci": 27,
+      "n2": 211
+     },
+     {
+      "label": "MacVicar 1993",
+      "ai": 144,
+      "n1": 2304,
+      "ci": 78,
+      "n2": 1206
+     },
+     {
+      "label": "McLachlan 2012",
+      "ai": 221,
+      "n1": 1146,
+      "ci": 285,
+      "n2": 1149
+     },
+     {
+      "label": "North Stafford 2000",
+      "ai": 137,
+      "n1": 770,
+      "ci": 128,
+      "n2": 735
+     },
+     {
+      "label": "Rowley 1995",
+      "ai": 52,
+      "n1": 388,
+      "ci": 59,
+      "n2": 397
+     },
+     {
+      "label": "Tracy 2013",
+      "ai": 183,
+      "n1": 851,
+      "ci": 204,
+      "n2": 841
+     },
+     {
+      "label": "Turnbull 1996",
+      "ai": 79,
+      "n1": 643,
+      "ci": 71,
+      "n2": 635
+     },
+     {
+      "label": "Waldenstrom 2001",
+      "ai": 55,
+      "n1": 484,
+      "ci": 56,
+      "n2": 496
+     }
+    ],
+    "measure": "RR",
+    "method": "REML",
+    "claimed_value": 0.9103,
+    "tolerance": 0.05
+   },
+   "source": "cochrane_cd004667_pub6_an2"
+  },
+  {
+   "id": "cochrane_cd004871_pub5_an8_7__clean",
+   "kind": "clean",
+   "artifact": "Meta-analysis (RR, REML). Studies:\n  label | events(trt)/N(trt) | events(ctrl)/N(ctrl)\n  Antolinos-Campillo 2014 | 0/20 | 0/20\n  Briem 2007 | 0/20 | 0/20\n  Capo-Juan 2017 | 0/25 | 0/25\n  Gemmell 2008 | 0/15 | 0/15\n  Haller 2016 | 0/27 | 0/27\n  Irnich 2001 | 0/57 | 0/57\n  Klein 2013 | 0/30 | 0/31\n  Segura-Orti 2016 | 0/8 | 0/6\n  Skillgate 2020 | 0/147 | 0/139\nClaimed pooled RR = 0.9688. Conclusion: treatment reduces the outcome.",
+   "data": {
+    "studies": [
+     {
+      "label": "Antolinos-Campillo 2014",
+      "ai": 0,
+      "n1": 20,
+      "ci": 0,
+      "n2": 20
+     },
+     {
+      "label": "Briem 2007",
+      "ai": 0,
+      "n1": 20,
+      "ci": 0,
+      "n2": 20
+     },
+     {
+      "label": "Capo-Juan 2017",
+      "ai": 0,
+      "n1": 25,
+      "ci": 0,
+      "n2": 25
+     },
+     {
+      "label": "Gemmell 2008",
+      "ai": 0,
+      "n1": 15,
+      "ci": 0,
+      "n2": 15
+     },
+     {
+      "label": "Haller 2016",
+      "ai": 0,
+      "n1": 27,
+      "ci": 0,
+      "n2": 27
+     },
+     {
+      "label": "Irnich 2001",
+      "ai": 0,
+      "n1": 57,
+      "ci": 0,
+      "n2": 57
+     },
+     {
+      "label": "Klein 2013",
+      "ai": 0,
+      "n1": 30,
+      "ci": 0,
+      "n2": 31
+     },
+     {
+      "label": "Segura-Orti 2016",
+      "ai": 0,
+      "n1": 8,
+      "ci": 0,
+      "n2": 6
+     },
+     {
+      "label": "Skillgate 2020",
+      "ai": 0,
+      "n1": 147,
+      "ci": 0,
+      "n2": 139
+     }
+    ],
+    "measure": "RR",
+    "method": "REML",
+    "claimed_value": 0.9688,
+    "tolerance": 0.05
+   },
+   "source": "cochrane_cd004871_pub5_an8"
+  },
+  {
+   "id": "cochrane_cd004871_pub5_an8_7__impossible",
+   "kind": "impossible_cell",
+   "artifact": "Meta-analysis (RR, REML). Studies:\n  label | events(trt)/N(trt) | events(ctrl)/N(ctrl)\n  Antolinos-Campillo 2014 | 25/20 | 0/20\n  Briem 2007 | 0/20 | 0/20\n  Capo-Juan 2017 | 0/25 | 0/25\n  Gemmell 2008 | 0/15 | 0/15\n  Haller 2016 | 0/27 | 0/27\n  Irnich 2001 | 0/57 | 0/57\n  Klein 2013 | 0/30 | 0/31\n  Segura-Orti 2016 | 0/8 | 0/6\n  Skillgate 2020 | 0/147 | 0/139\nClaimed pooled RR = 0.9688. Conclusion: treatment reduces the outcome.",
+   "data": {
+    "studies": [
+     {
+      "label": "Antolinos-Campillo 2014",
+      "ai": 25,
+      "n1": 20,
+      "ci": 0,
+      "n2": 20
+     },
+     {
+      "label": "Briem 2007",
+      "ai": 0,
+      "n1": 20,
+      "ci": 0,
+      "n2": 20
+     },
+     {
+      "label": "Capo-Juan 2017",
+      "ai": 0,
+      "n1": 25,
+      "ci": 0,
+      "n2": 25
+     },
+     {
+      "label": "Gemmell 2008",
+      "ai": 0,
+      "n1": 15,
+      "ci": 0,
+      "n2": 15
+     },
+     {
+      "label": "Haller 2016",
+      "ai": 0,
+      "n1": 27,
+      "ci": 0,
+      "n2": 27
+     },
+     {
+      "label": "Irnich 2001",
+      "ai": 0,
+      "n1": 57,
+      "ci": 0,
+      "n2": 57
+     },
+     {
+      "label": "Klein 2013",
+      "ai": 0,
+      "n1": 30,
+      "ci": 0,
+      "n2": 31
+     },
+     {
+      "label": "Segura-Orti 2016",
+      "ai": 0,
+      "n1": 8,
+      "ci": 0,
+      "n2": 6
+     },
+     {
+      "label": "Skillgate 2020",
+      "ai": 0,
+      "n1": 147,
+      "ci": 0,
+      "n2": 139
+     }
+    ],
+    "measure": "RR",
+    "method": "REML"
+   },
+   "source": "cochrane_cd004871_pub5_an8"
+  },
+  {
+   "id": "cochrane_cd004871_pub5_an8_7__repro",
+   "kind": "reproduction",
+   "artifact": "Meta-analysis (RR, REML). Studies:\n  label | events(trt)/N(trt) | events(ctrl)/N(ctrl)\n  Antolinos-Campillo 2014 | 0/20 | 0/20\n  Briem 2007 | 0/20 | 0/20\n  Capo-Juan 2017 | 0/25 | 0/25\n  Gemmell 2008 | 0/15 | 0/15\n  Haller 2016 | 0/27 | 0/27\n  Irnich 2001 | 0/57 | 0/57\n  Klein 2013 | 0/30 | 0/31\n  Segura-Orti 2016 | 0/8 | 0/6\n  Skillgate 2020 | 0/147 | 0/139\nClaimed pooled RR = 1.7439. Conclusion: treatment affects the outcome.",
+   "data": {
+    "studies": [
+     {
+      "label": "Antolinos-Campillo 2014",
+      "ai": 0,
+      "n1": 20,
+      "ci": 0,
+      "n2": 20
+     },
+     {
+      "label": "Briem 2007",
+      "ai": 0,
+      "n1": 20,
+      "ci": 0,
+      "n2": 20
+     },
+     {
+      "label": "Capo-Juan 2017",
+      "ai": 0,
+      "n1": 25,
+      "ci": 0,
+      "n2": 25
+     },
+     {
+      "label": "Gemmell 2008",
+      "ai": 0,
+      "n1": 15,
+      "ci": 0,
+      "n2": 15
+     },
+     {
+      "label": "Haller 2016",
+      "ai": 0,
+      "n1": 27,
+      "ci": 0,
+      "n2": 27
+     },
+     {
+      "label": "Irnich 2001",
+      "ai": 0,
+      "n1": 57,
+      "ci": 0,
+      "n2": 57
+     },
+     {
+      "label": "Klein 2013",
+      "ai": 0,
+      "n1": 30,
+      "ci": 0,
+      "n2": 31
+     },
+     {
+      "label": "Segura-Orti 2016",
+      "ai": 0,
+      "n1": 8,
+      "ci": 0,
+      "n2": 6
+     },
+     {
+      "label": "Skillgate 2020",
+      "ai": 0,
+      "n1": 147,
+      "ci": 0,
+      "n2": 139
+     }
+    ],
+    "measure": "RR",
+    "method": "REML",
+    "claimed_value": 1.7439,
+    "tolerance": 0.05
+   },
+   "source": "cochrane_cd004871_pub5_an8"
+  },
+  {
+   "id": "cochrane_cd004871_pub5_an8_7__direction",
+   "kind": "direction",
+   "artifact": "Meta-analysis (RR, REML). Studies:\n  label | events(trt)/N(trt) | events(ctrl)/N(ctrl)\n  Antolinos-Campillo 2014 | 0/20 | 0/20\n  Briem 2007 | 0/20 | 0/20\n  Capo-Juan 2017 | 0/25 | 0/25\n  Gemmell 2008 | 0/15 | 0/15\n  Haller 2016 | 0/27 | 0/27\n  Irnich 2001 | 0/57 | 0/57\n  Klein 2013 | 0/30 | 0/31\n  Segura-Orti 2016 | 0/8 | 0/6\n  Skillgate 2020 | 0/147 | 0/139\nClaimed pooled RR = 0.9688. Conclusion: treatment increases the outcome.",
+   "data": {
+    "studies": [
+     {
+      "label": "Antolinos-Campillo 2014",
+      "ai": 0,
+      "n1": 20,
+      "ci": 0,
+      "n2": 20
+     },
+     {
+      "label": "Briem 2007",
+      "ai": 0,
+      "n1": 20,
+      "ci": 0,
+      "n2": 20
+     },
+     {
+      "label": "Capo-Juan 2017",
+      "ai": 0,
+      "n1": 25,
+      "ci": 0,
+      "n2": 25
+     },
+     {
+      "label": "Gemmell 2008",
+      "ai": 0,
+      "n1": 15,
+      "ci": 0,
+      "n2": 15
+     },
+     {
+      "label": "Haller 2016",
+      "ai": 0,
+      "n1": 27,
+      "ci": 0,
+      "n2": 27
+     },
+     {
+      "label": "Irnich 2001",
+      "ai": 0,
+      "n1": 57,
+      "ci": 0,
+      "n2": 57
+     },
+     {
+      "label": "Klein 2013",
+      "ai": 0,
+      "n1": 30,
+      "ci": 0,
+      "n2": 31
+     },
+     {
+      "label": "Segura-Orti 2016",
+      "ai": 0,
+      "n1": 8,
+      "ci": 0,
+      "n2": 6
+     },
+     {
+      "label": "Skillgate 2020",
+      "ai": 0,
+      "n1": 147,
+      "ci": 0,
+      "n2": 139
+     }
+    ],
+    "measure": "RR",
+    "method": "REML",
+    "claimed_value": 0.9688,
+    "tolerance": 0.05
+   },
+   "source": "cochrane_cd004871_pub5_an8"
+  },
+  {
+   "id": "cochrane_cd004925_pub4_an1_8__clean",
+   "kind": "clean",
+   "artifact": "Meta-analysis (RR, REML). Studies:\n  label | events(trt)/N(trt) | events(ctrl)/N(ctrl)\n  Bassiri 1995 | 0/35 | 1/37\n  Benoit 1996 | 1/97 | 6/97\n  Charan Kumar 2016 | 0/36 | 1/36\n  Dominguez 2000 | 2/143 | 6/137\n  Guleria 1998 | 1/54 | 2/54\n  Kumar 1998 | 0/57 | 2/43\n  Majeed 2022 | 0/54 | 2/54\n  Osman 2005 | 2/50 | 0/50\n  Pleass 1995 | 0/150 | 13/150\n  SPLINT 2020 | 0/100 | 12/100\n  Zaki 2013 | 1/150 | 2/150\nClaimed pooled RR = 0.2632. Conclusion: treatment reduces the outcome.",
+   "data": {
+    "studies": [
+     {
+      "label": "Bassiri 1995",
+      "ai": 0,
+      "n1": 35,
+      "ci": 1,
+      "n2": 37
+     },
+     {
+      "label": "Benoit 1996",
+      "ai": 1,
+      "n1": 97,
+      "ci": 6,
+      "n2": 97
+     },
+     {
+      "label": "Charan Kumar 2016",
+      "ai": 0,
+      "n1": 36,
+      "ci": 1,
+      "n2": 36
+     },
+     {
+      "label": "Dominguez 2000",
+      "ai": 2,
+      "n1": 143,
+      "ci": 6,
+      "n2": 137
+     },
+     {
+      "label": "Guleria 1998",
+      "ai": 1,
+      "n1": 54,
+      "ci": 2,
+      "n2": 54
+     },
+     {
+      "label": "Kumar 1998",
+      "ai": 0,
+      "n1": 57,
+      "ci": 2,
+      "n2": 43
+     },
+     {
+      "label": "Majeed 2022",
+      "ai": 0,
+      "n1": 54,
+      "ci": 2,
+      "n2": 54
+     },
+     {
+      "label": "Osman 2005",
+      "ai": 2,
+      "n1": 50,
+      "ci": 0,
+      "n2": 50
+     },
+     {
+      "label": "Pleass 1995",
+      "ai": 0,
+      "n1": 150,
+      "ci": 13,
+      "n2": 150
+     },
+     {
+      "label": "SPLINT 2020",
+      "ai": 0,
+      "n1": 100,
+      "ci": 12,
+      "n2": 100
+     },
+     {
+      "label": "Zaki 2013",
+      "ai": 1,
+      "n1": 150,
+      "ci": 2,
+      "n2": 150
+     }
+    ],
+    "measure": "RR",
+    "method": "REML",
+    "claimed_value": 0.2632,
+    "tolerance": 0.05
+   },
+   "source": "cochrane_cd004925_pub4_an1"
+  },
+  {
+   "id": "cochrane_cd004925_pub4_an1_8__impossible",
+   "kind": "impossible_cell",
+   "artifact": "Meta-analysis (RR, REML). Studies:\n  label | events(trt)/N(trt) | events(ctrl)/N(ctrl)\n  Bassiri 1995 | 40/35 | 1/37\n  Benoit 1996 | 1/97 | 6/97\n  Charan Kumar 2016 | 0/36 | 1/36\n  Dominguez 2000 | 2/143 | 6/137\n  Guleria 1998 | 1/54 | 2/54\n  Kumar 1998 | 0/57 | 2/43\n  Majeed 2022 | 0/54 | 2/54\n  Osman 2005 | 2/50 | 0/50\n  Pleass 1995 | 0/150 | 13/150\n  SPLINT 2020 | 0/100 | 12/100\n  Zaki 2013 | 1/150 | 2/150\nClaimed pooled RR = 0.2632. Conclusion: treatment reduces the outcome.",
+   "data": {
+    "studies": [
+     {
+      "label": "Bassiri 1995",
+      "ai": 40,
+      "n1": 35,
+      "ci": 1,
+      "n2": 37
+     },
+     {
+      "label": "Benoit 1996",
+      "ai": 1,
+      "n1": 97,
+      "ci": 6,
+      "n2": 97
+     },
+     {
+      "label": "Charan Kumar 2016",
+      "ai": 0,
+      "n1": 36,
+      "ci": 1,
+      "n2": 36
+     },
+     {
+      "label": "Dominguez 2000",
+      "ai": 2,
+      "n1": 143,
+      "ci": 6,
+      "n2": 137
+     },
+     {
+      "label": "Guleria 1998",
+      "ai": 1,
+      "n1": 54,
+      "ci": 2,
+      "n2": 54
+     },
+     {
+      "label": "Kumar 1998",
+      "ai": 0,
+      "n1": 57,
+      "ci": 2,
+      "n2": 43
+     },
+     {
+      "label": "Majeed 2022",
+      "ai": 0,
+      "n1": 54,
+      "ci": 2,
+      "n2": 54
+     },
+     {
+      "label": "Osman 2005",
+      "ai": 2,
+      "n1": 50,
+      "ci": 0,
+      "n2": 50
+     },
+     {
+      "label": "Pleass 1995",
+      "ai": 0,
+      "n1": 150,
+      "ci": 13,
+      "n2": 150
+     },
+     {
+      "label": "SPLINT 2020",
+      "ai": 0,
+      "n1": 100,
+      "ci": 12,
+      "n2": 100
+     },
+     {
+      "label": "Zaki 2013",
+      "ai": 1,
+      "n1": 150,
+      "ci": 2,
+      "n2": 150
+     }
+    ],
+    "measure": "RR",
+    "method": "REML"
+   },
+   "source": "cochrane_cd004925_pub4_an1"
+  },
+  {
+   "id": "cochrane_cd004925_pub4_an1_8__repro",
+   "kind": "reproduction",
+   "artifact": "Meta-analysis (RR, REML). Studies:\n  label | events(trt)/N(trt) | events(ctrl)/N(ctrl)\n  Bassiri 1995 | 0/35 | 1/37\n  Benoit 1996 | 1/97 | 6/97\n  Charan Kumar 2016 | 0/36 | 1/36\n  Dominguez 2000 | 2/143 | 6/137\n  Guleria 1998 | 1/54 | 2/54\n  Kumar 1998 | 0/57 | 2/43\n  Majeed 2022 | 0/54 | 2/54\n  Osman 2005 | 2/50 | 0/50\n  Pleass 1995 | 0/150 | 13/150\n  SPLINT 2020 | 0/100 | 12/100\n  Zaki 2013 | 1/150 | 2/150\nClaimed pooled RR = 0.4738. Conclusion: treatment affects the outcome.",
+   "data": {
+    "studies": [
+     {
+      "label": "Bassiri 1995",
+      "ai": 0,
+      "n1": 35,
+      "ci": 1,
+      "n2": 37
+     },
+     {
+      "label": "Benoit 1996",
+      "ai": 1,
+      "n1": 97,
+      "ci": 6,
+      "n2": 97
+     },
+     {
+      "label": "Charan Kumar 2016",
+      "ai": 0,
+      "n1": 36,
+      "ci": 1,
+      "n2": 36
+     },
+     {
+      "label": "Dominguez 2000",
+      "ai": 2,
+      "n1": 143,
+      "ci": 6,
+      "n2": 137
+     },
+     {
+      "label": "Guleria 1998",
+      "ai": 1,
+      "n1": 54,
+      "ci": 2,
+      "n2": 54
+     },
+     {
+      "label": "Kumar 1998",
+      "ai": 0,
+      "n1": 57,
+      "ci": 2,
+      "n2": 43
+     },
+     {
+      "label": "Majeed 2022",
+      "ai": 0,
+      "n1": 54,
+      "ci": 2,
+      "n2": 54
+     },
+     {
+      "label": "Osman 2005",
+      "ai": 2,
+      "n1": 50,
+      "ci": 0,
+      "n2": 50
+     },
+     {
+      "label": "Pleass 1995",
+      "ai": 0,
+      "n1": 150,
+      "ci": 13,
+      "n2": 150
+     },
+     {
+      "label": "SPLINT 2020",
+      "ai": 0,
+      "n1": 100,
+      "ci": 12,
+      "n2": 100
+     },
+     {
+      "label": "Zaki 2013",
+      "ai": 1,
+      "n1": 150,
+      "ci": 2,
+      "n2": 150
+     }
+    ],
+    "measure": "RR",
+    "method": "REML",
+    "claimed_value": 0.4738,
+    "tolerance": 0.05
+   },
+   "source": "cochrane_cd004925_pub4_an1"
+  },
+  {
+   "id": "cochrane_cd004925_pub4_an1_8__direction",
+   "kind": "direction",
+   "artifact": "Meta-analysis (RR, REML). Studies:\n  label | events(trt)/N(trt) | events(ctrl)/N(ctrl)\n  Bassiri 1995 | 0/35 | 1/37\n  Benoit 1996 | 1/97 | 6/97\n  Charan Kumar 2016 | 0/36 | 1/36\n  Dominguez 2000 | 2/143 | 6/137\n  Guleria 1998 | 1/54 | 2/54\n  Kumar 1998 | 0/57 | 2/43\n  Majeed 2022 | 0/54 | 2/54\n  Osman 2005 | 2/50 | 0/50\n  Pleass 1995 | 0/150 | 13/150\n  SPLINT 2020 | 0/100 | 12/100\n  Zaki 2013 | 1/150 | 2/150\nClaimed pooled RR = 0.2632. Conclusion: treatment increases the outcome.",
+   "data": {
+    "studies": [
+     {
+      "label": "Bassiri 1995",
+      "ai": 0,
+      "n1": 35,
+      "ci": 1,
+      "n2": 37
+     },
+     {
+      "label": "Benoit 1996",
+      "ai": 1,
+      "n1": 97,
+      "ci": 6,
+      "n2": 97
+     },
+     {
+      "label": "Charan Kumar 2016",
+      "ai": 0,
+      "n1": 36,
+      "ci": 1,
+      "n2": 36
+     },
+     {
+      "label": "Dominguez 2000",
+      "ai": 2,
+      "n1": 143,
+      "ci": 6,
+      "n2": 137
+     },
+     {
+      "label": "Guleria 1998",
+      "ai": 1,
+      "n1": 54,
+      "ci": 2,
+      "n2": 54
+     },
+     {
+      "label": "Kumar 1998",
+      "ai": 0,
+      "n1": 57,
+      "ci": 2,
+      "n2": 43
+     },
+     {
+      "label": "Majeed 2022",
+      "ai": 0,
+      "n1": 54,
+      "ci": 2,
+      "n2": 54
+     },
+     {
+      "label": "Osman 2005",
+      "ai": 2,
+      "n1": 50,
+      "ci": 0,
+      "n2": 50
+     },
+     {
+      "label": "Pleass 1995",
+      "ai": 0,
+      "n1": 150,
+      "ci": 13,
+      "n2": 150
+     },
+     {
+      "label": "SPLINT 2020",
+      "ai": 0,
+      "n1": 100,
+      "ci": 12,
+      "n2": 100
+     },
+     {
+      "label": "Zaki 2013",
+      "ai": 1,
+      "n1": 150,
+      "ci": 2,
+      "n2": 150
+     }
+    ],
+    "measure": "RR",
+    "method": "REML",
+    "claimed_value": 0.2632,
+    "tolerance": 0.05
+   },
+   "source": "cochrane_cd004925_pub4_an1"
+  },
+  {
+   "id": "cochrane_cd006536_pub5_an8_9__clean",
+   "kind": "clean",
+   "artifact": "Meta-analysis (RR, REML). Studies:\n  label | events(trt)/N(trt) | events(ctrl)/N(ctrl)\n  Grajek 2010 | 3/31 | 4/14\n  Hirsch 2011 | 4/68 | 4/65\n  Schachinger 2006 | 15/101 | 20/103\n  Tendera 2009 | 25/160 | 7/40\n  Traverse 2011 | 1/58 | 2/29\n  Traverse 2018 | 2/79 | 3/41\n  Cao 2009 | 0/41 | 1/45\n  Choudry 2016 | 7/46 | 3/39\n  Lunde 2006 | 12/49 | 9/50\n  Quyyumi 2011 | 2/16 | 1/15\n  Traverse 2010 | 0/30 | 1/10\n  Wollert 2004 | 6/30 | 4/30\nClaimed pooled RR = 0.8913. Conclusion: treatment reduces the outcome.",
+   "data": {
+    "studies": [
+     {
+      "label": "Grajek 2010",
+      "ai": 3,
+      "n1": 31,
+      "ci": 4,
+      "n2": 14
+     },
+     {
+      "label": "Hirsch 2011",
+      "ai": 4,
+      "n1": 68,
+      "ci": 4,
+      "n2": 65
+     },
+     {
+      "label": "Schachinger 2006",
+      "ai": 15,
+      "n1": 101,
+      "ci": 20,
+      "n2": 103
+     },
+     {
+      "label": "Tendera 2009",
+      "ai": 25,
+      "n1": 160,
+      "ci": 7,
+      "n2": 40
+     },
+     {
+      "label": "Traverse 2011",
+      "ai": 1,
+      "n1": 58,
+      "ci": 2,
+      "n2": 29
+     },
+     {
+      "label": "Traverse 2018",
+      "ai": 2,
+      "n1": 79,
+      "ci": 3,
+      "n2": 41
+     },
+     {
+      "label": "Cao 2009",
+      "ai": 0,
+      "n1": 41,
+      "ci": 1,
+      "n2": 45
+     },
+     {
+      "label": "Choudry 2016",
+      "ai": 7,
+      "n1": 46,
+      "ci": 3,
+      "n2": 39
+     },
+     {
+      "label": "Lunde 2006",
+      "ai": 12,
+      "n1": 49,
+      "ci": 9,
+      "n2": 50
+     },
+     {
+      "label": "Quyyumi 2011",
+      "ai": 2,
+      "n1": 16,
+      "ci": 1,
+      "n2": 15
+     },
+     {
+      "label": "Traverse 2010",
+      "ai": 0,
+      "n1": 30,
+      "ci": 1,
+      "n2": 10
+     },
+     {
+      "label": "Wollert 2004",
+      "ai": 6,
+      "n1": 30,
+      "ci": 4,
+      "n2": 30
+     }
+    ],
+    "measure": "RR",
+    "method": "REML",
+    "claimed_value": 0.8913,
+    "tolerance": 0.05
+   },
+   "source": "cochrane_cd006536_pub5_an8"
+  },
+  {
+   "id": "cochrane_cd006536_pub5_an8_9__impossible",
+   "kind": "impossible_cell",
+   "artifact": "Meta-analysis (RR, REML). Studies:\n  label | events(trt)/N(trt) | events(ctrl)/N(ctrl)\n  Grajek 2010 | 36/31 | 4/14\n  Hirsch 2011 | 4/68 | 4/65\n  Schachinger 2006 | 15/101 | 20/103\n  Tendera 2009 | 25/160 | 7/40\n  Traverse 2011 | 1/58 | 2/29\n  Traverse 2018 | 2/79 | 3/41\n  Cao 2009 | 0/41 | 1/45\n  Choudry 2016 | 7/46 | 3/39\n  Lunde 2006 | 12/49 | 9/50\n  Quyyumi 2011 | 2/16 | 1/15\n  Traverse 2010 | 0/30 | 1/10\n  Wollert 2004 | 6/30 | 4/30\nClaimed pooled RR = 0.8913. Conclusion: treatment reduces the outcome.",
+   "data": {
+    "studies": [
+     {
+      "label": "Grajek 2010",
+      "ai": 36,
+      "n1": 31,
+      "ci": 4,
+      "n2": 14
+     },
+     {
+      "label": "Hirsch 2011",
+      "ai": 4,
+      "n1": 68,
+      "ci": 4,
+      "n2": 65
+     },
+     {
+      "label": "Schachinger 2006",
+      "ai": 15,
+      "n1": 101,
+      "ci": 20,
+      "n2": 103
+     },
+     {
+      "label": "Tendera 2009",
+      "ai": 25,
+      "n1": 160,
+      "ci": 7,
+      "n2": 40
+     },
+     {
+      "label": "Traverse 2011",
+      "ai": 1,
+      "n1": 58,
+      "ci": 2,
+      "n2": 29
+     },
+     {
+      "label": "Traverse 2018",
+      "ai": 2,
+      "n1": 79,
+      "ci": 3,
+      "n2": 41
+     },
+     {
+      "label": "Cao 2009",
+      "ai": 0,
+      "n1": 41,
+      "ci": 1,
+      "n2": 45
+     },
+     {
+      "label": "Choudry 2016",
+      "ai": 7,
+      "n1": 46,
+      "ci": 3,
+      "n2": 39
+     },
+     {
+      "label": "Lunde 2006",
+      "ai": 12,
+      "n1": 49,
+      "ci": 9,
+      "n2": 50
+     },
+     {
+      "label": "Quyyumi 2011",
+      "ai": 2,
+      "n1": 16,
+      "ci": 1,
+      "n2": 15
+     },
+     {
+      "label": "Traverse 2010",
+      "ai": 0,
+      "n1": 30,
+      "ci": 1,
+      "n2": 10
+     },
+     {
+      "label": "Wollert 2004",
+      "ai": 6,
+      "n1": 30,
+      "ci": 4,
+      "n2": 30
+     }
+    ],
+    "measure": "RR",
+    "method": "REML"
+   },
+   "source": "cochrane_cd006536_pub5_an8"
+  },
+  {
+   "id": "cochrane_cd006536_pub5_an8_9__repro",
+   "kind": "reproduction",
+   "artifact": "Meta-analysis (RR, REML). Studies:\n  label | events(trt)/N(trt) | events(ctrl)/N(ctrl)\n  Grajek 2010 | 3/31 | 4/14\n  Hirsch 2011 | 4/68 | 4/65\n  Schachinger 2006 | 15/101 | 20/103\n  Tendera 2009 | 25/160 | 7/40\n  Traverse 2011 | 1/58 | 2/29\n  Traverse 2018 | 2/79 | 3/41\n  Cao 2009 | 0/41 | 1/45\n  Choudry 2016 | 7/46 | 3/39\n  Lunde 2006 | 12/49 | 9/50\n  Quyyumi 2011 | 2/16 | 1/15\n  Traverse 2010 | 0/30 | 1/10\n  Wollert 2004 | 6/30 | 4/30\nClaimed pooled RR = 1.6044. Conclusion: treatment affects the outcome.",
+   "data": {
+    "studies": [
+     {
+      "label": "Grajek 2010",
+      "ai": 3,
+      "n1": 31,
+      "ci": 4,
+      "n2": 14
+     },
+     {
+      "label": "Hirsch 2011",
+      "ai": 4,
+      "n1": 68,
+      "ci": 4,
+      "n2": 65
+     },
+     {
+      "label": "Schachinger 2006",
+      "ai": 15,
+      "n1": 101,
+      "ci": 20,
+      "n2": 103
+     },
+     {
+      "label": "Tendera 2009",
+      "ai": 25,
+      "n1": 160,
+      "ci": 7,
+      "n2": 40
+     },
+     {
+      "label": "Traverse 2011",
+      "ai": 1,
+      "n1": 58,
+      "ci": 2,
+      "n2": 29
+     },
+     {
+      "label": "Traverse 2018",
+      "ai": 2,
+      "n1": 79,
+      "ci": 3,
+      "n2": 41
+     },
+     {
+      "label": "Cao 2009",
+      "ai": 0,
+      "n1": 41,
+      "ci": 1,
+      "n2": 45
+     },
+     {
+      "label": "Choudry 2016",
+      "ai": 7,
+      "n1": 46,
+      "ci": 3,
+      "n2": 39
+     },
+     {
+      "label": "Lunde 2006",
+      "ai": 12,
+      "n1": 49,
+      "ci": 9,
+      "n2": 50
+     },
+     {
+      "label": "Quyyumi 2011",
+      "ai": 2,
+      "n1": 16,
+      "ci": 1,
+      "n2": 15
+     },
+     {
+      "label": "Traverse 2010",
+      "ai": 0,
+      "n1": 30,
+      "ci": 1,
+      "n2": 10
+     },
+     {
+      "label": "Wollert 2004",
+      "ai": 6,
+      "n1": 30,
+      "ci": 4,
+      "n2": 30
+     }
+    ],
+    "measure": "RR",
+    "method": "REML",
+    "claimed_value": 1.6044,
+    "tolerance": 0.05
+   },
+   "source": "cochrane_cd006536_pub5_an8"
+  },
+  {
+   "id": "cochrane_cd006536_pub5_an8_9__direction",
+   "kind": "direction",
+   "artifact": "Meta-analysis (RR, REML). Studies:\n  label | events(trt)/N(trt) | events(ctrl)/N(ctrl)\n  Grajek 2010 | 3/31 | 4/14\n  Hirsch 2011 | 4/68 | 4/65\n  Schachinger 2006 | 15/101 | 20/103\n  Tendera 2009 | 25/160 | 7/40\n  Traverse 2011 | 1/58 | 2/29\n  Traverse 2018 | 2/79 | 3/41\n  Cao 2009 | 0/41 | 1/45\n  Choudry 2016 | 7/46 | 3/39\n  Lunde 2006 | 12/49 | 9/50\n  Quyyumi 2011 | 2/16 | 1/15\n  Traverse 2010 | 0/30 | 1/10\n  Wollert 2004 | 6/30 | 4/30\nClaimed pooled RR = 0.8913. Conclusion: treatment increases the outcome.",
+   "data": {
+    "studies": [
+     {
+      "label": "Grajek 2010",
+      "ai": 3,
+      "n1": 31,
+      "ci": 4,
+      "n2": 14
+     },
+     {
+      "label": "Hirsch 2011",
+      "ai": 4,
+      "n1": 68,
+      "ci": 4,
+      "n2": 65
+     },
+     {
+      "label": "Schachinger 2006",
+      "ai": 15,
+      "n1": 101,
+      "ci": 20,
+      "n2": 103
+     },
+     {
+      "label": "Tendera 2009",
+      "ai": 25,
+      "n1": 160,
+      "ci": 7,
+      "n2": 40
+     },
+     {
+      "label": "Traverse 2011",
+      "ai": 1,
+      "n1": 58,
+      "ci": 2,
+      "n2": 29
+     },
+     {
+      "label": "Traverse 2018",
+      "ai": 2,
+      "n1": 79,
+      "ci": 3,
+      "n2": 41
+     },
+     {
+      "label": "Cao 2009",
+      "ai": 0,
+      "n1": 41,
+      "ci": 1,
+      "n2": 45
+     },
+     {
+      "label": "Choudry 2016",
+      "ai": 7,
+      "n1": 46,
+      "ci": 3,
+      "n2": 39
+     },
+     {
+      "label": "Lunde 2006",
+      "ai": 12,
+      "n1": 49,
+      "ci": 9,
+      "n2": 50
+     },
+     {
+      "label": "Quyyumi 2011",
+      "ai": 2,
+      "n1": 16,
+      "ci": 1,
+      "n2": 15
+     },
+     {
+      "label": "Traverse 2010",
+      "ai": 0,
+      "n1": 30,
+      "ci": 1,
+      "n2": 10
+     },
+     {
+      "label": "Wollert 2004",
+      "ai": 6,
+      "n1": 30,
+      "ci": 4,
+      "n2": 30
+     }
+    ],
+    "measure": "RR",
+    "method": "REML",
+    "claimed_value": 0.8913,
+    "tolerance": 0.05
+   },
+   "source": "cochrane_cd006536_pub5_an8"
+  },
+  {
+   "id": "cochrane_cd006632_pub3_an12_10__clean",
+   "kind": "clean",
+   "artifact": "Meta-analysis (RR, REML). Studies:\n  label | events(trt)/N(trt) | events(ctrl)/N(ctrl)\n  Aizawa 2002 | 0/32 | 0/37\n  Bernard 2011 | 0/87 | 0/89\n  Brook 1999 | 0/162 | 0/159\n  Doig 2008 | 0/540 | 0/537\n  Falconer 1993 | 0/53 | 0/68\n  Kim 2002 | 0/9 | 0/9\n  Kiyama 2003a | 0/47 | 0/38\n  Marrie 2000 | 0/87 | 0/124\n  Panella 2009 | 0/201 | 0/201\n  Panella 2018 | 0/283 | 0/195\n  Roberts 1997 | 0/82 | 0/83\n  Sulch 2002 | 0/76 | 0/76\nClaimed pooled RR = 1.0143. Conclusion: treatment increases the outcome.",
+   "data": {
+    "studies": [
+     {
+      "label": "Aizawa 2002",
+      "ai": 0,
+      "n1": 32,
+      "ci": 0,
+      "n2": 37
+     },
+     {
+      "label": "Bernard 2011",
+      "ai": 0,
+      "n1": 87,
+      "ci": 0,
+      "n2": 89
+     },
+     {
+      "label": "Brook 1999",
+      "ai": 0,
+      "n1": 162,
+      "ci": 0,
+      "n2": 159
+     },
+     {
+      "label": "Doig 2008",
+      "ai": 0,
+      "n1": 540,
+      "ci": 0,
+      "n2": 537
+     },
+     {
+      "label": "Falconer 1993",
+      "ai": 0,
+      "n1": 53,
+      "ci": 0,
+      "n2": 68
+     },
+     {
+      "label": "Kim 2002",
+      "ai": 0,
+      "n1": 9,
+      "ci": 0,
+      "n2": 9
+     },
+     {
+      "label": "Kiyama 2003a",
+      "ai": 0,
+      "n1": 47,
+      "ci": 0,
+      "n2": 38
+     },
+     {
+      "label": "Marrie 2000",
+      "ai": 0,
+      "n1": 87,
+      "ci": 0,
+      "n2": 124
+     },
+     {
+      "label": "Panella 2009",
+      "ai": 0,
+      "n1": 201,
+      "ci": 0,
+      "n2": 201
+     },
+     {
+      "label": "Panella 2018",
+      "ai": 0,
+      "n1": 283,
+      "ci": 0,
+      "n2": 195
+     },
+     {
+      "label": "Roberts 1997",
+      "ai": 0,
+      "n1": 82,
+      "ci": 0,
+      "n2": 83
+     },
+     {
+      "label": "Sulch 2002",
+      "ai": 0,
+      "n1": 76,
+      "ci": 0,
+      "n2": 76
+     }
+    ],
+    "measure": "RR",
+    "method": "REML",
+    "claimed_value": 1.0143,
+    "tolerance": 0.05
+   },
+   "source": "cochrane_cd006632_pub3_an12"
+  },
+  {
+   "id": "cochrane_cd006632_pub3_an12_10__impossible",
+   "kind": "impossible_cell",
+   "artifact": "Meta-analysis (RR, REML). Studies:\n  label | events(trt)/N(trt) | events(ctrl)/N(ctrl)\n  Aizawa 2002 | 37/32 | 0/37\n  Bernard 2011 | 0/87 | 0/89\n  Brook 1999 | 0/162 | 0/159\n  Doig 2008 | 0/540 | 0/537\n  Falconer 1993 | 0/53 | 0/68\n  Kim 2002 | 0/9 | 0/9\n  Kiyama 2003a | 0/47 | 0/38\n  Marrie 2000 | 0/87 | 0/124\n  Panella 2009 | 0/201 | 0/201\n  Panella 2018 | 0/283 | 0/195\n  Roberts 1997 | 0/82 | 0/83\n  Sulch 2002 | 0/76 | 0/76\nClaimed pooled RR = 1.0143. Conclusion: treatment increases the outcome.",
+   "data": {
+    "studies": [
+     {
+      "label": "Aizawa 2002",
+      "ai": 37,
+      "n1": 32,
+      "ci": 0,
+      "n2": 37
+     },
+     {
+      "label": "Bernard 2011",
+      "ai": 0,
+      "n1": 87,
+      "ci": 0,
+      "n2": 89
+     },
+     {
+      "label": "Brook 1999",
+      "ai": 0,
+      "n1": 162,
+      "ci": 0,
+      "n2": 159
+     },
+     {
+      "label": "Doig 2008",
+      "ai": 0,
+      "n1": 540,
+      "ci": 0,
+      "n2": 537
+     },
+     {
+      "label": "Falconer 1993",
+      "ai": 0,
+      "n1": 53,
+      "ci": 0,
+      "n2": 68
+     },
+     {
+      "label": "Kim 2002",
+      "ai": 0,
+      "n1": 9,
+      "ci": 0,
+      "n2": 9
+     },
+     {
+      "label": "Kiyama 2003a",
+      "ai": 0,
+      "n1": 47,
+      "ci": 0,
+      "n2": 38
+     },
+     {
+      "label": "Marrie 2000",
+      "ai": 0,
+      "n1": 87,
+      "ci": 0,
+      "n2": 124
+     },
+     {
+      "label": "Panella 2009",
+      "ai": 0,
+      "n1": 201,
+      "ci": 0,
+      "n2": 201
+     },
+     {
+      "label": "Panella 2018",
+      "ai": 0,
+      "n1": 283,
+      "ci": 0,
+      "n2": 195
+     },
+     {
+      "label": "Roberts 1997",
+      "ai": 0,
+      "n1": 82,
+      "ci": 0,
+      "n2": 83
+     },
+     {
+      "label": "Sulch 2002",
+      "ai": 0,
+      "n1": 76,
+      "ci": 0,
+      "n2": 76
+     }
+    ],
+    "measure": "RR",
+    "method": "REML"
+   },
+   "source": "cochrane_cd006632_pub3_an12"
+  },
+  {
+   "id": "cochrane_cd006632_pub3_an12_10__repro",
+   "kind": "reproduction",
+   "artifact": "Meta-analysis (RR, REML). Studies:\n  label | events(trt)/N(trt) | events(ctrl)/N(ctrl)\n  Aizawa 2002 | 0/32 | 0/37\n  Bernard 2011 | 0/87 | 0/89\n  Brook 1999 | 0/162 | 0/159\n  Doig 2008 | 0/540 | 0/537\n  Falconer 1993 | 0/53 | 0/68\n  Kim 2002 | 0/9 | 0/9\n  Kiyama 2003a | 0/47 | 0/38\n  Marrie 2000 | 0/87 | 0/124\n  Panella 2009 | 0/201 | 0/201\n  Panella 2018 | 0/283 | 0/195\n  Roberts 1997 | 0/82 | 0/83\n  Sulch 2002 | 0/76 | 0/76\nClaimed pooled RR = 1.8257. Conclusion: treatment affects the outcome.",
+   "data": {
+    "studies": [
+     {
+      "label": "Aizawa 2002",
+      "ai": 0,
+      "n1": 32,
+      "ci": 0,
+      "n2": 37
+     },
+     {
+      "label": "Bernard 2011",
+      "ai": 0,
+      "n1": 87,
+      "ci": 0,
+      "n2": 89
+     },
+     {
+      "label": "Brook 1999",
+      "ai": 0,
+      "n1": 162,
+      "ci": 0,
+      "n2": 159
+     },
+     {
+      "label": "Doig 2008",
+      "ai": 0,
+      "n1": 540,
+      "ci": 0,
+      "n2": 537
+     },
+     {
+      "label": "Falconer 1993",
+      "ai": 0,
+      "n1": 53,
+      "ci": 0,
+      "n2": 68
+     },
+     {
+      "label": "Kim 2002",
+      "ai": 0,
+      "n1": 9,
+      "ci": 0,
+      "n2": 9
+     },
+     {
+      "label": "Kiyama 2003a",
+      "ai": 0,
+      "n1": 47,
+      "ci": 0,
+      "n2": 38
+     },
+     {
+      "label": "Marrie 2000",
+      "ai": 0,
+      "n1": 87,
+      "ci": 0,
+      "n2": 124
+     },
+     {
+      "label": "Panella 2009",
+      "ai": 0,
+      "n1": 201,
+      "ci": 0,
+      "n2": 201
+     },
+     {
+      "label": "Panella 2018",
+      "ai": 0,
+      "n1": 283,
+      "ci": 0,
+      "n2": 195
+     },
+     {
+      "label": "Roberts 1997",
+      "ai": 0,
+      "n1": 82,
+      "ci": 0,
+      "n2": 83
+     },
+     {
+      "label": "Sulch 2002",
+      "ai": 0,
+      "n1": 76,
+      "ci": 0,
+      "n2": 76
+     }
+    ],
+    "measure": "RR",
+    "method": "REML",
+    "claimed_value": 1.8257,
+    "tolerance": 0.05
+   },
+   "source": "cochrane_cd006632_pub3_an12"
+  },
+  {
+   "id": "cochrane_cd006632_pub3_an12_10__direction",
+   "kind": "direction",
+   "artifact": "Meta-analysis (RR, REML). Studies:\n  label | events(trt)/N(trt) | events(ctrl)/N(ctrl)\n  Aizawa 2002 | 0/32 | 0/37\n  Bernard 2011 | 0/87 | 0/89\n  Brook 1999 | 0/162 | 0/159\n  Doig 2008 | 0/540 | 0/537\n  Falconer 1993 | 0/53 | 0/68\n  Kim 2002 | 0/9 | 0/9\n  Kiyama 2003a | 0/47 | 0/38\n  Marrie 2000 | 0/87 | 0/124\n  Panella 2009 | 0/201 | 0/201\n  Panella 2018 | 0/283 | 0/195\n  Roberts 1997 | 0/82 | 0/83\n  Sulch 2002 | 0/76 | 0/76\nClaimed pooled RR = 1.0143. Conclusion: treatment reduces the outcome.",
+   "data": {
+    "studies": [
+     {
+      "label": "Aizawa 2002",
+      "ai": 0,
+      "n1": 32,
+      "ci": 0,
+      "n2": 37
+     },
+     {
+      "label": "Bernard 2011",
+      "ai": 0,
+      "n1": 87,
+      "ci": 0,
+      "n2": 89
+     },
+     {
+      "label": "Brook 1999",
+      "ai": 0,
+      "n1": 162,
+      "ci": 0,
+      "n2": 159
+     },
+     {
+      "label": "Doig 2008",
+      "ai": 0,
+      "n1": 540,
+      "ci": 0,
+      "n2": 537
+     },
+     {
+      "label": "Falconer 1993",
+      "ai": 0,
+      "n1": 53,
+      "ci": 0,
+      "n2": 68
+     },
+     {
+      "label": "Kim 2002",
+      "ai": 0,
+      "n1": 9,
+      "ci": 0,
+      "n2": 9
+     },
+     {
+      "label": "Kiyama 2003a",
+      "ai": 0,
+      "n1": 47,
+      "ci": 0,
+      "n2": 38
+     },
+     {
+      "label": "Marrie 2000",
+      "ai": 0,
+      "n1": 87,
+      "ci": 0,
+      "n2": 124
+     },
+     {
+      "label": "Panella 2009",
+      "ai": 0,
+      "n1": 201,
+      "ci": 0,
+      "n2": 201
+     },
+     {
+      "label": "Panella 2018",
+      "ai": 0,
+      "n1": 283,
+      "ci": 0,
+      "n2": 195
+     },
+     {
+      "label": "Roberts 1997",
+      "ai": 0,
+      "n1": 82,
+      "ci": 0,
+      "n2": 83
+     },
+     {
+      "label": "Sulch 2002",
+      "ai": 0,
+      "n1": 76,
+      "ci": 0,
+      "n2": 76
+     }
+    ],
+    "measure": "RR",
+    "method": "REML",
+    "claimed_value": 1.0143,
+    "tolerance": 0.05
+   },
+   "source": "cochrane_cd006632_pub3_an12"
+  },
+  {
+   "id": "cochrane_cd006742_pub3_an2_11__clean",
+   "kind": "clean",
+   "artifact": "Meta-analysis (RR, REML). Studies:\n  label | events(trt)/N(trt) | events(ctrl)/N(ctrl)\n  MRC 1985 | 73/3012 | 79/3049\n  PREVEND IT 2004 | 4/112 | 8/100\n  SHEP 1991 | 0/3 | 0/4\n  VA-NHLBI 1978 | 8/508 | 5/504\nClaimed pooled RR = 0.9282. Conclusion: treatment reduces the outcome.",
+   "data": {
+    "studies": [
+     {
+      "label": "MRC 1985",
+      "ai": 73,
+      "n1": 3012,
+      "ci": 79,
+      "n2": 3049
+     },
+     {
+      "label": "PREVEND IT 2004",
+      "ai": 4,
+      "n1": 112,
+      "ci": 8,
+      "n2": 100
+     },
+     {
+      "label": "SHEP 1991",
+      "ai": 0,
+      "n1": 3,
+      "ci": 0,
+      "n2": 4
+     },
+     {
+      "label": "VA-NHLBI 1978",
+      "ai": 8,
+      "n1": 508,
+      "ci": 5,
+      "n2": 504
+     }
+    ],
+    "measure": "RR",
+    "method": "REML",
+    "claimed_value": 0.9282,
+    "tolerance": 0.05
+   },
+   "source": "cochrane_cd006742_pub3_an2"
+  },
+  {
+   "id": "cochrane_cd006742_pub3_an2_11__impossible",
+   "kind": "impossible_cell",
+   "artifact": "Meta-analysis (RR, REML). Studies:\n  label | events(trt)/N(trt) | events(ctrl)/N(ctrl)\n  MRC 1985 | 3017/3012 | 79/3049\n  PREVEND IT 2004 | 4/112 | 8/100\n  SHEP 1991 | 0/3 | 0/4\n  VA-NHLBI 1978 | 8/508 | 5/504\nClaimed pooled RR = 0.9282. Conclusion: treatment reduces the outcome.",
+   "data": {
+    "studies": [
+     {
+      "label": "MRC 1985",
+      "ai": 3017,
+      "n1": 3012,
+      "ci": 79,
+      "n2": 3049
+     },
+     {
+      "label": "PREVEND IT 2004",
+      "ai": 4,
+      "n1": 112,
+      "ci": 8,
+      "n2": 100
+     },
+     {
+      "label": "SHEP 1991",
+      "ai": 0,
+      "n1": 3,
+      "ci": 0,
+      "n2": 4
+     },
+     {
+      "label": "VA-NHLBI 1978",
+      "ai": 8,
+      "n1": 508,
+      "ci": 5,
+      "n2": 504
+     }
+    ],
+    "measure": "RR",
+    "method": "REML"
+   },
+   "source": "cochrane_cd006742_pub3_an2"
+  },
+  {
+   "id": "cochrane_cd006742_pub3_an2_11__repro",
+   "kind": "reproduction",
+   "artifact": "Meta-analysis (RR, REML). Studies:\n  label | events(trt)/N(trt) | events(ctrl)/N(ctrl)\n  MRC 1985 | 73/3012 | 79/3049\n  PREVEND IT 2004 | 4/112 | 8/100\n  SHEP 1991 | 0/3 | 0/4\n  VA-NHLBI 1978 | 8/508 | 5/504\nClaimed pooled RR = 1.6708. Conclusion: treatment affects the outcome.",
+   "data": {
+    "studies": [
+     {
+      "label": "MRC 1985",
+      "ai": 73,
+      "n1": 3012,
+      "ci": 79,
+      "n2": 3049
+     },
+     {
+      "label": "PREVEND IT 2004",
+      "ai": 4,
+      "n1": 112,
+      "ci": 8,
+      "n2": 100
+     },
+     {
+      "label": "SHEP 1991",
+      "ai": 0,
+      "n1": 3,
+      "ci": 0,
+      "n2": 4
+     },
+     {
+      "label": "VA-NHLBI 1978",
+      "ai": 8,
+      "n1": 508,
+      "ci": 5,
+      "n2": 504
+     }
+    ],
+    "measure": "RR",
+    "method": "REML",
+    "claimed_value": 1.6708,
+    "tolerance": 0.05
+   },
+   "source": "cochrane_cd006742_pub3_an2"
+  },
+  {
+   "id": "cochrane_cd006742_pub3_an2_11__direction",
+   "kind": "direction",
+   "artifact": "Meta-analysis (RR, REML). Studies:\n  label | events(trt)/N(trt) | events(ctrl)/N(ctrl)\n  MRC 1985 | 73/3012 | 79/3049\n  PREVEND IT 2004 | 4/112 | 8/100\n  SHEP 1991 | 0/3 | 0/4\n  VA-NHLBI 1978 | 8/508 | 5/504\nClaimed pooled RR = 0.9282. Conclusion: treatment increases the outcome.",
+   "data": {
+    "studies": [
+     {
+      "label": "MRC 1985",
+      "ai": 73,
+      "n1": 3012,
+      "ci": 79,
+      "n2": 3049
+     },
+     {
+      "label": "PREVEND IT 2004",
+      "ai": 4,
+      "n1": 112,
+      "ci": 8,
+      "n2": 100
+     },
+     {
+      "label": "SHEP 1991",
+      "ai": 0,
+      "n1": 3,
+      "ci": 0,
+      "n2": 4
+     },
+     {
+      "label": "VA-NHLBI 1978",
+      "ai": 8,
+      "n1": 508,
+      "ci": 5,
+      "n2": 504
+     }
+    ],
+    "measure": "RR",
+    "method": "REML",
+    "claimed_value": 0.9282,
+    "tolerance": 0.05
+   },
+   "source": "cochrane_cd006742_pub3_an2"
+  },
+  {
+   "id": "cochrane_cd007024_pub3_an1_12__clean",
+   "kind": "clean",
+   "artifact": "Meta-analysis (RR, REML). Studies:\n  label | events(trt)/N(trt) | events(ctrl)/N(ctrl)\n  Carroll 1998 dataset a | 0/24 | 0/18\n  Carroll 1998 dataset b | 0/25 | 0/23\n  Baldacara 2013 | 0/15 | 0/15\n  Carroll 2004 dataset a | 0/30 | 0/30\n  Carroll 2004 dataset b | 0/30 | 0/31\n  Carroll 2012 dataset a | 0/27 | 0/26\n  Carroll 2012 dataset b | 0/28 | 0/26\n  Carroll 2016 dataset a | 0/23 | 0/22\n  Carroll 2016 dataset b | 0/28 | 0/26\n  George 2000 | 0/11 | 0/9\n  Petrakis 2000 | 0/36 | 0/31\n  Pettinati 2008 dataset a | 0/53 | 0/54\n  Schottenfeld 2013 | 0/91 | 0/86\n  Carroll 1993 | 0/9 | 0/9\n  Pettinati 2008 dataset b | 0/53 | 0/52\nClaimed pooled RR = 0.9398. Conclusion: treatment reduces the outcome.",
+   "data": {
+    "studies": [
+     {
+      "label": "Carroll 1998 dataset a",
+      "ai": 0,
+      "n1": 24,
+      "ci": 0,
+      "n2": 18
+     },
+     {
+      "label": "Carroll 1998 dataset b",
+      "ai": 0,
+      "n1": 25,
+      "ci": 0,
+      "n2": 23
+     },
+     {
+      "label": "Baldacara 2013",
+      "ai": 0,
+      "n1": 15,
+      "ci": 0,
+      "n2": 15
+     },
+     {
+      "label": "Carroll 2004 dataset a",
+      "ai": 0,
+      "n1": 30,
+      "ci": 0,
+      "n2": 30
+     },
+     {
+      "label": "Carroll 2004 dataset b",
+      "ai": 0,
+      "n1": 30,
+      "ci": 0,
+      "n2": 31
+     },
+     {
+      "label": "Carroll 2012 dataset a",
+      "ai": 0,
+      "n1": 27,
+      "ci": 0,
+      "n2": 26
+     },
+     {
+      "label": "Carroll 2012 dataset b",
+      "ai": 0,
+      "n1": 28,
+      "ci": 0,
+      "n2": 26
+     },
+     {
+      "label": "Carroll 2016 dataset a",
+      "ai": 0,
+      "n1": 23,
+      "ci": 0,
+      "n2": 22
+     },
+     {
+      "label": "Carroll 2016 dataset b",
+      "ai": 0,
+      "n1": 28,
+      "ci": 0,
+      "n2": 26
+     },
+     {
+      "label": "George 2000",
+      "ai": 0,
+      "n1": 11,
+      "ci": 0,
+      "n2": 9
+     },
+     {
+      "label": "Petrakis 2000",
+      "ai": 0,
+      "n1": 36,
+      "ci": 0,
+      "n2": 31
+     },
+     {
+      "label": "Pettinati 2008 dataset a",
+      "ai": 0,
+      "n1": 53,
+      "ci": 0,
+      "n2": 54
+     },
+     {
+      "label": "Schottenfeld 2013",
+      "ai": 0,
+      "n1": 91,
+      "ci": 0,
+      "n2": 86
+     },
+     {
+      "label": "Carroll 1993",
+      "ai": 0,
+      "n1": 9,
+      "ci": 0,
+      "n2": 9
+     },
+     {
+      "label": "Pettinati 2008 dataset b",
+      "ai": 0,
+      "n1": 53,
+      "ci": 0,
+      "n2": 52
+     }
+    ],
+    "measure": "RR",
+    "method": "REML",
+    "claimed_value": 0.9398,
+    "tolerance": 0.05
+   },
+   "source": "cochrane_cd007024_pub3_an1"
+  },
+  {
+   "id": "cochrane_cd007024_pub3_an1_12__impossible",
+   "kind": "impossible_cell",
+   "artifact": "Meta-analysis (RR, REML). Studies:\n  label | events(trt)/N(trt) | events(ctrl)/N(ctrl)\n  Carroll 1998 dataset a | 29/24 | 0/18\n  Carroll 1998 dataset b | 0/25 | 0/23\n  Baldacara 2013 | 0/15 | 0/15\n  Carroll 2004 dataset a | 0/30 | 0/30\n  Carroll 2004 dataset b | 0/30 | 0/31\n  Carroll 2012 dataset a | 0/27 | 0/26\n  Carroll 2012 dataset b | 0/28 | 0/26\n  Carroll 2016 dataset a | 0/23 | 0/22\n  Carroll 2016 dataset b | 0/28 | 0/26\n  George 2000 | 0/11 | 0/9\n  Petrakis 2000 | 0/36 | 0/31\n  Pettinati 2008 dataset a | 0/53 | 0/54\n  Schottenfeld 2013 | 0/91 | 0/86\n  Carroll 1993 | 0/9 | 0/9\n  Pettinati 2008 dataset b | 0/53 | 0/52\nClaimed pooled RR = 0.9398. Conclusion: treatment reduces the outcome.",
+   "data": {
+    "studies": [
+     {
+      "label": "Carroll 1998 dataset a",
+      "ai": 29,
+      "n1": 24,
+      "ci": 0,
+      "n2": 18
+     },
+     {
+      "label": "Carroll 1998 dataset b",
+      "ai": 0,
+      "n1": 25,
+      "ci": 0,
+      "n2": 23
+     },
+     {
+      "label": "Baldacara 2013",
+      "ai": 0,
+      "n1": 15,
+      "ci": 0,
+      "n2": 15
+     },
+     {
+      "label": "Carroll 2004 dataset a",
+      "ai": 0,
+      "n1": 30,
+      "ci": 0,
+      "n2": 30
+     },
+     {
+      "label": "Carroll 2004 dataset b",
+      "ai": 0,
+      "n1": 30,
+      "ci": 0,
+      "n2": 31
+     },
+     {
+      "label": "Carroll 2012 dataset a",
+      "ai": 0,
+      "n1": 27,
+      "ci": 0,
+      "n2": 26
+     },
+     {
+      "label": "Carroll 2012 dataset b",
+      "ai": 0,
+      "n1": 28,
+      "ci": 0,
+      "n2": 26
+     },
+     {
+      "label": "Carroll 2016 dataset a",
+      "ai": 0,
+      "n1": 23,
+      "ci": 0,
+      "n2": 22
+     },
+     {
+      "label": "Carroll 2016 dataset b",
+      "ai": 0,
+      "n1": 28,
+      "ci": 0,
+      "n2": 26
+     },
+     {
+      "label": "George 2000",
+      "ai": 0,
+      "n1": 11,
+      "ci": 0,
+      "n2": 9
+     },
+     {
+      "label": "Petrakis 2000",
+      "ai": 0,
+      "n1": 36,
+      "ci": 0,
+      "n2": 31
+     },
+     {
+      "label": "Pettinati 2008 dataset a",
+      "ai": 0,
+      "n1": 53,
+      "ci": 0,
+      "n2": 54
+     },
+     {
+      "label": "Schottenfeld 2013",
+      "ai": 0,
+      "n1": 91,
+      "ci": 0,
+      "n2": 86
+     },
+     {
+      "label": "Carroll 1993",
+      "ai": 0,
+      "n1": 9,
+      "ci": 0,
+      "n2": 9
+     },
+     {
+      "label": "Pettinati 2008 dataset b",
+      "ai": 0,
+      "n1": 53,
+      "ci": 0,
+      "n2": 52
+     }
+    ],
+    "measure": "RR",
+    "method": "REML"
+   },
+   "source": "cochrane_cd007024_pub3_an1"
+  },
+  {
+   "id": "cochrane_cd007024_pub3_an1_12__repro",
+   "kind": "reproduction",
+   "artifact": "Meta-analysis (RR, REML). Studies:\n  label | events(trt)/N(trt) | events(ctrl)/N(ctrl)\n  Carroll 1998 dataset a | 0/24 | 0/18\n  Carroll 1998 dataset b | 0/25 | 0/23\n  Baldacara 2013 | 0/15 | 0/15\n  Carroll 2004 dataset a | 0/30 | 0/30\n  Carroll 2004 dataset b | 0/30 | 0/31\n  Carroll 2012 dataset a | 0/27 | 0/26\n  Carroll 2012 dataset b | 0/28 | 0/26\n  Carroll 2016 dataset a | 0/23 | 0/22\n  Carroll 2016 dataset b | 0/28 | 0/26\n  George 2000 | 0/11 | 0/9\n  Petrakis 2000 | 0/36 | 0/31\n  Pettinati 2008 dataset a | 0/53 | 0/54\n  Schottenfeld 2013 | 0/91 | 0/86\n  Carroll 1993 | 0/9 | 0/9\n  Pettinati 2008 dataset b | 0/53 | 0/52\nClaimed pooled RR = 1.6917. Conclusion: treatment affects the outcome.",
+   "data": {
+    "studies": [
+     {
+      "label": "Carroll 1998 dataset a",
+      "ai": 0,
+      "n1": 24,
+      "ci": 0,
+      "n2": 18
+     },
+     {
+      "label": "Carroll 1998 dataset b",
+      "ai": 0,
+      "n1": 25,
+      "ci": 0,
+      "n2": 23
+     },
+     {
+      "label": "Baldacara 2013",
+      "ai": 0,
+      "n1": 15,
+      "ci": 0,
+      "n2": 15
+     },
+     {
+      "label": "Carroll 2004 dataset a",
+      "ai": 0,
+      "n1": 30,
+      "ci": 0,
+      "n2": 30
+     },
+     {
+      "label": "Carroll 2004 dataset b",
+      "ai": 0,
+      "n1": 30,
+      "ci": 0,
+      "n2": 31
+     },
+     {
+      "label": "Carroll 2012 dataset a",
+      "ai": 0,
+      "n1": 27,
+      "ci": 0,
+      "n2": 26
+     },
+     {
+      "label": "Carroll 2012 dataset b",
+      "ai": 0,
+      "n1": 28,
+      "ci": 0,
+      "n2": 26
+     },
+     {
+      "label": "Carroll 2016 dataset a",
+      "ai": 0,
+      "n1": 23,
+      "ci": 0,
+      "n2": 22
+     },
+     {
+      "label": "Carroll 2016 dataset b",
+      "ai": 0,
+      "n1": 28,
+      "ci": 0,
+      "n2": 26
+     },
+     {
+      "label": "George 2000",
+      "ai": 0,
+      "n1": 11,
+      "ci": 0,
+      "n2": 9
+     },
+     {
+      "label": "Petrakis 2000",
+      "ai": 0,
+      "n1": 36,
+      "ci": 0,
+      "n2": 31
+     },
+     {
+      "label": "Pettinati 2008 dataset a",
+      "ai": 0,
+      "n1": 53,
+      "ci": 0,
+      "n2": 54
+     },
+     {
+      "label": "Schottenfeld 2013",
+      "ai": 0,
+      "n1": 91,
+      "ci": 0,
+      "n2": 86
+     },
+     {
+      "label": "Carroll 1993",
+      "ai": 0,
+      "n1": 9,
+      "ci": 0,
+      "n2": 9
+     },
+     {
+      "label": "Pettinati 2008 dataset b",
+      "ai": 0,
+      "n1": 53,
+      "ci": 0,
+      "n2": 52
+     }
+    ],
+    "measure": "RR",
+    "method": "REML",
+    "claimed_value": 1.6917,
+    "tolerance": 0.05
+   },
+   "source": "cochrane_cd007024_pub3_an1"
+  },
+  {
+   "id": "cochrane_cd007024_pub3_an1_12__direction",
+   "kind": "direction",
+   "artifact": "Meta-analysis (RR, REML). Studies:\n  label | events(trt)/N(trt) | events(ctrl)/N(ctrl)\n  Carroll 1998 dataset a | 0/24 | 0/18\n  Carroll 1998 dataset b | 0/25 | 0/23\n  Baldacara 2013 | 0/15 | 0/15\n  Carroll 2004 dataset a | 0/30 | 0/30\n  Carroll 2004 dataset b | 0/30 | 0/31\n  Carroll 2012 dataset a | 0/27 | 0/26\n  Carroll 2012 dataset b | 0/28 | 0/26\n  Carroll 2016 dataset a | 0/23 | 0/22\n  Carroll 2016 dataset b | 0/28 | 0/26\n  George 2000 | 0/11 | 0/9\n  Petrakis 2000 | 0/36 | 0/31\n  Pettinati 2008 dataset a | 0/53 | 0/54\n  Schottenfeld 2013 | 0/91 | 0/86\n  Carroll 1993 | 0/9 | 0/9\n  Pettinati 2008 dataset b | 0/53 | 0/52\nClaimed pooled RR = 0.9398. Conclusion: treatment increases the outcome.",
+   "data": {
+    "studies": [
+     {
+      "label": "Carroll 1998 dataset a",
+      "ai": 0,
+      "n1": 24,
+      "ci": 0,
+      "n2": 18
+     },
+     {
+      "label": "Carroll 1998 dataset b",
+      "ai": 0,
+      "n1": 25,
+      "ci": 0,
+      "n2": 23
+     },
+     {
+      "label": "Baldacara 2013",
+      "ai": 0,
+      "n1": 15,
+      "ci": 0,
+      "n2": 15
+     },
+     {
+      "label": "Carroll 2004 dataset a",
+      "ai": 0,
+      "n1": 30,
+      "ci": 0,
+      "n2": 30
+     },
+     {
+      "label": "Carroll 2004 dataset b",
+      "ai": 0,
+      "n1": 30,
+      "ci": 0,
+      "n2": 31
+     },
+     {
+      "label": "Carroll 2012 dataset a",
+      "ai": 0,
+      "n1": 27,
+      "ci": 0,
+      "n2": 26
+     },
+     {
+      "label": "Carroll 2012 dataset b",
+      "ai": 0,
+      "n1": 28,
+      "ci": 0,
+      "n2": 26
+     },
+     {
+      "label": "Carroll 2016 dataset a",
+      "ai": 0,
+      "n1": 23,
+      "ci": 0,
+      "n2": 22
+     },
+     {
+      "label": "Carroll 2016 dataset b",
+      "ai": 0,
+      "n1": 28,
+      "ci": 0,
+      "n2": 26
+     },
+     {
+      "label": "George 2000",
+      "ai": 0,
+      "n1": 11,
+      "ci": 0,
+      "n2": 9
+     },
+     {
+      "label": "Petrakis 2000",
+      "ai": 0,
+      "n1": 36,
+      "ci": 0,
+      "n2": 31
+     },
+     {
+      "label": "Pettinati 2008 dataset a",
+      "ai": 0,
+      "n1": 53,
+      "ci": 0,
+      "n2": 54
+     },
+     {
+      "label": "Schottenfeld 2013",
+      "ai": 0,
+      "n1": 91,
+      "ci": 0,
+      "n2": 86
+     },
+     {
+      "label": "Carroll 1993",
+      "ai": 0,
+      "n1": 9,
+      "ci": 0,
+      "n2": 9
+     },
+     {
+      "label": "Pettinati 2008 dataset b",
+      "ai": 0,
+      "n1": 53,
+      "ci": 0,
+      "n2": 52
+     }
+    ],
+    "measure": "RR",
+    "method": "REML",
+    "claimed_value": 0.9398,
+    "tolerance": 0.05
+   },
+   "source": "cochrane_cd007024_pub3_an1"
+  },
+  {
+   "id": "cochrane_cd008688_pub3_an3_13__clean",
+   "kind": "clean",
+   "artifact": "Meta-analysis (RR, REML). Studies:\n  label | events(trt)/N(trt) | events(ctrl)/N(ctrl)\n  Bassi 1999 | 0/14 | 0/15\n  Diener 2011 | 1/177 | 2/175\n  Shimada 2021 | 0/68 | 0/66\nClaimed pooled RR = 0.6753. Conclusion: treatment reduces the outcome.",
+   "data": {
+    "studies": [
+     {
+      "label": "Bassi 1999",
+      "ai": 0,
+      "n1": 14,
+      "ci": 0,
+      "n2": 15
+     },
+     {
+      "label": "Diener 2011",
+      "ai": 1,
+      "n1": 177,
+      "ci": 2,
+      "n2": 175
+     },
+     {
+      "label": "Shimada 2021",
+      "ai": 0,
+      "n1": 68,
+      "ci": 0,
+      "n2": 66
+     }
+    ],
+    "measure": "RR",
+    "method": "REML",
+    "claimed_value": 0.6753,
+    "tolerance": 0.05
+   },
+   "source": "cochrane_cd008688_pub3_an3"
+  },
+  {
+   "id": "cochrane_cd008688_pub3_an3_13__impossible",
+   "kind": "impossible_cell",
+   "artifact": "Meta-analysis (RR, REML). Studies:\n  label | events(trt)/N(trt) | events(ctrl)/N(ctrl)\n  Bassi 1999 | 19/14 | 0/15\n  Diener 2011 | 1/177 | 2/175\n  Shimada 2021 | 0/68 | 0/66\nClaimed pooled RR = 0.6753. Conclusion: treatment reduces the outcome.",
+   "data": {
+    "studies": [
+     {
+      "label": "Bassi 1999",
+      "ai": 19,
+      "n1": 14,
+      "ci": 0,
+      "n2": 15
+     },
+     {
+      "label": "Diener 2011",
+      "ai": 1,
+      "n1": 177,
+      "ci": 2,
+      "n2": 175
+     },
+     {
+      "label": "Shimada 2021",
+      "ai": 0,
+      "n1": 68,
+      "ci": 0,
+      "n2": 66
+     }
+    ],
+    "measure": "RR",
+    "method": "REML"
+   },
+   "source": "cochrane_cd008688_pub3_an3"
+  },
+  {
+   "id": "cochrane_cd008688_pub3_an3_13__repro",
+   "kind": "reproduction",
+   "artifact": "Meta-analysis (RR, REML). Studies:\n  label | events(trt)/N(trt) | events(ctrl)/N(ctrl)\n  Bassi 1999 | 0/14 | 0/15\n  Diener 2011 | 1/177 | 2/175\n  Shimada 2021 | 0/68 | 0/66\nClaimed pooled RR = 1.2156. Conclusion: treatment affects the outcome.",
+   "data": {
+    "studies": [
+     {
+      "label": "Bassi 1999",
+      "ai": 0,
+      "n1": 14,
+      "ci": 0,
+      "n2": 15
+     },
+     {
+      "label": "Diener 2011",
+      "ai": 1,
+      "n1": 177,
+      "ci": 2,
+      "n2": 175
+     },
+     {
+      "label": "Shimada 2021",
+      "ai": 0,
+      "n1": 68,
+      "ci": 0,
+      "n2": 66
+     }
+    ],
+    "measure": "RR",
+    "method": "REML",
+    "claimed_value": 1.2156,
+    "tolerance": 0.05
+   },
+   "source": "cochrane_cd008688_pub3_an3"
+  },
+  {
+   "id": "cochrane_cd008688_pub3_an3_13__direction",
+   "kind": "direction",
+   "artifact": "Meta-analysis (RR, REML). Studies:\n  label | events(trt)/N(trt) | events(ctrl)/N(ctrl)\n  Bassi 1999 | 0/14 | 0/15\n  Diener 2011 | 1/177 | 2/175\n  Shimada 2021 | 0/68 | 0/66\nClaimed pooled RR = 0.6753. Conclusion: treatment increases the outcome.",
+   "data": {
+    "studies": [
+     {
+      "label": "Bassi 1999",
+      "ai": 0,
+      "n1": 14,
+      "ci": 0,
+      "n2": 15
+     },
+     {
+      "label": "Diener 2011",
+      "ai": 1,
+      "n1": 177,
+      "ci": 2,
+      "n2": 175
+     },
+     {
+      "label": "Shimada 2021",
+      "ai": 0,
+      "n1": 68,
+      "ci": 0,
+      "n2": 66
+     }
+    ],
+    "measure": "RR",
+    "method": "REML",
+    "claimed_value": 0.6753,
+    "tolerance": 0.05
+   },
+   "source": "cochrane_cd008688_pub3_an3"
+  },
+  {
+   "id": "cochrane_cd008873_pub5_an2_14__clean",
+   "kind": "clean",
+   "artifact": "Meta-analysis (RR, REML). Studies:\n  label | events(trt)/N(trt) | events(ctrl)/N(ctrl)\n  Sablok 2015 | 1/108 | 1/57\n  Diogenes 2013 | 0/29 | 0/21\n  Roth 2013 | 0/1039 | 0/259\nClaimed pooled RR = 0.4766. Conclusion: treatment reduces the outcome.",
+   "data": {
+    "studies": [
+     {
+      "label": "Sablok 2015",
+      "ai": 1,
+      "n1": 108,
+      "ci": 1,
+      "n2": 57
+     },
+     {
+      "label": "Diogenes 2013",
+      "ai": 0,
+      "n1": 29,
+      "ci": 0,
+      "n2": 21
+     },
+     {
+      "label": "Roth 2013",
+      "ai": 0,
+      "n1": 1039,
+      "ci": 0,
+      "n2": 259
+     }
+    ],
+    "measure": "RR",
+    "method": "REML",
+    "claimed_value": 0.4766,
+    "tolerance": 0.05
+   },
+   "source": "cochrane_cd008873_pub5_an2"
+  },
+  {
+   "id": "cochrane_cd008873_pub5_an2_14__impossible",
+   "kind": "impossible_cell",
+   "artifact": "Meta-analysis (RR, REML). Studies:\n  label | events(trt)/N(trt) | events(ctrl)/N(ctrl)\n  Sablok 2015 | 113/108 | 1/57\n  Diogenes 2013 | 0/29 | 0/21\n  Roth 2013 | 0/1039 | 0/259\nClaimed pooled RR = 0.4766. Conclusion: treatment reduces the outcome.",
+   "data": {
+    "studies": [
+     {
+      "label": "Sablok 2015",
+      "ai": 113,
+      "n1": 108,
+      "ci": 1,
+      "n2": 57
+     },
+     {
+      "label": "Diogenes 2013",
+      "ai": 0,
+      "n1": 29,
+      "ci": 0,
+      "n2": 21
+     },
+     {
+      "label": "Roth 2013",
+      "ai": 0,
+      "n1": 1039,
+      "ci": 0,
+      "n2": 259
+     }
+    ],
+    "measure": "RR",
+    "method": "REML"
+   },
+   "source": "cochrane_cd008873_pub5_an2"
+  },
+  {
+   "id": "cochrane_cd008873_pub5_an2_14__repro",
+   "kind": "reproduction",
+   "artifact": "Meta-analysis (RR, REML). Studies:\n  label | events(trt)/N(trt) | events(ctrl)/N(ctrl)\n  Sablok 2015 | 1/108 | 1/57\n  Diogenes 2013 | 0/29 | 0/21\n  Roth 2013 | 0/1039 | 0/259\nClaimed pooled RR = 0.858. Conclusion: treatment affects the outcome.",
+   "data": {
+    "studies": [
+     {
+      "label": "Sablok 2015",
+      "ai": 1,
+      "n1": 108,
+      "ci": 1,
+      "n2": 57
+     },
+     {
+      "label": "Diogenes 2013",
+      "ai": 0,
+      "n1": 29,
+      "ci": 0,
+      "n2": 21
+     },
+     {
+      "label": "Roth 2013",
+      "ai": 0,
+      "n1": 1039,
+      "ci": 0,
+      "n2": 259
+     }
+    ],
+    "measure": "RR",
+    "method": "REML",
+    "claimed_value": 0.858,
+    "tolerance": 0.05
+   },
+   "source": "cochrane_cd008873_pub5_an2"
+  },
+  {
+   "id": "cochrane_cd008873_pub5_an2_14__direction",
+   "kind": "direction",
+   "artifact": "Meta-analysis (RR, REML). Studies:\n  label | events(trt)/N(trt) | events(ctrl)/N(ctrl)\n  Sablok 2015 | 1/108 | 1/57\n  Diogenes 2013 | 0/29 | 0/21\n  Roth 2013 | 0/1039 | 0/259\nClaimed pooled RR = 0.4766. Conclusion: treatment increases the outcome.",
+   "data": {
+    "studies": [
+     {
+      "label": "Sablok 2015",
+      "ai": 1,
+      "n1": 108,
+      "ci": 1,
+      "n2": 57
+     },
+     {
+      "label": "Diogenes 2013",
+      "ai": 0,
+      "n1": 29,
+      "ci": 0,
+      "n2": 21
+     },
+     {
+      "label": "Roth 2013",
+      "ai": 0,
+      "n1": 1039,
+      "ci": 0,
+      "n2": 259
+     }
+    ],
+    "measure": "RR",
+    "method": "REML",
+    "claimed_value": 0.4766,
+    "tolerance": 0.05
+   },
+   "source": "cochrane_cd008873_pub5_an2"
+  },
+  {
+   "id": "cochrane_cd009417_pub3_an9_15__clean",
+   "kind": "clean",
+   "artifact": "Meta-analysis (RR, REML). Studies:\n  label | events(trt)/N(trt) | events(ctrl)/N(ctrl)\n  Alansari 2019 | 10/208 | 13/205\n  Lagos 2009 | 1/15 | 2/15\n  Ramilo 2014 | 6/74 | 0/37\n  Rodriguez 1997a | 31/51 | 18/51\n  Rodriguez 1997b | 25/46 | 33/52\nClaimed pooled RR = 1.0972. Conclusion: treatment increases the outcome.",
+   "data": {
+    "studies": [
+     {
+      "label": "Alansari 2019",
+      "ai": 10,
+      "n1": 208,
+      "ci": 13,
+      "n2": 205
+     },
+     {
+      "label": "Lagos 2009",
+      "ai": 1,
+      "n1": 15,
+      "ci": 2,
+      "n2": 15
+     },
+     {
+      "label": "Ramilo 2014",
+      "ai": 6,
+      "n1": 74,
+      "ci": 0,
+      "n2": 37
+     },
+     {
+      "label": "Rodriguez 1997a",
+      "ai": 31,
+      "n1": 51,
+      "ci": 18,
+      "n2": 51
+     },
+     {
+      "label": "Rodriguez 1997b",
+      "ai": 25,
+      "n1": 46,
+      "ci": 33,
+      "n2": 52
+     }
+    ],
+    "measure": "RR",
+    "method": "REML",
+    "claimed_value": 1.0972,
+    "tolerance": 0.05
+   },
+   "source": "cochrane_cd009417_pub3_an9"
+  },
+  {
+   "id": "cochrane_cd009417_pub3_an9_15__impossible",
+   "kind": "impossible_cell",
+   "artifact": "Meta-analysis (RR, REML). Studies:\n  label | events(trt)/N(trt) | events(ctrl)/N(ctrl)\n  Alansari 2019 | 213/208 | 13/205\n  Lagos 2009 | 1/15 | 2/15\n  Ramilo 2014 | 6/74 | 0/37\n  Rodriguez 1997a | 31/51 | 18/51\n  Rodriguez 1997b | 25/46 | 33/52\nClaimed pooled RR = 1.0972. Conclusion: treatment increases the outcome.",
+   "data": {
+    "studies": [
+     {
+      "label": "Alansari 2019",
+      "ai": 213,
+      "n1": 208,
+      "ci": 13,
+      "n2": 205
+     },
+     {
+      "label": "Lagos 2009",
+      "ai": 1,
+      "n1": 15,
+      "ci": 2,
+      "n2": 15
+     },
+     {
+      "label": "Ramilo 2014",
+      "ai": 6,
+      "n1": 74,
+      "ci": 0,
+      "n2": 37
+     },
+     {
+      "label": "Rodriguez 1997a",
+      "ai": 31,
+      "n1": 51,
+      "ci": 18,
+      "n2": 51
+     },
+     {
+      "label": "Rodriguez 1997b",
+      "ai": 25,
+      "n1": 46,
+      "ci": 33,
+      "n2": 52
+     }
+    ],
+    "measure": "RR",
+    "method": "REML"
+   },
+   "source": "cochrane_cd009417_pub3_an9"
+  },
+  {
+   "id": "cochrane_cd009417_pub3_an9_15__repro",
+   "kind": "reproduction",
+   "artifact": "Meta-analysis (RR, REML). Studies:\n  label | events(trt)/N(trt) | events(ctrl)/N(ctrl)\n  Alansari 2019 | 10/208 | 13/205\n  Lagos 2009 | 1/15 | 2/15\n  Ramilo 2014 | 6/74 | 0/37\n  Rodriguez 1997a | 31/51 | 18/51\n  Rodriguez 1997b | 25/46 | 33/52\nClaimed pooled RR = 1.9749. Conclusion: treatment affects the outcome.",
+   "data": {
+    "studies": [
+     {
+      "label": "Alansari 2019",
+      "ai": 10,
+      "n1": 208,
+      "ci": 13,
+      "n2": 205
+     },
+     {
+      "label": "Lagos 2009",
+      "ai": 1,
+      "n1": 15,
+      "ci": 2,
+      "n2": 15
+     },
+     {
+      "label": "Ramilo 2014",
+      "ai": 6,
+      "n1": 74,
+      "ci": 0,
+      "n2": 37
+     },
+     {
+      "label": "Rodriguez 1997a",
+      "ai": 31,
+      "n1": 51,
+      "ci": 18,
+      "n2": 51
+     },
+     {
+      "label": "Rodriguez 1997b",
+      "ai": 25,
+      "n1": 46,
+      "ci": 33,
+      "n2": 52
+     }
+    ],
+    "measure": "RR",
+    "method": "REML",
+    "claimed_value": 1.9749,
+    "tolerance": 0.05
+   },
+   "source": "cochrane_cd009417_pub3_an9"
+  },
+  {
+   "id": "cochrane_cd009417_pub3_an9_15__direction",
+   "kind": "direction",
+   "artifact": "Meta-analysis (RR, REML). Studies:\n  label | events(trt)/N(trt) | events(ctrl)/N(ctrl)\n  Alansari 2019 | 10/208 | 13/205\n  Lagos 2009 | 1/15 | 2/15\n  Ramilo 2014 | 6/74 | 0/37\n  Rodriguez 1997a | 31/51 | 18/51\n  Rodriguez 1997b | 25/46 | 33/52\nClaimed pooled RR = 1.0972. Conclusion: treatment reduces the outcome.",
+   "data": {
+    "studies": [
+     {
+      "label": "Alansari 2019",
+      "ai": 10,
+      "n1": 208,
+      "ci": 13,
+      "n2": 205
+     },
+     {
+      "label": "Lagos 2009",
+      "ai": 1,
+      "n1": 15,
+      "ci": 2,
+      "n2": 15
+     },
+     {
+      "label": "Ramilo 2014",
+      "ai": 6,
+      "n1": 74,
+      "ci": 0,
+      "n2": 37
+     },
+     {
+      "label": "Rodriguez 1997a",
+      "ai": 31,
+      "n1": 51,
+      "ci": 18,
+      "n2": 51
+     },
+     {
+      "label": "Rodriguez 1997b",
+      "ai": 25,
+      "n1": 46,
+      "ci": 33,
+      "n2": 52
+     }
+    ],
+    "measure": "RR",
+    "method": "REML",
+    "claimed_value": 1.0972,
+    "tolerance": 0.05
+   },
+   "source": "cochrane_cd009417_pub3_an9"
+  }
+ ]
+}

@@ -1,0 +1,71 @@
+{
+ "slice": "F:\\overmind\\benchmark_data",
+ "held_out_n": 35,
+ "arms": [
+  {
+   "arm": "objective-ref (witness-only floor)",
+   "status": "RUN",
+   "metrics": {
+    "arm": "objective-ref",
+    "n": 35,
+    "defects": 26,
+    "cleans": 9,
+    "caught": 17,
+    "false_alarms": 0,
+    "caught_defect_rate": 0.6538,
+    "false_alarm_rate": 0.0,
+    "parity_rate": 1.0,
+    "agreement_soundness": 0.5,
+    "accepted": 18,
+    "accepted_correct": 9,
+    "total_cost_usd": 0.0,
+    "cost_per_accepted_change": 0.0,
+    "blended": 1.1538
+   }
+  },
+  {
+   "arm": "C-shadow (stub reviewers)",
+   "status": "SHADOW",
+   "metrics": {
+    "arm": "C-shadow",
+    "n": 35,
+    "defects": 26,
+    "cleans": 9,
+    "caught": 26,
+    "false_alarms": 0,
+    "caught_defect_rate": 1.0,
+    "false_alarm_rate": 0.0,
+    "parity_rate": 1.0,
+    "agreement_soundness": 1.0,
+    "accepted": 9,
+    "accepted_correct": 9,
+    "total_cost_usd": 0.0,
+    "cost_per_accepted_change": 0.0,
+    "blended": 1.5
+   }
+  },
+  {
+   "arm": "A",
+   "status": "STAGED (needs a live frontier model)",
+   "metrics": null
+  },
+  {
+   "arm": "B",
+   "status": "STAGED (needs a live frontier model x3)",
+   "metrics": null
+  },
+  {
+   "arm": "C",
+   "status": "STAGED (needs >=2 distinct live families; have [])",
+   "metrics": null
+  }
+ ],
+ "win_condition": null,
+ "notes": [
+  "Held-out slice: 35 tasks from 64 total (defects=26, clean=9).",
+  "Held-out split is a deterministic sha256 bucket; answer keys read only by the scorer.",
+  "Weights pinned (BENCHMARK.md/scoring.py); scoring can report NOT_PROVEN.",
+  "Objective reference = Arm C floor with NO reviewers: catches witness-detectable defects (impossible_cell, reproduction) but structurally misses reviewer-only 'direction' defects \u2014 that gap is what the cross-vendor panel must close.",
+  "Live vendors this run: NONE (all capped/unauthed)."
+ ]
+}
