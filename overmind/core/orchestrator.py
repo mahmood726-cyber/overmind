@@ -300,7 +300,7 @@ class Orchestrator:
                 # wrapped so a recorder bug can never wedge the accept path.
                 # Controlled by OVERMIND_PROVENANCE (default off).
                 try:
-                    self._record_verdict_provenance(final_result, task, evidence)
+                    self._record_verdict_provenance(final_result, task, evidence, output_lines)
                 except Exception:  # noqa: BLE001 — provenance is advisory
                     pass
                 # D5 attribute cost to this accept/reject decision (shadow).
@@ -840,11 +840,12 @@ class Orchestrator:
             pass
         return final_result
 
-    def _record_verdict_provenance(self, final_result, task, evidence) -> None:
+    def _record_verdict_provenance(self, final_result, task, evidence, output_lines=None) -> None:
         """D7 accept-point provenance recorder (shadow; no-op unless enabled).
 
-        Resolves the worker vendor from the runner that produced the work and
-        appends a provenance line. Lazily builds the recorder from
+        Resolves the worker vendor from the runner that produced the work, runs
+        the cross-vendor check (D1) when enabled, and appends a provenance line
+        carrying the cross-vendor field. Lazily builds the recorder from
         OVERMIND_PROVENANCE_PATH or ``<data_dir>/provenance/verdicts.jsonl``.
         """
         default_path = self.config.data_dir / "provenance" / "verdicts.jsonl"
@@ -857,12 +858,32 @@ class Orchestrator:
             runner_record = self.db.get_runner(runner_id)
             if runner_record is not None:
                 worker_runner = getattr(runner_record, "runner_type", "") or ""
+        cross_vendor = self._maybe_cross_vendor_check(final_result, task, worker_runner, output_lines)
         prov = build_provenance(
             final_result,
             worker_runner=worker_runner,
             project_id=getattr(task, "project_id", ""),
+            cross_vendor=cross_vendor,
         )
         recorder.record(prov)
+
+    def _maybe_cross_vendor_check(self, final_result, task, worker_runner, output_lines):
+        """D1 cross-vendor check at the accept point (advisory; None when off).
+
+        Runs only when OVERMIND_CROSS_VENDOR_CHECK is enabled; builds a compact
+        artifact from the task + verdict details + transcript tail so a
+        different-vendor bug-hunt has something to review. Findings are advisory
+        and recorded on the provenance line — never ship-blocking here."""
+        from overmind.verification.cross_vendor_check import CrossVendorChecker, check_mode
+        if check_mode() == "off":
+            return None
+        details = list(getattr(final_result, "details", []) or [])
+        tail = list(output_lines or [])[-40:]
+        artifact = "\n".join(
+            [f"task: {getattr(task, 'title', '')}", "verdict details:", *details, "transcript tail:", *tail]
+        )
+        writer_engine = worker_runner or "claude"
+        return CrossVendorChecker().check(artifact, writer_engine=writer_engine)
 
     @staticmethod
     def _cost_accounting_enabled() -> bool:

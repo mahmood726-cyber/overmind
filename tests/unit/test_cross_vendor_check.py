@@ -12,8 +12,11 @@ from pathlib import Path
 import pytest
 
 from overmind.verification.cross_vendor_check import (
+    CANARY_ARTIFACT,
     CrossVendorChecker,
     check_mode,
+    is_found_nothing_pass,
+    smoke_probe_codex_seats,
 )
 from overmind.verification.judge_backends import JUDGE_ERROR, CodexBackend
 
@@ -176,3 +179,60 @@ def test_prompt_includes_artifact(monkeypatch):
     checker = CrossVendorChecker(checker_engines=("codex",), backends={"codex": codex})
     checker.check("SENTINEL_ARTIFACT_XYZ", writer_engine="claude")
     assert "SENTINEL_ARTIFACT_XYZ" in codex.calls[0]
+
+
+# --- Codex-seat smoke probe (T5 attestation) ------------------------------------
+
+def test_smoke_probe_both_seats_alive():
+    backends = {"mahmood": _FakeBackend("READY"), "noreen": _FakeBackend("READY")}
+    probes = smoke_probe_codex_seats(backends=backends)
+    assert [p.seat for p in probes] == ["mahmood", "noreen"]
+    assert all(p.alive for p in probes)
+
+
+def test_smoke_probe_flags_401_seat():
+    backends = {
+        "mahmood": _FakeBackend("READY"),
+        "noreen": _FakeBackend(f"{JUDGE_ERROR} exit 401: unauthorized"),
+    }
+    probes = smoke_probe_codex_seats(backends=backends)
+    by_seat = {p.seat: p for p in probes}
+    assert by_seat["mahmood"].alive is True
+    assert by_seat["noreen"].alive is False
+    assert "401" in by_seat["noreen"].detail
+
+
+def test_smoke_probe_flags_unavailable_seat():
+    backends = {"mahmood": _FakeBackend("x", available=False), "noreen": _FakeBackend("READY")}
+    probes = smoke_probe_codex_seats(backends=backends)
+    by_seat = {p.seat: p for p in probes}
+    assert by_seat["mahmood"].alive is False
+    assert "unavailable" in by_seat["mahmood"].detail
+
+
+# --- cE>cN canary (the RapidMeta P0-denominator-logic family) -------------------
+
+def test_canary_flags_impossible_cell(monkeypatch):
+    monkeypatch.setenv("OVERMIND_CROSS_VENDOR_CHECK", "shadow")
+    # a real bug-finder flags the impossible cell
+    codex = _FakeBackend(
+        "- [P0] events cE=524 exceed N cN=39 — impossible 2x2 cell (rapidmeta)\nVERDICT: BLOCK"
+    )
+    checker = CrossVendorChecker(checker_engines=("codex",), backends={"codex": codex})
+    result = checker.check(CANARY_ARTIFACT, writer_engine="claude")
+    assert result.present is True
+    assert result.findings, "canary: checker must flag the planted cE>cN defect"
+    assert is_found_nothing_pass(result) is False
+
+
+def test_found_nothing_pass_on_canary_is_failure(monkeypatch):
+    monkeypatch.setenv("OVERMIND_CROSS_VENDOR_CHECK", "shadow")
+    # a checker that PASSes the known-buggy canary with no findings = canary FAILURE
+    codex = _FakeBackend("Looks fine to me.\nVERDICT: PASS")
+    checker = CrossVendorChecker(checker_engines=("codex",), backends={"codex": codex})
+    result = checker.check(CANARY_ARTIFACT, writer_engine="claude")
+    assert is_found_nothing_pass(result) is True  # canary catches the empty pass
+
+
+def test_canary_artifact_contains_impossible_cell():
+    assert "cE=524" in CANARY_ARTIFACT and "cN=39" in CANARY_ARTIFACT

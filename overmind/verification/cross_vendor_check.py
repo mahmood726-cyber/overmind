@@ -49,6 +49,68 @@ def check_mode() -> str:
     return "off"
 
 
+# The RapidMeta P0-denominator-logic canary: an arithmetically-impossible 2x2 cell
+# (events > N). A real bug-finder MUST flag this; a "found-nothing pass" on it is a
+# canary FAILURE (research doc §1.4 / §3 benchmark). Concrete, non-fabricated —
+# CAPLACIZUMAB_TTP cE=524 > cN=39.
+CANARY_ARTIFACT = (
+    "2x2 contingency table for CAPLACIZUMAB_TTP:\n"
+    "  control arm: events cE=524, N cN=39\n"
+    "  treatment arm: events tE=12, N tN=41\n"
+    "Computed risk ratio from these cells."
+)
+
+
+@dataclass(slots=True)
+class SeatProbe:
+    """Result of a low-effort auth/liveness smoke probe of one Codex seat."""
+
+    seat: str
+    alive: bool
+    detail: str = ""
+
+    def to_dict(self) -> dict:
+        return {"seat": self.seat, "alive": self.alive, "detail": self.detail}
+
+
+def smoke_probe_codex_seats(
+    seats: tuple[str, ...] | list[str] = ("mahmood", "noreen"),
+    *,
+    backends: dict[str, object] | None = None,
+    probe_prompt: str = "Reply with the single word READY.",
+) -> list[SeatProbe]:
+    """Low-effort liveness/auth probe of both Codex seats (T5 attestation smoke).
+
+    Runs the cheap ``effort='low'`` probe so a real bug-hunt (xhigh) is only spent
+    once seats are known live. A seat that is unavailable (no codex CLI / no
+    CODEX_HOME) or returns a ``JUDGE_ERROR:`` (e.g. 401) is reported ``alive=False``
+    — loud, not silently degraded. Backends are injectable for tests.
+    """
+    results: list[SeatProbe] = []
+    for seat in seats:
+        backend = (backends or {}).get(seat)
+        if backend is None:
+            backend = CodexBackend(seat=seat, effort="low")
+        available = getattr(backend, "available", None)
+        if callable(available) and not available():
+            results.append(SeatProbe(seat, False, "unavailable (no codex CLI / CODEX_HOME)"))
+            continue
+        resp = backend.query(probe_prompt)
+        if isinstance(resp, str) and resp.startswith(JUDGE_ERROR):
+            results.append(SeatProbe(seat, False, resp[:120]))
+        else:
+            results.append(SeatProbe(seat, True, "ok"))
+    return results
+
+
+def is_found_nothing_pass(result: "CrossVendorCheckResult") -> bool:
+    """True when a check on a KNOWN-buggy artifact came back PASS with no findings.
+
+    On the canary this is a FAILURE signal — a bug-hunt that finds nothing on a
+    planted defect has no signal (LFD found-nothing-pass fence)."""
+    return bool(result.present and result.verdict == "PASS" and not result.findings)
+
+
 def _build_backend(engine: str, effort: str | None):
     """Construct a checker backend for an engine name (bug-hunt tuned)."""
     name = engine.strip().lower()
