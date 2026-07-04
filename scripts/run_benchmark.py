@@ -32,18 +32,20 @@ DATA_DIR = Path(__file__).resolve().parents[1] / "benchmark_data"
 OUT_DIR = DATA_DIR / "runs"
 
 
-def _live_vendors() -> dict:
-    """Which reviewer vendors respond to a real smoke right now.
+def _live_vendors() -> tuple[dict, list[str]]:
+    """Which reviewer vendors respond to a real smoke right now (preflight ONCE).
 
     Uses the reliability preflight (real exec smokes): headless Claude
     (subscription OAuth — NOT capped), both Codex seats, and agy. Plus a direct
-    Gemini probe."""
-    live = {}
+    Gemini probe. Returns (live_vendors, per-vendor status notes)."""
+    live: dict = {}
+    notes: list[str] = []
     try:
         from overmind.reliability.auth_preflight import preflight_all
-        for p in preflight_all():   # now includes first-class claude (OAuth)
+        for p in preflight_all():   # includes first-class claude (OAuth)
             if p.alive:
                 live[p.vendor] = True
+            notes.append(f"preflight {p.vendor}:{p.seat} = {'LIVE' if p.alive else 'DOWN'} ({p.detail[:70]})")
     except Exception:  # noqa: BLE001
         pass
     # Gemini direct API.
@@ -51,11 +53,13 @@ def _live_vendors() -> dict:
         from overmind.verification.llm_judge import GeminiBackend
         from overmind.verification.judge_backends import JUDGE_ERROR
         r = GeminiBackend().query("Reply READY")
-        if isinstance(r, str) and not r.startswith(JUDGE_ERROR):
+        alive = isinstance(r, str) and not r.startswith(JUDGE_ERROR)
+        if alive:
             live["gemini"] = True
+        notes.append(f"preflight gemini:api = {'LIVE' if alive else 'DOWN'} ({(r or '')[:60]})")
     except Exception:  # noqa: BLE001
         pass
-    return live
+    return live, notes
 
 
 def _real_reviewer(vendor: str):
@@ -131,8 +135,12 @@ def main() -> int:
                          "metrics": fz_m.to_dict()})
 
     # 3) Real arms for live vendors; stage the rest.
-    live = {} if shadow else _live_vendors()
-    notes.append(f"Live vendors this run: {sorted(live) or 'NONE (all capped/unauthed)'}.")
+    if shadow:
+        live, preflight_notes = {}, []
+    else:
+        live, preflight_notes = _live_vendors()
+    notes.extend(preflight_notes)
+    notes.append(f"Live vendors this run: {sorted(live) or 'NONE'}.")
     real_metrics: dict[str, ArmMetrics] = {}
 
     def _run_real(name, reviewers, use_witness, cp):

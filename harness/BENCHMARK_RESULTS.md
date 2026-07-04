@@ -4,7 +4,40 @@
 **Harness:** `overmind/benchmark/` (arms A/B/C, deterministic witnesses, blinded held-out split,
 checkpoint/resume, cost instrument). **Runner:** `scripts/run_benchmark.py` (capacity-aware,
 re-runnable, resumes via checkpoint). **Slice:** `benchmark_data/` (330 tasks from 33 metafor-reproduced
-gold fixtures × 10 kinds; held-out = 164). **Scorecard:** `benchmark_data/runs/scorecard.{md,json}`.
+gold fixtures × 10 kinds; held-out = 139 (frozen split carved out 73)). **Scorecard:** `benchmark_data/runs/scorecard.{md,json}`.
+
+## Live-capacity run — 2026-07-04 (attempted NOW, not waiting for 00:35Z)
+Auth-preflighted every vendor with a **real smoke** (not login-status). **Verified state — no vendor
+produces a real completion right now:**
+| vendor | real-smoke result |
+|---|---|
+| **agy** | daemon up but returns **empty text** (`"text": ""`) on 3 attempts (pro/flash/pro) — throttled/down, NOT live |
+| **codex** (both seats) | `exit 1` (credit-capped; model field empty) |
+| **claude** (oauth) | stale node token → no auth (401) |
+| **gemini** (api) | HTTP 429 Too Many Requests |
+
+**Truth-first decision:** agy returning empty text ≠ a live agent — routed through a reviewer it would
+make every verdict `flag=False` (a degenerate rubber-stamp), which is an empty-backend artifact, **not
+agy's judgment**. So **no real-model Arm A/B/C was run** — fabricating one would be dishonest. The
+harness executed correctly: preflight → no live vendors → deterministic **objective floor + C-shadow on
+the FROZEN-protected held-out slice** → **Arms A/B/C STAGED**; the win-condition evaluator correctly
+returns **pending/NOT_PROVEN** (C not live). Scorecard records every per-vendor DOWN reason.
+
+**n_eff behaviour Arm B (agy×3) would expose — demonstrated mechanically (AN-3, no model needed):**
+| panel | n_eff | families | consensus? |
+|---|---|---|---|
+| **Arm B: agy ×3 (homogeneous)** | **1.2** | 1 | **NO → fall through to the D2 witness** |
+| Arm C: agy + codex + claude | 3.0 | 3 | yes → consensus |
+| Arm C-min: agy + codex | 2.0 | 2 | yes → consensus |
+The decorrelation gate correctly refuses to treat 3× same-vendor agreement as consensus — the exact
+failure Arm B is designed to expose, verified without a live model.
+
+**Still pending for the full A/B/C verdict:** **any ONE** live frontier vendor unblocks a real **Arm A**
+(and Arm B ×3); **Arm C** needs **≥2 distinct live families**. Nearest unblocks: Codex credit refill
+(~00:19Z), a fresh Claude subscription token (`claude setup-token` + `setx`, unblocks immediately —
+Claude is not capped), or agy throttle clearing. `scripts/benchmark_autostage.py` fires them on capacity
+return, resuming via checkpoint. The **C-shadow** reference (caught 1.000, agreement 1.000) already
+stands as the plumbing proof.
 
 ## What ran this session (real, reproducible)
 
@@ -27,27 +60,29 @@ Then `scripts/benchmark_autostage.py` runs Arm A (+ Arm C's Claude reviewer) liv
 capped, so it does not wait for the ~5h refill. This session: Codex credit-capped, Gemini 429, Claude
 token stale → no model arm ran; the real numbers below are the deterministic floor, model arms **staged**.
 
-**Expanded slice (2026-07-04, decisive):** **330 tasks** from **33** metafor-reproduced 2×2 gold
-fixtures × **10 kinds**; **held-out = 164** (146 defect, 18 clean; **101 reviewer-only** defects).
+**Expanded slice + frozen split (2026-07-04, decisive; current numbers):** **330 tasks** from **33**
+metafor-reproduced 2×2 gold fixtures × **10 kinds**, three-way split (AN-2): **dev=118 / held-out=139 /
+FROZEN=73**. Held-out this run: **126 defect, 13 clean, 83 reviewer-only**.
 
 | arm | status | caught-defect | false-alarm | parity | agreement | blended |
 |---|---|---|---|---|---|---|
-| **objective-ref** (witness-only floor, no model) | RUN | **0.308** (45/146) | **0.000** | **1.000** | **0.151** | 0.808 |
+| **objective-ref** (witness-only floor, no model), held-out | RUN | **0.341** (43/126) | **0.000** | **1.000** | **0.135** | 0.841 |
+| **objective-ref [FROZEN slice, sealed]** | FROZEN | 0.292 | 0.000 | 1.000 | 0.019 | 0.792 |
 | **C-shadow** (stub reviewers + floor, plumbing proof) | SHADOW | 1.000 | 0.000 | 1.000 | 1.000 | 1.500 |
 | A / B / C (model arms) | STAGED | — | — | — | — | — |
 
-**Per-class (objective reference, held-out):** witness-detectable **45/45** (impossible_cell +
-reproduction + ci_invalid, perfect), clean **18/18** (zero false alarms), **reviewer-only 0/101**
+**Per-class (objective reference, held-out):** witness-detectable **43/43** (impossible_cell +
+reproduction + ci_invalid, perfect), clean **13/13** (zero false alarms), **reviewer-only 0/83**
 (all six classes — the floor structurally cannot see them).
 
 ### What these numbers actually say (truth-first)
-- The **floor dropped from 0.654 (old 35-task slice) to 0.308** — this is **honest, not a regression**:
-  the expanded slice is dominated by *reviewer-only* defects (101 of 146), which the deterministic floor
-  cannot catch. A bigger, more realistic slice **lowered** the floor's caught-rate, exactly as expected.
-- Where a witness exists the floor is still **perfect (45/45) with zero false alarms** (parity 1.0).
-- **The reviewer-only gap the panel must close is now 101 held-out tasks (was 9)** across six realistic
-  classes — a large, decisive target, not a small-sample artifact. Agreement-soundness **0.151** shows
-  the cost of floor-alone: it "accepts" 101 defects it can't see.
+- The **floor is 0.341** on the frozen-protected held-out slice (0.292 on the sealed frozen slice) —
+  far below the old 35-task slice's 0.654, which is **honest, not a regression**: the expanded slice is
+  dominated by *reviewer-only* defects (83 of 126) the deterministic floor cannot catch.
+- Where a witness exists the floor is still **perfect (43/43) with zero false alarms** (parity 1.0).
+- **The reviewer-only gap the panel must close is 83 held-out tasks (was 9)** across six realistic
+  classes — a large, decisive target. Agreement-soundness **0.135** shows the cost of floor-alone: it
+  "accepts" 83 defects it can't see.
 - **C-shadow** (stub reviewers flagging defects, on the floor) closes the whole gap: caught 0.308 →
   **1.000**, agreement 0.151 → **1.000** — proving the Arm C plumbing works end-to-end. It is a
   plumbing proof (stub reviewers), not a model result; labelled SHADOW.

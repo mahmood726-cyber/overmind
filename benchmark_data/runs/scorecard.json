@@ -88,6 +88,11 @@
   "AN-2 FROZEN slice is SEALED: harness-evolution never reads/scores/tunes on it; a candidate is promoted only if it also wins there (arXiv:2605.30621). It is scored below for reference only.",
   "Answer keys read only by the scorer. Weights pinned; scoring can report NOT_PROVEN.",
   "Objective reference = Arm C floor with NO reviewers: catches witness-detectable defects (impossible_cell, reproduction, ci_invalid) but structurally misses the 83 reviewer-only defects in the held-out slice (6 classes) \u2014 that gap is what the cross-vendor panel must close.",
-  "Live vendors this run: NONE (all capped/unauthed)."
+  "preflight claude:oauth = DOWN (no auth (set CLAUDE_CODE_OAUTH_TOKEN via `claude setup-token`))",
+  "preflight codex:mahmood = DOWN (JUDGE_ERROR: exit 1: OpenAI Codex v0.142.3\n--------\nworkdir: F:\\overmi)",
+  "preflight codex:noreen = DOWN (JUDGE_ERROR: exit 1: OpenAI Codex v0.142.3\n--------\nworkdir: F:\\overmi)",
+  "preflight agy:default = DOWN (JUDGE_ERROR: agy returned empty text)",
+  "preflight gemini:api = DOWN (JUDGE_ERROR: HTTPError: HTTP Error 429: Too Many Requests)",
+  "Live vendors this run: NONE."
  ]
 }
