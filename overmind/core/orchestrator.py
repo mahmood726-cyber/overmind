@@ -38,6 +38,7 @@ from overmind.tasks.task_queue import TaskQueue
 from overmind.verification.llm_judge import LLMJudge, QuorumJudge
 from overmind.verification.judge_factory import build_judge
 from overmind.verification.objective_gate import emit_audit as _emit_objective_gate_audit
+from overmind.verification.provenance import build_provenance, resolve_recorder
 from overmind.verification.policy_guard import PolicyGuard
 from overmind.verification.trajectory_scorer import TrajectoryScorer
 from overmind.verification.verifier import VerificationEngine
@@ -288,6 +289,15 @@ class Orchestrator:
                     include_judge=True,
                 )
                 verification_results.append(final_result)
+                # D7 Dispatch accept-point provenance (SHADOW): record which
+                # worker produced the verdict, which gate decided it, and whether
+                # an objective witness sat under a pass. Never mutates the verdict;
+                # wrapped so a recorder bug can never wedge the accept path.
+                # Controlled by OVERMIND_PROVENANCE (default off).
+                try:
+                    self._record_verdict_provenance(final_result, task, evidence)
+                except Exception:  # noqa: BLE001 — provenance is advisory
+                    pass
                 if final_result.success:
                     self.task_queue.transition(
                         evidence.task_id,
@@ -813,6 +823,30 @@ class Orchestrator:
         except Exception:  # noqa: BLE001 — audit is advisory; never break verify
             pass
         return final_result
+
+    def _record_verdict_provenance(self, final_result, task, evidence) -> None:
+        """D7 accept-point provenance recorder (shadow; no-op unless enabled).
+
+        Resolves the worker vendor from the runner that produced the work and
+        appends a provenance line. Lazily builds the recorder from
+        OVERMIND_PROVENANCE_PATH or ``<data_dir>/provenance/verdicts.jsonl``.
+        """
+        default_path = self.config.data_dir / "provenance" / "verdicts.jsonl"
+        recorder = resolve_recorder(default_path)
+        if recorder is None:
+            return
+        worker_runner = ""
+        runner_id = getattr(evidence, "runner_id", "")
+        if runner_id:
+            runner_record = self.db.get_runner(runner_id)
+            if runner_record is not None:
+                worker_runner = getattr(runner_record, "runner_type", "") or ""
+        prov = build_provenance(
+            final_result,
+            worker_runner=worker_runner,
+            project_id=getattr(task, "project_id", ""),
+        )
+        recorder.record(prov)
 
     def _build_llm_judge(self) -> LLMJudge | QuorumJudge | None:
         if not self._judge_enabled():
