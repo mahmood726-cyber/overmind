@@ -98,7 +98,10 @@ never wedge the accept path.
   incumbent on the §3 held-out blended score or produce identical verdicts** before touching a ship path.
 - **Phase E — Harness-evolution loop automation (T-HE north-star).** Only after the §3 Evaluator is
   trustworthy: a human-in-the-loop-then-autonomous Proposer that adds one mechanism per iteration,
-  kept only on a held-out blended-score win. Never reads the held-out split.
+  kept only on a held-out blended-score win. Never reads the held-out split. **Two-slice frozen rule
+  (AN-2, live now):** a candidate is promoted only if it also wins on the SEALED frozen slice that
+  evolution never reads/scores/tunes on (`tasks.frozen_ids` + `scoring.two_slice_promotion`) — a
+  held-out-only win is eval-fit, not benefit (arXiv:2605.30621).
 
 ---
 

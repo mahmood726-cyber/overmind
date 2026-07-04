@@ -80,9 +80,45 @@ def stable_bucket(task_id: str, *, salt: str = "") -> float:
     return int(h[:8], 16) / 0xFFFFFFFF
 
 
-def held_out_ids(task_ids, *, holdout_fraction: float = 0.5, salt: str = "heldout-v1") -> set[str]:
-    """Deterministic held-out id set (~holdout_fraction of tasks)."""
-    return {tid for tid in task_ids if stable_bucket(tid, salt=salt) < holdout_fraction}
+# --- Two-slice frozen-benchmark split (AN-2 / arXiv:2605.30621) -----------------
+# Three disjoint, deterministic slices from one salted bucket:
+#   FROZEN   — a SEALED slice that harness-evolution must NEVER read, score, or
+#              tune against; a candidate is promoted only if it ALSO wins here.
+#              This is the fence between "we fit the eval" and "we got better".
+#   HELDOUT  — the decision slice scored on each run (never used to TUNE, but read).
+#   DEV      — the tuning slice.
+# Distinct from the frozen slice being off the AGENT surface (keys/ gitignore) —
+# this is off the EVOLUTION surface.
+SPLIT_SALT = "split-v1"
+FROZEN_FRACTION = 0.25
+HELDOUT_FRACTION = 0.375   # of the whole; dev gets the remainder (~0.375)
+_HELDOUT_UPPER = FROZEN_FRACTION + HELDOUT_FRACTION
+
+
+def _split_bucket(task_id: str) -> float:
+    return stable_bucket(task_id, salt=SPLIT_SALT)
+
+
+def frozen_ids(task_ids) -> set[str]:
+    """The SEALED slice — evolution never reads/scores/tunes on these."""
+    return {tid for tid in task_ids if _split_bucket(tid) < FROZEN_FRACTION}
+
+
+def held_out_ids(task_ids, **_legacy) -> set[str]:
+    """The decision slice scored each run (excludes the frozen slice). Extra
+    legacy kwargs (holdout_fraction/salt) are accepted and ignored so existing
+    callers keep working."""
+    return {tid for tid in task_ids if FROZEN_FRACTION <= _split_bucket(tid) < _HELDOUT_UPPER}
+
+
+def dev_ids(task_ids) -> set[str]:
+    """The tuning slice."""
+    return {tid for tid in task_ids if _split_bucket(tid) >= _HELDOUT_UPPER}
+
+
+def split_summary(task_ids) -> dict[str, int]:
+    ids = list(task_ids)
+    return {"dev": len(dev_ids(ids)), "held_out": len(held_out_ids(ids)), "frozen": len(frozen_ids(ids))}
 
 
 def load_tasks(path: Path | str) -> list[Task]:

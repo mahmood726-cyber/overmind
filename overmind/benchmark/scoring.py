@@ -137,6 +137,40 @@ class WinCondition:
                 "affordable": self.affordable, "verdict": self.verdict, "notes": self.notes}
 
 
+@dataclass(slots=True)
+class TwoSlicePromotion:
+    """AN-2: a harness-evolution candidate is promoted only if it beats the
+    incumbent on BOTH the held-out (scored) slice AND the frozen (sealed) slice.
+    A win on held-out alone is 'harness updating', not 'harness benefit'
+    (arXiv:2605.30621)."""
+    held_out_win: bool
+    frozen_win: bool
+    promote: bool
+    reason: str
+
+    def to_dict(self) -> dict:
+        return {"held_out_win": self.held_out_win, "frozen_win": self.frozen_win,
+                "promote": self.promote, "reason": self.reason}
+
+
+def two_slice_promotion(incumbent_blended_held_out: float, candidate_blended_held_out: float,
+                        incumbent_blended_frozen: float, candidate_blended_frozen: float,
+                        *, margin: float = 0.0) -> TwoSlicePromotion:
+    """Promote a candidate harness change only if it wins on held-out AND frozen."""
+    ho = candidate_blended_held_out > incumbent_blended_held_out + margin
+    fr = candidate_blended_frozen > incumbent_blended_frozen + margin
+    promote = ho and fr
+    if promote:
+        reason = "wins on both held-out and frozen (real benefit, not eval-fit)"
+    elif ho and not fr:
+        reason = "wins on held-out but NOT frozen — likely harness-fit / overfitting the gate; REJECT"
+    elif fr and not ho:
+        reason = "wins on frozen but not held-out — inconsistent; REJECT"
+    else:
+        reason = "wins on neither; REJECT"
+    return TwoSlicePromotion(ho, fr, promote, reason)
+
+
 def evaluate_win_condition(a: ArmMetrics, b: ArmMetrics, c: ArmMetrics,
                            *, cost_multiple_k: float = 5.0) -> WinCondition:
     """Truth-first win condition (can report NOT winning).

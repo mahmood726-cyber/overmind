@@ -72,6 +72,38 @@ def test_held_out_split_deterministic():
     assert 0 < len(a) < len(ids)          # a real split, not all/none
 
 
+def test_two_slice_frozen_split_disjoint_and_covers():
+    from overmind.benchmark.tasks import dev_ids, frozen_ids, held_out_ids
+    ids = [f"t{i}" for i in range(500)]
+    dev, ho, fz = dev_ids(ids), held_out_ids(ids), frozen_ids(ids)
+    # pairwise disjoint
+    assert dev & ho == set() and dev & fz == set() and ho & fz == set()
+    # cover everything
+    assert dev | ho | fz == set(ids)
+    # each non-empty and roughly the intended proportions
+    assert len(fz) > 0 and len(ho) > 0 and len(dev) > 0
+    assert 0.15 < len(fz) / len(ids) < 0.35     # ~0.25 frozen
+
+
+def test_frozen_slice_deterministic():
+    from overmind.benchmark.tasks import frozen_ids
+    ids = [f"t{i}" for i in range(300)]
+    assert frozen_ids(ids) == frozen_ids(ids)
+
+
+def test_two_slice_promotion_requires_both():
+    from overmind.benchmark.scoring import two_slice_promotion
+    # wins both -> promote
+    assert two_slice_promotion(1.0, 1.2, 1.0, 1.1).promote is True
+    # wins held-out only -> REJECT (harness-fit)
+    p = two_slice_promotion(1.0, 1.2, 1.0, 0.9)
+    assert p.promote is False and "overfitting" in p.reason
+    # wins frozen only -> reject
+    assert two_slice_promotion(1.0, 0.9, 1.0, 1.2).promote is False
+    # wins neither -> reject
+    assert two_slice_promotion(1.0, 0.9, 1.0, 0.9).promote is False
+
+
 def test_stable_bucket_range():
     assert 0.0 <= stable_bucket("x") < 1.0
 

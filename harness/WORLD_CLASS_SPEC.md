@@ -356,6 +356,17 @@ A change is *promoted* only when it beats the incumbent on the §3 **blended sco
 (T-HE). Build-order discipline governs sequencing: **manual-reliable → Skill → loop(gate+stop) → then
 schedule.** Single-writer-per-repo; no force-push; gated commits.
 
+**Two-slice frozen-benchmark rule (AN-2, arXiv:2605.30621 "Harness Updating Is Not Harness Benefit").**
+Benchmark-gated evolution can manufacture *illusory* progress by overfitting the gate — "harness
+updating" masquerading as "harness benefit". Fence: the §3 corpus is split three ways by a deterministic
+sha256 bucket — **dev** (tuning), **held-out** (scored each run), and a **FROZEN** slice that
+harness-evolution **never reads, scores against, or tunes on**. A candidate harness change is promoted
+only if it beats the incumbent on the held-out slice **and** on the frozen slice
+(`scoring.two_slice_promotion`); a held-out-only win is rejected as eval-fit. The frozen slice is off the
+*evolution* surface (distinct from keys being off the *agent* surface). **Live in the harness now**
+(`tasks.frozen_ids`; the scorecard reports the sealed frozen numbers for reference), so the first real
+A/B/C run is honest by construction.
+
 *This spec is the yardstick. `GAP_ANALYSIS.md` measures the current code against it; `ROADMAP.md`
 sequences the no-regression path to satisfying every differentiator, with §3 as the acceptance test;
 `BEST_IN_CLASS_WORKFLOW.md` maps the full end-to-end pipeline (problem → moat → method → cross-vendor

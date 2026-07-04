@@ -1,26 +1,26 @@
 {
  "slice": "F:\\overmind\\benchmark_data",
- "held_out_n": 164,
+ "held_out_n": 139,
  "arms": [
   {
    "arm": "objective-ref (witness-only floor)",
    "status": "RUN",
    "metrics": {
     "arm": "objective-ref",
-    "n": 164,
-    "defects": 146,
-    "cleans": 18,
-    "caught": 45,
+    "n": 139,
+    "defects": 126,
+    "cleans": 13,
+    "caught": 43,
     "false_alarms": 0,
-    "caught_defect_rate": 0.3082,
+    "caught_defect_rate": 0.3413,
     "false_alarm_rate": 0.0,
     "parity_rate": 1.0,
-    "agreement_soundness": 0.1513,
-    "accepted": 119,
-    "accepted_correct": 18,
+    "agreement_soundness": 0.1354,
+    "accepted": 96,
+    "accepted_correct": 13,
     "total_cost_usd": 0.0,
     "cost_per_accepted_change": 0.0,
-    "blended": 0.8082
+    "blended": 0.8413
    }
   },
   {
@@ -28,20 +28,41 @@
    "status": "SHADOW",
    "metrics": {
     "arm": "C-shadow",
-    "n": 164,
-    "defects": 146,
-    "cleans": 18,
-    "caught": 146,
+    "n": 139,
+    "defects": 126,
+    "cleans": 13,
+    "caught": 126,
     "false_alarms": 0,
     "caught_defect_rate": 1.0,
     "false_alarm_rate": 0.0,
     "parity_rate": 1.0,
     "agreement_soundness": 1.0,
-    "accepted": 18,
-    "accepted_correct": 18,
+    "accepted": 13,
+    "accepted_correct": 13,
     "total_cost_usd": 0.0,
     "cost_per_accepted_change": 0.0,
     "blended": 1.5
+   }
+  },
+  {
+   "arm": "objective-ref [FROZEN slice, sealed]",
+   "status": "FROZEN",
+   "metrics": {
+    "arm": "frozen-objective-ref",
+    "n": 73,
+    "defects": 72,
+    "cleans": 1,
+    "caught": 21,
+    "false_alarms": 0,
+    "caught_defect_rate": 0.2917,
+    "false_alarm_rate": 0.0,
+    "parity_rate": 1.0,
+    "agreement_soundness": 0.0192,
+    "accepted": 52,
+    "accepted_correct": 1,
+    "total_cost_usd": 0.0,
+    "cost_per_accepted_change": 0.0,
+    "blended": 0.7917
    }
   },
   {
@@ -62,10 +83,11 @@
  ],
  "win_condition": null,
  "notes": [
-  "Held-out slice: 164 tasks from 330 total (defects=146, clean=18).",
-  "Held-out split is a deterministic sha256 bucket; answer keys read only by the scorer.",
-  "Weights pinned (BENCHMARK.md/scoring.py); scoring can report NOT_PROVEN.",
-  "Objective reference = Arm C floor with NO reviewers: catches witness-detectable defects (impossible_cell, reproduction, ci_invalid) but structurally misses the 101 reviewer-only defects in the held-out slice (6 classes) \u2014 that gap is what the cross-vendor panel must close.",
+  "Split (deterministic sha256): dev=118 held_out=139 FROZEN=73 (of 330 total).",
+  "Held-out slice scored this run: 139 tasks (defects=126, clean=13).",
+  "AN-2 FROZEN slice is SEALED: harness-evolution never reads/scores/tunes on it; a candidate is promoted only if it also wins there (arXiv:2605.30621). It is scored below for reference only.",
+  "Answer keys read only by the scorer. Weights pinned; scoring can report NOT_PROVEN.",
+  "Objective reference = Arm C floor with NO reviewers: catches witness-detectable defects (impossible_cell, reproduction, ci_invalid) but structurally misses the 83 reviewer-only defects in the held-out slice (6 classes) \u2014 that gap is what the cross-vendor panel must close.",
   "Live vendors this run: NONE (all capped/unauthed)."
  ]
 }

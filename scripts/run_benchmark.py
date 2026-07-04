@@ -23,7 +23,9 @@ from overmind.benchmark.reviewers import BackendReviewer, StubReviewer  # noqa: 
 from overmind.benchmark.runner import ArmSpec, run_arm  # noqa: E402
 from overmind.benchmark.scorecard import write_scorecard  # noqa: E402
 from overmind.benchmark.scoring import evaluate_win_condition, score_arm, ArmMetrics  # noqa: E402
-from overmind.benchmark.tasks import held_out_ids, load_keys, load_tasks  # noqa: E402
+from overmind.benchmark.tasks import (  # noqa: E402
+    frozen_ids, held_out_ids, load_keys, load_tasks, split_summary,
+)
 from overmind.reliability.checkpoint import CheckpointStore  # noqa: E402
 
 DATA_DIR = Path(__file__).resolve().parents[1] / "benchmark_data"
@@ -76,17 +78,25 @@ def main() -> int:
     shadow = "--shadow" in sys.argv
     tasks = load_tasks(DATA_DIR / "tasks.json")
     keys = load_keys(DATA_DIR / "keys" / "keys.json")   # scorer-only
-    ho = held_out_ids([t.id for t in tasks])
+    all_ids = [t.id for t in tasks]
+    ho = held_out_ids(all_ids)
+    fz = frozen_ids(all_ids)
     held = [t for t in tasks if t.id in ho]
+    frozen = [t for t in tasks if t.id in fz]
     ho_keys = {k: v for k, v in keys.items() if k in ho}
+    fz_keys = {k: v for k, v in keys.items() if k in fz}
     store = CheckpointStore(DATA_DIR / "checkpoints")
     arms_out = []
+    sp = split_summary(all_ids)
     notes = [
-        f"Held-out slice: {len(held)} tasks from {len(tasks)} total "
+        f"Split (deterministic sha256): dev={sp['dev']} held_out={sp['held_out']} FROZEN={sp['frozen']} "
+        f"(of {len(tasks)} total).",
+        f"Held-out slice scored this run: {len(held)} tasks "
         f"(defects={sum(1 for k in ho_keys.values() if k.has_defect)}, "
         f"clean={sum(1 for k in ho_keys.values() if not k.has_defect)}).",
-        "Held-out split is a deterministic sha256 bucket; answer keys read only by the scorer.",
-        "Weights pinned (BENCHMARK.md/scoring.py); scoring can report NOT_PROVEN.",
+        "AN-2 FROZEN slice is SEALED: harness-evolution never reads/scores/tunes on it; a candidate is "
+        "promoted only if it also wins there (arXiv:2605.30621). It is scored below for reference only.",
+        "Answer keys read only by the scorer. Weights pinned; scoring can report NOT_PROVEN.",
     ]
 
     # 1) Objective reference (deterministic; always runs).
@@ -111,6 +121,14 @@ def main() -> int:
                          results_path=OUT_DIR / "arm_c_shadow.jsonl")
     shadow_m = score_arm("C-shadow", shadow_run.verdicts, ho_keys)
     arms_out.append({"arm": "C-shadow (stub reviewers)", "status": "SHADOW", "metrics": shadow_m.to_dict()})
+
+    # 2b) FROZEN slice — sealed reference numbers (for promotion checks only; never tuned).
+    if frozen:
+        fz_ref = run_arm(ArmSpec("C", reviewers=[], use_witness=True), frozen,
+                         results_path=OUT_DIR / "frozen_objective_ref.jsonl")
+        fz_m = score_arm("frozen-objective-ref", fz_ref.verdicts, fz_keys)
+        arms_out.append({"arm": "objective-ref [FROZEN slice, sealed]", "status": "FROZEN",
+                         "metrics": fz_m.to_dict()})
 
     # 3) Real arms for live vendors; stage the rest.
     live = {} if shadow else _live_vendors()
