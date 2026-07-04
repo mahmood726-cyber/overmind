@@ -68,9 +68,19 @@ is byte-identical).
 - **Phase B — Auth preflight + node breaker/backoff (T5/T6), durable dispatch journal (T4).** Cluster
   branch; shadow against dead-key/flapping-node fixtures and injected-crash replay. Gates the cluster
   branch's merge.
+- **Phase B2 — Dispatch as recorded control plane (D7).** Express the accept/reroute/provenance logic
+  as Dispatch flows: record a Dispatch provenance record (vendor, node, gate outcome, cost) on every
+  verdict; enforce the objective-gate floor (D2) at the Dispatch accept point; prove reroute-on-cap to
+  a non-capped vendor with no lost work. Additive; shadow-recorded before enforced.
+- **Phase B3 — Frontier model-selection eval (§1.5).** Build the **capability-cliff qualification** on
+  the hardest tasks (multi-arm NMA parity, DTA bivariate, borrowing-field k-fold, long agentic
+  bug-hunts); measure **per-vendor marginal value** (drop-one ablation) + rubber-stamp rate; **test
+  Sonnet-top as a cheaper verifier** (kept only if it holds on the cliff). Frontier-only, non-diluted.
 - **Phase C — Stand up the §3 benchmark (the T-HE Evaluator) on the private corpus (D6).** Build the
-  A/B/C arms, pin weights + cost multiple K *before* running, enforce held-out blinding (answer key
-  outside the agent's tool surface). This is the acceptance test the whole program is measured by.
+  A/B/C arms (all run through Dispatch; they differ only in what Dispatch orchestrates), pin weights +
+  cost multiple K *before* running, enforce held-out blinding (answer key outside the agent's tool
+  surface). This is the acceptance test the whole program is measured by. See the full end-to-end
+  pipeline in `BEST_IN_CLASS_WORKFLOW.md`.
 - **Phase D — Research track, measurement-gated last (T7/T8/T9/T10-DAG).** Credibility/debate judge,
   failure→regression auto-promotion, explicit handoffs, DAG scheduler concepts — each must **beat the
   incumbent on the §3 held-out blended score or produce identical verdicts** before touching a ship path.

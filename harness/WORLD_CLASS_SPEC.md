@@ -31,7 +31,37 @@ the moat."*
 
 ---
 
-## 1. The 4–6 differentiators (what makes it best-in-class FOR THIS PURPOSE)
+## 0.5 Control model — Dispatch is the single control plane (the conductor)
+
+**Foundational architectural constraint (Mahmood):** the harness is **controlled entirely through
+Dispatch.** There is no separate bespoke control daemon; **Dispatch *is* the control plane.**
+
+- **Dispatch is the conductor, not a worker.** It occupies the Trinity "small manager/router" seat:
+  it **routes each unit of work to the right VENDOR** (Claude / Codex-A / Codex-B / agy) **on the
+  right NODE** (pc1 / laptop / pc2), **gates the result, and moves on** — it does **not** do the
+  heavy reasoning itself. This is the pattern already proven in production: the Dispatch orchestrator
+  spawns and steers code-task lanes, runs the cross-vendor witness, and the scheduled
+  agent-drain-watchdog reports back to Dispatch, which is the "hands" that relaunch/refill.
+- **Everything runs through Dispatch primitives.** Drive lanes with **`start_task` / `start_code_task`
+  / `send_message`**; observe with **`read_transcript` / `list_sessions`** + the **scheduled
+  agent-drain-watchdog**; the watchdog reports to the Dispatch orchestrator which relaunches to keep
+  lanes drained-to-cap. No control logic lives outside this loop.
+- **Vendor lanes are stateless workers.** All harness *control* logic — routing, cap-detection and
+  rerouting, truth-gating, consensus-or-flag adjudication, the drain-to-cap loop, and
+  cost-per-accepted-change accounting — is expressed as **Dispatch-orchestrated flows**. The vendor
+  seats hold no control state; Dispatch dispatches to them and owns the gate.
+- **The router need not be the biggest model** (Trinity, verified: a 0.6B coordinator beats a frontier
+  pool). This applies **only to the Dispatch conductor seat** (pure routing / low reasoning) and is a
+  **tested cost lever, not an assumption** — see §1.5. All *methods / reproduction / verification* work
+  runs on frontier models.
+
+This constraint is load-bearing for the differentiators below: D1 (consensus-or-flag), D2
+(objective-gate floor), D4 (provenance), and D5 (cost-per-accepted) are **defined as Dispatch flows**,
+and D7 makes the control plane itself a differentiator.
+
+---
+
+## 1. The seven differentiators (what makes it best-in-class FOR THIS PURPOSE)
 
 Each differentiator states: **the claim**, **why it is defensible for this purpose**, and **the
 objective signal that proves it holds** (so none is a vibe).
@@ -106,10 +136,78 @@ objective signal that proves it holds** (so none is a vibe).
 - **Proof signal:** the benchmark in §3 runs *on this corpus*; the held-out split is never read during
   a run; fixture count grows monotonically as failures are classified.
 
-**Why exactly these six:** D1–D3 are the *correctness* core (independent, gated, reproduced);
+### D7 — Dispatch as the single control plane (the conductor)
+- **Claim:** All control is exercised through **one** plane — Dispatch — which routes each unit of work
+  to the strongest live vendor on the right node, gates the result against the objective-gate floor
+  (D2) before accepting any lane's "pass", reroutes on vendor-cap detection, and records provenance
+  (D4) of every claim through the flow. There is no second control path.
+- **Why defensible:** A single, uniform control plane is what makes the other six *auditable and
+  evolvable*: every accept, reroute, and cost event passes through one instrumented conductor, so the
+  whole system is one A/B-testable loop (Niklaus evolve-the-harness) rather than a tangle of bespoke
+  daemons. It is also the Trinity-validated shape — a light conductor routing a frontier pool beats any
+  single model — and it means the control logic itself can be improved without touching the vendor
+  workers.
+- **Proof signal:** every ship verdict carries a Dispatch provenance record (vendor, node, gate
+  outcome, cost); a vendor-cap event produces a recorded reroute to a non-capped vendor with no lost
+  work; no "pass" is accepted by Dispatch without a named objective witness under it (D2).
+
+**Why exactly these seven:** D1–D3 are the *correctness* core (independent, gated, reproduced);
 D4 is the *trust* layer (auditable); D5 is the *economics* that keep it usable; D6 is the *moat*
-that makes the whole thing defensible and measurable. Drop any one and the claim "best-in-the-world
-for its purpose" stops being provable.
+that makes the whole thing defensible and measurable; **D7 is the *control plane* that binds the other
+six into one instrumented, evolvable conductor.** Drop any one and the claim "best-in-the-world for its
+purpose" stops being provable.
+
+---
+
+## 1.5 Vendor panel / model selection — FRONTIER-heterogeneity, qualified on the HARDEST tasks
+
+**Principle (Mahmood, empirical):** the cross-vendor panel must be **heterogeneity across FRONTIER
+models.** Weaker/cheaper models are **excluded from reasoning / reproduction / verification seats.**
+This is not cost-indifference — it is that, for this work, a weak model in a verification seat adds
+*correlated, obvious* failures (little independent signal) and can *rubber-stamp* a wrong number, which
+is worse than no panel member at all.
+
+### 1.5.1 The capability-cliff evaluation principle (the load-bearing rule)
+Mahmood's observed failure mode: **weaker models — including GLM/Chinese open models (Qwen / DeepSeek /
+Kimi / GLM class) and lower-tier models — often perform *well on moderate tasks* but *collapse on
+really complex, sophisticated, long-horizon* code/reasoning.** The cliff is **invisible on easy tasks**.
+Therefore:
+
+1. **A model's fitness for a seat MUST be judged on our HARDEST tasks, never on easy/average ones.**
+   Demo/benchmark performance on standard suites is **not sufficient** — the cliff won't show there.
+   The panel-qualification eval stresses each candidate on the **most complex methods/reproduction
+   tasks**: multi-arm NMA parity, DTA bivariate convergence, the borrowing-field k-fold, and long
+   agentic bug-hunts. A candidate qualifies for a seat only if it holds accuracy **there**.
+2. **Frontier-heterogeneity matters because frontier models from different vendors fail
+   *differently*** — independent, subtle failures → genuine error-catching when they disagree. Weak
+   models fail in **correlated / obvious** ways → little independent signal. This is *why* the panel
+   must be frontier-only: decorrelation is only valuable between models that are each individually
+   above the cliff.
+3. **"Always try to be groundbreaking" = push frontier models hard on the hardest tasks; do not dilute
+   the panel with weak models to save cost.**
+
+### 1.5.2 Per-seat model selection (recommendations are TESTED, not assumed)
+Truth-first: recommend a model per seat only **after** (or with a concrete plan to) empirically
+qualify it on our hardest tasks per §1.5.1. Current best-available anchors:
+
+| Seat | Role | Model policy | Evaluation to run |
+|---|---|---|---|
+| **Claude (worker + verifier)** | reasoning / method dev / verification | **top-tier (Opus-class)** for work | **Test Sonnet-top vs Opus for the *verifier* role** — Sonnet may be a fine cheaper cross-check **IF it holds accuracy on our hardest tasks**; qualify on the cliff, don't assume. Sonnet-top is **the one cheaper candidate genuinely worth testing** as verifier/worker. Weak = out. |
+| **GPT via Codex (worker + verifier)** | strongest bug-finder / cross-vendor check | **strongest Codex/GPT available (today gpt-5.5 on both seats)** | evaluate newer GPT frontier models as they land; never drop below frontier for verification. |
+| **Gemini via agy / Antigravity (worker + verifier)** | Google-family decorrelation seat | **strongest Gemini frontier model** | evaluate Gemini frontier alternatives; qualify on hard tasks. |
+| **Dispatch conductor (routing only)** | route/gate/move-on, low reasoning | **frontier by default;** a cheaper model is acceptable **only here** (Trinity: router needn't be biggest) | **tested option, gated on not hurting outcomes** — measure that routing quality and end-to-end outcomes do not regress before adopting a cheaper conductor. NOT an assumption. |
+
+**Reconciliation with Trinity:** the "router needn't be the biggest model" result applies **only to the
+narrow Dispatch routing seat** (pure routing decisions). Every actual methods / reproduction /
+verification unit runs on a **frontier** model. A cheaper conductor is a *tested* cost lever, never a
+default.
+
+### 1.5.3 Benchmark implication — measure each vendor-model's MARGINAL value
+The consensus-or-flag eval (§3) must **measure the marginal verification value of each panel member**:
+a vendor-model that mostly errors, or mostly rubber-stamps (agrees without catching planted defects),
+**adds no verification value and is dropped from the panel.** Panel membership is *earned* by
+**genuinely catching errors / adding independent signal on the hardest tasks**, not granted by vendor
+identity. This is the objective test that keeps the panel frontier-only and non-diluted.
 
 ---
 
@@ -126,6 +224,8 @@ for its purpose" stops being provable.
 | D4 | full span/provenance on every verdict | tracer + signed bundles built | tracer **not threaded through** most callers |
 | D5 | cost-per-accepted-change per loop | rough `_run_cost_usd` estimate only | **no real `total_cost_usd` parse; no acceptance-rate** |
 | D6 | blinded, growing private corpus as the scorer | corpus + evals exist | benchmark (§3) not yet standing; blinding not enforced as a rule |
+| D7 | one Dispatch control plane; gate before accept; reroute on cap; provenance per claim | Dispatch orchestrator + drain-watchdog proven in production | control flows not yet *expressed as recorded Dispatch provenance*; objective-gate floor (D2) not yet enforced at the Dispatch accept point |
+| §1.5 | frontier-only panel, each seat's model qualified on the HARDEST tasks; marginal value measured | frontier seats configured (Claude/Codex gpt-5.5/agy) | no *capability-cliff qualification eval*; per-vendor marginal-value not measured; Sonnet-top-as-verifier untested |
 
 ---
 
@@ -144,7 +244,20 @@ correctness/agreement AND efficiency**, on **our private ground truth** (D6), de
    maker+checkers). Tests whether *more agents* alone — without vendor diversity — is the win. This
    is the honest control that isolates our D1 claim: if B ≈ our arm, heterogeneity buys nothing.
 3. **C — The heterogeneous truth-gated harness (ours).** Cross-vendor consensus-or-flag (D1) +
-   objective-gate floor (D2) + reproduction-or-flag (D3), under the same budget.
+   objective-gate floor (D2) + reproduction-or-flag (D3), **all expressed as Dispatch-orchestrated
+   flows** (D7): Dispatch routes each unit to the strongest live vendor/node, gates against the
+   objective floor before accepting any lane's pass, and reroutes on vendor-cap. Under the same budget.
+
+**All three arms run through Dispatch** (the single control plane); the arms differ only in *what
+Dispatch orchestrates* (one vendor / N same-vendor / frontier-heterogeneous panel), so the head-to-head
+isolates the panel, not the plumbing.
+
+**Panel-qualification pre-gate (per §1.5 — runs before C is even assembled):** each candidate
+vendor-model must pass the **capability-cliff qualification** — hold accuracy on the *hardest* subset
+(multi-arm NMA parity, DTA bivariate, borrowing-field k-fold, long agentic bug-hunts), not on easy
+tasks. A model that fails the cliff is excluded from C's reasoning/verification seats. Sonnet-top is
+qualified here specifically as a candidate *verifier* seat (cheaper cross-check) — kept only if it holds
+on the hard subset.
 
 ### 3.2 The task set (on our corpus — D6)
 Drawn from the private corpus, mixing **fix tasks** (a real defect is present — the harness should
@@ -171,10 +284,20 @@ Per arm, over the held-out split:
   - **numeric-parity rate** = fraction of reproduction tasks reproduced to declared precision.
   - **agreement soundness** = fraction of *agreements* that were actually correct (guards the
     "two optimists agree" hack — an agreement on a wrong answer counts against, not for).
+- **Per-vendor marginal value (§1.5.3 — the panel-membership test):**
+  - **marginal caught-defect** = defects caught *only because* vendor V was on the panel (drop-one
+    ablation: remove V, re-score). A member with ~0 marginal catch adds no verification value.
+  - **rubber-stamp rate** = fraction of V's agreements that were on *wrong* answers (V agreed but the
+    defect was real). High rubber-stamp = negative signal → **V is dropped from the panel.**
+  - This directly enforces "frontier-only, non-diluted": panel membership is earned on the hardest
+    tasks, not granted by vendor identity.
 - **Efficiency:**
   - **cost-per-accepted-change** = total USD spend / number of accepted-and-correct changes
     (from real `total_cost_usd` + Codex/agy usage — D5).
   - **wall-clock per accepted change** and **tokens per accepted change** (secondary).
+- **Control-plane integrity (D7):** fraction of accepts that carried a Dispatch provenance record with
+  an objective witness under them (target 1.0); reroute-on-cap success (a capped vendor's unit
+  completes on a rerouted vendor with no lost work).
 - **Blended promotion score** (Niklaus form, adapted, decided on held-out only):
   `score = caught_defect_rate − λ_fa · false_alarm_rate + 0.5 · numeric_parity_rate − 0.005 · cost_per_accepted_usd_normalized`
   where `λ_fa` penalizes false alarms and the cost term is normalized so a cheaper arm at equal
@@ -217,6 +340,11 @@ superiority.
   Proposer is a north-star gated on the Evaluator being trustworthy.
 - **Not** a claim of superiority we cannot currently prove. Until §3 runs on held-out data, "world-class"
   is a *target*, not a stated result.
+- **Not** a second control plane. All control runs through Dispatch (§0.5 / D7); no bespoke control
+  daemon is added alongside it.
+- **Not** a weak-model panel. Reasoning / reproduction / verification seats are **frontier-only**
+  (§1.5); cheap models are excluded from those seats, and are a *tested* option only in the narrow
+  Dispatch routing seat.
 
 ---
 
@@ -229,4 +357,6 @@ A change is *promoted* only when it beats the incumbent on the §3 **blended sco
 schedule.** Single-writer-per-repo; no force-push; gated commits.
 
 *This spec is the yardstick. `GAP_ANALYSIS.md` measures the current code against it; `ROADMAP.md`
-sequences the no-regression path to satisfying every differentiator, with §3 as the acceptance test.*
+sequences the no-regression path to satisfying every differentiator, with §3 as the acceptance test;
+`BEST_IN_CLASS_WORKFLOW.md` maps the full end-to-end pipeline (problem → moat → method → cross-vendor
+verification → benchmark → publish) as Dispatch-orchestrated, loop-engineered stages.*
