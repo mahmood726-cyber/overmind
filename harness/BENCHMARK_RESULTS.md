@@ -8,9 +8,24 @@ gold fixtures; held-out = 35). **Scorecard:** `benchmark_data/runs/scorecard.{md
 
 ## What ran this session (real, reproducible)
 
-**Capacity reality:** `claude -p` is not logged in (no `ANTHROPIC_API_KEY`), both Codex seats are
-credit-capped (~5h refill), and Gemini returns HTTP 429. **No model-backed arm could run live.** So the
-real numbers below are the *deterministic* ones; the three model arms are **staged** (below).
+**Capacity reality (updated after the OAuth fix):** headless Claude does **not** need an API key — it
+runs `claude -p` on the **subscription** via `CLAUDE_CODE_OAUTH_TOKEN` (OAuth bearer). The earlier "not
+logged in" was a bug: `safe_subprocess_env()` **stripped** the token (never allowlisted), so the
+subprocess never received it. **Fixed** (commit `a735d73`): the token is now allowlisted + passed as a
+bearer, and headless Claude is a **first-class, non-capped vendor** in the preflight.
+
+**But the node's persisted token is STALE** — `CLAUDE_CODE_OAUTH_TOKEN` (Machine scope) is a malformed
+26-char value (`sk-ant-oat-P…`) returning **HTTP 401 Invalid bearer token**. The mechanism is proven
+(with a token set, `claude -p` uses bearer auth, reports `total_cost_usd`, no API key); the *only*
+blocker is token validity, and a fresh token can't be minted headlessly (`claude setup-token` needs an
+interactive TTY). **One-line node fix (interactive, on the node):**
+```
+claude setup-token                               # OAuth flow -> long-lived token
+setx CLAUDE_CODE_OAUTH_TOKEN "sk-ant-oat01-…"    # replaces the stale 26-char value
+```
+Then `scripts/benchmark_autostage.py` runs Arm A (+ Arm C's Claude reviewer) live — Claude is not
+capped, so it does not wait for the ~5h refill. This session: Codex credit-capped, Gemini 429, Claude
+token stale → no model arm ran; the real numbers below are the deterministic floor, model arms **staged**.
 
 | arm | status | caught-defect | false-alarm | parity | agreement | blended |
 |---|---|---|---|---|---|---|
