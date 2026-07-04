@@ -100,9 +100,13 @@ Dispatch routes.
 - **STATE:** signed cert bundle (freshness/replay-protected) + JSONL findings + the per-verdict
   `cross_vendor_check_present(vendor=…, decorrelated=…)` field + Dispatch provenance record.
 - **FENCE:** reward-hacks = *found-nothing pass*, *correlated agents rubber-stamp*, *judge gamed by
-  phrasing*. Fences = the planted-bug canary (a found-nothing pass on a fix task = failure),
-  frontier-only decorrelated panel (weak models fail correlated → excluded), and the marginal-value
-  metric that drops a rubber-stamping vendor (§1.5.3). **This stage is where D1+D2+D3+D4 all bind.**
+  phrasing*, *generating agent games its own verification* (test-weakening, fixture-hardcoding,
+  `sys.exit(0)`, validator-patching). Fences = the planted-bug canary (a found-nothing pass on a fix
+  task = failure); frontier-only decorrelated panel (weak models fail correlated → excluded); the
+  marginal-value metric that drops a rubber-stamping vendor (§1.5.3); and the **AN-6 eval-gaming
+  pre-filter** (`verification/eval_gaming_filter.py`, clean-room regex+AST layer inspired by
+  rewardhackwatch, trajectory-only, no code exec) run as a cheap advisory over any PASS before it
+  ships. **This stage is where D1+D2+D3+D4 all bind.**
 
 ### Stage 5 — Benchmark vs comparators + the harness benchmark (THE PROOF)
 - **Idea:** two proofs. (a) **beat-all vs published comparators** on the method's own metric; (b) the
