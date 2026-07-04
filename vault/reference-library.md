@@ -14,8 +14,28 @@ Curated link library (vault workflow #3). Grouped by role.
 - MADE (materials closed-loop): https://arxiv.org/abs/2601.20996 — [[src-made-benchmark]]
 - TRINITY (evolved coordinator, ICLR'26): https://arxiv.org/abs/2512.04695 · https://sakana.ai/trinity/ — [[src-trinity]]
 - Scheduler-graph (SGH, position paper): https://arxiv.org/abs/2604.11378 — [[src-scheduler-graph-sgh]]
-- Attention Residuals (Kimi Team, **excluded** — pretraining technique): https://arxiv.org/abs/2603.15031 — [[src-attention-residuals-excluded]]
+- AutoMem (Stanford — learnable memory, HIGH): https://arxiv.org/pdf/2607.01224 — [[src-automem]]
+- Right in the Right Way (MIT — RLVR + human demos, anti-reward-hacking): https://arxiv.org/abs/2607.01181 — [[src-right-in-the-right-way]]
 - Related (not fetched): Meta-Harness https://yoonholee.com/meta-harness/
+
+## Background papers (pure-ML-theory — NOT actionable)
+- Attention Residuals (Kimi Team, **excluded** — pretraining technique): https://arxiv.org/abs/2603.15031 — [[src-attention-residuals-excluded]]
+- A Hippocampus for Linear Attention / HOLA (Wanyun Cui — memory metaphor only): https://arxiv.org/abs/2607.02303 — [[src-hippocampus-linear-attention]]
+- A Mathematical Introduction to Diffusion Models (Jianfeng Lu — reference-only): https://arxiv.org/abs/2607.01693 — [[src-diffusion-models-intro]]
+
+## Candidate tools / repos (audit before adopting)
+- Ragas (RAG eval, Apache-2.0, ~14.6k★): https://github.com/explodinggradients/ragas — [[tool-ragas]]
+- Weekend repos (10, resolved + triaged): [[candidate-tools-weekend-repos]]
+  - ComposioHQ/agent-orchestrator (HIGH): https://github.com/ComposioHQ/agent-orchestrator
+  - Yeachan-Heo/oh-my-claudecode (HIGH): https://github.com/Yeachan-Heo/oh-my-claudecode
+  - NousResearch/hermes-agent (MED-HIGH): https://github.com/NousResearch/hermes-agent
+  - Gitlawb/openclaude (MED-HIGH): https://github.com/Gitlawb/openclaude
+  - paperclipai/paperclip (MED): https://github.com/paperclipai/paperclip
+  - open-gitagent/clawless (LOW-MED): https://github.com/open-gitagent/clawless
+  - google-research/timesfm (LOW): https://github.com/google-research/timesfm
+  - larksuite/cli (LOW): https://github.com/larksuite/cli
+  - 666ghj/MiroFish (LOW): https://github.com/666ghj/MiroFish
+  - 🚫 elder-plinius/ST3GG (AVOID — jailbreak/adversarial): https://github.com/elder-plinius/ST3GG
 
 ## Tools
 - Claude Code docs: https://code.claude.com/docs — [[src-claude-code-docs]]
@@ -41,3 +61,7 @@ Curated link library (vault workflow #3). Grouped by role.
 - "Fable is world's best at long tasks" — unverified marketing.
 - TRINITY "bigger manager = worse" and "verifier must differ" — NOT in the paper.
 - eToro MemClaw metrics — README claim, not independently measured.
+- Weekend-repo **star counts** — as reported 2026-07-04; Hermes "209k" and Paperclip "71k" are **implausibly
+  high** → treat as unverified / possible star inflation.
+- AutoMem / Hippocampus / Right-in-the-Right-Way / Diffusion — arXiv summaries recorded **per Mahmood's
+  brief** (framing accepted, not independently re-derived from the PDFs this pass).

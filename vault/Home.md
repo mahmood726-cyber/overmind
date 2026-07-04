@@ -10,8 +10,13 @@ human-readable, Obsidian-compatible store. New here? Read [[README]] first (what
 ## The four pillars
 
 ### 📚 [[_Sources-MOC|00 · Sources]] — external material reviewed today
-Annotated, grouped by theme (harness-evolution · loop-anatomy · benchmarking · skills · memory). Each
-source has a note with verified facts + truth-first flags. All URLs collected in [[reference-library]].
+Annotated, grouped by theme (harness-evolution · loop-anatomy · benchmarking · skills · memory · tools ·
+background). Each source has a note with verified facts + truth-first flags. All URLs in [[reference-library]].
+- **Source tiers** — **Actionable** (adopt/build now) · **Actionable-adjacent** ([[src-automem]],
+  [[src-right-in-the-right-way]] — transferable framing, not drop-in) · **Background** (pure-ML-theory:
+  [[src-attention-residuals-excluded]], [[src-hippocampus-linear-attention]], [[src-diffusion-models-intro]]).
+- **Candidate tools:** [[tool-ragas]] (eval gate) · [[candidate-tools-weekend-repos]] (10 repos triaged;
+  top picks agent-orchestrator / oh-my-claudecode / hermes-agent; 🚫 AVOID ST3GG).
 
 ### 🔬 [[_Verification-MOC|01 · Verification]] — cross-vendor QA
 Today's triple-vendor witness + bug-fix summaries, each linked to its source report under

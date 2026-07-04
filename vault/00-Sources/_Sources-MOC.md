@@ -14,8 +14,9 @@ truth-first flags. Every URL is collected in [[reference-library]].
 - [[src-trinity]] — **TRINITY (Sakana AI, ICLR 2026).** Empirical proof the shape works: a 0.6B coordinator
   routing Thinker/Worker/Verifier across a model pool, looping until a Verifier accepts, beats every
   individual frontier model. Validates our conductor + maker/checker gate.
-- [[src-attention-residuals-excluded]] — **Attention Residuals (Kimi Team).** The *counterpoint*: a
-  train-the-model technique, **assessed and deliberately excluded** — no bearing on orchestration.
+- [[src-automem]] — **AutoMem (Stanford, arXiv 2607.01224).** *Cross-filed with memory.* Harness-evolution
+  applied to **memory**: an outer meta-loop evolves the memory architecture, an inner loop trains a
+  memory-skill from the agent's own trajectories. **HIGH — actionable-adjacent** (framing, not a drop-in).
 
 ## loop-anatomy — *the shape of a good loop*
 - [[src-loop-engineering-cherny]] — **Boris Cherny, "build loops, not prompts."** The three load-bearing
@@ -26,6 +27,9 @@ truth-first flags. Every URL is collected in [[reference-library]].
   6-part loop anatomy; commands verified against the docs.
 - [[src-lfd]] — **Elvis Sun, Loss-Function Development (`/goal` loss functions).** How to design the loss
   the outer loop descends and fence it against reward-hacking.
+- [[src-right-in-the-right-way]] — **"Right in the Right Way" (MIT, arXiv 2607.01181).** *Anti-reward-hacking.*
+  A training paper whose finding transfers: scoring only the verifiable signal produces reward hacking;
+  complement it with a harder-to-game signal. **MED — actionable-adjacent** (insight, not a technique).
 - [[src-scheduler-graph-sgh]] — **Scheduler-graph / SGH (arXiv 2604.11378).** The execution substrate
   (DAG scheduling, bounded escalation, `any_of` racing). ⚠ position paper, concepts only.
 - [[src-claude-code-docs]] — **Claude Code docs.** The real primitives every mechanism is built from
@@ -44,3 +48,33 @@ truth-first flags. Every URL is collected in [[reference-library]].
 ## memory — *the shared store*
 - [[src-memclaw]] — **Caura MemClaw.** MCP-native governed shared memory for agent fleets — the machine
   layer that this vault (the human layer) mirrors.
+- [[src-automem]] — **AutoMem (Stanford, arXiv 2607.01224).** *Cross-filed with harness-evolution.* Memory
+  decisions as a first-class, **learnable/evolvable** skill distilled from the agent's own trajectories —
+  argues our vault/MemClaw/SOP layer shouldn't sit static.
+- [[src-hippocampus-linear-attention]] — **HOLA / "A Hippocampus for Linear Attention" (arXiv 2607.02303).**
+  *Design metaphor only (also a background paper).* Its compressive-state + bounded-exact-cache split
+  mirrors our **MemClaw (semantic) + exact audit/verification store** design. **Analogy, not a technique.**
+
+## tools — *candidate adoptions (link/tools library)*
+- [[tool-ragas]] — **Ragas** eval framework (faithfulness / context precision) — objective-ish gate for the
+  LLM-mediated extraction lanes. **MED-HIGH, actionable.**
+- [[candidate-tools-weekend-repos]] — 10 weekend repos resolved + triaged (High→None + security); top picks
+  ComposioHQ/agent-orchestrator, oh-my-claudecode, Hermes-agent; **AVOID: ST3GG**.
+
+## Background reading — *pure-ML-theory, NOT actionable*
+Kept deliberately separate so the adoptable sources stay clean. Nothing here is a technique to adopt.
+- [[src-attention-residuals-excluded]] — **Attention Residuals (Kimi Team, arXiv 2603.15031).** A
+  train-the-model technique — assessed and **excluded** (the counterpoint to "evolve the harness").
+- [[src-hippocampus-linear-attention]] — **HOLA (arXiv 2607.02303).** Architecture paper; kept only for its
+  memory-design *metaphor* (see the memory theme).
+- [[src-diffusion-models-intro]] — **A Mathematical Introduction to Diffusion Models (arXiv 2607.01693).**
+  Graduate lecture notes; **reference-only**, loose tangent to the MinerU-Diffusion OCR decoder.
+
+---
+
+## Source tiers (actionable / actionable-adjacent / background)
+| Tier | Sources |
+|---|---|
+| **Actionable** — adopt / build from now | [[src-evolve-the-harness]] · [[src-loop-engineering-cherny]] · [[src-loop-library]] · [[src-ai-edge-loop-guide]] · [[src-lfd]] · [[src-scheduler-graph-sgh]] · [[src-claude-code-docs]] · [[src-made-benchmark]] · [[src-trinity]] · [[src-mattpocock-skills]] · [[src-sanyuan-skills]] · [[src-memclaw]] · **tools:** [[tool-ragas]] · [[candidate-tools-weekend-repos]] |
+| **Actionable-adjacent** — transferable framing/insight, not a drop-in | [[src-automem]] (memory as a learnable/evolvable skill) · [[src-right-in-the-right-way]] (reward-hacking is real; complement the objective gate) |
+| **Background** — pure-ML-theory, reference-only | [[src-attention-residuals-excluded]] · [[src-hippocampus-linear-attention]] · [[src-diffusion-models-intro]] |
