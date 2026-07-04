@@ -140,6 +140,13 @@ objective signal that proves it holds** (so none is a vibe).
   coverage. This is the strategic asset the whole program protects.
 - **Proof signal:** the benchmark in §3 runs *on this corpus*; the held-out split is never read during
   a run; fixture count grows monotonically as failures are classified.
+- **Adversarial audit before promotion (AN-7, BenchJack arXiv:2605.12673):** an in-house adversarial
+  audit (`benchmark/benchjack_audit.py`, a *method* not a dependency) red-teams the private corpus for
+  ways to score without solving — id-leak, keyword-shortcut, template-uniformity, missing-canary — and
+  runs before any evolution cycle promotes a candidate. Discovered exploits become **negative-memory
+  regression fixtures** (grows the moat). Run on the current corpus it already surfaces 10 real
+  weaknesses (the keyword-shortcut / template-uniformity risks `BENCHMARK_RESULTS.md` flagged as open) —
+  turning "still open" limitations into tracked fixtures, honestly.
 
 ### D7 — Dispatch as the single control plane (the conductor)
 - **Claim:** All control is exercised through **one** plane — Dispatch — which routes each unit of work
