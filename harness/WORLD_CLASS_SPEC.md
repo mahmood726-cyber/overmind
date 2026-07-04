@@ -101,6 +101,11 @@ objective signal that proves it holds** (so none is a vibe).
   moat: AACT registered-vs-published and gold-MA parity are reproduction targets, not opinion targets.
 - **Proof signal:** every accepted quantitative claim carries ≥1 independent-reproduction witness id;
   the benchmark measures caught planted-numeric-defects (e.g. RapidMeta `cE>cN`).
+- **Promotion bar (AN-5, DFAH arXiv:2601.15322):** a result is promoted to "verified" only on **passk
+  (all-k-succeed across N replays)**, not pass@k (any-of-k); plus an optional **signature-determinism**
+  witness (identical tool-call+args across replays) — `verification/passk_witness.py`. Honest caveat:
+  determinism proves *auditability*, not *correctness* (a deterministically wrong answer is still wrong),
+  so it pairs with the reproduction/correctness gate, never substitutes.
 
 ### D4 — Full auditability / provenance of every claim
 - **Claim:** Every verdict is reconstructable end-to-end: which witnesses ran, which vendor produced
