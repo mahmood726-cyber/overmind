@@ -269,6 +269,15 @@ identity. This is the objective test that keeps the panel frontier-only and non-
 
 ## 3. THE BENCHMARK that would PROVE superiority
 
+**Foundational reference:** the design follows **Kapoor, Stroebl, Siegel, Nadgir & Narayanan, "AI Agents
+That Matter" (arXiv:2407.01502, 2024)** — the authoritative agent-benchmarking reference: (1) jointly
+optimize **cost + accuracy** (→ D5 cost-per-accepted + affordability gate), (2) an adequate **holdout at
+the right generality level** to stop shortcut-overfitting (→ AN-2 two-slice frozen rule + held-out +
+blinded keys), (3) distinguish **model-developer vs downstream-developer** benchmarking (ours is
+downstream: does *this* harness catch defects on *our* corpus), (4) **standardization / error bars /
+reproducibility** (→ released deterministic `run_benchmark.py`; Wilson 95% CIs on rate metrics). Cross-check
+result + the two adopted deltas (Wilson CIs; fixture-leakage disclosure) are in `BENCHMARK_RESULTS.md`.
+
 **Name:** MADE-style constrained-budget closed-loop harness benchmark (the "T-HE Evaluator").
 **Shape:** a MADE-derived (arXiv:2601.20996) **closed-loop** eval that runs the *same task set*
 through three harness configurations under an **identical budget ceiling**, scored on **both

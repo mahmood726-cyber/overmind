@@ -3,6 +3,8 @@
 Curated link library (vault workflow #3). Grouped by role.
 
 ## Framing / practitioner
+- **AI Agents That Matter** (Kapoor, Stroebl, Siegel, Nadgir, Narayanan, 2024): https://arxiv.org/abs/2407.01502 — **FOUNDATIONAL benchmark-design reference** (jointly optimize cost+accuracy; adequate holdout at the right generality level or agents overfit; model- vs downstream-developer needs; standardization/error-bars). Cited in `harness/BENCHMARK.md` / `BENCHMARK_RESULTS.md` / `WORLD_CLASS_SPEC §3`. Cross-check 2026-07-05: aligned 4/6, adopted 2 deltas (Wilson CIs; fixture-leakage disclosure).
+- **RAG-tuning loop (h100envy)** — *external CORROBORATION, nothing to adopt*: independently arrives at train/held-out split + noise-threshold + budget/run brakes + log + objective-check — all of which we already have; our **frozen slice (AN-2) + Kish n_eff (AN-3)** go further. Confirmatory, not new.
 - Evolve the Harness (Niklaus): https://huggingface.co/spaces/joelniklaus/harness-optimization — [[src-evolve-the-harness]]
 - Loss-Function Development (Elvis Sun): https://github.com/elvisun/loss-function-development — [[src-lfd]]
 - Loop Library (Forward Future): https://signals.forwardfuture.com/loop-library/ — [[src-loop-library]]

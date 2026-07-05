@@ -13,9 +13,24 @@ The scorer is the ONLY component that reads the answer keys.
 """
 from __future__ import annotations
 
+import math
 from dataclasses import dataclass
 
 from overmind.benchmark.tasks import REPRODUCTION
+
+
+def wilson_ci(successes: int, n: int, *, z: float = 1.96) -> tuple[float, float] | None:
+    """Wilson score confidence interval for a proportion (AN — "AI Agents That
+    Matter", arXiv:2407.01502: report error bars). Returns (lo, hi) in [0,1], or
+    None when n == 0. Wilson (not normal-approx) is well-behaved at small n and
+    near 0/1 — appropriate for a modest held-out slice."""
+    if n <= 0:
+        return None
+    p = successes / n
+    denom = 1.0 + z * z / n
+    center = (p + z * z / (2 * n)) / denom
+    half = (z / denom) * math.sqrt(p * (1 - p) / n + z * z / (4 * n * n))
+    return (round(max(0.0, center - half), 4), round(min(1.0, center + half), 4))
 
 # Pinned weights (declared before any run; never tuned on the held-out split).
 LAMBDA_FALSE_ALARM = 1.0
@@ -43,8 +58,16 @@ class ArmMetrics:
         return None if self.defects == 0 else round(self.caught / self.defects, 4)
 
     @property
+    def caught_defect_ci(self) -> tuple[float, float] | None:
+        return wilson_ci(self.caught, self.defects)
+
+    @property
     def false_alarm_rate(self) -> float | None:
         return None if self.cleans == 0 else round(self.false_alarms / self.cleans, 4)
+
+    @property
+    def false_alarm_ci(self) -> tuple[float, float] | None:
+        return wilson_ci(self.false_alarms, self.cleans)
 
     @property
     def parity_rate(self) -> float | None:
@@ -74,7 +97,9 @@ class ArmMetrics:
             "arm": self.arm, "n": self.n, "defects": self.defects, "cleans": self.cleans,
             "caught": self.caught, "false_alarms": self.false_alarms,
             "caught_defect_rate": self.caught_defect_rate,
+            "caught_defect_ci95": self.caught_defect_ci,
             "false_alarm_rate": self.false_alarm_rate,
+            "false_alarm_ci95": self.false_alarm_ci,
             "parity_rate": self.parity_rate,
             "agreement_soundness": self.agreement_soundness,
             "accepted": self.accepted, "accepted_correct": self.accepted_correct,

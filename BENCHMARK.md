@@ -46,3 +46,22 @@ fragile: ~14.3% reproduction floor, MAFI, HKSJ flips).
 FE (common-effect) / DL (DerSimonian-Laird) / PM (Paule-Mandel) / REML (Fisher scoring;
 metafor's default). REML reproduces metafor BCG to ~1e-5 (logRR -0.71453 vs -0.71450,
 tau2 0.31324 vs 0.31322).
+
+## Benchmark-design reference (foundational)
+The harness benchmark (`overmind/benchmark/`, §3 of `harness/WORLD_CLASS_SPEC.md`) is built on the
+discipline of **Kapoor, Stroebl, Siegel, Nadgir & Narayanan, "AI Agents That Matter", arXiv:2407.01502
+(2024)** — the authoritative reference for agent benchmarking. It prescribes exactly our design:
+1. **Jointly optimize COST + ACCURACY, not accuracy alone** — "the cost of running these agents isn't a
+   top-line metric reported"; visualize agents on a **cost–accuracy Pareto frontier**. → our
+   cost-per-accepted-change (D5) + the affordability gate in the win condition.
+2. **Inadequate/absent HOLDOUT sets → agents take shortcuts and overfit** ("many agent benchmarks have
+   inadequate holdout sets, and sometimes none at all"); withhold at the right generality level and
+   consider keeping it secret. → our **two-slice frozen rule** (AN-2) + sha256 held-out + answer keys
+   off the agent surface.
+3. **Distinguish model-developer vs downstream-developer** benchmarking needs. → ours is a
+   downstream-developer benchmark (does *this* harness catch defects on *our* corpus), not a
+   model-capability leaderboard.
+4. **Standardization / reproducibility** — release the eval script, report **error bars**, be robust to
+   evaluation order. → `scripts/run_benchmark.py` is the released deterministic eval; checkpoint/resume
+   makes it order-invariant. (Cross-check adopt-delta: **Wilson confidence intervals** on the rate
+   metrics — see `harness/BENCHMARK_RESULTS.md`.)

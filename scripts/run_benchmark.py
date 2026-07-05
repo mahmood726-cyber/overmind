@@ -79,13 +79,22 @@ def _real_reviewer(vendor: str):
 
 
 def main() -> int:
+    global OUT_DIR
     shadow = "--shadow" in sys.argv
+    # --max-tasks=N: cap the held-out slice to the first N (sorted by id) for
+    # latency-bound vendors (e.g. agy ~35s/call). Deterministic, reproducible; a
+    # labelled SUBSET of held-out — the frozen slice stays sealed either way.
+    max_tasks = next((int(a.split("=", 1)[1]) for a in sys.argv if a.startswith("--max-tasks=")), None)
     tasks = load_tasks(DATA_DIR / "tasks.json")
     keys = load_keys(DATA_DIR / "keys" / "keys.json")   # scorer-only
     all_ids = [t.id for t in tasks]
     ho = held_out_ids(all_ids)
     fz = frozen_ids(all_ids)
     held = [t for t in tasks if t.id in ho]
+    if max_tasks is not None:
+        held = sorted(held, key=lambda t: t.id)[:max_tasks]
+        ho = {t.id for t in held}
+        OUT_DIR = DATA_DIR / "runs_live"   # keep the committed full-slice scorecard intact
     frozen = [t for t in tasks if t.id in fz]
     ho_keys = {k: v for k, v in keys.items() if k in ho}
     fz_keys = {k: v for k, v in keys.items() if k in fz}

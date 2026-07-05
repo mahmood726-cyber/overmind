@@ -121,6 +121,30 @@ def split_summary(task_ids) -> dict[str, int]:
     return {"dev": len(dev_ids(ids)), "held_out": len(held_out_ids(ids)), "frozen": len(frozen_ids(ids))}
 
 
+def fixture_of(task_id: str) -> str:
+    """The source fixture slug of a task id (strips the ``__variant`` suffix).
+    ``bcg_colditz1994_0__impossible`` -> ``bcg_colditz1994_0``."""
+    return task_id.rsplit("__", 1)[0]
+
+
+def fixture_leakage(task_ids) -> dict[str, object]:
+    """Generality-level holdout disclosure ("AI Agents That Matter", 2407.01502:
+    withhold at the right generality level). Our split holds out task VARIANTS by
+    id, but a held-out/frozen variant may share a source FIXTURE with a dev variant
+    — so an agent could learn fixture-specific numbers. This quantifies that leak."""
+    ids = list(task_ids)
+    dev_fx = {fixture_of(i) for i in dev_ids(ids)}
+    ho_fx = {fixture_of(i) for i in held_out_ids(ids)}
+    fz_fx = {fixture_of(i) for i in frozen_ids(ids)}
+    return {
+        "held_out_fixtures_shared_with_dev": len(ho_fx & dev_fx),
+        "frozen_fixtures_shared_with_dev": len(fz_fx & dev_fx),
+        "distinct_fixtures": len(dev_fx | ho_fx | fz_fx),
+        "note": "variant-level holdout; a fixture-level holdout (no shared source fixture across "
+                "slices) would be strictly more rigorous — recorded as a known generality-level caveat",
+    }
+
+
 def load_tasks(path: Path | str) -> list[Task]:
     data = json.loads(Path(path).read_text(encoding="utf-8"))
     return [Task.from_dict(t) for t in data["tasks"]]

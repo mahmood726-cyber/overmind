@@ -126,6 +126,34 @@ Otherwise **NOT_PROVEN**, with explicit notes (B≈C → heterogeneity not payin
 high false-alarm → crying wolf). Weights + K are pinned before the run; the held-out answer keys are
 read only by the scorer (blinding). **The benchmark is built to be able to show us not winning.**
 
+## Foundational benchmark reference + cross-check — "AI Agents That Matter" (arXiv:2407.01502)
+**Kapoor, Stroebl, Siegel, Nadgir & Narayanan (2024)** is the authoritative reference for our benchmark
+design (verified via the paper + HTML). It prescribes exactly our discipline; the cross-check below asks
+whether any of its concrete prescriptions we do **not** already implement.
+
+| Their prescription (concrete) | Us | Status |
+|---|---|---|
+| **Jointly optimize cost + accuracy**; report agents on a **cost–accuracy Pareto frontier** ("the cost of running these agents isn't a top-line metric reported") | cost-per-accepted-change (D5) in the blended score + the affordability gate in the win condition | **already covered** (cost is first-class); a literal Pareto-frontier *plot* is a future viz — noted |
+| **Adequate holdout, withheld at the right generality level; keep it secret** ("agents take shortcuts and overfit") | two-slice **frozen** rule (AN-2) + sha256 held-out + answer keys off the agent surface | **already covered**, and we go further (frozen slice never scored during evolution) |
+| **Enumerate shortcut types** (distribution/task/domain/general; hardcoded policies) | BenchJack audit (AN-7) probes id-leak / keyword-shortcut / template-uniformity | **already covered** |
+| **Standardization / reproducibility: release the eval script, be order-invariant** | `scripts/run_benchmark.py` released + deterministic; checkpoint/resume ⇒ order-invariant | **already covered** |
+| **Report error bars** ("agent evaluations are rarely accompanied by error bars") | point estimates only, previously | **ADOPTED — delta 1** |
+| **Withhold at generality level = whole tasks, not just samples** | we withhold task *variants* by id, but the same source *fixture* spans dev + held-out | **ADOPTED — delta 2 (disclosure)** |
+
+**Adopt-delta 1 — Wilson 95% CIs (`scoring.wilson_ci`).** Every rate metric (caught-defect, false-alarm)
+now carries a Wilson score 95% CI in the scorecard — honest error bars, especially on the smaller
+agy-latency-bounded live runs. (Wilson, not normal-approx, for good behaviour at small n / near 0-1.)
+
+**Adopt-delta 2 — fixture-level holdout disclosure (`tasks.fixture_leakage`).** Their "withhold at the
+right generality level" exposes a real gap: our split holds out task *variants*, but on the current
+corpus **all 33 held-out fixtures share a source fixture with dev** (frozen: 29/33). So an agent could
+learn a fixture's true pooled estimate from a dev variant and apply it to a held-out variant. This is now
+**measured and disclosed** (`fixture_of` + `fixture_leakage`); a strictly-more-rigorous **fixture-level
+split** (no shared source fixture across slices) is recorded as the next hardening step.
+
+**Net cross-check result:** **aligned on 4 of 6; adopted 2 deltas** (Wilson CIs; fixture-leakage
+disclosure). No prescription was found that is both un-covered and un-addressed.
+
 ## Reproducibility + blinding note
 The sealed answer keys (`benchmark_data/keys/`) are **deliberately not committed** — the `keys/` path
 is gitignored (secret-protection convention), which doubles as **blinding**: keys stay off the repo

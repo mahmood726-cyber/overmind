@@ -91,6 +91,38 @@ def test_frozen_slice_deterministic():
     assert frozen_ids(ids) == frozen_ids(ids)
 
 
+def test_wilson_ci_basic():
+    from overmind.benchmark.scoring import wilson_ci
+    assert wilson_ci(0, 0) is None
+    lo, hi = wilson_ci(5, 10)
+    assert 0.0 <= lo < 0.5 < hi <= 1.0          # centred near 0.5, real width
+    lo0, hi0 = wilson_ci(0, 10)                  # 0 successes -> lo=0, hi>0
+    assert lo0 == 0.0 and hi0 > 0.0
+    lo1, hi1 = wilson_ci(10, 10)                 # all -> hi=1, lo<1
+    assert hi1 == 1.0 and lo1 < 1.0
+
+
+def test_arm_metrics_expose_ci():
+    from overmind.benchmark.scoring import ArmMetrics
+    m = ArmMetrics(arm="X", n=20, defects=16, cleans=4, caught=10, false_alarms=0,
+                   accepted=6, accepted_correct=4, repro_total=4, repro_correct=4, total_cost_usd=0.0)
+    d = m.to_dict()
+    assert d["caught_defect_ci95"] is not None and len(d["caught_defect_ci95"]) == 2
+    lo, hi = d["caught_defect_ci95"]
+    assert lo < (m.caught_defect_rate or 0) < hi   # rate inside its CI
+
+
+def test_fixture_of_and_leakage():
+    from overmind.benchmark.tasks import fixture_of, fixture_leakage
+    from overmind.benchmark.generate import generate
+    assert fixture_of("bcg_0__impossible") == "bcg_0"
+    tasks, _ = generate(max_fixtures=6)
+    leak = fixture_leakage([t.id for t in tasks])
+    # every fixture yields tasks in dev+held-out+frozen, so most fixtures are shared
+    assert leak["distinct_fixtures"] >= 1
+    assert "held_out_fixtures_shared_with_dev" in leak
+
+
 def test_two_slice_promotion_requires_both():
     from overmind.benchmark.scoring import two_slice_promotion
     # wins both -> promote
