@@ -14,6 +14,8 @@ substrate under the one-off [[_Verification-MOC|verification]] work.
 - [[Single-Writer-Rule-SOP]] — one writer per artifact; truth-first re-derivation of every affected number.
 - [[Codex-agy-Auth-Recipe-SOP]] — the concrete fleet auth recipe (CODEX_HOME per seat,
   `--skip-git-repo-check` / sandbox flags, `node2_ed25519` SSH).
+- [[Rule-Authoring-SOP]] — how to author `lessons.md`/`rules`/Sentinel rules that agents actually
+  obey under pressure (persuasion levers + TDD-for-docs; lifted from obra/superpowers, MIT).
 
 ## Provenance
 Sourced from `F:\overmind\workflow-upgrade\2026-07-04-{cutting-edge-improvements,implementation-checklist}.md`
