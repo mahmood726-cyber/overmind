@@ -146,6 +146,16 @@ objective signal that proves it holds** (so none is a vibe).
   harness-health metrics; report cross-vendor consensus cost against this *accepted-reproduction*
   denominator, not raw tokens. A hard **`budget.max_tokens_per_thread`** abort on the OpenAI/Codex lane
   feeds the same unified ledger (an objective cost gate mirroring `total_cost_usd`).
+- **Reference implementation of the accounting shape (2026-07-05, cluster-harness `pilot/cost-ledger`,
+  13 tests):** the `harness.cost_ledger` module in cluster-harness demonstrates the exact D5 semantics
+  as a *pure, read-only* aggregator over already-persisted panels — `cost_per_accepted = total terminal
+  spend / accepts` (total, **not** accepted-only — flagged/no-quorum/failed spend is counted as waste,
+  never hidden), acceptance-rate, per-vendor attribution, and a `None` (not a crash) on zero-accepts.
+  Cost units are **never mixed**: it emits a wall-clock-seconds ledger always, and a USD ledger only when
+  *every* counted lane carries a `total_cost_usd` (else marked unavailable). This de-risks the Overmind
+  wiring: the remaining Overmind-side work is to persist real `total_cost_usd` per lane and point the
+  same `total-over-accepts` shape at it — the algorithm is proven offline. It is a *reference*, not a
+  claim that Overmind's D5 gap is closed (see the gap table).
 
 ### D6 — A private eval / ground-truth moat that grows with use
 - **Claim:** Superiority is scored against a **private, curated, truth-gated corpus** — AACT
@@ -215,6 +225,20 @@ Therefore:
 3. **"Always try to be groundbreaking" = push frontier models hard on the hardest tasks; do not dilute
    the panel with weak models to save cost.**
 
+**Machine-enforce the frontier-only rule (CC 2.1 wiring, 2026-07-05).** This principle is currently a
+*documented policy*; CC ≥ 2.1.196 makes it a *machine-enforced invariant*. In each Claude lane's
+`.claude/settings.json` set `availableModels` to the eval-qualified frontier set and
+`enforceAvailableModels: true` (managed setting, 2.1.175; subagent model overrides now respect the
+allowlist, 2.1.172). This turns "never silently escalate to a weaker/cheaper model" (AN-9 capability-
+router rule) into a setting the harness cannot violate, and keeps Sonnet-5 **out** of the panel until it
+passes the §1.5.1 capability-cliff qualification (correct action vs auto-promotion). Additive, config-
+only, no code churn. Companion adopt-now primitives (from the full CC scan) — `sandbox.credentials` to
+stop sandboxed subprocesses reading the OAuth token, `claude -p --json-schema` for typed consensus
+verdicts (thins Claude-lane stdout scraping), and pinning every node ≥ 2.1.199 for the `claude -p`
+headless hang/stdout-corruption fixes — are catalogued with wiring notes in
+`C:\Projects\claude-code-features-scan-2026-07-05.md`. All are *enforcement/safety* wins, not new
+capability; nothing in CC's single-vendor orchestration replaces Dispatch (that would regress D1).
+
 ### 1.5.2 Per-seat model selection (recommendations are TESTED, not assumed)
 Truth-first: recommend a model per seat only **after** (or with a concrete plan to) empirically
 qualify it on our hardest tasks per §1.5.1. Current best-available anchors:
@@ -260,7 +284,7 @@ identity. This is the objective test that keeps the panel frontier-only and non-
 | D2 | objective witness under every accept, or human-in-chair | many real witnesses exist | **no floor assertion** — judge-only ships are possible and *uncounted* |
 | D3 | independent reproduction per quantitative claim | proven manually (transport-NMA) | not a *standing, per-claim* recorded stage |
 | D4 | full span/provenance on every verdict | tracer + signed bundles built | tracer **not threaded through** most callers |
-| D5 | cost-per-accepted-change per loop | rough `_run_cost_usd` estimate only | **no real `total_cost_usd` parse; no acceptance-rate** |
+| D5 | cost-per-accepted-change per loop | accounting shape proven offline (cluster-harness `pilot/cost-ledger`: total-over-accepts, acceptance-rate, waste attribution, USD-ready, 13 tests) | **Overmind side still lacks a real `total_cost_usd` parse per lane**; wire the proven `total-over-accepts` shape at it — algorithm no longer the gap, the metered-spend capture is |
 | D6 | blinded, growing private corpus as the scorer | corpus + evals exist | benchmark (§3) not yet standing; blinding not enforced as a rule |
 | D7 | one Dispatch control plane; gate before accept; reroute on cap; provenance per claim | Dispatch orchestrator + drain-watchdog proven in production | control flows not yet *expressed as recorded Dispatch provenance*; objective-gate floor (D2) not yet enforced at the Dispatch accept point |
 | §1.5 | frontier-only panel, each seat's model qualified on the HARDEST tasks; marginal value measured | frontier seats configured (Claude/Codex gpt-5.5/agy) | no *capability-cliff qualification eval*; per-vendor marginal-value not measured; Sonnet-top-as-verifier untested |
