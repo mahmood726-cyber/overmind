@@ -1,5 +1,68 @@
 # BENCHMARK_RESULTS — the proof, run log (§3)
 
+## Live A/B/C run — 2026-07-05 ~23:00–23:40 local (FIRST VALID MODEL ARM; verdict NOT_PROVEN)
+
+Ran `scripts/run_benchmark.py --max-tasks=40` (released, checkpoint/resumable) on a
+deterministic **40-task SUBSET of the sealed held-out slice** (frozen slice untouched):
+**35 defects (15 witness-detectable + 20 reviewer-only) + 5 clean.** Real exec-smoke
+preflight (not `login status`).
+
+**Vendor reality this run:** codex:mahmood **LIVE** (~14 s/call); agy **LIVE** but
+**degraded** (~20 s/call, 45% usable); codex:noreen DOWN (exit 1); claude:oauth DOWN
+(stale 26-char token); gemini:api DOWN (HTTP 429). Effective sustained capacity ≈ **1.4
+vendors**.
+
+**What actually ran per arm:**
+- **Arm A — single codex: VALID (39/40 usable, 98%).** This is the **first valid live
+  model arm** the benchmark has produced.
+- **Arm B — codex ×3: INVALID (5% usable).** codex **capped at the A→B boundary**
+  (`exit 1: codex_models_manager` + `TimeoutExpired`); Arm A had consumed codex's ~40-call
+  weekly headroom. Correctly auto-flagged INVALID by `runner.MIN_USABLE_RATE`.
+- **Arm C — codex + agy + witness floor: INVALID (22% usable).** codex 0/40 (fully
+  capped), agy 18/40 (45%, empty-text / driver-envelope artifacts). Correctly INVALID.
+
+| arm | status | caught | false-alarm | parity | agreement | blended |
+|---|---|---|---|---|---|---|
+| **A — single codex** | **RUN (VALID)** | **0.629** (22/35) | **0.400** (2/5) | 1.000 | 0.188 | 0.729 |
+| B — codex ×3 | INVALID (usable 5%) | *0.029* | *0.000* | — | *0.128* | — |
+| C — codex+agy+floor | INVALID (usable 22%) | *0.657* | *0.200* | *1.000* | *0.250* | — |
+| objective-ref (floor, no model) | RUN | 0.429 (15/35) | 0.000 | 1.000 | 0.200 | 0.929 |
+| C-shadow (stub reviewers) | SHADOW | 1.000 | 0.000 | 1.000 | 1.000 | 1.500 |
+| objective-ref [FROZEN, sealed] | FROZEN | 0.292 | 0.000 | 1.000 | 0.019 | 0.792 |
+
+*Italic B/C figures are backend artifacts of a degraded fleet — **NOT scored as real**.
+C's 0.657 is NOT "beating A": 62/80 reviews failed; it is dominated by the deterministic
+floor + a few agy reviews, not a valid panel.*
+
+**Wilson 95% CI (the one valid arm, A):** caught 0.629 → **[0.463, 0.768]**; false-alarm
+0.400 → **[0.118, 0.769]** (5 clean tasks — wide, honest).
+
+**Findings on the valid arm (single codex):** caught **14/15 witness-detectable** but
+only **8/20 reviewer-only**, at **FAR 0.40**. Two concrete honesties: (a) it **missed a
+witness-detectable `ci_invalid`** that the deterministic floor catches — evidence for
+keeping the witness floor *under* the reviewers in C; (b) both false alarms were on
+**all-zero-event** clean tasks (codex flagged "RR not estimable") — defensible skepticism
+scored as crying wolf, precisely the cost the C consensus gate is meant to suppress. The
+floor alone catches **0/20** reviewer-only; a single agent recovers **8/20** but pays
+FAR 0.0→0.40. **Whether C recovers those catches without the FAR penalty is the untested
+question.**
+
+**Cost / economics — NOT_PROVEN in dollars.** codex/agy are subscription seats → the cost
+instrument reads **$0 marginal** on every arm; real $/accepted needs the **metered Claude
+lane** (down). Binding cost is the **codex weekly cap** (exhausted after ~40 calls).
+
+**Did Arm C beat A and B? NO — NOT_PROVEN.** The differentiator never earned a valid
+measurement (fleet degraded mid-run). We do not claim a win, and the machinery did not
+manufacture one: the usable-rate guard flagged B/C INVALID and `evaluate_win_condition`
+returned pending. **Two-slice promotion N/A** — no valid held-out C delta to promote.
+
+**Unblock (in order):** (1) fresh Claude OAuth token on the node — not capped, **metered**,
+unblocks Arm A + first real $/accepted; (2) codex weekly refill; (3) agy throttle clearing
+to ≥50% sustained. `benchmark_autostage.py` resumes via checkpoint on capacity return.
+Artifacts: `benchmark_data/runs_live/scorecard.{md,json}` + `arm_{A,B,C}.jsonl`.
+
+---
+
 **Date:** 2026-07-04
 **Harness:** `overmind/benchmark/` (arms A/B/C, deterministic witnesses, blinded held-out split,
 checkpoint/resume, cost instrument). **Runner:** `scripts/run_benchmark.py` (capacity-aware,
