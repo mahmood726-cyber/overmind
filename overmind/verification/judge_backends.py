@@ -87,6 +87,12 @@ class ClaudeCodeBackend:
     timeout: int = 180
     runner: Runner = _default_runner
     oauth_token: str | None = None       # explicit override; else CLAUDE_CODE_OAUTH_TOKEN
+    # A3 (cc-adopt-4): when True, request a schema-validated JSON verdict via
+    # `--json-schema` instead of a free-text VERDICT block. Default False keeps
+    # the argv (and the live verdict flow) byte-for-byte unchanged; the typed
+    # output is parsed by claude_json_verdict.parse_typed_verdict, not the regex
+    # scraper. Kept as a flag so this only touches the verdict flow when opted in.
+    json_schema: bool = False
 
     def _oauth_token(self) -> str | None:
         return self.oauth_token or os.environ.get("CLAUDE_CODE_OAUTH_TOKEN") or None
@@ -101,8 +107,17 @@ class ClaudeCodeBackend:
             return False
         return bool(self._oauth_token()) or bool(os.environ.get("ANTHROPIC_API_KEY"))
 
+    def _argv(self) -> list[str]:
+        argv = split_command(self.command)
+        if self.json_schema:
+            # Local import: judge_backends must not import claude_json_verdict at
+            # module load (that module imports from llm_judge).
+            from overmind.verification.claude_json_verdict import schema_cli_arg
+            argv += ["--json-schema", schema_cli_arg()]
+        return argv
+
     def query(self, prompt: str) -> str:
-        return self.runner(split_command(self.command), prompt, self._auth_env(), self.timeout)
+        return self.runner(self._argv(), prompt, self._auth_env(), self.timeout)
 
 
 @dataclass(slots=True)

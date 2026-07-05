@@ -20,7 +20,7 @@ import subprocess
 import time
 from dataclasses import dataclass, field
 from pathlib import Path
-from typing import Protocol
+from typing import Callable, Protocol
 from urllib.request import Request, urlopen
 from urllib.error import URLError
 
@@ -281,12 +281,18 @@ class LLMJudge:
         backend: JudgeBackend | None = None,
         transcript_window: int = 80,
         use_cot: bool | None = None,
+        verdict_parser: Callable[[str], JudgeVerdict] | None = None,
     ) -> None:
         self.backend = backend or StubBackend()
         self.transcript_window = transcript_window
         # CoT + rubric prompt: explicit flag wins; otherwise read env. Off by
         # default so existing judge behavior is unchanged unless opted in.
         self.use_cot = _cot_enabled() if use_cot is None else use_cot
+        # A3 (cc-adopt-4): pluggable verdict parser. Default None => the regex
+        # scraper (_parse_verdict), byte-for-byte unchanged. The typed Claude seat
+        # injects claude_json_verdict.parse_typed_verdict here to consume a
+        # `--json-schema` JSON verdict instead of scraping stdout.
+        self._verdict_parser = verdict_parser
 
     def judge(
         self,
@@ -298,7 +304,8 @@ class LLMJudge:
         """Submit task context to LLM and parse structured verdict."""
         prompt = self._build_prompt(task, project, verification_result, transcript_lines)
         response = self.backend.query(prompt)
-        return self._parse_verdict(response)
+        parse = self._verdict_parser or self._parse_verdict
+        return parse(response)
 
     def _build_prompt(
         self,
