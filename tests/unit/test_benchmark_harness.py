@@ -260,6 +260,50 @@ def test_run_arm_with_stub_and_checkpoint(tmp_path):
     assert set(run2.verdicts) == {"d1", "c1"}
 
 
+def test_parse_marks_envelope_noise_unusable():
+    from overmind.benchmark.reviewers import parse_reviewer_output
+    # a driver-envelope with no FLAG line = unusable (NOT a flag=False judgment)
+    v = parse_reviewer_output("Created At: 2026-07-05T07:04:47Z\nCompleted At: ...\n\t")
+    assert v.usable is False
+    assert v.flag is False   # still defaults false, but flagged unusable
+    # a real review IS usable
+    good = parse_reviewer_output("FLAG: yes\nREASON: impossible cell")
+    assert good.usable is True
+
+
+def test_parse_marks_judge_error_unusable():
+    from overmind.benchmark.reviewers import parse_reviewer_output
+    from overmind.verification.judge_backends import JUDGE_ERROR
+    assert parse_reviewer_output(f"{JUDGE_ERROR} agy returned empty text").usable is False
+
+
+def test_arm_invalid_when_vendor_degraded(tmp_path):
+    from overmind.benchmark.reviewers import ReviewerVerdict
+    tasks = [Task(f"t{i}", CLEAN, "x", data={}) for i in range(10)]
+    # a reviewer that is usable only 20% of the time (degraded vendor)
+    def flaky(task):
+        i = int(task.id[1:])
+        return ReviewerVerdict(flag=False, usable=(i < 2))   # 2/10 usable
+    run = run_arm(ArmSpec("A", [flaky]), tasks, results_path=tmp_path / "r.jsonl")
+    assert run.usable_rate == 0.2
+    assert run.valid is False
+
+
+def test_arm_valid_when_reviewers_usable(tmp_path):
+    from overmind.benchmark.reviewers import ReviewerVerdict
+    tasks = [Task(f"t{i}", CLEAN, "x", data={}) for i in range(10)]
+    def good(task):
+        return ReviewerVerdict(flag=False, usable=True)
+    run = run_arm(ArmSpec("A", [good]), tasks, results_path=tmp_path / "r.jsonl")
+    assert run.usable_rate == 1.0 and run.valid is True
+
+
+def test_witness_only_arm_always_valid(tmp_path):
+    tasks = [Task("d1", IMPOSSIBLE_CELL, "a", data={"studies": [{"ai": 99, "n1": 10}]})]
+    run = run_arm(ArmSpec("C", [], use_witness=True), tasks, results_path=tmp_path / "r.jsonl")
+    assert run.valid is True   # no reviewers -> usable_rate None -> valid
+
+
 def test_run_arm_c_uses_witness_floor(tmp_path):
     # reviewer says clean, but the witness catches the impossible cell -> C flags
     tasks = [Task("d1", IMPOSSIBLE_CELL, "a", data={"studies": [{"ai": 99, "n1": 10}]})]

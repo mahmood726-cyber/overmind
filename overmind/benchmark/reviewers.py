@@ -32,9 +32,11 @@ class ReviewerVerdict:
     value: float | None = None
     vendor: str = ""
     raw: str = ""
+    usable: bool = True       # False = no real review parsed (empty/envelope/JUDGE_ERROR)
 
     def to_dict(self) -> dict:
-        return {"flag": self.flag, "reason": self.reason, "value": self.value, "vendor": self.vendor}
+        return {"flag": self.flag, "reason": self.reason, "value": self.value,
+                "vendor": self.vendor, "usable": self.usable}
 
 
 def build_prompt(task: Task) -> str:
@@ -64,7 +66,13 @@ def parse_reviewer_output(text: str, *, vendor: str = "") -> ReviewerVerdict:
             value = None
     mr = _REASON_RE.search(raw)
     reason = mr.group(1).strip()[:200] if mr else raw.strip()[:200]
-    return ReviewerVerdict(flag=flag, reason=reason, value=value, vendor=vendor, raw=raw[:500])
+    # A response is USABLE only if a real verdict was parsed — an explicit FLAG line.
+    # A missing FLAG (empty text, a driver-envelope with only status metadata, or a
+    # JUDGE_ERROR) is NOT a flag=False judgment; it's an unusable response, so a
+    # degraded/throttled vendor is not silently scored as a rubber-stamp.
+    from overmind.verification.judge_backends import JUDGE_ERROR
+    usable = bool(m) and not raw.strip().startswith(JUDGE_ERROR)
+    return ReviewerVerdict(flag=flag, reason=reason, value=value, vendor=vendor, raw=raw[:500], usable=usable)
 
 
 class StubReviewer:

@@ -6,6 +6,30 @@ checkpoint/resume, cost instrument). **Runner:** `scripts/run_benchmark.py` (cap
 re-runnable, resumes via checkpoint). **Slice:** `benchmark_data/` (330 tasks from 33 metafor-reproduced
 gold fixtures × 10 kinds; held-out = 139 (frozen split carved out 73)). **Scorecard:** `benchmark_data/runs/scorecard.{md,json}`.
 
+## Live-capacity run — 2026-07-05 (agy passed the smoke but is degraded under load)
+Fresh real preflight: **agy LIVE** (smoke "ok"), Codex both seats DOWN (`exit 1`, refill not through),
+Claude stale-token, Gemini not retested. Ran **Arm A (agy)** + started **Arm B (agy×3)** on a 20-task
+held-out subset (agy ~35 s/call). **Result: INVALID — agy is intermittently degraded.** Over 20 Arm-A
+tasks agy produced a **real review on only 4 (20% usable-rate)**: 3 hard `JUDGE_ERROR: empty text` + 13
+driver-envelope responses (`Created At…Completed At…`, no `FLAG:` line). Only the obvious impossible-cell
+cases got genuine reviews (agy correctly caught "128 events > N of 12").
+
+**Truth-first decision:** 80% of the verdicts are backend artifacts (empty → parsed `flag=False`), **not
+agy's judgment** — so **no valid Arm A/B was produced** (fabricating one from a throttled backend would
+be dishonest). The single preflight smoke passed because one call succeeded; sustained throughput is
+degraded. Run stopped.
+
+**This exposed a real harness gap → fixed (additive, tested):** a reviewer response with no parseable
+`FLAG:` (empty / envelope / `JUDGE_ERROR`) is now marked **`usable=False`** (`reviewers.py`), the runner
+tracks a per-arm **usable-rate**, and an arm below **50%** usable is reported **INVALID (vendor
+degraded)** rather than silently scored as a rubber-stamp (`runner.MIN_USABLE_RATE`). The agy run is
+correctly detected INVALID at 20%. So a future degraded-vendor run can never masquerade as a real arm.
+
+**Verdict: still pending / NOT_PROVEN.** No vendor currently sustains a valid arm (agy degraded, Codex
+capped, Claude stale-token). `benchmark_autostage.py` retries on capacity; the fastest clean unblock is a
+fresh Claude token (`claude setup-token` + `setx` — Claude is metered, so it would also give real
+cost-per-accepted numbers).
+
 ## Live-capacity run — 2026-07-04 (attempted NOW, not waiting for 00:35Z)
 Auth-preflighted every vendor with a **real smoke** (not login-status). **Verified state — no vendor
 produces a real completion right now:**

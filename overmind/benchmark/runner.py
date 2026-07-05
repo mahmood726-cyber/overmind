@@ -39,12 +39,31 @@ class ArmSpec:
         return arm_c(task.id, reviewer_verdicts, witness_defect)
 
 
+# An arm whose reviewers were usable on fewer than this fraction of tasks is a
+# degraded-vendor artifact, not a valid measurement (e.g. a throttled vendor
+# returning empty/envelope responses). Reported INVALID, not scored as real.
+MIN_USABLE_RATE = 0.5
+
+
 @dataclass(slots=True)
 class ArmRun:
     arm: str
     verdicts: dict = field(default_factory=dict)     # task_id -> ArmVerdict
     costs: dict = field(default_factory=dict)         # task_id -> usd
     reviewer_records: dict = field(default_factory=dict)
+    usable_reviews: int = 0
+    total_reviews: int = 0
+
+    @property
+    def usable_rate(self) -> float | None:
+        return None if self.total_reviews == 0 else round(self.usable_reviews / self.total_reviews, 4)
+
+    @property
+    def valid(self) -> bool:
+        """False when the reviewers were unusable too often (degraded vendor).
+        Witness-only arms (no reviewers) are always valid."""
+        r = self.usable_rate
+        return r is None or r >= MIN_USABLE_RATE
 
 
 def run_arm(
@@ -86,6 +105,10 @@ def run_arm(
 
     for task in todo:
         reviewer_verdicts = [rv(task) for rv in spec.reviewers]
+        for v in reviewer_verdicts:
+            run.total_reviews += 1
+            if getattr(v, "usable", True):
+                run.usable_reviews += 1
         witness_defect = False
         if spec.use_witness:
             witness_defect = run_witness(task).defect

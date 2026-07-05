@@ -157,6 +157,14 @@ def main() -> int:
                       checkpoint_store=store, results_path=OUT_DIR / f"arm_{name}.jsonl",
                       cost_fn=lambda t, v: _est_cost(v))
         m = score_arm(name, run.verdicts, ho_keys)
+        if not run.valid:
+            # degraded vendor (reviewers unusable too often) — NOT a valid measurement
+            arms_out.append({"arm": name, "status": f"INVALID (vendor degraded, usable-rate "
+                             f"{(run.usable_rate or 0):.0%})", "metrics": m.to_dict()})
+            notes.append(f"Arm {name} INVALID: reviewer usable-rate {(run.usable_rate or 0):.0%} < "
+                         f"50% — the vendor returned empty/envelope responses on most tasks; the "
+                         f"verdicts are backend artifacts, not the model's judgment. NOT scored as real.")
+            return
         real_metrics[name] = m
         arms_out.append({"arm": name, "status": "RUN", "metrics": m.to_dict()})
 
