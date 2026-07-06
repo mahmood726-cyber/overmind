@@ -1,5 +1,39 @@
 # BENCHMARK_RESULTS — the proof, run log (§3)
 
+## Headless-Claude auth-path investigation — 2026-07-06 (exhaustive; no non-stale path found)
+
+Goal: unblock the Claude arm **without** an interactive token re-mint, on the hypothesis
+that Claude authenticates via a different invocation than the harness's headless
+`claude -p`. **Result: no such path exists on this node.** Every non-interactive Claude
+credential path was tested and ruled out (real smokes, not assumptions):
+
+| path tested | result |
+|---|---|
+| env `CLAUDE_CODE_OAUTH_TOKEN` (node Machine scope) | stale 26-char value → 401 (was already known) |
+| `~/.claude/.credentials.json` `claudeAiOauth` | **empty** — accessToken len 0, refreshToken len 0, expiresAt 0 (subscriptionType `max`); CLI reports "Not logged in" |
+| `claude -p` (`.local/bin`, v2.1.195) full inherited env | "Not logged in / run /login" (rc 1) |
+| **desktop-bundled `claude.exe`** (`CLAUDE_CODE_EXECPATH`, v2.1.197, the exact binary this session uses) as a subprocess, full env incl. `CLAUDE_CODE_SDK_HAS_HOST_AUTH_REFRESH=1` | "Not logged in" (rc 1) |
+| direct POST to `ANTHROPIC_BASE_URL/v1/messages`, no client bearer | **401** `{"type":"authentication_error","message":"x-api-key header is required"}` |
+| `ANTHROPIC_API_KEY` | not set (Machine/User/process) |
+
+**Root cause (confirmed, not guessed):** the auth that powers *this* Dispatch/code-task
+session is held **in-process by the Claude desktop host** and served to the child it
+launches over an **IPC channel** (host OAuth refresh). It is never persisted to a file,
+env var, or the gateway as a reusable credential — `.credentials.json` is wiped to len-0,
+and the base-URL gateway still demands `x-api-key`. A bare subprocess (the harness's
+`claude -p` worker, or even a shell child of this authenticated session) inherits the
+`*_HAS_OAUTH_REFRESH` *flags* but **not the IPC channel**, so it cannot obtain a token.
+This is why the same session that answers here cannot hand its auth to `claude -p`.
+
+**Decision (per the "don't fake it" rule):** no fallback adapter was wired — there is no
+working path to smoke-prove, so wiring one would ship an unproven success path. The
+harness's headless Claude genuinely requires a fresh credential:
+`claude setup-token` + `setx CLAUDE_CODE_OAUTH_TOKEN <token>` (interactive TTY), **or** an
+interactive `claude` `/login` to repopulate `.credentials.json`. **A/B/C was NOT re-run:**
+no vendor state changed (Claude still down, codex capped until ~08:57 reset, agy degraded),
+so a re-run would reproduce the same INVALID B/C. Re-run when Claude is re-minted (metered
+→ first real cost-per-accepted) and/or after the codex reset.
+
 ## Live A/B/C run — 2026-07-05 ~23:00–23:40 local (FIRST VALID MODEL ARM; verdict NOT_PROVEN)
 
 Ran `scripts/run_benchmark.py --max-tasks=40` (released, checkpoint/resumable) on a
