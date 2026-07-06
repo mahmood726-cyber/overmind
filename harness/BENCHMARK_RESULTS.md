@@ -1,5 +1,36 @@
 # BENCHMARK_RESULTS — the proof, run log (§3)
 
+## Laptop-node Claude probe + fleet re-check — 2026-07-06 09:38 (both nodes down; no valid panel)
+
+Plan: re-probe pc1 headless Claude; if down, try the **laptop** (mahmo@100.80.183.43 over
+Tailscale, key `node2_ed25519`) which was believed to hold a working Claude Code
+subscription login; put whichever works into the decisive A/B/C. **Result: neither node
+has a working headless Claude, and the fleet can't form a valid heterogeneous panel right
+now.** Real smokes:
+
+| node | headless `claude -p` | credential state |
+|---|---|---|
+| **pc1** | "Not logged in / run /login" | `.credentials.json` empty (len 0); env token stale 26-char |
+| **laptop** | **401 Invalid authentication credentials** (confirmed even with env token cleared) | `.credentials.json` has a real **108-char accessToken but EXPIRED ~8 days ago**, **refreshToken len 0** (no auto-renew), subscriptionType `max`; env token also stale 26-char |
+
+The laptop is *closer* (a real token, just lapsed) but **cannot self-refresh headlessly**
+(no refresh token) → needs an interactive `claude` `/login` there. pc1 needs
+`claude setup-token`. Per the "STOP if neither node works" rule, no Claude arm was run.
+
+**Fleet re-probe at 09:38 (past the expected 08:57 codex reset):** codex did **NOT**
+recover — both seats `exit 1: codex_models_manager::manager: fail` (persistent, consistent
+with a balance cap not a weekly reset); **only agy live** (single family, historically
+degraded ~45%). Since **Arm C requires ≥2 distinct live families**, a Claude-less
+codex+agy decisive run is also impossible today — only agy is up. No arm was re-run
+(would reproduce INVALID and burn agy quota for no new signal).
+
+**Decision:** STOP, report honestly. **Decisive A/B/C remains NOT_PROVEN**, now blocked on
+*two* fronts (Claude auth on both nodes; codex down; agy alone can't make C). Fastest real
+unblock: an **interactive Claude `/login` on the laptop** (its token merely expired) — then
+the SSH-worker route (harness on pc1 → `ssh laptop claude -p`) becomes viable; or
+`claude setup-token` on pc1. No fabrication; no fallback wired (no working path to
+smoke-prove).
+
 ## Headless-Claude auth-path investigation — 2026-07-06 (exhaustive; no non-stale path found)
 
 Goal: unblock the Claude arm **without** an interactive token re-mint, on the hypothesis
