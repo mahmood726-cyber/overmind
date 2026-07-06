@@ -175,3 +175,36 @@ def test_ssh_claude_backend_propagates_judge_error_from_runner():
     from overmind.verification.judge_backends import SshClaudeBackend
     b = SshClaudeBackend(host="h", runner=lambda *a: f"{JUDGE_ERROR} exit 255: connection refused")
     assert b.query("p").startswith(JUDGE_ERROR)
+
+
+def test_ssh_claude_backend_default_remote_cmd_is_portable():
+    """Objective gate (hardcoded-local-path P0, Sentinel, 2026-07-06).
+
+    The default remote command must NOT bake in a machine-specific absolute user
+    path (e.g. C:\\Users\\<name>\\.local\\bin\\claude.exe). It must be a portable
+    bare `claude` the remote node's PATH resolves, so the SSH worker runs on ANY
+    node (laptop/pc2/…), not just the one machine where claude sits at that path.
+    Fails before the fix (default was the absolute .local\\bin path); passes after.
+    Nodes needing a custom path use OVERMIND_CLAUDE_SSH_REMOTE_CMD (tested below).
+    """
+    import re
+    from overmind.verification.judge_backends import SshClaudeBackend
+
+    default_cmd = SshClaudeBackend().remote_cmd
+    assert not re.search(r"[A-Za-z]:[\\/]Users[\\/]", default_cmd), default_cmd
+    assert "/home/" not in default_cmd, default_cmd
+    assert ".local" not in default_cmd, default_cmd
+    assert "claude" in default_cmd            # still a runnable claude command
+
+
+def test_ssh_claude_backend_remote_cmd_env_override(monkeypatch):
+    """A node whose non-interactive SSH PATH lacks claude sets an absolute remote
+    path via OVERMIND_CLAUDE_SSH_REMOTE_CMD; the backend uses it verbatim over the
+    portable default — so portability never removes the escape hatch."""
+    from overmind.verification.judge_backends import SshClaudeBackend
+
+    cap: dict = {}
+    monkeypatch.setenv("OVERMIND_CLAUDE_SSH_REMOTE_CMD", r'"D:\tools\claude.exe" -p')
+    b = SshClaudeBackend(host="h", runner=_capturing_runner(cap, "ok"))
+    b.query("p")
+    assert cap["argv"][-1] == r'"D:\tools\claude.exe" -p'

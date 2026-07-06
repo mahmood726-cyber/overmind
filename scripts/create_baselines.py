@@ -27,7 +27,8 @@ import subprocess
 import sys
 from pathlib import Path
 
-DATA_DIR = Path(__file__).resolve().parents[1] / "data"
+REPO_ROOT = Path(__file__).resolve().parents[1]
+DATA_DIR = REPO_ROOT / "data"
 BASELINES_DIR = DATA_DIR / "baselines"
 PROBES_DIR = DATA_DIR / "baseline_probes"
 
@@ -909,7 +910,9 @@ print(json.dumps({
         # (log-RR). Reproduces metafor EXACTLY: REML tau2=0.3132, est=-0.7145,
         # SE=0.1798 — the strongest possible external cross-check.
         "project_id_prefix": "overmind",
-        "project_path": r"C:\Users\mahmo\code\overmind",
+        # Self-referential: this baseline probes Overmind's OWN pooling engine, so
+        # resolve to this repo's root rather than a machine-specific checkout path.
+        "project_path": str(REPO_ROOT),
         "tolerance": 1e-4,
         "probe": '''
 import sys, json

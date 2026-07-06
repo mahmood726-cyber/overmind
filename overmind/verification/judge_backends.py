@@ -140,7 +140,14 @@ class SshClaudeBackend:
 
     host: str | None = None                # e.g. mahmo@100.80.183.43
     key: str | None = None                 # ssh identity file (-i)
-    remote_cmd: str = r'"C:\Users\mahmo\.local\bin\claude.exe" -p'
+    # Portable default: a bare `claude -p` the REMOTE node's PATH resolves (matches
+    # ClaudeCodeBackend.command and the `ssh <host> claude -p` worker documented in
+    # scripts/run_benchmark.py). This runs on ANY node (laptop/pc2/…), not just a
+    # machine where claude sits at a specific absolute path. `shutil.which` can't be
+    # used here — it resolves on the LOCAL node, but this command runs remotely — so
+    # a node whose non-interactive SSH PATH lacks claude sets an absolute path via
+    # OVERMIND_CLAUDE_SSH_REMOTE_CMD (see _remote()) instead of hardcoding one here.
+    remote_cmd: str = "claude -p"
     ssh_command: str = "ssh"
     timeout: int = 180
     runner: Runner = _default_runner
