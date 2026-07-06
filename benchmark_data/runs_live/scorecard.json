@@ -97,6 +97,35 @@
     "n": 40,
     "defects": 35,
     "cleans": 5,
+    "caught": 21,
+    "false_alarms": 2,
+    "caught_defect_rate": 0.6,
+    "caught_defect_ci95": [
+     0.4357,
+     0.7445
+    ],
+    "false_alarm_rate": 0.4,
+    "false_alarm_ci95": [
+     0.1176,
+     0.7693
+    ],
+    "parity_rate": 1.0,
+    "agreement_soundness": 0.1765,
+    "accepted": 17,
+    "accepted_correct": 3,
+    "total_cost_usd": 0.0,
+    "cost_per_accepted_change": 0.0,
+    "blended": 0.7
+   }
+  },
+  {
+   "arm": "B",
+   "status": "RUN",
+   "metrics": {
+    "arm": "B",
+    "n": 40,
+    "defects": 35,
+    "cleans": 5,
     "caught": 22,
     "false_alarms": 2,
     "caught_defect_rate": 0.6286,
@@ -119,79 +148,54 @@
    }
   },
   {
-   "arm": "B",
-   "status": "INVALID (vendor degraded, usable-rate 5%)",
-   "metrics": {
-    "arm": "B",
-    "n": 40,
-    "defects": 35,
-    "cleans": 5,
-    "caught": 1,
-    "false_alarms": 0,
-    "caught_defect_rate": 0.0286,
-    "caught_defect_ci95": [
-     0.0051,
-     0.1453
-    ],
-    "false_alarm_rate": 0.0,
-    "false_alarm_ci95": [
-     0.0,
-     0.4345
-    ],
-    "parity_rate": 0.0,
-    "agreement_soundness": 0.1282,
-    "accepted": 39,
-    "accepted_correct": 5,
-    "total_cost_usd": 0.0,
-    "cost_per_accepted_change": 0.0,
-    "blended": 0.0286
-   }
-  },
-  {
    "arm": "C",
-   "status": "INVALID (vendor degraded, usable-rate 22%)",
+   "status": "RUN",
    "metrics": {
     "arm": "C",
     "n": 40,
     "defects": 35,
     "cleans": 5,
-    "caught": 23,
-    "false_alarms": 1,
-    "caught_defect_rate": 0.6571,
+    "caught": 29,
+    "false_alarms": 2,
+    "caught_defect_rate": 0.8286,
     "caught_defect_ci95": [
-     0.4915,
-     0.7917
+     0.6732,
+     0.919
     ],
-    "false_alarm_rate": 0.2,
+    "false_alarm_rate": 0.4,
     "false_alarm_ci95": [
-     0.0362,
-     0.6245
+     0.1176,
+     0.7693
     ],
     "parity_rate": 1.0,
-    "agreement_soundness": 0.25,
-    "accepted": 16,
-    "accepted_correct": 4,
+    "agreement_soundness": 0.3333,
+    "accepted": 9,
+    "accepted_correct": 3,
     "total_cost_usd": 0.0,
     "cost_per_accepted_change": 0.0,
-    "blended": 0.9571
+    "blended": 0.9286
    }
   }
  ],
- "win_condition": null,
+ "win_condition": {
+  "c_beats_a": true,
+  "c_beats_b": true,
+  "affordable": true,
+  "verdict": "WORLD_CLASS",
+  "notes": []
+ },
  "notes": [
   "Split (deterministic sha256): dev=118 held_out=139 FROZEN=73 (of 330 total).",
   "Held-out slice scored this run: 40 tasks (defects=35, clean=5).",
   "AN-2 FROZEN slice is SEALED: harness-evolution never reads/scores/tunes on it; a candidate is promoted only if it also wins there (arXiv:2605.30621). It is scored below for reference only.",
   "Answer keys read only by the scorer. Weights pinned; scoring can report NOT_PROVEN.",
   "Objective reference = Arm C floor with NO reviewers: catches witness-detectable defects (impossible_cell, reproduction, ci_invalid) but structurally misses the 20 reviewer-only defects in the held-out slice (6 classes) \u2014 that gap is what the cross-vendor panel must close.",
-  "preflight claude:oauth = DOWN (no auth (set CLAUDE_CODE_OAUTH_TOKEN via `claude setup-token`))",
-  "preflight codex:mahmood = LIVE (ok)",
-  "preflight codex:noreen = DOWN (JUDGE_ERROR: exit 1: 2026-07-05T22:20:12.031171Z ERROR codex_models_ma)",
+  "preflight claude:oauth = LIVE (ok)",
+  "preflight codex:mahmood = DOWN (JUDGE_ERROR: exit 1: OpenAI Codex v0.142.3\n--------\nworkdir: F:\\overmi)",
+  "preflight codex:noreen = DOWN (JUDGE_ERROR: exit 1: 2026-07-06T11:28:37.480455Z ERROR codex_models_ma)",
   "preflight agy:default = LIVE (ok)",
   "preflight gemini:api = DOWN (JUDGE_ERROR: HTTPError: HTTP Error 429: Too Many Requests)",
-  "Live vendors this run: ['agy', 'codex'].",
-  "Arm B INVALID: reviewer usable-rate 5% < 50% \u2014 the vendor returned empty/envelope responses on most tasks; the verdicts are backend artifacts, not the model's judgment. NOT scored as real.",
-  "Arm C INVALID: reviewer usable-rate 22% < 50% \u2014 the vendor returned empty/envelope responses on most tasks; the verdicts are backend artifacts, not the model's judgment. NOT scored as real.",
-  "Arm C reviewers: ['codex', 'agy'] (distinct families)."
+  "Live vendors this run: ['agy', 'claude'].",
+  "Arm C reviewers: ['claude', 'agy'] (distinct families)."
  ]
 }

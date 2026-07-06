@@ -32,6 +32,19 @@ DATA_DIR = Path(__file__).resolve().parents[1] / "benchmark_data"
 OUT_DIR = DATA_DIR / "runs"
 
 
+def _claude_backend():
+    """Claude worker backend: local `claude -p` (subscription OAuth token) by
+    default; a REMOTE `ssh <host> claude -p` worker when OVERMIND_CLAUDE_SSH_HOST
+    is set (additive, flag-gated). Never displaces the local path unless a host is
+    configured — used by BOTH the preflight and the reviewer so they agree."""
+    import os
+    if os.environ.get("OVERMIND_CLAUDE_SSH_HOST"):
+        from overmind.verification.judge_backends import SshClaudeBackend
+        return SshClaudeBackend()
+    from overmind.verification.judge_backends import ClaudeCodeBackend
+    return ClaudeCodeBackend()
+
+
 def _live_vendors() -> tuple[dict, list[str]]:
     """Which reviewer vendors respond to a real smoke right now (preflight ONCE).
 
@@ -42,7 +55,7 @@ def _live_vendors() -> tuple[dict, list[str]]:
     notes: list[str] = []
     try:
         from overmind.reliability.auth_preflight import preflight_all
-        for p in preflight_all():   # includes first-class claude (OAuth)
+        for p in preflight_all(claude_backend=_claude_backend()):   # first-class claude (local OAuth or SSH-remote)
             if p.alive:
                 live[p.vendor] = True
             notes.append(f"preflight {p.vendor}:{p.seat} = {'LIVE' if p.alive else 'DOWN'} ({p.detail[:70]})")
@@ -64,8 +77,7 @@ def _live_vendors() -> tuple[dict, list[str]]:
 
 def _real_reviewer(vendor: str):
     if vendor == "claude":
-        from overmind.verification.judge_backends import ClaudeCodeBackend
-        return BackendReviewer(ClaudeCodeBackend(), vendor="claude")
+        return BackendReviewer(_claude_backend(), vendor="claude")
     if vendor == "codex":
         from overmind.verification.judge_backends import CodexBackend
         return BackendReviewer(CodexBackend(seat="mahmood", effort="xhigh"), vendor="codex")

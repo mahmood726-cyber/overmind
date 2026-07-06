@@ -125,3 +125,53 @@ def test_local_model_uses_injected_http_when_enabled():
         _http=lambda url, payload, timeout: json.dumps({"response": "VERDICT: PASS"}),
     )
     assert backend.query("p") == "VERDICT: PASS"
+
+
+# --- SshClaudeBackend (remote subscription-Claude worker over SSH) ---------------
+
+def test_ssh_claude_backend_builds_ssh_argv_and_pipes_stdin():
+    from overmind.verification.judge_backends import SshClaudeBackend
+    cap: dict = {}
+    b = SshClaudeBackend(host="user@1.2.3.4", key=None,
+                         remote_cmd="claude -p", runner=_capturing_runner(cap, "FLAG: yes"))
+    assert b.query("review this artifact") == "FLAG: yes"
+    argv = cap["argv"]
+    assert argv[0] == "ssh"
+    assert "BatchMode=yes" in argv
+    assert argv[-2] == "user@1.2.3.4"      # host
+    assert argv[-1] == "claude -p"          # remote command
+    assert cap["stdin"] == "review this artifact"   # prompt on stdin
+
+
+def test_ssh_claude_backend_includes_identity_file_when_key_set():
+    from overmind.verification.judge_backends import SshClaudeBackend
+    cap: dict = {}
+    b = SshClaudeBackend(host="h", key="k.pem", runner=_capturing_runner(cap, "ok"))
+    b.query("p")
+    argv = cap["argv"]
+    assert "-i" in argv and argv[argv.index("-i") + 1] == "k.pem"
+
+
+def test_ssh_claude_backend_strips_benign_ssh_warning_lines():
+    from overmind.verification.judge_backends import SshClaudeBackend
+    noisy = ("** WARNING: connection is not using a post-quantum key exchange algorithm.\n"
+             "** This session may be vulnerable to store now, decrypt later attacks.\n"
+             "FLAG: no\nREASON: clean")
+    b = SshClaudeBackend(host="h", runner=lambda *a: noisy)
+    out = b.query("p")
+    assert out.startswith("FLAG: no")      # warning stripped, real completion preserved
+    assert "post-quantum" not in out
+
+
+def test_ssh_claude_backend_unavailable_without_host():
+    from overmind.verification.judge_backends import SshClaudeBackend
+    b = SshClaudeBackend(host=None, runner=lambda *a: "x")
+    # no host configured (and no env var) -> not available, query returns JUDGE_ERROR
+    assert b.available() is False
+    assert b.query("p").startswith(JUDGE_ERROR)
+
+
+def test_ssh_claude_backend_propagates_judge_error_from_runner():
+    from overmind.verification.judge_backends import SshClaudeBackend
+    b = SshClaudeBackend(host="h", runner=lambda *a: f"{JUDGE_ERROR} exit 255: connection refused")
+    assert b.query("p").startswith(JUDGE_ERROR)

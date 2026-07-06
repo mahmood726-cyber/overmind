@@ -121,6 +121,74 @@ class ClaudeCodeBackend:
 
 
 @dataclass(slots=True)
+class SshClaudeBackend:
+    """Judge via `claude -p` on a REMOTE node over SSH (additive; flag-gated).
+
+    Motivation: headless `claude -p` on the local node can be unauthed (stale
+    OAuth token / empty credentials / the desktop-host OAuth-refresh IPC is not
+    reachable from a bare subprocess), while ANOTHER node holds a valid Claude
+    Code SUBSCRIPTION login. This backend runs the worker there:
+    ``ssh <host> claude -p`` with the prompt piped on stdin, returning the
+    subscription completion. No API key, no metered path — the subscription
+    bearer lives only on the remote node.
+
+    Enabled only when a host is configured (``host`` arg or
+    OVERMIND_CLAUDE_SSH_HOST); otherwise ``available()`` is False and the harness
+    keeps using the local token path — this class never displaces it. The runner
+    is injectable so routing/parse logic is unit-testable without a real SSH hop.
+    """
+
+    host: str | None = None                # e.g. mahmo@100.80.183.43
+    key: str | None = None                 # ssh identity file (-i)
+    remote_cmd: str = r'"C:\Users\mahmo\.local\bin\claude.exe" -p'
+    ssh_command: str = "ssh"
+    timeout: int = 180
+    runner: Runner = _default_runner
+
+    # Benign SSH advisory lines that may precede the real completion on stdout on
+    # some configs (the post-quantum KX warning normally goes to stderr, but strip
+    # defensively so they never corrupt the parsed verdict).
+    _SSH_NOISE = ("post-quantum", "store now, decrypt", "openssh.com",
+                  "may need to be upgraded", "This session may be vulnerable")
+
+    def _host(self) -> str | None:
+        return self.host or os.environ.get("OVERMIND_CLAUDE_SSH_HOST") or None
+
+    def _key(self) -> str | None:
+        return self.key or os.environ.get("OVERMIND_CLAUDE_SSH_KEY") or None
+
+    def _remote(self) -> str:
+        return os.environ.get("OVERMIND_CLAUDE_SSH_REMOTE_CMD") or self.remote_cmd
+
+    def available(self) -> bool:
+        if shutil.which(self.ssh_command) is None:
+            return False
+        if not self._host():
+            return False
+        key = self._key()
+        if key and not Path(key).is_file():
+            return False
+        return True
+
+    def _argv(self) -> list[str]:
+        argv = [self.ssh_command, "-o", "BatchMode=yes", "-o", "ConnectTimeout=15"]
+        key = self._key()
+        if key:
+            argv += ["-i", key]
+        argv += [self._host() or "", self._remote()]
+        return argv
+
+    def query(self, prompt: str) -> str:
+        if not self._host():
+            return f"{JUDGE_ERROR} no SSH host configured (OVERMIND_CLAUDE_SSH_HOST)"
+        raw = self.runner(self._argv(), prompt, {}, self.timeout)
+        if raw.startswith(JUDGE_ERROR):
+            return raw
+        lines = [ln for ln in raw.splitlines() if not any(m in ln for m in self._SSH_NOISE)]
+        return "\n".join(lines).strip()
+
+
+@dataclass(slots=True)
 class CodexBackend:
     """Judge via `codex exec` for parallel verification bursts.
 

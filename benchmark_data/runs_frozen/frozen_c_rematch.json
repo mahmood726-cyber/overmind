@@ -1,0 +1,100 @@
+{
+ "frozen_C_panel_matched": {
+  "valid": true,
+  "usable_rate": 0.7625,
+  "metrics": {
+   "A": {
+    "arm": "A",
+    "n": 40,
+    "defects": 39,
+    "cleans": 1,
+    "caught": 27,
+    "false_alarms": 1,
+    "caught_defect_rate": 0.6923,
+    "caught_defect_ci95": [
+     0.5358,
+     0.8143
+    ],
+    "false_alarm_rate": 1.0,
+    "false_alarm_ci95": [
+     0.2065,
+     1.0
+    ],
+    "parity_rate": 1.0,
+    "agreement_soundness": 0.0,
+    "accepted": 12,
+    "accepted_correct": 0,
+    "total_cost_usd": 0.0,
+    "cost_per_accepted_change": null,
+    "blended": 0.1923
+   },
+   "B": {
+    "arm": "B",
+    "n": 40,
+    "defects": 39,
+    "cleans": 1,
+    "caught": 26,
+    "false_alarms": 1,
+    "caught_defect_rate": 0.6667,
+    "caught_defect_ci95": [
+     0.5098,
+     0.7937
+    ],
+    "false_alarm_rate": 1.0,
+    "false_alarm_ci95": [
+     0.2065,
+     1.0
+    ],
+    "parity_rate": 1.0,
+    "agreement_soundness": 0.0,
+    "accepted": 13,
+    "accepted_correct": 0,
+    "total_cost_usd": 0.0,
+    "cost_per_accepted_change": null,
+    "blended": 0.1667
+   },
+   "C": {
+    "arm": "C",
+    "n": 40,
+    "defects": 39,
+    "cleans": 1,
+    "caught": 31,
+    "false_alarms": 1,
+    "caught_defect_rate": 0.7949,
+    "caught_defect_ci95": [
+     0.6447,
+     0.8922
+    ],
+    "false_alarm_rate": 1.0,
+    "false_alarm_ci95": [
+     0.2065,
+     1.0
+    ],
+    "parity_rate": 1.0,
+    "agreement_soundness": 0.0,
+    "accepted": 8,
+    "accepted_correct": 0,
+    "total_cost_usd": 0.0,
+    "cost_per_accepted_change": null,
+    "blended": 0.2949
+   }
+  },
+  "win_condition": {
+   "c_beats_a": true,
+   "c_beats_b": true,
+   "affordable": true,
+   "verdict": "WORLD_CLASS",
+   "notes": []
+  }
+ },
+ "two_slice": {
+  "held_out_win": true,
+  "frozen_win": true,
+  "promote": true,
+  "reason": "wins on both held-out and frozen (real benefit, not eval-fit)",
+  "ho_incumbent": 0.7286,
+  "ho_C": 0.9286,
+  "fz_incumbent": 0.1923,
+  "fz_C": 0.2949
+ }
+}

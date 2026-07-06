@@ -1,0 +1,99 @@
+{
+ "slice": "FROZEN",
+ "n": 40,
+ "picked": [
+  "claude",
+  "codex",
+  "agy"
+ ],
+ "arms": {
+  "A": {
+   "arm": "A",
+   "n": 40,
+   "defects": 39,
+   "cleans": 1,
+   "caught": 27,
+   "false_alarms": 1,
+   "caught_defect_rate": 0.6923,
+   "caught_defect_ci95": [
+    0.5358,
+    0.8143
+   ],
+   "false_alarm_rate": 1.0,
+   "false_alarm_ci95": [
+    0.2065,
+    1.0
+   ],
+   "parity_rate": 1.0,
+   "agreement_soundness": 0.0,
+   "accepted": 12,
+   "accepted_correct": 0,
+   "total_cost_usd": 0.0,
+   "cost_per_accepted_change": null,
+   "blended": 0.1923
+  },
+  "B": {
+   "arm": "B",
+   "n": 40,
+   "defects": 39,
+   "cleans": 1,
+   "caught": 26,
+   "false_alarms": 1,
+   "caught_defect_rate": 0.6667,
+   "caught_defect_ci95": [
+    0.5098,
+    0.7937
+   ],
+   "false_alarm_rate": 1.0,
+   "false_alarm_ci95": [
+    0.2065,
+    1.0
+   ],
+   "parity_rate": 1.0,
+   "agreement_soundness": 0.0,
+   "accepted": 13,
+   "accepted_correct": 0,
+   "total_cost_usd": 0.0,
+   "cost_per_accepted_change": null,
+   "blended": 0.1667
+  },
+  "C": {
+   "arm": "C",
+   "n": 40,
+   "defects": 39,
+   "cleans": 1,
+   "caught": 29,
+   "false_alarms": 1,
+   "caught_defect_rate": 0.7436,
+   "caught_defect_ci95": [
+    0.5892,
+    0.8543
+   ],
+   "false_alarm_rate": 1.0,
+   "false_alarm_ci95": [
+    0.2065,
+    1.0
+   ],
+   "parity_rate": 1.0,
+   "agreement_soundness": 0.0,
+   "accepted": 10,
+   "accepted_correct": 0,
+   "total_cost_usd": 0.0,
+   "cost_per_accepted_change": null,
+   "blended": 0.2436
+  }
+ },
+ "valid": {
+  "A": true,
+  "B": true,
+  "C": false
+ },
+ "win_condition": null,
+ "notes": [
+  "preflight claude:oauth = LIVE (ok)",
+  "preflight codex:mahmood = LIVE (ok)",
+  "preflight codex:noreen = DOWN (JUDGE_ERROR: exit 1: 2026-07-06T13:03:58.817796Z ERROR codex_models_ma)",
+  "preflight agy:default = LIVE (ok)",
+  "preflight gemini:api = DOWN (JUDGE_ERROR: HTTPError: HTTP Error 429: Too Many Requests)"
+ ]
+}

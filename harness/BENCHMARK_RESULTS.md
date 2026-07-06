@@ -1,5 +1,72 @@
 # BENCHMARK_RESULTS — the proof, run log (§3)
 
+## DECISIVE A/B/C — Claude(laptop subscription over SSH) + agy — 2026-07-06 (WORLD_CLASS, two-slice confirmed)
+
+The first fully-valid A/B/C with a live frontier model in the panel. **Arm C (heterogeneous
+truth-gate) beats single-agent A and homogeneous B on error-catch, confirmed on BOTH the
+held-out and the sealed frozen slice, at equal false-alarm — and with 1/3 the metered-vendor
+calls of B.**
+
+**Claude worker + wiring:** pc1 headless `claude -p` is still dead (empty creds / stale
+token). Mahmood re-logged Claude Code on the **laptop**; its `~/.claude/.credentials.json`
+now authenticates. Wired an **additive, flag-gated `SshClaudeBackend`** (commit below):
+`ssh mahmo@100.80.183.43 claude -p` with the prompt piped on stdin, enabled by
+`OVERMIND_CLAUDE_SSH_HOST` (local token path untouched; 5 new unit tests + a real
+completion smoke). Claude answers via the **subscription** (no API key, no dollar meter) —
+so cost is reported in **calls / latency**, the correct unit. Preflight this run: claude
+LIVE (SSH), agy LIVE, codex DOWN at held-out run time (rejoined ~14:03, degraded), gemini
+429. Claude ~8–15 s/call over SSH, agy ~20 s/call.
+
+**Held-out slice (40-task sealed subset: 35 defects / 5 clean):**
+| arm | panel | usable | caught-defect | false-alarm | agreement | model calls |
+|---|---|---|---|---|---|---|
+| **A** single | Claude | 100% | 0.600 (21/35) CI[0.44,0.74] | 0.400 (2/5) | 0.177 | **40 Claude** |
+| **B** homogeneous ×3 | Claude×3 | 100% | 0.629 (22/35) | 0.400 | 0.188 | **120 Claude** |
+| **C** heterogeneous+floor | Claude+agy+witness | 75% | **0.829 (29/35) CI[0.67,0.92]** | 0.400 | 0.333 | **40 Claude + 40 agy** |
+
+Verdict **WORLD_CLASS**. Decomposition of C's win (both real, distinct sources):
+- **witness floor**: witness-detectable caught A/B/C = 10/10/**15** — Claude alone (and ×3)
+  miss 5 arithmetically-detectable defects; the deterministic floor recovers all 5.
+- **vendor heterogeneity** on the floor-*invisible* reviewer-only defects: A/B/C =
+  11/12/**14** of 20 — agy's independent read + consensus-or-flag catches 2–3 the single
+  agent and self-vote miss. **This is the pure differentiator signal (the floor can't see
+  these).** Self-consistency (B) barely moved A (11→12); a *different vendor* moved it to 14.
+
+**Frozen two-slice confirmation (40-task sealed subset: 39 defects / 1 clean):**
+The auto-pick added codex (back at 14:03 but degraded) → 3-vendor frozen C came back
+**INVALID (usable 47.5%)** — a different panel than held-out. Re-ran frozen Arm C with the
+**matching Claude+agy panel** (like-for-like) — VALID (usable 76%, Claude 40/40, agy 21/40):
+| arm | caught-defect | blended |
+|---|---|---|
+| A (Claude) | 0.692 (27/39) | 0.192 |
+| B (Claude×3) | 0.667 (26/39) | 0.167 |
+| **C (Claude+agy+floor)** | **0.795 (31/39)** | **0.295** |
+
+Frozen verdict **WORLD_CLASS**. **Two-slice promotion = PROMOTE**: C beats best-of-{A,B}
+on blended on held-out (0.929 vs 0.729) **and** frozen (0.295 vs 0.192) → "real benefit,
+not eval-fit" (`two_slice_promotion`).
+
+**Economics (call-cost, subscription = no dollar meter):** C beats B while spending **1/3
+the metered-vendor (Claude) calls** (40 vs 120) — heterogeneity is far more call-efficient
+than homogeneous self-consistency; B triples the expensive calls for a *smaller* gain than
+adding one different vendor. C vs A: +40 agy calls (a cheaper second vendor) to lift caught
+0.600→0.829. This is the "acceptable call-cost" bar, met decisively.
+
+**Honest caveats (win is real but bounded):**
+- **False-alarm is NOT where C wins** — FAR is tied at 0.400 (held-out) / 1.0 (frozen), and
+  the clean denominators are tiny (5 held-out, 1 frozen clean). The win is **caught-defect +
+  agreement at equal FAR**, not "C cries wolf less". A larger clean set is the next hardening.
+- **agy was degraded** (~50–52% usable both slices); Claude's 100% usable-rate carried Arm
+  C's validity. The heterogeneity gain came from agy's *usable half* — a stronger second
+  vendor would likely widen the margin.
+- **Frozen slice is 39/40 defects** → agreement/FAR uninformative there; the frozen
+  confirmation is specifically a **caught-defect** re-confirmation (the meaningful axis).
+- **The integrity guards still bite**: the 3-vendor frozen C was correctly auto-flagged
+  INVALID at 47.5% usable — the win only counts on the valid, panel-matched arm.
+
+Artifacts: `benchmark_data/runs_live/scorecard.{md,json}` (held-out),
+`benchmark_data/runs_frozen/frozen_c_rematch.json` + `arm_{A,B,C}.jsonl` (frozen).
+
 ## Laptop-node Claude probe + fleet re-check — 2026-07-06 09:38 (both nodes down; no valid panel)
 
 Plan: re-probe pc1 headless Claude; if down, try the **laptop** (mahmo@100.80.183.43 over
