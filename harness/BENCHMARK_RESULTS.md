@@ -1,5 +1,88 @@
 # BENCHMARK_RESULTS — the proof, run log (§3)
 
+## HARDER A/B/C — FULL held-out slice (139) — Claude+agy — 2026-07-07 (caught-defect win ROBUST; verdict NOT_PROVEN on FAR; gap-analysis)
+
+The stronger re-run Mahmood asked for: the **full sealed held-out slice (139 tasks: 126 defect / 13
+clean)**, not the prior 40-subset, released harness unmodified (`scripts/run_benchmark.py --max-tasks=139`),
+Claude(laptop-SSH)+agy panel (Codex DOWN all night — mahmood weekly/credit cap survived the 00:11 reset,
+noreen token invalidated; Gemini 429). Full narrative + gap analysis:
+`C:\Projects\benchmark-gap-analysis-2026-07-06.md`.
+
+**Held-out (FULL 139), Claude+agy+floor:**
+| arm | panel | caught-defect (95% Wilson) | false-alarm | agreement | blended | model calls |
+|---|---|---|---|---|---|---|
+| **A** single | Claude | 0.802 (101/126) [0.724, 0.862] | 0.308 (4/13) | 0.265 | 0.994 | 139 Claude |
+| **B** homogeneous ×3 | Claude×3 | 0.770 (97/126) [0.689, 0.835] | 0.231 (3/13) | 0.256 | **1.039** | 417 Claude |
+| **C** heterogeneous+floor | Claude+agy+witness | **0.921 (116/126) [0.860, 0.956]** | 0.462 (6/13) | **0.412** | 0.959 | 139 Claude + 139 agy |
+| objective-ref | witness only | 0.341 (43/126) | 0.000 | 0.135 | — | 0 |
+
+**Verdict = NOT_PROVEN** — `c_beats_a=False` on the FAR-no-worse clause ONLY (C.FAR 0.462 > A.FAR 0.308);
+`c_beats_b=True`; `affordable=True`. **C's error-catch win is robust and large** (+12 over A, +15 over B,
+tight CI), and agreement-soundness likewise (0.412 vs 0.265/0.256) — but C's false-alarm rate is the worst
+of the three, and because blended penalises FAR at λ=1.0, C's composite is the *lowest*. The integrity gate
+correctly withholds WORLD_CLASS. **The larger slice exposed a calibration cost the lucky 5-clean 40-subset
+hid** (where FAR tied 0.400 and C read WORLD_CLASS).
+
+**Two robustness findings the full slice surfaces:**
+- **Homogeneous self-consistency HURTS.** B (Claude×3) catches *less* than single Claude (0.770 < 0.802) on
+  both sources (witness 34 vs 35, reviewer-only 63 vs 66): majority-of-3 suppresses nondeterministic
+  single-run catches (and false alarms). *More same-vendor agents is a precision/sensitivity trade, not a
+  detector gain* — the differentiator must be a **different** vendor. (40-subset had B≈A; full slice shows B<A.)
+- **C's win decomposes into two distinct real sources:** witness floor recovers **8 arithmetic defects
+  Claude alone misses** (witness-detectable A/B/C = 35/34/**43=100%**, zero false alarms); vendor
+  heterogeneity adds **+7 over single-agent on the floor-invisible reviewer-only defects** (reviewer-only
+  A/B/C = 66/63/**73**), where agy hits **50 of its 51 usable reads (98%)**.
+
+**Gap analysis (every residual classified; `gap_analysis.py`, verified to reproduce the 2026-07-06 numbers):**
+C's residual = **10 missed defects + 6 false alarms**.
+- **0** witness_floor_gap (floor 43/43) · **0** aggregation_suppressed (C is already consensus-OR-flag; a
+  single dissent always flags — "flag-on-any-dissent" is the existing rule) · **1** correlated_blind_spot
+  (a single `method_mismatch` both usable vendors missed — the ONLY true cross-vendor blind spot in 126
+  defects) · **9** degraded_vendor_loss · **6** false_alarm_calibration.
+- **The 9 misses are an agy plumbing bug, not a capability gap:** every one is Claude-reviewed-and-missed
+  while agy returned an **unusable async wrapper** (a still-running `Tool is running as a background task …`
+  handle, or a bare `command completed` envelope, no `FLAG:` line, no result body) — **0/9 are hard
+  reasoning failures**. agy reasons fine (98% hit when it answers); handling the async response (poll to
+  completion, read the result body) recovers ≈8–9 of the 9 at ~zero model cost.
+- **The 6 false alarms** = 3 zero-event "RR inestimable" (defensible objection to degenerate data; 2
+  correlated across both vendors) + 3 agy-only "CI-includes-1.0" over-reads → the calibration/abstain gap.
+
+**Ceiling + verdict.** Witness-detectable ceiling = 100% (achieved, 43/43). Reviewer-only ~0.95 after the
+agy fix (irreducible tail = 1 blind spot + hardest method-judgment calls). **Overall caught ceiling ≈ 0.97;
+C is at 0.921 (~6 defects short, ~5 of them the cheap agy-envelope losses).** Mahmood's read holds: near the
+ceiling; residual is vendor-reliability + calibration, **not** capability. **Diminishing returns on a 3rd
+vendor confirmed** — its marginal-catch ceiling is ~1 defect (only 1 correlated blind spot exists).
+
+**Top cheap closes (net-positive only):** (1) **agy async-envelope poll** — ~free, caught 0.921→~0.97
+(biggest catch-gain/$); (2) **conformal accept/abstain gate (PV-B)** — ~free, FAR 0.462→~0.15, blended
+0.959→~1.19 → **flips win-condition to WORLD_CLASS and blended two-slice to PROMOTE** (the lever that proves
+the win); (3) **3rd vendor only via adaptive-quorum (PV-A)**, gated to hard cases — marginal ~1 defect, a
+measurement not an improvement. Plus AN-C Rogan–Gladen debias (free reporting rigor).
+
+**Two-slice (frozen, sealed FULL 73: 72 defect / 1 clean) — caught-defect confirmation, all arms VALID:**
+| arm | frozen caught-defect (95% Wilson) | held-out caught-defect | frozen blended |
+|---|---|---|---|
+| A | 0.681 (49/72) [0.566, 0.777] | 0.802 | 0.181 |
+| B | 0.694 (50/72) [0.581, 0.789] | 0.770 | 0.194 |
+| **C** | **0.778 (56/72) [0.669, 0.858]** | **0.921** | **0.278** |
+
+C's caught-defect lead over A and B **re-holds on the sealed slice** (0.778 vs 0.681/0.694) → **the win is
+robust, not slice-luck.** The frozen run's `evaluate_win_condition` returns WORLD_CLASS, but its FAR clause
+is *vacuous* there (1 clean task, flagged by all three → FAR ties 1.0). So: **caught-defect two-slice =
+CONFIRMED** (C wins both slices); **blended two-slice = does NOT promote** (C wins frozen blended 0.278 >
+0.194/0.181 where FAR ties, but loses held-out blended 0.959 < B 1.039 where the informative 13-clean FAR
+penalises it). The held-out NOT_PROVEN is the *only* informative FAR measurement; the conformal gate closes
+it.
+
+**Honest correction to the entry below:** the 2026-07-06 decisive run reported two-slice PROMOTE on
+*blended*; on the full slice that does NOT hold (C's FAR-penalised blended 0.959 is the lowest of the three,
+so a blended two-slice would REJECT). The robust win is **caught-defect + agreement**, not the composite —
+until the conformal gate fixes FAR. The 40-subset's blended win was an artifact of a lucky FAR tie on 5
+clean tasks.
+
+Artifacts: `benchmark_data/runs_live/scorecard.{md,json}` + `arm_{A,B,C}.jsonl` (full 139),
+`benchmark_data/runs_frozen/` (frozen).
+
 ## DECISIVE A/B/C — Claude(laptop subscription over SSH) + agy — 2026-07-06 (WORLD_CLASS, two-slice confirmed)
 
 The first fully-valid A/B/C with a live frontier model in the panel. **Arm C (heterogeneous

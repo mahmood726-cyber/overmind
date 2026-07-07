@@ -1,23 +1,22 @@
 {
  "slice": "FROZEN",
- "n": 40,
+ "n": 73,
  "picked": [
   "claude",
-  "codex",
   "agy"
  ],
  "arms": {
   "A": {
    "arm": "A",
-   "n": 40,
-   "defects": 39,
+   "n": 73,
+   "defects": 72,
    "cleans": 1,
-   "caught": 27,
+   "caught": 49,
    "false_alarms": 1,
-   "caught_defect_rate": 0.6923,
+   "caught_defect_rate": 0.6806,
    "caught_defect_ci95": [
-    0.5358,
-    0.8143
+    0.5661,
+    0.7767
    ],
    "false_alarm_rate": 1.0,
    "false_alarm_ci95": [
@@ -26,23 +25,23 @@
    ],
    "parity_rate": 1.0,
    "agreement_soundness": 0.0,
-   "accepted": 12,
+   "accepted": 23,
    "accepted_correct": 0,
    "total_cost_usd": 0.0,
    "cost_per_accepted_change": null,
-   "blended": 0.1923
+   "blended": 0.1806
   },
   "B": {
    "arm": "B",
-   "n": 40,
-   "defects": 39,
+   "n": 73,
+   "defects": 72,
    "cleans": 1,
-   "caught": 26,
+   "caught": 50,
    "false_alarms": 1,
-   "caught_defect_rate": 0.6667,
+   "caught_defect_rate": 0.6944,
    "caught_defect_ci95": [
-    0.5098,
-    0.7937
+    0.5805,
+    0.7887
    ],
    "false_alarm_rate": 1.0,
    "false_alarm_ci95": [
@@ -51,23 +50,23 @@
    ],
    "parity_rate": 1.0,
    "agreement_soundness": 0.0,
-   "accepted": 13,
+   "accepted": 22,
    "accepted_correct": 0,
    "total_cost_usd": 0.0,
    "cost_per_accepted_change": null,
-   "blended": 0.1667
+   "blended": 0.1944
   },
   "C": {
    "arm": "C",
-   "n": 40,
-   "defects": 39,
+   "n": 73,
+   "defects": 72,
    "cleans": 1,
-   "caught": 29,
+   "caught": 56,
    "false_alarms": 1,
-   "caught_defect_rate": 0.7436,
+   "caught_defect_rate": 0.7778,
    "caught_defect_ci95": [
-    0.5892,
-    0.8543
+    0.6691,
+    0.8583
    ],
    "false_alarm_rate": 1.0,
    "false_alarm_ci95": [
@@ -76,23 +75,29 @@
    ],
    "parity_rate": 1.0,
    "agreement_soundness": 0.0,
-   "accepted": 10,
+   "accepted": 16,
    "accepted_correct": 0,
    "total_cost_usd": 0.0,
    "cost_per_accepted_change": null,
-   "blended": 0.2436
+   "blended": 0.2778
   }
  },
  "valid": {
   "A": true,
   "B": true,
-  "C": false
+  "C": true
  },
- "win_condition": null,
+ "win_condition": {
+  "c_beats_a": true,
+  "c_beats_b": true,
+  "affordable": true,
+  "verdict": "WORLD_CLASS",
+  "notes": []
+ },
  "notes": [
   "preflight claude:oauth = LIVE (ok)",
-  "preflight codex:mahmood = LIVE (ok)",
-  "preflight codex:noreen = DOWN (JUDGE_ERROR: exit 1: 2026-07-06T13:03:58.817796Z ERROR codex_models_ma)",
+  "preflight codex:mahmood = DOWN (unavailable (no codex CLI / CODEX_HOME))",
+  "preflight codex:noreen = DOWN (unavailable (no codex CLI / CODEX_HOME))",
   "preflight agy:default = LIVE (ok)",
   "preflight gemini:api = DOWN (JUDGE_ERROR: HTTPError: HTTP Error 429: Too Many Requests)"
  ]
