@@ -30,13 +30,14 @@ class ArmSpec:
     name: str                      # "A" | "B" | "C"
     reviewers: list                # list of reviewer callables
     use_witness: bool = False      # C uses the objective-gate floor
+    gate: object = None            # optional conformal accept/abstain gate (C only)
 
     def aggregate(self, task: Task, reviewer_verdicts: list, witness_defect: bool) -> ArmVerdict:
         if self.name == "A":
             return arm_a(task.id, reviewer_verdicts)
         if self.name == "B":
             return arm_b(task.id, reviewer_verdicts)
-        return arm_c(task.id, reviewer_verdicts, witness_defect)
+        return arm_c(task.id, reviewer_verdicts, witness_defect, gate=self.gate)
 
 
 # An arm whose reviewers were usable on fewer than this fraction of tasks is a
@@ -147,4 +148,5 @@ def _verdict_from_dict(rec: dict) -> ArmVerdict:
         task_id=rec["task_id"], arm=rec["arm"], flag=bool(rec["flag"]),
         accepted=bool(rec["accepted"]), deciding=rec.get("deciding", ""),
         reviewer_flags=list(rec.get("reviewer_flags", [])), witness_defect=rec.get("witness_defect"),
+        abstained=bool(rec.get("abstained", False)),
     )

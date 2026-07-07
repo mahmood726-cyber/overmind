@@ -52,6 +52,8 @@ class ArmMetrics:
     repro_total: int
     repro_correct: int
     total_cost_usd: float
+    abstained: int = 0                 # conformal gate declined to judge (reporting only)
+    abstained_on_defect: int = 0       # of those, how many were true defects (catch cost)
 
     @property
     def caught_defect_rate(self) -> float | None:
@@ -92,10 +94,16 @@ class ArmMetrics:
             4,
         )
 
+    @property
+    def abstain_rate(self) -> float | None:
+        return None if self.n == 0 else round(self.abstained / self.n, 4)
+
     def to_dict(self) -> dict:
         return {
             "arm": self.arm, "n": self.n, "defects": self.defects, "cleans": self.cleans,
             "caught": self.caught, "false_alarms": self.false_alarms,
+            "abstained": self.abstained, "abstained_on_defect": self.abstained_on_defect,
+            "abstain_rate": self.abstain_rate,
             "caught_defect_rate": self.caught_defect_rate,
             "caught_defect_ci95": self.caught_defect_ci,
             "false_alarm_rate": self.false_alarm_rate,
@@ -116,6 +124,7 @@ def score_arm(arm: str, verdicts: dict, keys: dict, costs: dict | None = None) -
     defects = cleans = caught = false_alarms = 0
     accepted = accepted_correct = 0
     repro_total = repro_correct = 0
+    abstained = abstained_on_defect = 0
     total_cost = 0.0
     for tid, key in keys.items():
         v = verdicts.get(tid)
@@ -123,6 +132,10 @@ def score_arm(arm: str, verdicts: dict, keys: dict, costs: dict | None = None) -
             continue
         total_cost += float(costs.get(tid, 0.0))
         has_defect = key.has_defect
+        if getattr(v, "abstained", False):
+            abstained += 1
+            if has_defect:
+                abstained_on_defect += 1
         if has_defect:
             defects += 1
             if v.flag:
@@ -146,6 +159,7 @@ def score_arm(arm: str, verdicts: dict, keys: dict, costs: dict | None = None) -
         defects=defects, cleans=cleans, caught=caught, false_alarms=false_alarms,
         accepted=accepted, accepted_correct=accepted_correct,
         repro_total=repro_total, repro_correct=repro_correct, total_cost_usd=total_cost,
+        abstained=abstained, abstained_on_defect=abstained_on_defect,
     )
 
 

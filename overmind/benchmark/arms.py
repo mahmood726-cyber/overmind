@@ -22,15 +22,17 @@ class ArmVerdict:
     task_id: str
     arm: str
     flag: bool                    # arm asserts a defect
-    accepted: bool                # not flag
-    deciding: str                 # what drove it (witness / consensus / reviewer / majority)
+    accepted: bool                # accepts as clean (not flag AND not abstained)
+    deciding: str                 # what drove it (witness / consensus / reviewer / majority / abstain)
     reviewer_flags: list[bool] = field(default_factory=list)
     witness_defect: bool | None = None
+    abstained: bool = False       # conformal gate declined to judge (neither flag nor accept)
 
     def to_dict(self) -> dict:
         return {"task_id": self.task_id, "arm": self.arm, "flag": self.flag,
                 "accepted": self.accepted, "deciding": self.deciding,
-                "reviewer_flags": list(self.reviewer_flags), "witness_defect": self.witness_defect}
+                "reviewer_flags": list(self.reviewer_flags), "witness_defect": self.witness_defect,
+                "abstained": self.abstained}
 
 
 def arm_a(task_id: str, reviewer_verdicts: list) -> ArmVerdict:
@@ -50,12 +52,17 @@ def arm_b(task_id: str, reviewer_verdicts: list) -> ArmVerdict:
     return ArmVerdict(task_id, "B", flag, not flag, f"majority({votes_flag}/{len(flags)})", flags, None)
 
 
-def arm_c(task_id: str, reviewer_verdicts: list, witness_defect: bool) -> ArmVerdict:
-    """Heterogeneous consensus-or-flag + objective-gate floor (D1+D2).
+def arm_c(task_id: str, reviewer_verdicts: list, witness_defect: bool, gate=None) -> ArmVerdict:
+    """Heterogeneous consensus-or-flag + objective-gate floor (D1+D2), with an
+    optional conformal accept/abstain gate (PV-B).
 
-    The witness is the FLOOR: a deterministic defect flags regardless of reviewers.
-    Otherwise reviewers must unanimously agree "clean" to accept; any flag or any
-    disagreement -> flag."""
+    The witness is the FLOOR: a deterministic defect flags regardless of reviewers
+    and is NEVER abstained. Otherwise reviewers must unanimously agree "clean" to
+    accept; any flag or any disagreement -> flag. When a ``gate`` is supplied, a
+    reviewer-driven flag whose confidence is below the gate's calibrated threshold
+    is converted to an ABSTENTION (neither flag nor accept) — a borderline
+    significance/degeneracy objection declines to judge instead of crying wolf.
+    Passing ``gate=None`` (the default) keeps the pre-gate behavior byte-for-byte."""
     flags = [bool(v.flag) for v in reviewer_verdicts]
     if witness_defect:
         return ArmVerdict(task_id, "C", True, False, "objective_gate_floor", flags, True)
@@ -64,6 +71,10 @@ def arm_c(task_id: str, reviewer_verdicts: list, witness_defect: bool) -> ArmVer
         # but mark deciding so the report shows there was no cross-vendor corroboration.
         return ArmVerdict(task_id, "C", False, True, "witness_only_no_reviewers", flags, False)
     if any(flags):
+        # a reviewer-driven flag: consult the conformal gate (if any) before asserting.
+        if gate is not None and gate.should_abstain(reviewer_verdicts):
+            return ArmVerdict(task_id, "C", False, False, "conformal_abstain", flags, False,
+                              abstained=True)
         return ArmVerdict(task_id, "C", True, False, "consensus_or_flag(review_flag)", flags, False)
     # all reviewers agree clean AND witness clean
     return ArmVerdict(task_id, "C", False, True, "consensus_clean+witness_clean", flags, False)

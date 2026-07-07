@@ -171,6 +171,102 @@ def test_arm_c_consensus_or_flag():
     assert arm_c("t", [_rv(False), _rv(False)], witness_defect=False).accepted is True
 
 
+# --- conformal accept/abstain gate (PV-B) ---------------------------------------
+
+def _rev(flag, reason="", vendor="claude", usable=True):
+    return ReviewerVerdict(flag=flag, reason=reason, vendor=vendor, usable=usable)
+
+
+def test_reason_classifiers():
+    from overmind.benchmark.conformal import reason_is_sig_only, reason_is_structural
+    # significance / degeneracy objection with no structural defect -> sig-only
+    assert reason_is_sig_only("95% CI [0.88, 1.21] includes 1.0, non-significant") is True
+    assert reason_is_sig_only("All studies have 0 events, RR not estimable") is True
+    # a concrete structural defect -> NOT sig-only, IS structural
+    assert reason_is_structural("outcome is a mean difference but labelled as a risk ratio") is True
+    assert reason_is_sig_only("zero events, but the comparator arms are swapped") is False
+
+
+def test_flag_confidence_ranks_borderline_below_structural():
+    from overmind.benchmark.conformal import flag_confidence
+    # a lone vendor's significance-only flag while the other vendor accepted = low
+    borderline = flag_confidence([_rev(True, "CI includes 1.0, non-significant", "agy"),
+                                  _rev(False, "looks fine", "claude")])
+    # a structural defect flag = high
+    structural = flag_confidence([_rev(True, "comparator arms are swapped", "claude")])
+    assert borderline < 0.5 < structural
+    # no reviewer flag -> not abstain-eligible (confidence 1.0)
+    assert flag_confidence([_rev(False), _rev(False)]) == 1.0
+
+
+def test_calibrate_threshold_retains_defects():
+    from overmind.benchmark.conformal import calibrate_threshold, NO_ABSTAIN
+    confs = [0.1, 0.2, 0.9, 0.9, 0.9, 0.9, 0.9, 0.9, 0.9, 0.9]  # 10 defect flags
+    # alpha=0.1 -> budget 1 -> abstain (<= tau) at most 1 defect flag
+    tau = calibrate_threshold(confs, alpha=0.1)
+    abstained = sum(1 for c in confs if c <= tau)
+    assert abstained <= 1   # retained >= (1-alpha) of defect flags
+    assert tau == 0.1       # isolates the single lowest
+    assert calibrate_threshold([], alpha=0.1) == NO_ABSTAIN     # no defects -> fail-open
+    assert calibrate_threshold(confs, alpha=0.0) == NO_ABSTAIN  # zero budget -> fail-open
+
+
+def test_calibrate_threshold_abstains_tied_band_within_budget():
+    from overmind.benchmark.conformal import calibrate_threshold, ConformalGate
+    # a tied low-confidence band of 2 among 12 defect flags; alpha must fit the tie
+    confs = [0.15, 0.15] + [0.9] * 10
+    # budget 1 (alpha=0.1) cannot fit the tied pair -> abstain nothing
+    assert sum(1 for c in confs if c <= calibrate_threshold(confs, alpha=0.10)) == 0
+    # budget 2 (alpha=0.17) fits the tied band -> abstain both
+    tau = calibrate_threshold(confs, alpha=0.17)
+    assert sum(1 for c in confs if c <= tau) == 2
+
+
+def test_arm_c_gate_abstains_borderline_flag():
+    from overmind.benchmark.conformal import ConformalGate
+    gate = ConformalGate(tau=0.5)
+    # a single-vendor significance-only flag (the other vendor accepts) -> abstain
+    panel = [_rev(True, "CI includes 1.0, non-significant", "agy"),
+             _rev(False, "correct", "claude")]
+    v = arm_c("t", panel, witness_defect=False, gate=gate)
+    assert v.abstained is True and v.flag is False and v.accepted is False
+    assert v.deciding == "conformal_abstain"
+
+
+def test_arm_c_gate_never_abstains_structural_flag_or_witness():
+    from overmind.benchmark.conformal import ConformalGate
+    gate = ConformalGate(tau=0.5)
+    # a structural defect flag stays a flag (high confidence)
+    v = arm_c("t", [_rev(True, "comparator arms swapped", "claude")], witness_defect=False, gate=gate)
+    assert v.flag is True and v.abstained is False
+    # the witness floor is NEVER abstained, even with a gate present
+    w = arm_c("t", [_rev(False, "", "claude")], witness_defect=True, gate=gate)
+    assert w.flag is True and w.abstained is False and w.deciding == "objective_gate_floor"
+
+
+def test_arm_c_no_gate_is_unchanged():
+    # default (gate=None) keeps consensus-or-flag byte-for-byte
+    v = arm_c("t", [_rev(True, "CI includes 1.0", "agy"), _rev(False)], witness_defect=False)
+    assert v.flag is True and v.abstained is False
+
+
+def test_score_arm_counts_abstain_and_excludes_from_far_and_caught():
+    from overmind.benchmark.arms import ArmVerdict
+    _, keys = _tasks_and_keys()   # d1,d2 defects; c1 clean; r1 defect(repro)
+    verdicts = {
+        "d1": ArmVerdict("d1", "C", True, False, "x"),                        # caught
+        "d2": ArmVerdict("d2", "C", False, False, "conformal_abstain", abstained=True),  # abstained defect
+        "c1": ArmVerdict("c1", "C", False, False, "conformal_abstain", abstained=True),  # abstained clean
+        "r1": ArmVerdict("r1", "C", True, False, "x"),                        # caught
+    }
+    m = score_arm("C", verdicts, keys)
+    assert m.abstained == 2 and m.abstained_on_defect == 1
+    assert m.false_alarms == 0          # abstained clean is NOT a false alarm
+    assert m.caught == 2                 # d2 abstained -> not caught (bounded catch cost)
+    d = m.to_dict()
+    assert d["abstained"] == 2 and d["abstain_rate"] is not None
+
+
 # --- reviewer parsing -----------------------------------------------------------
 
 def test_parse_reviewer_output():

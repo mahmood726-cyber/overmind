@@ -31,6 +31,13 @@ def render_markdown(scorecard: dict) -> str:
             lines.append(f"- {n}")
     else:
         lines.append("_Pending: needs Arms A, B, C all run (model capacity)._")
+    wcg = scorecard.get("win_condition_conformal")
+    if wcg:
+        lines += ["", "### With conformal accept/abstain gate (PV-B)",
+                  f"**Verdict: {wcg['verdict']}** (C>A={wcg['c_beats_a']}, C>B={wcg['c_beats_b']}, "
+                  f"affordable={wcg['affordable']})"]
+        for n in wcg.get("notes", []):
+            lines.append(f"- {n}")
     if scorecard.get("notes"):
         lines += ["", "## Notes"]
         lines += [f"- {n}" for n in scorecard["notes"]]

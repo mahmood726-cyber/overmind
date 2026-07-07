@@ -28,6 +28,7 @@ from __future__ import annotations
 import json
 import logging
 import os
+import re
 import shutil
 import subprocess
 import sys
@@ -239,6 +240,55 @@ class CodexBackend:
         return self.runner(argv, prompt, {"CODEX_HOME": str(self._codex_home())}, self.timeout)
 
 
+# --- agy async-envelope handling (gap-analysis close #1) ------------------------
+# agy (Antigravity/Gemini) is an AGENTIC model: given a question it frequently runs
+# a *tool* (execute a python snippet, list a directory) instead of answering, and
+# the driver returns the tool-invocation ENVELOPE as the turn's "text" — a
+# still-running handle ("Tool is running as a background task with task id …") or a
+# bare "Created At: … / The command completed" wrapper with no answer body. That
+# envelope has no FLAG/VERDICT line, so the reviewer parses it as unusable and agy's
+# real judgment is lost. In the 2026-07-06 held-out run this was 9 of Arm C's 10
+# missed defects — NOT a reasoning failure (agy hits ~98% when it actually answers),
+# a plumbing bug. The fix: (a) prepend a directive that forbids tool use and demands
+# a direct plain-text answer, and (b) if an envelope still comes back, POLL — re-ask
+# (bounded) until a real answer is captured, then fail closed if it never is.
+_AGY_DIRECT_ANSWER_PREFIX = (
+    "IMPORTANT: You are a text-only reviewer. Do NOT run any tools, code, shell, or "
+    "background commands, and do NOT inspect the filesystem. Reason only from the "
+    "text in this message and reply in plain text with the answer directly.\n\n"
+)
+_AGY_RETRY_PREFIX = (
+    "CRITICAL: Your previous reply launched a tool/background task instead of "
+    "answering. Do NOT run any tool, command, or background task. Answer NOW, using "
+    "ONLY your own reasoning over the text below, in plain text.\n\n"
+)
+# Markers of a driver tool-envelope rather than a model answer.
+_AGY_ENVELOPE_MARKERS = (
+    "is running as a background task",
+    "The command completed",
+    "The command failed with exit code",
+    "Completed At:",
+)
+_AGY_ANSWER_RE = re.compile(r"\b(FLAG|VERDICT|ANSWER)\s*:", re.IGNORECASE)
+
+
+def is_async_envelope(text: str) -> bool:
+    """True when ``text`` is an agy tool-invocation envelope, not a model answer.
+
+    An answer (a FLAG/VERDICT/ANSWER line) is never treated as an envelope even if a
+    tool also ran. Otherwise a leading ``Created At:`` tool-step header, a
+    still-running background-task handle, or a ``command completed`` wrapper marks an
+    envelope. Empty text is NOT an envelope (a distinct failure handled by caller)."""
+    t = (text or "").strip()
+    if not t:
+        return False
+    if _AGY_ANSWER_RE.search(t):
+        return False
+    if t.startswith("Created At:"):
+        return True
+    return any(m in t for m in _AGY_ENVELOPE_MARKERS)
+
+
 @dataclass(slots=True)
 class AgyBackend:
     """Judge via the agy-driver (Antigravity/Gemini over OAuth).
@@ -246,12 +296,18 @@ class AgyBackend:
     Uses the user's Gemini quota through the logged-in Antigravity session
     rather than the shared API key — diversifies the blast radius. The driver
     takes the prompt as a CLI arg and emits JSON with a ``text`` field.
+
+    Because agy is agentic and tends to run tools rather than answer, ``query``
+    prepends a no-tools directive and POLLS (bounded ``max_polls`` re-asks) past any
+    async envelope until a real answer is captured — recovering agy's judgment
+    instead of dropping an unusable wrapper. See ``is_async_envelope``.
     """
 
     model: str = "pro"
     timeout: int = 180
     runner: Runner = _default_runner
     driver_path: str | None = None
+    max_polls: int = 3            # total attempts (1 initial + up to 2 re-polls) on an envelope
 
     def _driver(self) -> Path | None:
         override = self.driver_path or os.environ.get("AGY_DRIVER_PATH")
@@ -264,21 +320,46 @@ class AgyBackend:
     def available(self) -> bool:
         return self._driver() is not None
 
+    def _argv(self, driver: Path, prompt: str) -> list[str]:
+        return ["python", str(driver), "--json", "--quiet-driver", "--model", self.model, prompt]
+
+    @staticmethod
+    def _extract_answer(raw: str) -> str:
+        """Pull the model answer out of the driver's --json payload. Prefers a
+        FLAG/VERDICT-bearing chunk (recovering an answer emitted BEFORE a trailing
+        tool step) over the terminal ``text`` field."""
+        try:
+            data = json.loads(raw)
+        except json.JSONDecodeError:
+            return raw  # non-JSON banner lines — fall back to raw text
+        text = (data.get("text") or "").strip()
+        if _AGY_ANSWER_RE.search(text):
+            return text
+        all_model = (data.get("all_model_text") or "").strip()
+        if _AGY_ANSWER_RE.search(all_model):
+            return all_model
+        return text
+
     def query(self, prompt: str) -> str:
         driver = self._driver()
         if driver is None:
             return f"{JUDGE_ERROR} agy-driver not found"
-        argv = ["python", str(driver), "--json", "--model", self.model, prompt]
-        raw = self.runner(argv, "", {}, self.timeout)
-        if raw.startswith(JUDGE_ERROR):
-            return raw
-        try:
-            data = json.loads(raw)
-        except json.JSONDecodeError:
-            # Driver may print non-JSON banner lines; fall back to raw text.
-            return raw
-        text = data.get("text", "")
-        return text if text else f"{JUDGE_ERROR} agy returned empty text"
+        attempts = max(1, self.max_polls)
+        last_text = ""
+        for i in range(attempts):
+            prefix = _AGY_DIRECT_ANSWER_PREFIX if i == 0 else _AGY_RETRY_PREFIX
+            raw = self.runner(self._argv(driver, prefix + prompt), "", {}, self.timeout)
+            if raw.startswith(JUDGE_ERROR):
+                return raw
+            text = self._extract_answer(raw)
+            if text:
+                last_text = text
+            if text and not is_async_envelope(text):
+                return text
+            # envelope or empty -> poll again with a stronger no-tools directive
+        if not last_text:
+            return f"{JUDGE_ERROR} agy returned empty text"
+        return f"{JUDGE_ERROR} agy returned only an async envelope after {attempts} polls"
 
 
 @dataclass(slots=True)

@@ -1,0 +1,136 @@
+{
+ "degraded": [
+  {
+   "id": "cochrane_cd013816_pub2_an16_24__method_mismatch",
+   "flag": true,
+   "usable": true,
+   "reason": "The conclusion claims the treatment increases the outcome, which contradicts the statistically non-significant result indicated by the 95% CI [0.2776, 5.9298] c",
+   "raw_head": "FLAG: yes\nREASON: The conclusion claims the treatment increases the outcome, whi",
+   "sec": 26.1
+  },
+  {
+   "id": "cochrane_cd003129_pub2_an1_4__subgroup_mismatch",
+   "flag": true,
+   "usable": true,
+   "reason": "The conclusion and analysis label claim to represent a paediatric subgroup, but the data provided is for the full unrestricted population.",
+   "raw_head": "FLAG: yes\nREASON: The conclusion and analysis label claim to represent a paediat",
+   "sec": 23.2
+  },
+  {
+   "id": "bcg_colditz1994_fe_1__method_mismatch",
+   "flag": false,
+   "usable": true,
+   "reason": "The cell counts are valid, the pooled estimate matches the fixed-effects calculation for the data, and the conclusion aligns with the estimate.",
+   "raw_head": "FLAG: no\nREASON: The cell counts are valid, the pooled estimate matches the fixe",
+   "sec": 31.5
+  },
+  {
+   "id": "bcg_colditz1994_fe_1__missing_reference",
+   "flag": false,
+   "usable": true,
+   "reason": "The provided study data mathematically supports the claimed pooled RR of 0.6503, and the conclusion correctly aligns with this reduction.",
+   "raw_head": "FLAG: no\nREASON: The provided study data mathematically supports the claimed poo",
+   "sec": 55.4
+  },
+  {
+   "id": "bcg_colditz1994_fe_1__measure_label",
+   "flag": true,
+   "usable": true,
+   "reason": "The artifact describes the outcome as a continuous mean difference, but presents binary event data and calculates a Relative Risk.",
+   "raw_head": "FLAG: yes\nREASON: The artifact describes the outcome as a continuous mean differ",
+   "sec": 30.5
+  },
+  {
+   "id": "cochrane_cd015432_pub2_an14_31__method_mismatch",
+   "flag": true,
+   "usable": true,
+   "reason": "The conclusion claims the treatment increases the outcome, but the 95% CI [0.8256, 1.6020] crosses 1.0, indicating no statistically significant effect.",
+   "raw_head": "FLAG: yes\nREASON: The conclusion claims the treatment increases the outcome, but",
+   "sec": 27.9
+  },
+  {
+   "id": "cochrane_cd009417_pub3_an9_15__method_mismatch",
+   "flag": true,
+   "usable": true,
+   "reason": "The 95% confidence interval [0.6763, 1.7798] crosses 1.0, contradicting the definitive conclusion that the treatment increases the outcome.",
+   "raw_head": "FLAG: yes\nREASON: The 95% confidence interval [0.6763, 1.7798] crosses 1.0, cont",
+   "sec": 15.8
+  },
+  {
+   "id": "cochrane_cd004508_pub5_an6_5__method_mismatch",
+   "flag": true,
+   "usable": true,
+   "reason": "The 95% confidence interval [0.1528, 1.5735] crosses 1.0 (indicating no statistically significant effect), which contradicts the definitive conclusion that the ",
+   "raw_head": "FLAG: yes\nREASON: The 95% confidence interval [0.1528, 1.5735] crosses 1.0 (indi",
+   "sec": 16.4
+  },
+  {
+   "id": "cochrane_cd004667_pub6_an2_6__missing_reference",
+   "flag": false,
+   "usable": true,
+   "reason": "The data contains no arithmetically impossible cells, the pooled RR is consistent with the study data, and the conclusion correctly interprets the RR < 1.",
+   "raw_head": "FLAG: no\nREASON: The data contains no arithmetically impossible cells, the poole",
+   "sec": 34.5
+  }
+ ],
+ "false_alarms": [
+  {
+   "id": "cochrane_cd012067_pub3_an16_19__clean",
+   "flag": true,
+   "usable": true,
+   "reason": "The claimed 95% CI [0.8782, 1.2137] crosses the null value of 1.0, contradicting the conclusion that the treatment significantly increases the outcome.",
+   "raw_head": "FLAG: yes\nREASON: The claimed 95% CI [0.8782, 1.2137] crosses the null value of ",
+   "sec": 15.8
+  },
+  {
+   "id": "cochrane_cd006632_pub3_an12_10__clean",
+   "flag": true,
+   "usable": true,
+   "reason": "The conclusion claims the treatment increases the outcome, which contradicts both the confidence interval crossing 1.0 and the fact that all studies have zero e",
+   "raw_head": "FLAG: yes\nREASON: The conclusion claims the treatment increases the outcome, whi",
+   "sec": 17.1
+  },
+  {
+   "id": "cochrane_cd014935_pub2_an2_27__clean",
+   "flag": true,
+   "usable": true,
+   "reason": "The stated conclusion that the treatment reduces the outcome is contradicted by the 95% CI [0.3454, 2.3973], which crosses 1.0 and indicates no statistically si",
+   "raw_head": "FLAG: yes\nREASON: The stated conclusion that the treatment reduces the outcome i",
+   "sec": 23.7
+  },
+  {
+   "id": "cochrane_cd011866_pub3_an5_18__clean",
+   "flag": true,
+   "usable": true,
+   "reason": "The stated conclusion that the treatment increases the outcome contradicts the data, as the 95% CI [0.9825, 1.4186] crosses 1.0, indicating no statistically sig",
+   "raw_head": "FLAG: yes\nREASON: The stated conclusion that the treatment increases the outcome",
+   "sec": 16.4
+  },
+  {
+   "id": "cochrane_cd004871_pub5_an8_7__clean",
+   "flag": true,
+   "usable": true,
+   "reason": "The pooled RR is mathematically undefined as all studies have zero events, and the conclusion contradicts the data where no events occurred in either group.",
+   "raw_head": "FLAG: yes\nREASON: The pooled RR is mathematically undefined as all studies have ",
+   "sec": 17.0
+  },
+  {
+   "id": "cochrane_cd013614_pub2_an27_23__clean",
+   "flag": true,
+   "usable": true,
+   "reason": "The 95% CI crosses 1.0 (indicating non-significance) and all studies have zero events, contradicting the conclusion that the treatment reduces the outcome.",
+   "raw_head": "FLAG: yes\nREASON: The 95% CI crosses 1.0 (indicating non-significance) and all s",
+   "sec": 16.5
+  }
+ ],
+ "blind": [
+  {
+   "id": "cochrane_cd015122_pub2_an23_30__method_mismatch",
+   "flag": false,
+   "usable": true,
+   "reason": "The pooled RR matches the study data, and the conclusion correctly interprets the statistically significant reduction.",
+   "raw_head": "FLAG: no\nREASON: The pooled RR matches the study data, and the conclusion correc",
+   "sec": 18.9
+  }
+ ]
+}

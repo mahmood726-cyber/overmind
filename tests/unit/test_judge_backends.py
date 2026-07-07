@@ -105,6 +105,71 @@ def test_agy_backend_missing_driver_errors():
     assert out.startswith(JUDGE_ERROR)
 
 
+# --- agy async-envelope poll (gap-analysis close #1) ----------------------------
+
+def test_is_async_envelope_detects_wrappers():
+    from overmind.verification.judge_backends import is_async_envelope
+    # a still-running background-task handle
+    assert is_async_envelope(
+        "Created At: 2026-07-06T12:33:04Z\nTool is running as a background task with "
+        "task id: 379e66d6/task-6\nTask Description: python -c \"import numpy\"") is True
+    # a bare command-completed / directory-listing envelope (no answer body)
+    assert is_async_envelope("Created At: ...\nCompleted At: ...\n{\"name\":\".ssh\"}") is True
+    # a real answer is NEVER an envelope, even if a tool also ran
+    assert is_async_envelope("Created At: ...\nFLAG: yes\nREASON: impossible cell") is False
+    assert is_async_envelope("FLAG: no\nREASON: fine") is False
+    assert is_async_envelope("VERDICT: PASS") is False
+    assert is_async_envelope("") is False
+
+
+def test_agy_backend_prepends_no_tools_directive(tmp_path: Path):
+    driver = tmp_path / "agy_driver.py"
+    driver.write_text("# stub", encoding="utf-8")
+    cap: dict = {}
+    resp = json.dumps({"text": "FLAG: no\nREASON: fine", "complete": True})
+    AgyBackend(driver_path=str(driver), runner=_capturing_runner(cap, resp)).query("REVIEW THIS")
+    prompt_arg = cap["argv"][-1]
+    assert "Do NOT run any tools" in prompt_arg and prompt_arg.endswith("REVIEW THIS")
+
+
+def test_agy_backend_polls_past_envelope_until_real_answer(tmp_path: Path):
+    driver = tmp_path / "agy_driver.py"
+    driver.write_text("# stub", encoding="utf-8")
+    envelope = json.dumps({"text": "Created At: x\nTool is running as a background task "
+                                   "with task id: abc/task-1", "complete": True})
+    answer = json.dumps({"text": "FLAG: yes\nREASON: comparator swapped", "complete": True})
+    calls = {"n": 0}
+
+    def flaky_runner(argv, stdin_text, env_overrides, timeout):
+        calls["n"] += 1
+        return envelope if calls["n"] == 1 else answer   # 1st = envelope, 2nd = real
+
+    out = AgyBackend(driver_path=str(driver), runner=flaky_runner, max_polls=3).query("p")
+    assert "FLAG: yes" in out and calls["n"] == 2   # polled exactly until a real answer
+
+
+def test_agy_backend_envelope_only_fails_closed(tmp_path: Path):
+    driver = tmp_path / "agy_driver.py"
+    driver.write_text("# stub", encoding="utf-8")
+    envelope = json.dumps({"text": "Created At: x\nTool is running as a background task"})
+
+    def always_envelope(argv, stdin_text, env_overrides, timeout):
+        return envelope
+
+    out = AgyBackend(driver_path=str(driver), runner=always_envelope, max_polls=2).query("p")
+    assert out.startswith(JUDGE_ERROR) and "envelope" in out   # never masquerades as an answer
+
+
+def test_agy_backend_recovers_answer_before_trailing_tool_step(tmp_path: Path):
+    # the terminal `text` is an envelope, but an earlier MODEL step held the answer
+    driver = tmp_path / "agy_driver.py"
+    driver.write_text("# stub", encoding="utf-8")
+    resp = json.dumps({"text": "Created At: x\nThe command completed",
+                       "all_model_text": "FLAG: yes\nREASON: impossible cell\n\nCreated At: x"})
+    out = AgyBackend(driver_path=str(driver), runner=_capturing_runner({}, resp), max_polls=2).query("p")
+    assert "FLAG: yes" in out
+
+
 def test_local_model_off_by_default():
     backend = LocalModelBackend(enabled=False)
     assert backend.available() is False

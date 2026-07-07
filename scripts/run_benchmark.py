@@ -163,11 +163,13 @@ def main() -> int:
     notes.extend(preflight_notes)
     notes.append(f"Live vendors this run: {sorted(live) or 'NONE'}.")
     real_metrics: dict[str, ArmMetrics] = {}
+    real_runs: dict[str, object] = {}
 
     def _run_real(name, reviewers, use_witness, cp):
         run = run_arm(ArmSpec(name, reviewers, use_witness=use_witness), held,
                       checkpoint_store=store, results_path=OUT_DIR / f"arm_{name}.jsonl",
                       cost_fn=lambda t, v: _est_cost(v))
+        real_runs[name] = run
         m = score_arm(name, run.verdicts, ho_keys)
         if not run.valid:
             # degraded vendor (reviewers unusable too often) — NOT a valid measurement
@@ -205,13 +207,38 @@ def main() -> int:
     else:
         arms_out.append({"arm": "C", "status": f"STAGED (needs >=2 distinct live families; have {sorted(live)})", "metrics": None})
 
-    # Win condition only when A, B, C all ran.
+    # Conformal accept/abstain gate (PV-B): re-derive Arm C with the calibrated
+    # gate so borderline significance/degeneracy flags abstain instead of crying
+    # wolf. Additive — the ungated Arm C above is untouched; this reports a second
+    # "C (conformal)" arm + a gated win condition. alpha (catch-retention budget) is
+    # pinned; override via OVERMIND_CONFORMAL_ALPHA. The gate is calibrated on the
+    # DEFECT class only (scorer-side keys), preserving clean-label blinding.
+    import os
+    alpha = float(os.environ.get("OVERMIND_CONFORMAL_ALPHA", "0.10"))
+    gated_c_metrics = None
+    if "C" in real_metrics and "C" in real_runs:
+        gated_c_metrics, gate = _conformal_c(real_runs["C"], ho_keys, alpha)
+        arms_out.append({"arm": "C (conformal gate)", "status": "RUN",
+                         "metrics": gated_c_metrics.to_dict()})
+        notes.append(f"Conformal accept/abstain gate (PV-B): alpha={alpha} (retain >= "
+                     f"{1 - alpha:.0%} of catches), tau={gate.tau:.4f}. Borderline "
+                     f"significance/degeneracy flags abstain: Arm C false-alarm "
+                     f"{real_metrics['C'].false_alarm_rate} -> {gated_c_metrics.false_alarm_rate}, "
+                     f"caught {real_metrics['C'].caught_defect_rate} -> "
+                     f"{gated_c_metrics.caught_defect_rate} ({gated_c_metrics.abstained} abstained).")
+
+    # Win condition only when A, B, C all ran (reported for BOTH the raw and the
+    # conformal-gated Arm C — the gate is the PV-B lever on the FAR clause).
     win = None
+    win_gated = None
     if all(k in real_metrics for k in ("A", "B", "C")):
         win = evaluate_win_condition(real_metrics["A"], real_metrics["B"], real_metrics["C"]).to_dict()
+        if gated_c_metrics is not None:
+            win_gated = evaluate_win_condition(real_metrics["A"], real_metrics["B"],
+                                               gated_c_metrics).to_dict()
 
     scorecard = {"slice": str(DATA_DIR), "held_out_n": len(held), "arms": arms_out,
-                 "win_condition": win, "notes": notes}
+                 "win_condition": win, "win_condition_conformal": win_gated, "notes": notes}
     paths = write_scorecard(OUT_DIR, scorecard)
     print(f"objective-ref: caught={ref_m.caught_defect_rate} false_alarm={ref_m.false_alarm_rate} "
           f"parity={ref_m.parity_rate} agreement={ref_m.agreement_soundness}")
@@ -221,6 +248,26 @@ def main() -> int:
     else:
         print("WIN CONDITION: pending (A/B/C not all live yet — re-run on capacity return; resumes via checkpoint)")
     return 0
+
+
+def _conformal_c(c_run, ho_keys, alpha):
+    """Re-derive Arm C with a calibrated conformal accept/abstain gate. Returns
+    (gated_metrics, gate). Calibrated on the DEFECT class only (blinding-preserving)."""
+    from overmind.benchmark.arms import arm_c
+    from overmind.benchmark.conformal import gate_from_defect_flags
+    from overmind.benchmark.reviewers import ReviewerVerdict
+
+    def _panel(tid):
+        return [ReviewerVerdict(flag=bool(r.get("flag")), reason=r.get("reason", "") or "",
+                                vendor=r.get("vendor", "") or "", usable=bool(r.get("usable", True)))
+                for r in c_run.reviewer_records.get(tid, [])]
+
+    defect_ids = {tid for tid, k in ho_keys.items() if k.has_defect and tid in c_run.verdicts}
+    gate = gate_from_defect_flags(c_run.reviewer_records, defect_ids, alpha=alpha)
+    gated = {}
+    for tid, v in c_run.verdicts.items():
+        gated[tid] = arm_c(tid, _panel(tid), bool(v.witness_defect), gate=gate)
+    return score_arm("C (conformal gate)", gated, ho_keys), gate
 
 
 def _est_cost(verdict) -> float:

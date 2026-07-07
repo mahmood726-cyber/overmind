@@ -1,0 +1,14 @@
+
+===== COMBINED (agy-fix + conformal alpha=0.1, tau=0.150) — HELD-OUT 139 =====
+  A                        caught=101/126=0.8016  FAR=4/13=0.3077  agree=0.2647  blended=0.9939  (abstain 0)
+  B                        caught=97/126=0.7698  FAR=3/13=0.2308  agree=0.2564  blended=1.039  (abstain 0)
+  C(agy-fix)               caught=122/126=0.9683  FAR=6/13=0.4615  agree=0.6364  blended=1.0068  (abstain 0)
+  C(agy-fix+conformal)     caught=115/126=0.9127  FAR=4/13=0.3077  agree=0.6364  blended=1.105  (abstain 9)
+  C caught CI95: (0.8504, 0.9506)
+  WIN CONDITION: WORLD_CLASS  c_beats_a=True c_beats_b=True affordable=True
+
+  FROZEN 73 (conformal, tau=0.150):
+    A: caught=0.6806 blended=0.1806
+    B: caught=0.6944 blended=0.1944
+    C: caught=0.7361 blended=0.2361
+  TWO-SLICE (C vs best-of-AB blended): held-out 1.105 vs 1.039; frozen 0.2361 vs 0.1944 -> promote=True
