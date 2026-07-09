@@ -77,6 +77,14 @@ def _normalize(studies: list[Study], measure: str) -> tuple[list[float], list[fl
     ys, vs, labels = [], [], []
     for s in studies:
         if s.yi is not None and s.vi is not None:
+            # Fail closed on non-finite inputs BEFORE the sign check: nan/inf slip
+            # past ``vi <= 0`` (nan<=0 and inf<=0 are both False) and would produce a
+            # schema-valid-but-garbage nan estimate, or an inf variance would silently
+            # drop the study (weight 1/inf = 0) and return a clean-looking pooled value.
+            if not math.isfinite(s.yi):
+                raise PoolingError(f"study {s.label!r} has non-finite yi {s.yi}")
+            if not math.isfinite(s.vi):
+                raise PoolingError(f"study {s.label!r} has non-finite variance {s.vi}")
             if s.vi <= 0:
                 raise PoolingError(f"study {s.label!r} has non-positive variance {s.vi}")
             ys.append(float(s.yi)); vs.append(float(s.vi))
@@ -188,6 +196,15 @@ def pool(studies: list[Study], measure: str = "RR", method: str = "DL") -> dict:
     Returns logRR/logOR pooled estimate, SE, z-Wald CI, tau^2, Q, I^2, and the
     back-transformed ratio + CI. Deterministic; raises PoolingError on bad input.
     """
+    # Fail closed on a ratio measure given in the wrong case (e.g. "rr"/"or"): the
+    # frozenset lookup is case-sensitive, so it would otherwise be silently treated
+    # as difference-scale and NOT back-transformed. The 2x2 path already rejects
+    # these in _binary_effect; this makes the generic (yi,vi) path consistent.
+    if measure not in _RATIO_MEASURES and measure.upper() in _RATIO_MEASURES:
+        raise PoolingError(
+            f"measure {measure!r} looks like a ratio measure in the wrong case; "
+            f"ratio measures are case-sensitive: {sorted(_RATIO_MEASURES)}"
+        )
     ys, vs, labels = _normalize(studies, measure)
     k = len(ys)
     if k < 2:

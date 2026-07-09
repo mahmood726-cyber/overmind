@@ -129,7 +129,14 @@ def classify_check(check: str) -> str:
 
     A completed check can carry a ``: detail`` suffix in some paths (e.g.
     skipped_checks); only the leading token is classified.
+
+    A non-string element in a (malformed) check list is classified ``unknown``
+    rather than crashing: this audit is a shadow safety net and must never take
+    down the hot path, and an unrecognised entry is correctly not an objective
+    floor (fail-closed for the audit).
     """
+    if not isinstance(check, str):
+        return "unknown"
     name = check.split(":", 1)[0].strip().lower()
     if name in OBJECTIVE_CHECKS:
         return "objective"

@@ -47,6 +47,22 @@ def test_classify_check(check, expected):
     assert classify_check(check) == expected
 
 
+@pytest.mark.parametrize("bad", [None, 123, ["build"], object()])
+def test_classify_non_string_is_unknown_not_crash(bad):
+    # the shadow audit must never crash on a malformed check list; a non-string
+    # entry is 'unknown' (fail-closed: not counted as an objective gate).
+    assert classify_check(bad) == "unknown"
+
+
+def test_audit_checks_survives_non_string_element():
+    # a stray non-string in completed_checks must not crash the audit and must not
+    # be counted as an objective witness (so a judge-only ship still flags).
+    audit = audit_checks("t", True, ["semantic_requirements", None, 42])
+    assert audit.would_ship_without_gate is True
+    assert audit.objective_gate_present is False
+    assert None in audit.unknown_checks and 42 in audit.unknown_checks
+
+
 def test_classify_strips_detail_suffix():
     # completed/skipped checks sometimes carry a ": detail" suffix
     assert classify_check("build: exit=0 command=make") == "objective"

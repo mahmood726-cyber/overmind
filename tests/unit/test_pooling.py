@@ -116,6 +116,42 @@ def test_non_positive_variance_fails_closed():
         pool([Study(yi=0.1, vi=0.0), Study(yi=0.2, vi=0.1)])
 
 
+def test_nan_variance_fails_closed():
+    # nan slips past `vi <= 0` (nan<=0 is False) and would produce a silent nan
+    # estimate — must fail closed instead of returning schema-valid garbage.
+    with pytest.raises(PoolingError):
+        pool([Study(yi=0.1, vi=float("nan")), Study(yi=0.2, vi=0.1)])
+
+
+def test_inf_variance_fails_closed():
+    # inf variance -> weight 1/inf = 0 silently drops the study and returns a
+    # clean-looking pooled value computed from the OTHER studies only. Fail closed.
+    with pytest.raises(PoolingError):
+        pool([Study(yi=0.1, vi=float("inf")), Study(yi=0.2, vi=0.1)])
+
+
+def test_non_finite_yi_fails_closed():
+    for bad in (float("nan"), float("inf"), float("-inf")):
+        with pytest.raises(PoolingError):
+            pool([Study(yi=bad, vi=0.2), Study(yi=0.2, vi=0.1)])
+
+
+def test_ratio_measure_wrong_case_fails_closed():
+    # a ratio measure in the wrong case would silently be treated as difference-scale
+    # (no back-transform); reject it so the caller learns the measure is case-sensitive.
+    for bad in ("rr", "or", "hr", "irr", "Rr", "Or"):
+        with pytest.raises(PoolingError):
+            pool([Study(yi=0.1, vi=0.2), Study(yi=0.2, vi=0.3)], measure=bad)
+
+
+def test_lowercase_difference_measure_still_pools_as_difference():
+    # only RATIO measures in the wrong case are rejected; a difference-scale label
+    # (even lowercase) maps to the correct scale and must NOT raise (no regression
+    # for callers passing e.g. "md").
+    r = pool([Study(yi=0.1, vi=0.2), Study(yi=0.2, vi=0.3)], measure="md")
+    assert r["scale"] == "difference" and r["estimate_ratio"] is None
+
+
 def test_difference_scale_measure_is_not_exponentiated():
     # MD / GIV (difference-scale): a large mean difference must NOT overflow via exp()
     # and the ratio fields are None (a ratio is meaningless on the difference scale).
