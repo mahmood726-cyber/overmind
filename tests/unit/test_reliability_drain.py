@@ -193,3 +193,66 @@ def test_drain_monitor_empty_dir(tmp_path):
     cap = CapLog(tmp_path / "cap.jsonl")
     mon = DrainMonitor(tmp_path / "nohb", cap)
     assert mon.report().loops == []
+
+
+def test_supervised_loop_out_of_credits_is_5h_autorefill_then_resumes(tmp_path):
+    """'out of credits' => time-based 5h auto-refill cap (not terminal): stable
+    reset_at = cap_start + 5h, re-probes on the back-off cadence, and auto-resumes
+    (records reset) the moment a probe returns a real completion."""
+    clk = _Clock(1000.0)
+    hbf = HeartbeatFile(tmp_path / "l.hb.json", clock=clk)
+    cap = CapLog(tmp_path / "cap.jsonl", clock=clk)
+    calls = {"n": 0}
+
+    def worker():
+        calls["n"] += 1
+        if calls["n"] <= 2:
+            return ["ERROR: Your workspace is out of credits. Ask your workspace owner to refill in order to continue."]
+        return ["=== QA BATCH done ==="]
+
+    def sleep(s):
+        clk.advance(s)  # advance clock so re-probe cadence is observable
+
+    loop = SupervisedLoop("l", worker, seat="seatA", heartbeat=hbf, cap_log=cap,
+                          cap_backoff_seconds=900.0, clock=clk, sleep=sleep)
+    res = loop.run(max_iterations=3)
+
+    assert res.caps == 2
+    caps = [e for e in cap.events() if e["kind"] == "cap"]
+    resets = [e for e in cap.events() if e["kind"] == "reset"]
+    # both cap events share the SAME 5h reset (cap_start 1000 + 18000)
+    assert caps and all(abs(c["reset_at"] - 19000.0) < 1e-6 for c in caps), caps
+    # slept the 900s re-probe cadence, NOT the full 5h (clock advanced only 1800 over 2 sleeps)
+    assert abs(clk.t - 2800.0) < 1e-6, clk.t
+    # recovered on the clean 3rd iteration
+    assert len(resets) == 1
+    assert "seatA" not in cap.active_caps(now=clk.t)
+
+
+def test_supervised_loop_weekly_exhausted_after_5h5_still_capped(tmp_path):
+    """If still out-of-credits past cap_start + 5.5h, reclassify as WEEKLY-EXHAUSTED:
+    reset_at=None (weekly reset unknown), hourly probe, and weekly_exhausted flag set."""
+    clk = _Clock(1000.0)
+    hbf = HeartbeatFile(tmp_path / "l.hb.json", clock=clk)
+    cap = CapLog(tmp_path / "cap.jsonl", clock=clk)
+
+    def worker():
+        return ["ERROR: Your workspace is out of credits. Ask your workspace owner to refill in order to continue."]
+
+    def sleep(s):
+        clk.advance(s)  # each cap sleep advances the clock
+
+    loop = SupervisedLoop("l", worker, seat="seatA", heartbeat=hbf, cap_log=cap,
+                          cap_backoff_seconds=900.0, credit_refill_seconds=5*3600.0,
+                          weekly_reclassify_seconds=5.5*3600.0, weekly_probe_seconds=3600.0,
+                          clock=clk, sleep=sleep)
+    # run enough iterations that elapsed passes 5.5h (900s sleeps => ~22 iters to reach 19800s)
+    res = loop.run(max_iterations=40)
+
+    assert res.weekly_exhausted is True
+    caps = [e for e in cap.events() if e["kind"] == "cap"]
+    # early caps are 5h-window (reset_at set); late caps are weekly (reset_at None)
+    assert any(c["reset_at"] is not None for c in caps), "expected 5h-window caps first"
+    weekly = [c for c in caps if c["reset_at"] is None]
+    assert weekly, "expected weekly-exhausted caps (reset_at None) after 5.5h"
+    assert "WEEKLY-EXHAUSTED" in weekly[-1]["cap_message"]

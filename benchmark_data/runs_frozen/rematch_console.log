@@ -1,0 +1,17 @@
+Re-running frozen Arm C = claude+agy+floor (panel-matched to held-out)...
+frozen Arm C (claude+agy): valid=True usable=0.7625 caught=0.7949 FAR=1.0 agree=0.0
+    claude: usable 40/40
+    agy: usable 21/40
+frozen Arm A (claude):   caught=0.6923 agree=0.0 blended=0.1923
+frozen Arm B (claude x3):caught=0.6667 agree=0.0 blended=0.1667
+frozen Arm C (claude+agy):caught=0.7949 agree=0.0 blended=0.2949
+
+FROZEN win condition: WORLD_CLASS
+  notes: []
+
+TWO-SLICE PROMOTION (C vs best of A/B, blended):
+  held-out: incumbent(best A/B)=0.7286 candidate(C)=0.9286 -> C wins held-out: True
+  frozen:   incumbent(best A/B)=0.1923 candidate(C)=0.2949 -> C wins frozen: True
+  PROMOTE: True -- wins on both held-out and frozen (real benefit, not eval-fit)
+
+wrote F:\overmind\benchmark_data\runs_frozen\frozen_c_rematch.json

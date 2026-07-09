@@ -58,3 +58,25 @@ flag, shadow-first):
 
 **Principle applied:** close a gap only when the fix's cost is clearly less than the recurring cost it
 removes, and only for costs we have actually paid. Everything heavier is deferred behind a measured need.
+
+## Out-of-credits = 5h auto-refill (not terminal) — 2026-07-04
+
+Vendor (Codex) workspace credits **auto-refill ~5 hours** after an "out of credits"
+cap. This is a **time-based** cap, NOT a manual/terminal one. `SupervisedLoop` now:
+- detects `out of credits` / `refill` / `insufficient_quota` (previously missed — only
+  matched `limit`/`quota`/`capacity`/`overloaded`);
+- classifies it as a credit cap and records **`reset_at = cap_start + 5h`** (constant
+  `CREDIT_REFILL_SECONDS`), with `cap_start` held stable across re-probes so the
+  expected reset does not drift;
+- **re-probes on the back-off cadence (default 900s / 15 min)** rather than sleeping the
+  full 5h, and **auto-resumes** (emits a `reset` to the cap-log) the moment a probe
+  returns a real completion — no session or manual action required.
+
+Regression: `tests/unit/test_reliability_drain.py::test_supervised_loop_out_of_credits_is_5h_autorefill_then_resumes`.
+
+### Two-tier credit cap (5h rolling vs weekly) — 2026-07-04
+The "out of credits" message is identical for both tiers, so `SupervisedLoop` distinguishes by BEHAVIOUR:
+- **Tier 1 — 5h rolling window:** on cap, park with `reset_at = cap_start + 5h`, re-probe every `cap_backoff_seconds` (15 min), auto-resume on a clean probe.
+- **Tier 2 — weekly allotment exhausted:** if STILL out-of-credits past `cap_start + weekly_reclassify_seconds` (5.5h), the 5h refill has demonstrably not restored it → reclassify: `record_cap(reset_at=None)` (weekly reset time unknown), set `SupervisorResult.weekly_exhausted=True`, and switch to `weekly_probe_seconds` (hourly) probing. The seat is flagged as done-for-the-week; a 5h wait will not help it. It still auto-resumes whenever the weekly reset actually lands (a clean probe clears it).
+
+Tests: `test_supervised_loop_out_of_credits_is_5h_autorefill_then_resumes`, `test_supervised_loop_weekly_exhausted_after_5h5_still_capped`.

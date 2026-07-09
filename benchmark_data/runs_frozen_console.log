@@ -1,0 +1,7 @@
+live vendors: ['agy', 'claude', 'codex']
+FROZEN confirmation on 40 sealed tasks (defects=39, clean=1); reviewers picked=['claude', 'codex', 'agy']
+  Arm A: status=VALID usable=1.0 caught=0.6923 FAR=1.0 agree=0.0
+  Arm B: status=VALID usable=1.0 caught=0.6667 FAR=1.0 agree=0.0
+  Arm C: status=INVALID usable=0.475 caught=0.7436 FAR=1.0 agree=0.0
+FROZEN win condition: N/A (an arm invalid)
+scorecard -> F:\overmind\benchmark_data\runs_frozen\frozen_scorecard.json

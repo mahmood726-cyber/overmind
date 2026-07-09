@@ -10,6 +10,12 @@ enforcement steps) shown to beat the incumbent on the §3 blended score on **hel
 enforce · one-flag rollback · prior code path intact for one nightly · single-writer-per-repo · no
 force-push · build-order: manual-reliable → Skill → loop(gate+stop) → then schedule.
 
+**Standing architecture invariant (must hold for every milestone):** the DETERMINISTIC-CORE SEAM —
+pooling engine + objective-witness floor + structural provenance gate stay callable with NO LLM and NO
+network over a serializable substrate; model-dependent semantic/reviewer layers sit above it; offline
+port is DEFERRED. See `WORLD_CLASS_SPEC.md` §0.6 (Mahmood-approved 2026-07-07). No lane may add core↔model
+or core↔network coupling.
+
 ---
 
 ## Milestone 0 — SHIPPED this session (additive, flagged, tests green)

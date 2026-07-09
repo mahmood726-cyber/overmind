@@ -61,6 +61,45 @@ and D7 makes the control plane itself a differentiator.
 
 ---
 
+## 0.6 DETERMINISTIC-CORE SEAM — standing architecture invariant
+
+**INVARIANT (standing, Mahmood-approved 2026-07-07).** Verbatim intent:
+
+> The deterministic core of the synthesis stack — the pooling engine (2×2 / τ² / RE-FE,
+> metafor-parity), the objective-witness floor (recompute + diff + parity), and the STRUCTURAL
+> provenance gate (year format, effect-measure-vs-value sanity, NaN/Inf, review-vs-RCT publication
+> type — the regex/rule checks, NOT the semantic identity check) — must remain a standalone module
+> callable with NO LLM and NO network, over a serializable, offline-portable data substrate. The
+> model-dependent layer (semantic PMID↔drug identity via embeddings; reviewer-only judgment via
+> frontier or small LLM) sits ABOVE that seam and may be swapped or absent. No lane may introduce new
+> coupling of the deterministic core to a model call or a network fetch, and the substrate must stay
+> serializable. Rationale: it's what a *blocking* provenance gate needs anyway (closing that loop is
+> the living-substrate precondition), it's insurance against a core that only runs on the frontier
+> stack, and it makes the deferred low-resource/weak-laptop offline profile a packaging exercise
+> rather than a rebuild. The offline port itself is a DEFERRED milestone gated behind (a) the living
+> loop closing and (b) the effect-measure engine settling — do not spend cycles on small-model
+> selection, LoRA, offline OCR, or weak-hardware packaging until those clear.
+
+**Binding rules for every future harness/methods lane:**
+- The deterministic core (pooling engine · objective-witness floor · structural provenance gate) is a
+  **standalone module with NO LLM call and NO network fetch**, running over a **serializable,
+  offline-portable** substrate. Do not add a model call or network dependency below this seam, and do
+  not make the substrate non-serializable.
+- The **structural** provenance checks (regex/rule: year format, effect-measure-vs-value sanity,
+  NaN/Inf, review-vs-RCT publication type) live **below** the seam. The **semantic** identity check
+  (PMID↔drug via embeddings) and **reviewer-only judgment** (frontier/small LLM) live **above** it and
+  are swappable-or-absent.
+- The offline / low-resource / weak-laptop port is a **DEFERRED** milestone, gated behind (a) the
+  living loop closing and (b) the effect-measure engine settling. **Do not** spend cycles on
+  small-model selection, LoRA, offline OCR, or weak-hardware packaging until both clear.
+
+This invariant reinforces D2 (objective-witness floor) and D3 (reproduction-or-flag): the witness under
+every accept must be computable without a model in the loop. It sits alongside §0.5 (Dispatch as the
+single control plane) as a foundational architectural constraint — not a differentiator to be measured,
+but a seam every lane must preserve.
+
+---
+
 ## 1. The seven differentiators (what makes it best-in-class FOR THIS PURPOSE)
 
 Each differentiator states: **the claim**, **why it is defensible for this purpose**, and **the
