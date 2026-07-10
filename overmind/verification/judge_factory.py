@@ -377,6 +377,7 @@ def build_judge(
             effective_votes=effective.effective_votes,
             distinct_families=effective.distinct_families,
             panel_warning=effective.warning,
+            engines=engines,  # order-aligned with judges; enables fail-closed consensus
         )
 
     # Fallback chain (also the single-engine path: a 1-element chain still gets

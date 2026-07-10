@@ -544,6 +544,11 @@ class QuorumVerdict:
     nominal_votes: int = 0
     effective_votes: float = 0.0
     distinct_families: int = 0
+    # Fail-closed consensus-or-flag resolution over this panel (hardening
+    # 2026-07-10). Observational: populated only when the panel's engine names are
+    # known (factory path). ``None`` for engine-less/legacy construction. It never
+    # changes ``passed`` — the orchestrator consults it to enforce fail-closed.
+    consensus_outcome: object | None = None
 
 
 class QuorumJudge:
@@ -567,12 +572,17 @@ class QuorumJudge:
         effective_votes: float | None = None,
         distinct_families: int | None = None,
         panel_warning: str | None = None,
+        engines: list[str] | None = None,
     ) -> None:
         if not judges:
             raise ValueError("QuorumJudge requires at least one LLMJudge")
         self.judges = judges
         self.quorum_threshold = quorum_threshold
         self.min_backends = min_backends
+        # Per-judge engine names, order-aligned with ``judges`` (factory supplies
+        # them). Needed to resolve model families for the fail-closed
+        # consensus/decorrelation floor; None => outcome not computed (legacy).
+        self.engines = list(engines) if engines is not None else None
         # Panel-independence metadata (filled in by the factory). Defaults assume
         # every judge is independent when not supplied.
         self.nominal_votes = nominal_votes if nominal_votes is not None else len(judges)
@@ -598,6 +608,8 @@ class QuorumJudge:
                     concerns=["judge_error", "backend_exception"],
                 ))
 
+        consensus_outcome = self._resolve_consensus_outcome(verdicts)
+
         available = [v for v in verdicts if "judge_error" not in v.concerns]
         if len(available) < self.min_backends:
             return QuorumVerdict(
@@ -612,6 +624,7 @@ class QuorumJudge:
                 nominal_votes=self.nominal_votes,
                 effective_votes=self.effective_votes,
                 distinct_families=self.distinct_families,
+                consensus_outcome=consensus_outcome,
             )
 
         pass_count = sum(1 for v in available if v.passed)
@@ -649,7 +662,49 @@ class QuorumJudge:
             nominal_votes=self.nominal_votes,
             effective_votes=self.effective_votes,
             distinct_families=self.distinct_families,
+            consensus_outcome=consensus_outcome,
         )
+
+    def _resolve_consensus_outcome(self, verdicts: list[JudgeVerdict]):
+        """Fail-closed consensus-or-flag resolution over the panel (observational).
+
+        Maps each backend verdict to a ``consensus_gate.VendorResponse`` — using the
+        engine's model family and the verdict's concern tags to classify delivery
+        status — and returns the deterministic ``ConsensusOutcome``. Returns ``None``
+        when engine names are unknown (legacy construction) so behavior is
+        byte-identical to before. Never raises into the hot path.
+
+        Imported lazily: ``consensus_gate`` imports ``judge_factory`` which imports
+        this module, so a top-level import would be circular.
+        """
+        if not self.engines or len(self.engines) != len(verdicts):
+            return None
+        try:
+            from overmind.verification.consensus_gate import (
+                VendorResponse,
+                VendorStatus,
+                resolve_consensus,
+            )
+
+            responses: list[VendorResponse] = []
+            for engine, v in zip(self.engines, verdicts):
+                concerns = set(v.concerns)
+                if {"judge_degenerate", "judge_parse_error"} & concerns:
+                    status = VendorStatus.MALFORMED
+                    passed = None
+                elif "judge_error" in concerns:
+                    status = VendorStatus.ERROR
+                    passed = None
+                else:
+                    status = VendorStatus.OK
+                    passed = v.passed
+                responses.append(VendorResponse(
+                    vendor=engine, status=status, passed=passed,
+                    detail=(v.concerns[0] if v.concerns else ""),
+                ))
+            return resolve_consensus(responses)
+        except Exception:  # noqa: BLE001 — observational; never break the judge path
+            return None
 
 
 # ── Cost-aware routed judge ─────────────────────────────────────────
