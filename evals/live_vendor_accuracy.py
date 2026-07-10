@@ -67,13 +67,18 @@ class SshCodexBackend:
         argv = ["ssh", "-i", KEY, "-o", "BatchMode=yes", "-o", "ConnectTimeout=15",
                 "-o", "StrictHostKeyChecking=accept-new", LAPTOP, remote]
         try:
-            p = subprocess.run(argv, input=prompt, capture_output=True, text=True,
+            # Send UTF-8 BYTES explicitly (text=False): the Windows default (cp1252)
+            # mangles non-ASCII artifact chars (+/-, <=, en-dash) so codex reads
+            # "input is not valid UTF-8" and fails. Decode stdout as UTF-8 too.
+            p = subprocess.run(argv, input=prompt.encode("utf-8"), capture_output=True,
                                timeout=self.timeout)
         except Exception as exc:  # noqa: BLE001
             return f"JUDGE_ERROR: ssh/codex exec failed: {exc}"
+        out = (p.stdout or b"").decode("utf-8", errors="replace")
+        err = (p.stderr or b"").decode("utf-8", errors="replace")
         if p.returncode != 0:
-            return f"JUDGE_ERROR: codex rc={p.returncode}: {(p.stderr or '')[-160:]}"
-        return p.stdout or "JUDGE_ERROR: empty stdout"
+            return f"JUDGE_ERROR: codex rc={p.returncode}: {err[-160:]}"
+        return out or "JUDGE_ERROR: empty stdout"
 
 
 def _load_done(path: Path) -> dict:
