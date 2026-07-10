@@ -1,0 +1,987 @@
+{
+  "rows": [
+    {
+      "target": "bcg_tb",
+      "tier": 1,
+      "k": 13,
+      "measure": "RR",
+      "published": "RR ~0.49 (random effects); marked latitude heterogeneity",
+      "source": "Colditz et al., JAMA 1994 (BCG vaccine vs tuberculosis)",
+      "method": "better",
+      "method_reason": "prediction interval crosses the null: a new population could show no/opposite effect -- decision-relevant heterogeneity the DL point hides",
+      "completeness": "n/a",
+      "transparency": "yes",
+      "match_or_beat": true
+    },
+    {
+      "target": "magnesium_mi",
+      "tier": 1,
+      "k": 22,
+      "measure": "OR",
+      "published": "OR<1 in small trials, attenuated by the large ISIS-4 trial (the magnesium controversy)",
+      "source": "Li et al. 2007 (IV magnesium in acute MI, mortality)",
+      "method": "better",
+      "method_reason": "prediction interval crosses the null: a new population could show no/opposite effect -- decision-relevant heterogeneity the DL point hides",
+      "completeness": "n/a",
+      "transparency": "yes",
+      "match_or_beat": true
+    },
+    {
+      "target": "stroke_unit_los",
+      "tier": 1,
+      "k": 9,
+      "measure": "MD",
+      "published": "mean-difference in days, large between-study heterogeneity",
+      "source": "Normand 1999 (stroke-unit vs routine care, length of hospital stay)",
+      "method": "better",
+      "method_reason": "HKSJ small-k CI now INCLUDES the null -- published significance is fragile; prediction interval crosses the null: a new population could show no/opposite effect -- decision-relevant heterogeneity the DL point hides",
+      "completeness": "n/a",
+      "transparency": "yes",
+      "match_or_beat": true
+    },
+    {
+      "target": "teacher_expectancy",
+      "tier": 1,
+      "k": 19,
+      "measure": "SMD",
+      "published": "small pooled SMD, near-null once contact-time moderator is modelled",
+      "source": "Raudenbush 1985 (teacher expectancy on pupil IQ, standardized mean difference)",
+      "method": "equal",
+      "method_reason": "same conclusion; HKSJ CI width +22%, REML/PI more defensible in principle",
+      "completeness": "n/a",
+      "transparency": "yes",
+      "match_or_beat": true
+    },
+    {
+      "target": "adherence_conscientiousness",
+      "tier": 1,
+      "k": 16,
+      "measure": "ZCOR",
+      "published": "pooled r ~0.15 (small positive)",
+      "source": "Molloy et al. 2014 (conscientiousness & medication adherence, correlation)",
+      "method": "better",
+      "method_reason": "prediction interval crosses the null: a new population could show no/opposite effect -- decision-relevant heterogeneity the DL point hides",
+      "completeness": "n/a",
+      "transparency": "yes",
+      "match_or_beat": true
+    },
+    {
+      "target": "cv_composite",
+      "tier": 2,
+      "k": 2,
+      "measure": "HR",
+      "published": "HR 0.86 [0.78, 0.95] (IPD pooled)",
+      "source": "FIDELITY pooled, Eur Heart J 2022",
+      "recon_FE": "HR 0.865 [0.788, 0.951]",
+      "method": "equal",
+      "method_reason": "FE aggregate reproduces IPD pooled HR (log gap 0.0063); k=2: FE aggregate reproduces the IPD pooled HR, but the random-effects/HKSJ/PI intervals are very wide (1 d.f.) and correctly say heterogeneity is uncharacterisable from 2 trials.",
+      "completeness": "equal",
+      "completeness_reason": "per-trial events reconcile EXACTLY with published pooled ({'fin': 825, 'pbo': 939}); all datapoints membrane-accepted",
+      "transparency": "yes",
+      "match_or_beat": true
+    },
+    {
+      "target": "kidney40_composite",
+      "tier": 2,
+      "k": 2,
+      "measure": "HR",
+      "published": "HR 0.85 [0.77, 0.93] (IPD pooled)",
+      "source": "FIDELITY pooled, Eur Heart J 2022",
+      "recon_FE": "HR 0.843 [0.770, 0.924]",
+      "method": "equal",
+      "method_reason": "FE aggregate reproduces IPD pooled HR (log gap 0.0081); k=2: FE aggregate reproduces the IPD pooled HR, but the random-effects/HKSJ/PI intervals are very wide (1 d.f.) and correctly say heterogeneity is uncharacterisable from 2 trials.",
+      "completeness": "equal",
+      "completeness_reason": "per-trial events reconcile EXACTLY with published pooled ({'fin': 854, 'pbo': 995}); all datapoints membrane-accepted",
+      "transparency": "yes",
+      "match_or_beat": true
+    }
+  ],
+  "n": 7,
+  "match_or_beat": 7,
+  "tier1_raw": [
+    {
+      "key": "bcg_tb",
+      "status": "ran",
+      "tier": 1,
+      "citation": "Colditz et al., JAMA 1994 (BCG vaccine vs tuberculosis); data via metadat dat.bcg",
+      "k": 13,
+      "measure": "RR",
+      "published_method": "random-effects (DerSimonian-Laird)",
+      "published_effect_reported": "RR ~0.49 (random effects); marked latitude heterogeneity",
+      "open_data_source": "metadat/dat.bcg.csv",
+      "data_sha256_16": "c5d7541bbde80b1c",
+      "published_DL": {
+        "estimate_log": -0.714117222073227,
+        "se": 0.1787420895354032,
+        "ci_log": [
+          -1.064445280084051,
+          -0.3637891640624031
+        ],
+        "tau2": 0.30876026286237646,
+        "I2": 92.11734685456207,
+        "estimate_ratio": 0.48962415046361907,
+        "ci_ratio": [
+          0.344919135222476,
+          0.6950377182251471
+        ]
+      },
+      "overmind_REML": {
+        "estimate_log": -0.7145323421581304,
+        "se": 0.17978151610518348,
+        "ci_log": [
+          -1.0668976388102978,
+          -0.3621670455059631
+        ],
+        "tau2": 0.31324325813638443,
+        "estimate_ratio": 0.48942093982603463,
+        "ci_ratio": [
+          0.3440743061067953,
+          0.6961660667154024
+        ],
+        "hksj_ci_log": [
+          -1.1078213541683286,
+          -0.3204130899781254
+        ],
+        "hksj_ci_ratio": [
+          0.33027773602574517,
+          0.7258491341315649
+        ],
+        "pi_log": [
+          -1.9953419585089018,
+          0.566277274192641
+        ],
+        "pi_ratio": [
+          0.1359671510919942,
+          1.7616965157866191
+        ],
+        "pi_tcrit": 2.1788128296672284,
+        "pi_df": 12
+      },
+      "method_axis": {
+        "point_estimate_verdict": "equal",
+        "point_log_shift": 0.0004151200849034087,
+        "uncertainty_verdict": "better",
+        "hksj_ci_width_vs_dl": 0.12381558682615572,
+        "pi_crosses_null": true,
+        "overall": "better",
+        "reason": "prediction interval crosses the null: a new population could show no/opposite effect -- decision-relevant heterogeneity the DL point hides"
+      },
+      "completeness_axis": {
+        "verdict": "n/a",
+        "reason": "trial table IS the published open data; pre-registry trials, no independent registry to diff (see Tier-2 for the completeness test)."
+      },
+      "transparency_axis": {
+        "verdict": "yes",
+        "reason": "every study row provenance-linked to metadat file + sha256; whole result re-runnable from this script.",
+        "per_study": [
+          {
+            "label": "Aronson",
+            "source": "metadat/dat.bcg.csv"
+          },
+          {
+            "label": "Ferguson & Simes",
+            "source": "metadat/dat.bcg.csv"
+          },
+          {
+            "label": "Rosenthal et al",
+            "source": "metadat/dat.bcg.csv"
+          },
+          {
+            "label": "Hart & Sutherland",
+            "source": "metadat/dat.bcg.csv"
+          },
+          {
+            "label": "Frimodt-Moller et al",
+            "source": "metadat/dat.bcg.csv"
+          },
+          {
+            "label": "Stein & Aronson",
+            "source": "metadat/dat.bcg.csv"
+          },
+          {
+            "label": "Vandiviere et al",
+            "source": "metadat/dat.bcg.csv"
+          },
+          {
+            "label": "TPT Madras",
+            "source": "metadat/dat.bcg.csv"
+          },
+          {
+            "label": "Coetzee & Berjak",
+            "source": "metadat/dat.bcg.csv"
+          },
+          {
+            "label": "Rosenthal et al",
+            "source": "metadat/dat.bcg.csv"
+          },
+          {
+            "label": "Comstock et al",
+            "source": "metadat/dat.bcg.csv"
+          },
+          {
+            "label": "Comstock & Webster",
+            "source": "metadat/dat.bcg.csv"
+          },
+          {
+            "label": "Comstock et al",
+            "source": "metadat/dat.bcg.csv"
+          }
+        ]
+      }
+    },
+    {
+      "key": "magnesium_mi",
+      "status": "ran",
+      "tier": 1,
+      "citation": "Li et al. 2007 (IV magnesium in acute MI, mortality); data via metadat dat.li2007",
+      "k": 22,
+      "measure": "OR",
+      "published_method": "random-effects (DerSimonian-Laird)",
+      "published_effect_reported": "OR<1 in small trials, attenuated by the large ISIS-4 trial (the magnesium controversy)",
+      "open_data_source": "metadat/dat.li2007.csv",
+      "data_sha256_16": "b3bed7e2339b3f0f",
+      "published_DL": {
+        "estimate_log": -0.41248088542641215,
+        "se": 0.11176524754998896,
+        "ci_log": [
+          -0.631536745347594,
+          -0.19342502550523027
+        ],
+        "tau2": 0.06673173462492556,
+        "I2": 63.61497453829932,
+        "estimate_ratio": 0.6620058505294428,
+        "ci_ratio": [
+          0.5317739715932543,
+          0.8241316227309128
+        ]
+      },
+      "overmind_REML": {
+        "estimate_log": -0.5458495864483671,
+        "se": 0.15035266490958832,
+        "ci_log": [
+          -0.8405353946507794,
+          -0.2511637782459548
+        ],
+        "tau2": 0.17656153313596482,
+        "estimate_ratio": 0.5793493668233423,
+        "ci_ratio": [
+          0.4314794497874661,
+          0.7778949588536292
+        ],
+        "hksj_ci_log": [
+          -0.6617264287922429,
+          -0.16323534206058138
+        ],
+        "hksj_ci_ratio": [
+          0.5159597972757228,
+          0.8493912673994916
+        ],
+        "pi_log": [
+          -1.4739434242679859,
+          0.3822442513712516
+        ],
+        "pi_ratio": [
+          0.22902057684003238,
+          1.4655700089038346
+        ],
+        "pi_tcrit": 2.0796138447276795,
+        "pi_df": 21
+      },
+      "method_axis": {
+        "point_estimate_verdict": "shifted",
+        "point_log_shift": 0.13336870102195497,
+        "uncertainty_verdict": "better",
+        "hksj_ci_width_vs_dl": 0.13781728302320423,
+        "pi_crosses_null": true,
+        "overall": "better",
+        "reason": "prediction interval crosses the null: a new population could show no/opposite effect -- decision-relevant heterogeneity the DL point hides"
+      },
+      "completeness_axis": {
+        "verdict": "n/a",
+        "reason": "trial table IS the published open data; pre-registry trials, no independent registry to diff (see Tier-2 for the completeness test)."
+      },
+      "transparency_axis": {
+        "verdict": "yes",
+        "reason": "every study row provenance-linked to metadat file + sha256; whole result re-runnable from this script.",
+        "per_study": [
+          {
+            "label": "Morton",
+            "source": "metadat/dat.li2007.csv"
+          },
+          {
+            "label": "Rasmussen",
+            "source": "metadat/dat.li2007.csv"
+          },
+          {
+            "label": "Smith",
+            "source": "metadat/dat.li2007.csv"
+          },
+          {
+            "label": "Abraham",
+            "source": "metadat/dat.li2007.csv"
+          },
+          {
+            "label": "Ceremuzynski",
+            "source": "metadat/dat.li2007.csv"
+          },
+          {
+            "label": "Shechter",
+            "source": "metadat/dat.li2007.csv"
+          },
+          {
+            "label": "Singh",
+            "source": "metadat/dat.li2007.csv"
+          },
+          {
+            "label": "Feldstedt",
+            "source": "metadat/dat.li2007.csv"
+          },
+          {
+            "label": "Shechter",
+            "source": "metadat/dat.li2007.csv"
+          },
+          {
+            "label": "Woods",
+            "source": "metadat/dat.li2007.csv"
+          },
+          {
+            "label": "Wu",
+            "source": "metadat/dat.li2007.csv"
+          },
+          {
+            "label": "Thogersen",
+            "source": "metadat/dat.li2007.csv"
+          },
+          {
+            "label": "Shechter",
+            "source": "metadat/dat.li2007.csv"
+          },
+          {
+            "label": "ISIS-4",
+            "source": "metadat/dat.li2007.csv"
+          },
+          {
+            "label": "Bhargava",
+            "source": "metadat/dat.li2007.csv"
+          },
+          {
+            "label": "Urek",
+            "source": "metadat/dat.li2007.csv"
+          },
+          {
+            "label": "Raghu",
+            "source": "metadat/dat.li2007.csv"
+          },
+          {
+            "label": "MAGIC",
+            "source": "metadat/dat.li2007.csv"
+          },
+          {
+            "label": "Gyamlani",
+            "source": "metadat/dat.li2007.csv"
+          },
+          {
+            "label": "Santoro",
+            "source": "metadat/dat.li2007.csv"
+          },
+          {
+            "label": "Zhu",
+            "source": "metadat/dat.li2007.csv"
+          },
+          {
+            "label": "Nakashima",
+            "source": "metadat/dat.li2007.csv"
+          }
+        ]
+      }
+    },
+    {
+      "key": "stroke_unit_los",
+      "status": "ran",
+      "tier": 1,
+      "citation": "Normand 1999 (stroke-unit vs routine care, length of hospital stay); data via metadat dat.normand1999",
+      "k": 9,
+      "measure": "MD",
+      "published_method": "random-effects (DerSimonian-Laird)",
+      "published_effect_reported": "mean-difference in days, large between-study heterogeneity",
+      "open_data_source": "metadat/dat.normand1999.csv",
+      "data_sha256_16": "7f7c8cbaa9fd6f4b",
+      "published_DL": {
+        "estimate_log": -13.981721817043937,
+        "se": 5.126698339231326,
+        "ci_log": [
+          -24.029865921538644,
+          -3.93357771254923
+        ],
+        "tau2": 205.40937546791073,
+        "I2": 96.65154015084396,
+        "estimate_ratio": null,
+        "ci_ratio": null
+      },
+      "overmind_REML": {
+        "estimate_log": -15.106027473478298,
+        "se": 8.946552839754952,
+        "ci_log": [
+          -32.64094882518255,
+          2.4288938782259546
+        ],
+        "tau2": 684.6461519296657,
+        "estimate_ratio": null,
+        "ci_ratio": null,
+        "hksj_ci_log": [
+          -34.12883411494087,
+          6.165390480853002
+        ],
+        "hksj_ci_ratio": null,
+        "pi_log": [
+          -78.87389939282377,
+          48.66184444586718
+        ],
+        "pi_ratio": null,
+        "pi_tcrit": 2.306004135204166,
+        "pi_df": 8
+      },
+      "method_axis": {
+        "point_estimate_verdict": "shifted",
+        "point_log_shift": 1.1243056564343608,
+        "uncertainty_verdict": "better",
+        "hksj_ci_width_vs_dl": 1.0050580573267047,
+        "pi_crosses_null": true,
+        "overall": "better",
+        "reason": "HKSJ small-k CI now INCLUDES the null -- published significance is fragile; prediction interval crosses the null: a new population could show no/opposite effect -- decision-relevant heterogeneity the DL point hides"
+      },
+      "completeness_axis": {
+        "verdict": "n/a",
+        "reason": "trial table IS the published open data; pre-registry trials, no independent registry to diff (see Tier-2 for the completeness test)."
+      },
+      "transparency_axis": {
+        "verdict": "yes",
+        "reason": "every study row provenance-linked to metadat file + sha256; whole result re-runnable from this script.",
+        "per_study": [
+          {
+            "label": "1",
+            "source": "metadat/dat.normand1999.csv"
+          },
+          {
+            "label": "2",
+            "source": "metadat/dat.normand1999.csv"
+          },
+          {
+            "label": "3",
+            "source": "metadat/dat.normand1999.csv"
+          },
+          {
+            "label": "4",
+            "source": "metadat/dat.normand1999.csv"
+          },
+          {
+            "label": "5",
+            "source": "metadat/dat.normand1999.csv"
+          },
+          {
+            "label": "6",
+            "source": "metadat/dat.normand1999.csv"
+          },
+          {
+            "label": "7",
+            "source": "metadat/dat.normand1999.csv"
+          },
+          {
+            "label": "8",
+            "source": "metadat/dat.normand1999.csv"
+          },
+          {
+            "label": "9",
+            "source": "metadat/dat.normand1999.csv"
+          }
+        ]
+      }
+    },
+    {
+      "key": "teacher_expectancy",
+      "status": "ran",
+      "tier": 1,
+      "citation": "Raudenbush 1985 (teacher expectancy on pupil IQ, standardized mean difference); data via metadat dat.raudenbush1985",
+      "k": 19,
+      "measure": "SMD",
+      "published_method": "random-effects / mixed (moderator: weeks of contact)",
+      "published_effect_reported": "small pooled SMD, near-null once contact-time moderator is modelled",
+      "open_data_source": "metadat/dat.raudenbush1985.csv",
+      "data_sha256_16": "111c0315c42fc196",
+      "published_DL": {
+        "estimate_log": 0.08932208443150243,
+        "se": 0.0557939247181291,
+        "ci_log": [
+          -0.020031998572169696,
+          0.19867616743517455
+        ],
+        "tau2": 0.025903672299806085,
+        "I2": 49.762118467035314,
+        "estimate_ratio": null,
+        "ci_ratio": null
+      },
+      "overmind_REML": {
+        "estimate_log": 0.08370124189229669,
+        "se": 0.05164067137103916,
+        "ci_log": [
+          -0.017512614132408705,
+          0.18491509791700209
+        ],
+        "tau2": 0.018818288151398924,
+        "estimate_ratio": null,
+        "ci_ratio": null,
+        "hksj_ci_log": [
+          -0.04424520046003698,
+          0.22288936932304182
+        ],
+        "hksj_ci_ratio": null,
+        "pi_log": [
+          -0.22424725747864702,
+          0.39164974126324037
+        ],
+        "pi_ratio": null,
+        "pi_tcrit": 2.1009220402410382,
+        "pi_df": 18
+      },
+      "method_axis": {
+        "point_estimate_verdict": "equal",
+        "point_log_shift": 0.0056208425392057365,
+        "uncertainty_verdict": "equal",
+        "hksj_ci_width_vs_dl": 0.2214201904747736,
+        "pi_crosses_null": true,
+        "overall": "equal",
+        "reason": "same conclusion; HKSJ CI width +22%, REML/PI more defensible in principle"
+      },
+      "completeness_axis": {
+        "verdict": "n/a",
+        "reason": "trial table IS the published open data; pre-registry trials, no independent registry to diff (see Tier-2 for the completeness test)."
+      },
+      "transparency_axis": {
+        "verdict": "yes",
+        "reason": "every study row provenance-linked to metadat file + sha256; whole result re-runnable from this script.",
+        "per_study": [
+          {
+            "label": "Rosenthal et al.",
+            "source": "metadat/dat.raudenbush1985.csv"
+          },
+          {
+            "label": "Conn et al.",
+            "source": "metadat/dat.raudenbush1985.csv"
+          },
+          {
+            "label": "Jose & Cody",
+            "source": "metadat/dat.raudenbush1985.csv"
+          },
+          {
+            "label": "Pellegrini & Hicks",
+            "source": "metadat/dat.raudenbush1985.csv"
+          },
+          {
+            "label": "Pellegrini & Hicks",
+            "source": "metadat/dat.raudenbush1985.csv"
+          },
+          {
+            "label": "Evans & Rosenthal",
+            "source": "metadat/dat.raudenbush1985.csv"
+          },
+          {
+            "label": "Fielder et al.",
+            "source": "metadat/dat.raudenbush1985.csv"
+          },
+          {
+            "label": "Claiborn",
+            "source": "metadat/dat.raudenbush1985.csv"
+          },
+          {
+            "label": "Kester",
+            "source": "metadat/dat.raudenbush1985.csv"
+          },
+          {
+            "label": "Maxwell",
+            "source": "metadat/dat.raudenbush1985.csv"
+          },
+          {
+            "label": "Carter",
+            "source": "metadat/dat.raudenbush1985.csv"
+          },
+          {
+            "label": "Flowers",
+            "source": "metadat/dat.raudenbush1985.csv"
+          },
+          {
+            "label": "Keshock",
+            "source": "metadat/dat.raudenbush1985.csv"
+          },
+          {
+            "label": "Henrikson",
+            "source": "metadat/dat.raudenbush1985.csv"
+          },
+          {
+            "label": "Fine",
+            "source": "metadat/dat.raudenbush1985.csv"
+          },
+          {
+            "label": "Grieger",
+            "source": "metadat/dat.raudenbush1985.csv"
+          },
+          {
+            "label": "Rosenthal & Jacobson",
+            "source": "metadat/dat.raudenbush1985.csv"
+          },
+          {
+            "label": "Fleming & Anttonen",
+            "source": "metadat/dat.raudenbush1985.csv"
+          },
+          {
+            "label": "Ginsburg",
+            "source": "metadat/dat.raudenbush1985.csv"
+          }
+        ]
+      }
+    },
+    {
+      "key": "adherence_conscientiousness",
+      "status": "ran",
+      "tier": 1,
+      "citation": "Molloy et al. 2014 (conscientiousness & medication adherence, correlation); data via metadat dat.molloy2014",
+      "k": 16,
+      "measure": "ZCOR",
+      "published_method": "random-effects (DerSimonian-Laird), Fisher-z",
+      "published_effect_reported": "pooled r ~0.15 (small positive)",
+      "open_data_source": "metadat/dat.molloy2014.csv",
+      "data_sha256_16": "4651a24acffe13fc",
+      "published_DL": {
+        "estimate_log": 0.14959835307564404,
+        "se": 0.031161265785647565,
+        "ci_log": [
+          0.08852339442309458,
+          0.21067331172819348
+        ],
+        "tau2": 0.00776254405495921,
+        "I2": 60.691324736485086,
+        "estimate_ratio": null,
+        "ci_ratio": null
+      },
+      "overmind_REML": {
+        "estimate_log": 0.1499171485163848,
+        "se": 0.03155996016456916,
+        "ci_log": [
+          0.08806076324031044,
+          0.21177353379245917
+        ],
+        "tau2": 0.008109560823052055,
+        "estimate_ratio": null,
+        "ci_ratio": null,
+        "hksj_ci_log": [
+          0.0799315342489597,
+          0.21926517190232836
+        ],
+        "hksj_ci_ratio": null,
+        "pi_log": [
+          -0.05347264148396838,
+          0.353306938516738
+        ],
+        "pi_ratio": null,
+        "pi_tcrit": 2.1314495455597755,
+        "pi_df": 15
+      },
+      "method_axis": {
+        "point_estimate_verdict": "equal",
+        "point_log_shift": 0.00031879544074076005,
+        "uncertainty_verdict": "better",
+        "hksj_ci_width_vs_dl": 0.14067729825268122,
+        "pi_crosses_null": true,
+        "overall": "better",
+        "reason": "prediction interval crosses the null: a new population could show no/opposite effect -- decision-relevant heterogeneity the DL point hides"
+      },
+      "completeness_axis": {
+        "verdict": "n/a",
+        "reason": "trial table IS the published open data; pre-registry trials, no independent registry to diff (see Tier-2 for the completeness test)."
+      },
+      "transparency_axis": {
+        "verdict": "yes",
+        "reason": "every study row provenance-linked to metadat file + sha256; whole result re-runnable from this script.",
+        "per_study": [
+          {
+            "label": "Axelsson et al.",
+            "source": "metadat/dat.molloy2014.csv"
+          },
+          {
+            "label": "Axelsson et al.",
+            "source": "metadat/dat.molloy2014.csv"
+          },
+          {
+            "label": "Bruce et al.",
+            "source": "metadat/dat.molloy2014.csv"
+          },
+          {
+            "label": "Christensen et al.",
+            "source": "metadat/dat.molloy2014.csv"
+          },
+          {
+            "label": "Christensen & Smith",
+            "source": "metadat/dat.molloy2014.csv"
+          },
+          {
+            "label": "Cohen et al.",
+            "source": "metadat/dat.molloy2014.csv"
+          },
+          {
+            "label": "Dobbels et al.",
+            "source": "metadat/dat.molloy2014.csv"
+          },
+          {
+            "label": "Ediger et al.",
+            "source": "metadat/dat.molloy2014.csv"
+          },
+          {
+            "label": "Insel et al.",
+            "source": "metadat/dat.molloy2014.csv"
+          },
+          {
+            "label": "Jerant et al.",
+            "source": "metadat/dat.molloy2014.csv"
+          },
+          {
+            "label": "Moran et al.",
+            "source": "metadat/dat.molloy2014.csv"
+          },
+          {
+            "label": "O'Cleirigh et al.",
+            "source": "metadat/dat.molloy2014.csv"
+          },
+          {
+            "label": "Penedo et al.",
+            "source": "metadat/dat.molloy2014.csv"
+          },
+          {
+            "label": "Quine et al.",
+            "source": "metadat/dat.molloy2014.csv"
+          },
+          {
+            "label": "Stilley et al.",
+            "source": "metadat/dat.molloy2014.csv"
+          },
+          {
+            "label": "Wiebe & Christensen",
+            "source": "metadat/dat.molloy2014.csv"
+          }
+        ]
+      }
+    }
+  ],
+  "tier2_raw": [
+    {
+      "endpoint": "cv_composite",
+      "status": "ran",
+      "tier": 2,
+      "k": 2,
+      "endpoint_label": "CV composite (CV death / non-fatal MI / non-fatal stroke / HHF)",
+      "trials": [
+        {
+          "trial": "FIDELIO-DKD",
+          "nct": "NCT02540993",
+          "outcome_title": "The First Occurrence of the Composite Endpoint of Cardiovascular Death, Non-fatal Myocardial Infarction, Non-fatal Stroke, or Hospitalization for Heart Failure",
+          "hr": 0.86,
+          "ci": [
+            0.747,
+            0.989
+          ],
+          "events_fin": 367,
+          "events_pbo": 420,
+          "log_hr": -0.15082288973458366,
+          "se": 0.07159038347221218,
+          "membrane": "accept",
+          "membrane_reason": "quorum agreement, confident, passed structural check",
+          "provenance": "NCT02540993 :: resultsSection outcome 'The First Occurrence of the Composite Endpoint of Cardiovasc' :: analyses[0]"
+        },
+        {
+          "trial": "FIGARO-DKD",
+          "nct": "NCT02545049",
+          "outcome_title": "The First Occurrence of the Composite Endpoint of Cardiovascular Death, Non-fatal Myocardial Infarction, Non Fatal Stroke, or Hospitalization for Heart Failure.",
+          "hr": 0.87,
+          "ci": [
+            0.76,
+            0.98
+          ],
+          "events_fin": 458,
+          "events_pbo": 519,
+          "log_hr": -0.13926206733350766,
+          "se": 0.0648568393066422,
+          "membrane": "accept",
+          "membrane_reason": "quorum agreement, confident, passed structural check",
+          "provenance": "NCT02545049 :: resultsSection outcome 'The First Occurrence of the Composite Endpoint of Cardiovasc' :: analyses[0]"
+        }
+      ],
+      "published": {
+        "hr": 0.86,
+        "ci": [
+          0.78,
+          0.95
+        ],
+        "source": "FIDELITY pooled, Eur Heart J 2022;43:474 (PMC8830527); IPD pooled HR",
+        "events_fin": 825,
+        "events_pbo": 939
+      },
+      "reconstructed_FE": {
+        "hr": 0.8654779782371014,
+        "ci": [
+          0.7876670478566473,
+          0.950975583975052
+        ],
+        "log": -0.14447334866750688,
+        "se": 0.048065402523052185
+      },
+      "reconstructed_REML": {
+        "hr": 0.8654779782371014,
+        "ci": [
+          0.7876670478566473,
+          0.950975583975052
+        ],
+        "tau2": 0.0,
+        "hksj_ci": null,
+        "pi": [
+          0.4699155910807612,
+          1.5940142124048955
+        ],
+        "pi_note": "k==2: prediction interval has 1 d.f. and is very wide; reported honestly, not suppressed."
+      },
+      "method_axis": {
+        "log_gap_vs_published": 0.006349541067076775,
+        "parity": true,
+        "verdict": "equal",
+        "small_k_caveat": "k=2: FE aggregate reproduces the IPD pooled HR, but the random-effects/HKSJ/PI intervals are very wide (1 d.f.) and correctly say heterogeneity is uncharacterisable from 2 trials."
+      },
+      "completeness_axis": {
+        "events_reconcile_with_published": true,
+        "reconstructed_events": {
+          "fin": 825,
+          "pbo": 939
+        },
+        "published_events": {
+          "fin": 825,
+          "pbo": 939
+        },
+        "all_datapoints_membrane_accepted": true
+      },
+      "transparency_axis": {
+        "verdict": "yes",
+        "reason": "every HR provenance-linked to NCT id + outcome-measure title + source span; re-runs from cached CT.gov v2 JSON."
+      }
+    },
+    {
+      "endpoint": "kidney40_composite",
+      "status": "ran",
+      "tier": 2,
+      "k": 2,
+      "endpoint_label": "Kidney composite (kidney failure / sustained >=40% eGFR decline / renal death)",
+      "trials": [
+        {
+          "trial": "FIDELIO-DKD",
+          "nct": "NCT02540993",
+          "outcome_title": "The First Occurrence of the Composite Endpoint of Onset of Kidney Failure, a Sustained Decrease of eGFR \u226540% From Baseline Over at Least 4 Weeks, or Renal Death",
+          "hr": 0.825,
+          "ci": [
+            0.732,
+            0.928
+          ],
+          "events_fin": 504,
+          "events_pbo": 600,
+          "log_hr": -0.19237189264745613,
+          "se": 0.0605243822581171,
+          "membrane": "accept",
+          "membrane_reason": "quorum agreement, confident, passed structural check",
+          "provenance": "NCT02540993 :: resultsSection outcome 'The First Occurrence of the Composite Endpoint of Onset of K' :: analyses[0]"
+        },
+        {
+          "trial": "FIGARO-DKD",
+          "nct": "NCT02545049",
+          "outcome_title": "The First Occurrence of the Composite Endpoint of Onset of Kidney Failure, a Sustained Decrease of eGFR \u226540% From Baseline Over at Least 4 Weeks, or Renal Death.",
+          "hr": 0.87,
+          "ci": [
+            0.76,
+            1.01
+          ],
+          "events_fin": 350,
+          "events_pbo": 395,
+          "log_hr": -0.13926206733350766,
+          "se": 0.07254908222756597,
+          "membrane": "accept",
+          "membrane_reason": "quorum agreement, confident, passed structural check",
+          "provenance": "NCT02545049 :: resultsSection outcome 'The First Occurrence of the Composite Endpoint of Onset of K' :: analyses[0]"
+        }
+      ],
+      "published": {
+        "hr": 0.85,
+        "ci": [
+          0.77,
+          0.93
+        ],
+        "source": "FIDELITY pooled, Eur Heart J 2022;43:474 (PMC8830527); IPD pooled HR",
+        "events_fin": 854,
+        "events_pbo": 995
+      },
+      "reconstructed_FE": {
+        "hr": 0.8431780035651382,
+        "ci": [
+          0.7697675938914782,
+          0.9235893422090742
+        ],
+        "log": -0.17057718838879596,
+        "se": 0.04647506185712905
+      },
+      "reconstructed_REML": {
+        "hr": 0.8431780035651382,
+        "ci": [
+          0.7697675938914782,
+          0.9235893422090742
+        ],
+        "tau2": 0.0,
+        "hksj_ci": null,
+        "pi": [
+          0.46715281891834814,
+          1.5218770323215285
+        ],
+        "pi_note": "k==2: prediction interval has 1 d.f. and is very wide; reported honestly, not suppressed."
+      },
+      "method_axis": {
+        "log_gap_vs_published": 0.00805825889102102,
+        "parity": true,
+        "verdict": "equal",
+        "small_k_caveat": "k=2: FE aggregate reproduces the IPD pooled HR, but the random-effects/HKSJ/PI intervals are very wide (1 d.f.) and correctly say heterogeneity is uncharacterisable from 2 trials."
+      },
+      "completeness_axis": {
+        "events_reconcile_with_published": true,
+        "reconstructed_events": {
+          "fin": 854,
+          "pbo": 995
+        },
+        "published_events": {
+          "fin": 854,
+          "pbo": 995
+        },
+        "all_datapoints_membrane_accepted": true
+      },
+      "transparency_axis": {
+        "verdict": "yes",
+        "reason": "every HR provenance-linked to NCT id + outcome-measure title + source span; re-runs from cached CT.gov v2 JSON."
+      }
+    }
+  ],
+  "registry_sweep": {
+    "intervention": "finerenone",
+    "phase": 3,
+    "found": [
+      "NCT02540993 (FIDELIO-DKD)",
+      "NCT02545049 (FIGARO-DKD)",
+      "NCT04435626 (FINEARTS-HF, HFpEF/HFmrEF, has results)",
+      "NCT05047263 (n=1584, no results)",
+      "+3 small mechanistic/PK trials"
+    ],
+    "in_fidelity": [
+      "NCT02540993",
+      "NCT02545049"
+    ],
+    "adjudication": "The open-data registry sweep surfaces every registered phase-3 finerenone outcome trial. FINEARTS-HF (NCT04435626) is a large trial WITH results but a DIFFERENT population (heart failure, not CKD/T2D) that read out after FIDELITY -- correctly OUT of the pool's scope, not an omission. So FIDELITY was complete for its scope, and the sweep demonstrably works as an omission detector."
+  }
+}
