@@ -19,13 +19,15 @@ public agentic-engineering research (web + arXiv). Builds on, and supersedes whe
 
 ## 0. Three honesty flags (read first)
 
-1. **Cross-vendor verification is PAUSED as of this writing.** Codex (both seats) and agy are out of
-   quota / degraded; headless Claude has no non-interactive path on the nodes (only laptop-subscription
-   over SSH works, and that too is quota-bound). So the differentiator — a live ≥2-distinct-family
-   consensus — **cannot run today.** Every cross-vendor number in this report is from *prior* runs
-   (2026-07-06/07, `overmind/benchmark_data/runs_live/`, `harness.db`), **not re-verified today.** This
-   is the single most important operational caveat: the moat exists in code and was measured, but its
-   fuel (vendor availability) is intermittent.
+1. **Cross-vendor verification is PAUSED as of this writing** — and a live probe (§1.5-LIVE) confirms why.
+   Codex (both seats) and agy are out of quota / degraded; headless Claude has no non-interactive path on
+   the nodes. So the differentiator — a live ≥2-distinct-family consensus — **cannot run today.** Every
+   cross-vendor *completion* number is from *prior* runs (2026-07-06/07, `harness.db`), **not re-verified
+   today.** New this run: I **did** live-verify the substrate *underneath* the vendor call (SSH transport,
+   routing, fan-out, consensus-or-flag, anti-wedge timeouts — all measured working), and I found the "all
+   three nodes online" update is **only half true: pc2 is offline** (Tailscale "last seen 4d ago"; SSH
+   times out). 2 of 3 nodes (pc1 + laptop) are up. The moat exists in code and its plumbing is now
+   live-proven; its fuel (vendor availability) and one node (pc2) are intermittent.
 
 2. **Every eval number here is fixture-based, not live-model.** `python -m evals.run_all` (13 evals)
    ran clean and reproduces every claimed delta — but on **deterministic seeded/stub panels**, not real
@@ -208,6 +210,52 @@ diminishing returns). Most production "multi-judge" stacks never prove heterogen
 (`isolation.py:98`: `run_in_container()` always returns SKIP; falls back to worktree), and — the binding
 constraint — **vendor reliability** (the A/B/C verdict was `NOT_PROVEN` on the false-alarm clause until the
 conformal gate landed, and cross-vendor is *paused today* on quota).
+
+#### 1.5-LIVE — measured 3-node benchmark (2026-07-10, this run)
+
+Prompted by "all three nodes online," I ran a live probe. **The claim only half-holds: 2 of 3 nodes are
+reachable.** This is the honest live picture — read-only, no node-repo writes, vendor calls not issued.
+
+**A. Reachability + health (live)**
+
+| Node | Role (cap) | Tailscale | SSH round-trip (read-only `hostname`) | Status |
+|---|---|---|---|---|
+| **pc1** | local controller (2) | self | n/a (local) | **UP** |
+| **laptop** `100.80.183.43` | ssh (3) | `pong` **2 ms** direct (56 ms first pkt via DERP-lhr, then IPv6 direct) | rc=0, host=`mahmood`, **mean ≈692 ms** over 5 reps (619–791 ms, *full* handshake+auth+cmd each call) | **UP** |
+| **pc2** `100.127.107.46` | ssh (3) | **offline, "last seen 4d ago"**, ping → *no reply* | rc=255 `Connection timed out`, **bounded at 10.18 s** by `ConnectTimeout=10` | **DOWN** |
+
+Two real security/perf notes surfaced live: the laptop SSH server emits a **post-quantum-KEX warning**
+(not using a PQ key exchange — "store-now-decrypt-later" exposure; server needs an OpenSSH upgrade), and the
+laptop's steady-state path is 2 ms but a *cold* SSH round-trip is ~0.7 s (handshake-dominated — batch remote
+work, don't chatter).
+
+**B. Plumbing exercised end-to-end, up to (not incl.) the vendor call — all measured**
+
+| Layer | What ran | Measured |
+|---|---|---|
+| **Fan-out setup** | `nodes.build_command` over all 3 nodes × 4 lanes | **12 commands in <0.1 ms** total (sub-µs each); local argv for pc1 (argc 5, no ssh) vs SSH-wrapped for laptop/pc2 (argc 12) — plumbing correct |
+| **Node-selection** | real `router.route()`, real `capabilities.json`, DB opened **read-only** | **0.0–0.8 ms/decision**; correct locality (workspace job → pinned to pc1; offload → pc2/laptop) |
+| **Consensus-or-flag** | real `consensus.evaluate()`, synthetic lane answers | **<0.1 ms/adjudication**; ACCEPT iff ≥2 *distinct* vendors agree (numeric to **1e-9**, or matching text verdict); FLAG w/ quantified spread on disagreement; **`cannot_form_quorum`** when only 1 vendor participates ("*two clones of one vendor do not count*") |
+| **Vendor call** | — | **QUOTA-BLOCKED — not issued.** No codex/agy completion faked. |
+| **Wedge/timeout (local)** | `runner.run(sleep 30, timeout=3.0)` | killed at **3201 ms** (`timed_out=True`, tree-killed) — **~200 ms kill overhead**, did not hang 30 s |
+| **Wedge/timeout (network)** | the pc2 SSH attempt above | bounded at **10.18 s** by `ConnectTimeout` — remote half of the anti-wedge, fast-fail not hang |
+
+**Two live findings worth acting on (both honest, both new):**
+1. **Node-selection trusts stale capability state.** `route()` cheerfully selected **`pc2/codexA`** for an
+   offload job because `capabilities.json` still marks that cell green — even though pc2 is provably offline
+   right now. The router only excludes a node if it is in the DB *cooldown/unreachable* set; with **no fresh
+   reachability probe feeding that set**, a dead node stays selectable. A probe-before-route (or a shorter
+   cooldown TTL) would have moved pc2 to `unavailable`. Measured staleness gap, not a code-read guess.
+2. **The consensus gate already does the "differentiator-OFF" honesty I recommended (★5).** With codex+agy
+   out of quota, a single-vendor panel returns **`cannot_form_quorum`** with a named reason, not a silent
+   pass — exactly the graceful degradation the adopt-list asked for. That primitive exists; what's missing is
+   wiring it to *vendor-quota detection* so the router stops routing to a dead lane in the first place.
+
+**Net effect on the scorecard:** the multi-PC row moves from *code-read only* to **plumbing live-verified on a
+2-node cluster**: transport (SSH exec), routing, fan-out, consensus-or-flag, and both halves of the anti-wedge
+timeout are **measured working today**; only the vendor-completion step is quota-blocked, and pc2 is down. The
+"AHEAD on cross-vendor consensus-or-flag" verdict stands on prior A/B/C evidence; the *live* addition is that
+the orchestration substrate underneath it is proven, fast (sub-ms routing/fan-out), and fail-safe.
 
 ---
 
