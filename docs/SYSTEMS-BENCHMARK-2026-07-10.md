@@ -19,15 +19,16 @@ public agentic-engineering research (web + arXiv). Builds on, and supersedes whe
 
 ## 0. Three honesty flags (read first)
 
-1. **Cross-vendor verification is PAUSED as of this writing** — and a live probe (§1.5-LIVE) confirms why.
-   Codex (both seats) and agy are out of quota / degraded; headless Claude has no non-interactive path on
-   the nodes. So the differentiator — a live ≥2-distinct-family consensus — **cannot run today.** Every
-   cross-vendor *completion* number is from *prior* runs (2026-07-06/07, `harness.db`), **not re-verified
-   today.** New this run: I **did** live-verify the substrate *underneath* the vendor call (SSH transport,
-   routing, fan-out, consensus-or-flag, anti-wedge timeouts — all measured working), and I found the "all
-   three nodes online" update is **only half true: pc2 is offline** (Tailscale "last seen 4d ago"; SSH
-   times out). 2 of 3 nodes (pc1 + laptop) are up. The moat exists in code and its plumbing is now
-   live-proven; its fuel (vendor availability) and one node (pc2) are intermittent.
+1. **Cross-vendor verification RAN LIVE this pass (updated) — a real 2-family consensus round succeeded.**
+   Earlier today it was paused; then Codex mahmood726 (on the laptop, over SSH) and agy came back live, so I
+   ran a **real** cross-vendor consensus benchmark end-to-end through the harness (§1.5-LIVE-C): 4 items fanned
+   to Codex-on-laptop + agy + a deterministic check, plus a seeded-dissent panel. **All behaved correctly** —
+   3 agreements ACCEPTED, the seeded disagreement FLAGGED. What's still *not* runnable at scale is the full
+   ≥3-family A/B/C (headless Claude has no non-interactive path; pc2 is offline). So the differentiator is
+   **live-verified as a mechanism on 2 distinct families today**; the historical 3-family A/B/C caught-defect
+   numbers remain from *prior* runs (2026-07-06/07, `harness.db`), not re-run at scale this pass. The "all
+   three nodes online" update is **only half true: pc2 is offline** (Tailscale "last seen 4d ago"; SSH times
+   out) — 2 of 3 nodes (pc1 + laptop) are up.
 
 2. **Every eval number here is fixture-based, not live-model.** `python -m evals.run_all` (13 evals)
    ran clean and reproduces every claimed delta — but on **deterministic seeded/stub panels**, not real
@@ -57,7 +58,7 @@ Five pieces, each scored against its **nearest published frontier system/paper**
 | **Overmind + TruthCert** | multi-witness → 5-state arbitrator (incl UNVERIFIED); 3-layer objective floor; signed CertBundle; 13 measured evals | CompassVerifier `[PEER]`, Inspect AI, conformal-abstention, SpecBench | **AHEAD on discipline, now AT-PAR on measurement, BEHIND on learned verifier + live measurement** | judge is a regex/prompt guard not a trained RM; evals are fixtures; objective-gate is WARN-only in the general path |
 | **Dispatch** | lease-based coordinator, 2-stage capability routing (lane×node), anti-wedge runner, consensus-or-flag; = the single control plane | LangGraph durable graph, supervisor topology, Magentic-One ledger, RouteLLM | **AT-PAR (adequate for domain), AHEAD on anti-wedge + vendor-distinct routing** | no durable/resumable graph or checkpoint-resume; routing is capability-based, not a learned cost-optimal router |
 | **Memory** | (a) 11-file markdown (wikilinks, **no temporal fields**); (b) SQLite/FTS5 3,201 rows: decay + temporal supersede + source-hash + claim-graph + MiniLM + dream-consolidation, wired | Graphiti/Zep (temporal KG), A-MEM, Mem0/Letta, OCR-Memory | **AT-PAR on architecture, AHEAD on shipped claim-graph retraction, BEHIND on entity graph + measured recall** | no typed entity graph; the two layers are unbridged (markdown has no temporal metadata); never run on LongMemEval |
-| **Multi-PC / cluster** | REAL Tailscale-SSH transport; 15 executed cross-machine cross-vendor jobs; delta-skip + contract-impact gate; A/B/C benchmark | Distributed sandboxed fleets; orchestrator-worker; co-failure-ceiling theory | **AHEAD on cross-vendor consensus-or-flag with *measured* heterogeneity benefit; BEHIND on scale + isolation** | vendor reliability is the binding constraint (paused today); node registry hand-seeded; remote isolation is a STUB |
+| **Multi-PC / cluster** | REAL Tailscale-SSH transport; **live 2-family (Codex+agy) consensus round verified this pass**; 15 prior cross-vendor jobs; delta-skip + contract-impact gate; A/B/C benchmark | Distributed sandboxed fleets; orchestrator-worker; co-failure-ceiling theory | **AHEAD on cross-vendor consensus-or-flag (now VERIFIED-live); BEHIND on scale + isolation** | vendor reliability is intermittent (Codex+agy live now, pc2 offline); node registry hand-seeded; router trusts stale caps; remote isolation is a STUB |
 
 ### 1.1 Sentinel — the pre-push truth-and-safety gate
 
@@ -251,11 +252,42 @@ work, don't chatter).
    pass — exactly the graceful degradation the adopt-list asked for. That primitive exists; what's missing is
    wiring it to *vendor-quota detection* so the router stops routing to a dead lane in the first place.
 
-**Net effect on the scorecard:** the multi-PC row moves from *code-read only* to **plumbing live-verified on a
-2-node cluster**: transport (SSH exec), routing, fan-out, consensus-or-flag, and both halves of the anti-wedge
-timeout are **measured working today**; only the vendor-completion step is quota-blocked, and pc2 is down. The
-"AHEAD on cross-vendor consensus-or-flag" verdict stands on prior A/B/C evidence; the *live* addition is that
-the orchestration substrate underneath it is proven, fast (sub-ms routing/fan-out), and fail-safe.
+**C. LIVE cross-vendor consensus round (real vendor completions — the vendor call is no longer blocked)**
+
+Codex mahmood726 (laptop, SSH) and agy (local) came back live, so I ran a real consensus benchmark **end-to-end
+through the harness** (real `ssh_prefix` → laptop `codex exec -m gpt-5.5 -c model_reasoning_effort=low` →
+`runner.run` anti-wedge → `consensus.evaluate`), fanned to **Codex-on-laptop + agy + a deterministic
+ground-truth** lane. 8 real vendor calls, no loops, seat not burned. Both vendors confirmed live by real exec
+first (`codex login status` lies).
+
+| Item | Prompt | Codex (laptop) | agy (local) | Determ. | Harness verdict | Correct? |
+|---|---|---|---|---|---|---|
+| agree-arith-1 | 17 × 23 | **391** (6.9s) | **391** (7.2s) | 391 | **ACCEPT** (3 vendors, spread 0) | ✅ |
+| agree-arith-2 | 256 + 44 | **300** (6.4s) | **300** (7.2s) | 300 | **ACCEPT** (3 vendors, spread 0) | ✅ |
+| agree-factual | hexagon sides | **6** (6.1s) | **6** (7.1s) | 6 | **ACCEPT** (3 vendors, spread 0) | ✅ |
+| seed-disagree | codex→100 / agy→200 | **100** (6.5s) | **200** (7.1s) | — | **FLAGGED** (spread 100, dissent named) | ✅ |
+| partial-dissent | 391 / 391 / *seeded 390* | 391 | 391 | 390 | **FLAGGED** ("2 agree, 1 vendor conflicts") | ✅ |
+
+**All 5 behaved correctly. Three things were *verified live*, not read from code:**
+1. **The consensus ACCEPT path** — three independent vendors agreeing to exact tolerance yields a clean accept.
+2. **The FLAG path** — a seeded disagreement is caught, quantified (spread), and the dissenter named.
+3. **The policy is *flag-on-any-dissent*, stricter than majority-vote** — the partial-dissent panel (2 vendors
+   agree, 1 conflicts) was **FLAGGED, not accepted**. This corrects a naïve "majority wins" expectation and
+   **independently confirms the documented A/B/C finding** (why homogeneous B<A: any dissent flags, so a
+   same-vendor majority can't rubber-stamp a nondeterministic catch). This is the truth-gate discipline
+   working as designed.
+
+Two corrections to my own priors, in the interest of truth-first: (a) Codex's `codex exec` sends the **answer
+to stdout and the verbose envelope to stderr**, so the harness parses a clean `391` — my earlier "codex
+envelope would misparse" concern (from a merged `2>&1` confirm) was **wrong**. (b) Warm cross-vendor latency is
+**~6–7 s/call** (Codex over SSH ≈ agy local), far below the cold-start numbers.
+
+**Net effect on the scorecard:** the multi-PC row and the consensus-or-flag capability move from *code-read
+only* to **VERIFIED-live**: transport (SSH exec), routing, fan-out, both anti-wedge timeouts, **and a real
+2-distinct-family (Codex+agy) consensus round with correct accept AND flag** are all measured working today.
+The only thing not re-run at scale is the full ≥3-family A/B/C caught-defect benchmark (needs headless Claude /
+a 3rd live family); pc2 is down. The "AHEAD on cross-vendor consensus-or-flag" verdict now rests on **both**
+prior A/B/C caught-defect evidence *and* a live end-to-end round this pass.
 
 ---
 
