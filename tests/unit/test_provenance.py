@@ -183,3 +183,66 @@ def test_summarize_file_skips_malformed(tmp_path):
 def test_provenance_to_dict_is_json_serializable():
     prov = build_provenance(_vr("a", True, ["build"]), worker_runner="claude")
     json.dumps(prov.to_dict())  # must not raise
+
+
+# --- fail-closed consensus wiring (hardening 2026-07-10) ------------------------
+
+def _vendor(name, passed, value=None):
+    from overmind.verification.consensus_gate import VendorResponse, VendorStatus
+    return VendorResponse(name, status=VendorStatus.OK, passed=passed, value=value)
+
+
+def test_provenance_records_consensus_pass():
+    prov = build_provenance(
+        _vr("c1", True, ["build"]), worker_runner="claude",
+        consensus_responses=[_vendor("claude", True), _vendor("codex", True)],
+    )
+    assert prov.consensus_verdict == "consensus_pass"
+    assert prov.consensus_flagged is False
+    assert prov.consensus_witnesses == ["claude", "codex"]
+    assert prov.consensus_flag_reasons == []
+
+
+def test_provenance_records_flagged_disagreement():
+    prov = build_provenance(
+        _vr("c2", True, ["build"]), worker_runner="claude",
+        consensus_responses=[_vendor("claude", True), _vendor("codex", False)],
+    )
+    assert prov.consensus_verdict == "flagged"
+    assert prov.consensus_flagged is True
+    assert "disagreement" in prov.consensus_flag_reasons
+
+
+def test_provenance_consensus_binds_objective_witness():
+    # judge-only success (no objective gate) + require_objective_witness -> the
+    # consensus pass is flagged for missing the objective floor.
+    prov = build_provenance(
+        _vr("c3", True, ["semantic_requirements"]), worker_runner="claude",
+        consensus_responses=[_vendor("claude", True), _vendor("codex", True)],
+        require_objective_witness=True,
+    )
+    assert prov.would_ship_without_gate is True
+    assert prov.consensus_verdict == "flagged"
+    assert "missing_objective_witness" in prov.consensus_flag_reasons
+
+
+def test_provenance_no_consensus_responses_leaves_fields_none():
+    prov = build_provenance(_vr("c4", True, ["build"]), worker_runner="claude")
+    assert prov.consensus_verdict is None
+    assert prov.consensus_flagged is None
+    d = prov.to_dict()
+    assert d["consensus_verdict"] is None
+    assert d["consensus_witnesses"] == []
+
+
+def test_summarize_counts_flagged_consensus():
+    recs = [
+        build_provenance(_vr("a", True, ["build"]), worker_runner="claude",
+                         consensus_responses=[_vendor("claude", True), _vendor("codex", True)]).to_dict(),
+        build_provenance(_vr("b", True, ["build"]), worker_runner="claude",
+                         consensus_responses=[_vendor("claude", True), _vendor("codex", False)]).to_dict(),
+        build_provenance(_vr("c", True, ["build"]), worker_runner="claude").to_dict(),  # no consensus
+    ]
+    s = summarize_records(recs)
+    assert s.consensus_resolved == 2
+    assert s.consensus_flagged == 1

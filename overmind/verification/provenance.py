@@ -70,6 +70,13 @@ class VerdictProvenance:
     # D1 Kish n_eff decorrelation sub-gate (AN-3) — optional
     consensus_neff: float | None = None
     consensus_counts: bool | None = None
+    # Fail-closed consensus-or-flag outcome (hardening 2026-07-10) — optional.
+    # Records the deterministic resolution of the vendor panel: which vendors
+    # witnessed the verdict and whether the harness would FLAG rather than pass.
+    consensus_verdict: str | None = None          # consensus_pass | consensus_fail | flagged
+    consensus_flagged: bool | None = None
+    consensus_witnesses: list[str] = field(default_factory=list)
+    consensus_flag_reasons: list[str] = field(default_factory=list)
     # economics (D5) — optional enrichment
     cost_usd: float | None = None
     # context
@@ -95,6 +102,10 @@ class VerdictProvenance:
             "cross_vendor_engine": self.cross_vendor_engine,
             "consensus_neff": self.consensus_neff,
             "consensus_counts": self.consensus_counts,
+            "consensus_verdict": self.consensus_verdict,
+            "consensus_flagged": self.consensus_flagged,
+            "consensus_witnesses": list(self.consensus_witnesses),
+            "consensus_flag_reasons": list(self.consensus_flag_reasons),
             "cost_usd": self.cost_usd,
             "trace_id": self.trace_id,
             "recorded_at": self.recorded_at,
@@ -129,10 +140,20 @@ def build_provenance(
     cross_vendor: object | None = None,
     cost_usd: float | None = None,
     agreeing_engines: list[str] | None = None,
+    consensus_responses: list[object] | None = None,
+    require_objective_witness: bool = False,
 ) -> VerdictProvenance:
     """Compose a provenance record from a ``VerificationResult`` + optional
     enrichments. Derives the objective-gate posture via the audit taxonomy, and
-    (AN-3) the Kish n_eff decorrelation gate when ``agreeing_engines`` is given."""
+    (AN-3) the Kish n_eff decorrelation gate when ``agreeing_engines`` is given.
+
+    When ``consensus_responses`` (a list of
+    ``consensus_gate.VendorResponse``) is supplied, the fail-closed
+    consensus-or-flag resolver runs and its outcome — verdict, whether it would be
+    FLAGGED, the witnessing vendors, and the flag reasons — is recorded. The
+    objective-witness floor is bound to the audit: if the verdict has no objective
+    witness, the pass direction is required to flag unless ``require_objective_witness``
+    is explicitly relaxed by the caller. Recording only; never changes a verdict."""
     audit: ObjectiveGateAudit = audit_result(result)
     cv_present = False
     cv_decorrelated: bool | None = None
@@ -148,6 +169,25 @@ def build_provenance(
             from overmind.verification.judge_factory import decorrelation_gate
             gate = decorrelation_gate(agreeing_engines)
             neff, consensus_counts = gate.neff, gate.consensus_counts
+        except Exception:  # noqa: BLE001 — provenance must never hard-fail
+            pass
+
+    c_verdict: str | None = None
+    c_flagged: bool | None = None
+    c_witnesses: list[str] = []
+    c_reasons: list[str] = []
+    if consensus_responses is not None:
+        try:
+            from overmind.verification.consensus_gate import resolve_consensus
+            outcome = resolve_consensus(
+                consensus_responses,
+                require_objective_witness=require_objective_witness,
+                objective_witness_present=audit.objective_gate_present,
+            )
+            c_verdict = outcome.verdict.value
+            c_flagged = outcome.flagged
+            c_witnesses = list(outcome.witnesses)
+            c_reasons = [r.value for r in outcome.reasons]
         except Exception:  # noqa: BLE001 — provenance must never hard-fail
             pass
     return VerdictProvenance(
@@ -166,6 +206,10 @@ def build_provenance(
         cross_vendor_engine=cv_engine,
         consensus_neff=neff,
         consensus_counts=consensus_counts,
+        consensus_verdict=c_verdict,
+        consensus_flagged=c_flagged,
+        consensus_witnesses=c_witnesses,
+        consensus_flag_reasons=c_reasons,
         cost_usd=cost_usd,
         project_id=project_id,
         trace_id=str(getattr(result, "trace_id", "") or ""),
@@ -209,6 +253,8 @@ class ProvenanceSummary:
     would_ship_without_gate: int = 0
     with_cross_vendor: int = 0
     decorrelated_cross_vendor: int = 0
+    consensus_resolved: int = 0      # records that ran the fail-closed resolver
+    consensus_flagged: int = 0       # of those, how many would FLAG (not pass)
     total_cost_usd: float = 0.0
     worker_families: dict[str, int] = field(default_factory=dict)
 
@@ -238,6 +284,8 @@ class ProvenanceSummary:
             "pct_success_on_consensus_only": self.pct_success_on_consensus_only,
             "with_cross_vendor": self.with_cross_vendor,
             "decorrelated_cross_vendor": self.decorrelated_cross_vendor,
+            "consensus_resolved": self.consensus_resolved,
+            "consensus_flagged": self.consensus_flagged,
             "total_cost_usd": round(self.total_cost_usd, 6),
             "worker_families": dict(self.worker_families),
         }
@@ -258,6 +306,10 @@ def summarize_records(records: Iterable[dict]) -> ProvenanceSummary:
             s.with_cross_vendor += 1
             if rec.get("cross_vendor_decorrelated"):
                 s.decorrelated_cross_vendor += 1
+        if rec.get("consensus_verdict") is not None:
+            s.consensus_resolved += 1
+            if rec.get("consensus_flagged"):
+                s.consensus_flagged += 1
         cost = rec.get("cost_usd")
         if isinstance(cost, (int, float)):
             s.total_cost_usd += float(cost)
