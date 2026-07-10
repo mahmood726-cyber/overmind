@@ -45,6 +45,22 @@ from overmind.verification.trajectory_scorer import TrajectoryScorer
 from overmind.verification.verifier import VerificationEngine
 
 
+def _quorum_failclosed_enabled() -> bool:
+    """Whether fail-closed enforcement of the quorum consensus outcome is ON in the
+    live decision path (env ``OVERMIND_QUORUM_FAILCLOSED``, default ON).
+
+    When ON, a judge verdict carrying a FLAGGED consensus-or-flag outcome
+    (correlated panel below the n_eff floor, too few independent witnesses,
+    partial availability, or vendor disagreement) is NOT allowed to record a
+    passing independent-judge gate — the harness flags instead of silently
+    counting a threshold-PASS. Set to 0/false/no/off to restore the prior
+    threshold-only behavior. No effect on a single ``LLMJudge`` (no consensus
+    outcome)."""
+    import os
+    val = os.environ.get("OVERMIND_QUORUM_FAILCLOSED", "1").strip().lower()
+    return val not in {"0", "false", "no", "off"}
+
+
 class Orchestrator:
     def __init__(self, config: AppConfig) -> None:
         self.config = config
@@ -804,21 +820,46 @@ class Orchestrator:
             )
             judge_available = "judge_error" not in judge_verdict.concerns
             if judge_available:
-                required_checks = self._append_unique_check(required_checks, "semantic_requirements")
-                if not judge_verdict.passed and judge_verdict.confidence >= 0.7:
-                    skipped_checks = self._append_unique_check(skipped_checks, "semantic_requirements")
-                    details.append(f"judge: {judge_verdict.reasoning[:200]}")
-                    return VerificationResult(
-                        task_id=verification_result.task_id,
-                        success=False,
-                        required_checks=required_checks,
-                        completed_checks=completed_checks,
-                        skipped_checks=skipped_checks,
-                        details=details,
-                        trace_id=verification_result.trace_id,
+                # W-A/W-B fail-closed enforcement (hardening 2026-07-10): a
+                # QuorumVerdict can carry a deterministic consensus-or-flag outcome
+                # (consensus_gate.resolve_consensus). When it FLAGS — correlated
+                # panel below the Kish n_eff floor, too few independent witnesses,
+                # partial availability, or vendor disagreement — the panel's
+                # threshold-PASS must NOT be recorded as an independent-judge gate.
+                # We flag it (record skipped + reason) rather than silently counting
+                # it. Gated by OVERMIND_QUORUM_FAILCLOSED (default ON); a no-op when
+                # the verdict has no consensus outcome (single LLMJudge / legacy).
+                outcome = getattr(judge_verdict, "consensus_outcome", None)
+                consensus_flagged = (
+                    _quorum_failclosed_enabled()
+                    and outcome is not None
+                    and getattr(outcome, "flagged", False)
+                )
+                if consensus_flagged:
+                    reasons = ",".join(
+                        getattr(r, "value", str(r)) for r in getattr(outcome, "reasons", [])
                     )
-                completed_checks = self._append_unique_check(completed_checks, "semantic_requirements")
-                details.append(f"judge: pass (conf={judge_verdict.confidence:.2f})")
+                    skipped_checks = self._append_unique_check(skipped_checks, "semantic_requirements")
+                    details.append(
+                        f"judge: consensus FLAGGED ({reasons}) — fail-closed, not "
+                        "counted as an independent-judge gate"
+                    )
+                else:
+                    required_checks = self._append_unique_check(required_checks, "semantic_requirements")
+                    if not judge_verdict.passed and judge_verdict.confidence >= 0.7:
+                        skipped_checks = self._append_unique_check(skipped_checks, "semantic_requirements")
+                        details.append(f"judge: {judge_verdict.reasoning[:200]}")
+                        return VerificationResult(
+                            task_id=verification_result.task_id,
+                            success=False,
+                            required_checks=required_checks,
+                            completed_checks=completed_checks,
+                            skipped_checks=skipped_checks,
+                            details=details,
+                            trace_id=verification_result.trace_id,
+                        )
+                    completed_checks = self._append_unique_check(completed_checks, "semantic_requirements")
+                    details.append(f"judge: pass (conf={judge_verdict.confidence:.2f})")
 
         final_result = VerificationResult(
             task_id=verification_result.task_id,

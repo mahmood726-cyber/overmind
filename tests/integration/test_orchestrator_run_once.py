@@ -144,6 +144,83 @@ def test_completion_gates_use_stub_judge_when_injected(tmp_path):
         orchestrator.close()
 
 
+def _flagged_quorum_judge():
+    """A real QuorumJudge whose panel is a correlated pair (two Anthropic seats)
+    both voting PASS -> consensus_gate FLAGS it (correlated_panel), while the
+    threshold-based .passed stays True. Exercises the live fail-closed path."""
+    from overmind.verification.llm_judge import QuorumJudge
+
+    def _pass_judge():
+        return LLMJudge(backend=StubBackend(
+            response="VERDICT: PASS\nCONFIDENCE: 0.9\nREASONING: ok"))
+
+    return QuorumJudge(judges=[_pass_judge(), _pass_judge()], engines=["claude", "claude"])
+
+
+def _judge_project_task(project_root):
+    project = ProjectRecord(
+        project_id="quorum-fc-project", name="Quorum FC", root_path=str(project_root),
+        project_type="python_tool", stack=["python"],
+    )
+    task = TaskRecord(
+        task_id="quorum-fc-task", project_id=project.project_id, title="t",
+        task_type="verification", source="test", priority=0.9, risk="medium",
+        expected_runtime_min=1, expected_context_cost="low",
+        required_verification=["relevant_tests"],
+    )
+    vr = VerificationResult(
+        task_id=task.task_id, success=True, required_checks=["relevant_tests"],
+        completed_checks=["relevant_tests"], skipped_checks=[],
+        details=["relevant_tests: exit=0 command=pytest"],
+    )
+    return project, task, vr
+
+
+def test_failclosed_flagged_quorum_not_counted_as_judge_gate(tmp_path, monkeypatch):
+    # flag ON (default): a FLAGGED consensus must NOT record a passing judge gate.
+    monkeypatch.setenv("OVERMIND_QUORUM_FAILCLOSED", "1")
+    config = _write_minimal_config(tmp_path / "config", tmp_path / "data")
+    project_root = tmp_path / "project"
+    project_root.mkdir()
+    orchestrator = Orchestrator(config)
+    orchestrator.llm_judge = _flagged_quorum_judge()
+    try:
+        project, task, vr = _judge_project_task(project_root)
+        final = orchestrator._apply_completion_gates(
+            task=task, project=project, verification_result=vr,
+            transcript_lines=["tests passed"], include_judge=True,
+        )
+        # objective tests are the floor -> still success; but the judge gate is
+        # NOT completed — it is flagged and skipped instead.
+        assert final.success is True
+        assert "semantic_requirements" in final.skipped_checks
+        assert "semantic_requirements" not in final.completed_checks
+        assert any("consensus FLAGGED" in d for d in final.details)
+    finally:
+        orchestrator.close()
+
+
+def test_failclosed_off_restores_legacy_judge_pass(tmp_path, monkeypatch):
+    # flag OFF: legacy behavior — the correlated-panel PASS is recorded as a gate.
+    monkeypatch.setenv("OVERMIND_QUORUM_FAILCLOSED", "0")
+    config = _write_minimal_config(tmp_path / "config", tmp_path / "data")
+    project_root = tmp_path / "project"
+    project_root.mkdir()
+    orchestrator = Orchestrator(config)
+    orchestrator.llm_judge = _flagged_quorum_judge()
+    try:
+        project, task, vr = _judge_project_task(project_root)
+        final = orchestrator._apply_completion_gates(
+            task=task, project=project, verification_result=vr,
+            transcript_lines=["tests passed"], include_judge=True,
+        )
+        assert final.success is True
+        assert "semantic_requirements" in final.completed_checks
+        assert not any("consensus FLAGGED" in d for d in final.details)
+    finally:
+        orchestrator.close()
+
+
 def test_completion_gates_block_disallowed_verify_command(tmp_path):
     config = _write_minimal_config(tmp_path / "config", tmp_path / "data")
     project_root = tmp_path / "project"
