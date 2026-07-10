@@ -49,26 +49,34 @@ JUDGE_ERROR = "JUDGE_ERROR:"
 def _default_runner(
     argv: list[str], stdin_text: str, env_overrides: dict[str, str], timeout: int
 ) -> str:
-    """Run a CLI under a scrubbed env, piping the prompt on stdin."""
+    """Run a vendor CLI under a scrubbed env, delivering the prompt on stdin.
+
+    Routes through the anti-wedge chokepoint ``reliability.safe_exec.run_guarded``
+    (D1/D2/D3 hardening 2026-07-10) so every vendor exec — ``claude -p``,
+    ``ssh … claude -p``, ``codex exec -``, agy — inherits a **process-tree kill on
+    timeout** (a bare ``subprocess.run`` kills only the direct child, leaking the
+    ssh/codex grandchildren that wedged nightly workers) and a stdin that is
+    written-then-closed (EOF), so a CLI that keeps reading stdin cannot hang the
+    launcher. Behaviour on the happy path and on a non-zero exit is unchanged; only
+    a timeout now tears down the whole tree instead of leaking it.
+
+    The ``JUDGE_ERROR:`` string contract the orchestrator/fallback gate on is
+    preserved: a timeout / spawn failure / non-zero exit all return a
+    ``JUDGE_ERROR:``-prefixed string; success returns the stripped stdout.
+    """
+    from overmind.reliability.safe_exec import run_guarded
+
     env = safe_subprocess_env()
     env.update(env_overrides)
-    try:
-        result = subprocess.run(
-            argv,
-            input=stdin_text,
-            capture_output=True,
-            text=True,
-            encoding="utf-8",
-            errors="replace",
-            timeout=timeout,
-            env=env,
-        )
-    except (subprocess.TimeoutExpired, OSError, ValueError) as exc:
-        return f"{JUDGE_ERROR} {type(exc).__name__}: {str(exc)[:200]}"
-    if result.returncode != 0:
-        stderr = (result.stderr or "").strip()[:200]
-        return f"{JUDGE_ERROR} exit {result.returncode}: {stderr}"
-    return result.stdout.strip()
+    res = run_guarded(argv, timeout=float(timeout), env=env, stdin_text=stdin_text)
+    if res.timed_out:
+        return f"{JUDGE_ERROR} TimeoutExpired: timed out after {timeout}s; process tree killed"
+    if res.returncode == -1 and "failed to start" in res.stderr:
+        # spawn failure (OSError/ValueError) — matches the prior OSError path
+        return f"{JUDGE_ERROR} OSError: {res.stderr.strip()[:200]}"
+    if res.returncode != 0:
+        return f"{JUDGE_ERROR} exit {res.returncode}: {(res.stderr or '').strip()[:200]}"
+    return res.stdout.strip()
 
 
 @dataclass(slots=True)

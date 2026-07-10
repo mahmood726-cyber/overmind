@@ -42,24 +42,32 @@ def test_oauth_token_survives_the_overmind_allowlist(monkeypatch):
 
 
 def test_token_lands_in_the_real_subprocess_env(monkeypatch):
-    """End-to-end: the env actually handed to subprocess.run for `claude -p`
-    contains the OAuth token — proving headless auth still reaches the lane."""
+    """End-to-end: the env actually handed to the real subprocess for `claude -p`
+    contains the OAuth token — proving headless auth still reaches the lane.
+
+    The judge lane's exec now routes through the anti-wedge chokepoint
+    ``reliability.safe_exec.run_guarded`` (tree-kill + hard timeout + no-stdin-hang,
+    2026-07-10), which spawns via ``subprocess.Popen`` rather than ``subprocess.run``.
+    The security property under test is unchanged — the token still reaches the real
+    subprocess env via ``safe_subprocess_env()`` — so this pins that env at the new
+    exec seam (Popen) with the same assertions."""
+    from overmind.reliability import safe_exec
+
     monkeypatch.setenv("CLAUDE_CODE_OAUTH_TOKEN", "sk-ant-oat01-E2E")
     captured: dict = {}
 
-    class _FakeCompleted:
-        returncode = 0
-        stdout = "VERDICT: PASS"
-        stderr = ""
+    class _FakePopen:
+        def __init__(self, argv, **kwargs):
+            captured["argv"] = argv
+            captured["env"] = kwargs.get("env", {})
+            self.returncode = 0
 
-    def _fake_run(argv, **kwargs):
-        captured["argv"] = argv
-        captured["env"] = kwargs.get("env", {})
-        return _FakeCompleted()
+        def communicate(self, input=None, timeout=None):  # noqa: A002 — mirror stdlib
+            return ("VERDICT: PASS", "")
 
-    # Patch subprocess.run inside the module so _default_runner builds the REAL
-    # env (safe_subprocess_env() + auth override) without spawning a CLI.
-    monkeypatch.setattr(judge_backends.subprocess, "run", _fake_run)
+    # Patch Popen inside the chokepoint so run_guarded builds the REAL env
+    # (safe_subprocess_env() + auth override) without spawning a CLI.
+    monkeypatch.setattr(safe_exec.subprocess, "Popen", _FakePopen)
 
     out = ClaudeCodeBackend().query("judge this diff")
     assert out == "VERDICT: PASS"

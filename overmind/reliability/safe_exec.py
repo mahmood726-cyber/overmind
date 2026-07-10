@@ -46,13 +46,26 @@ def run_guarded(
     timeout: float = DEFAULT_TIMEOUT_SECONDS,
     cwd: str | Path | None = None,
     env: dict[str, str] | None = None,
+    stdin_text: str | None = None,
     clock: Callable[[], float] = time.perf_counter,
 ) -> ExecResult:
-    """Run a subprocess with a hard timeout, process-tree kill, and stdin=NUL.
+    """Run a subprocess with a hard timeout, process-tree kill, and a stdin that
+    can never wedge the launcher.
 
     ``command`` may be a pre-split argv list or a string (split via
     ``split_command``). On timeout the whole process tree is killed and
     ``timed_out=True`` / ``returncode=-1`` is returned — the caller never wedges.
+
+    ``stdin_text``:
+      * ``None`` (default) — stdin is ``DEVNULL`` (NUL on Windows): a process that
+        blocks reading stdin gets EOF immediately and cannot hang the launcher.
+      * a string — the text is written to the child's stdin and stdin is then
+        **closed** (EOF sent). This is the anti-wedge-safe way to deliver a prompt
+        on stdin (e.g. ``claude -p`` / ``codex exec -``): the child receives its
+        input and an EOF, so it can never block waiting for *more* stdin — the D3
+        ``codex exec`` "reading additional input from stdin…" hang. Delivering a
+        prompt this way still gets the full tree-kill + hard-timeout guard, unlike
+        a bare ``subprocess.run`` which kills only the direct child.
     """
     argv = command if isinstance(command, list) else split_command(command)
     run_env = safe_subprocess_env()
@@ -64,7 +77,9 @@ def run_guarded(
             argv,
             cwd=str(cwd) if cwd is not None else None,
             shell=False,
-            stdin=subprocess.DEVNULL,          # NUL on Windows — never block on stdin
+            # PIPE when we have a prompt to deliver (written+closed below), else
+            # DEVNULL. Either way the child gets an EOF and never blocks on stdin.
+            stdin=subprocess.PIPE if stdin_text is not None else subprocess.DEVNULL,
             stdout=subprocess.PIPE,
             stderr=subprocess.PIPE,
             text=True,
@@ -76,7 +91,7 @@ def run_guarded(
         return ExecResult(-1, "", f"failed to start: {exc}", False, clock() - start)
 
     try:
-        stdout, stderr = proc.communicate(timeout=timeout)
+        stdout, stderr = proc.communicate(input=stdin_text, timeout=timeout)
         return ExecResult(proc.returncode, stdout or "", stderr or "", False, clock() - start)
     except subprocess.TimeoutExpired:
         kill_process_tree(proc)
