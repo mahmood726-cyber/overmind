@@ -13,6 +13,39 @@ T = TypeVar("T")
 VALID_TABLES = {"projects", "runners", "tasks", "insights", "checkpoints", "memories", "routing_scores"}
 
 
+def _cosine_scores(query_vec: list[float], doc_vecs: list[list[float]]) -> list[float]:
+    """Cosine similarity of ``query_vec`` against each row of ``doc_vecs``.
+
+    Numerically identical to looping ``embeddings.cosine_similarity`` per row
+    (full cosine: dot / (|q| |d|)), just vectorised with numpy so semantic search
+    over hundreds/thousands of candidates isn't a pure-Python hot loop. Falls back
+    to the per-row helper when numpy is unavailable, so results never change —
+    only speed does.
+    """
+    # Fast numpy path requires a rectangular matrix whose width matches the query
+    # (the production case: every embedding is the same 384-dim model output). If
+    # any candidate has a different length (only happens with hand-built vectors,
+    # e.g. in tests), fall back to the exact per-row helper so behaviour is
+    # unchanged from the original loop.
+    qlen = len(query_vec)
+    if not all(len(dv) == qlen for dv in doc_vecs):
+        return [embeddings.cosine_similarity(query_vec, dv) for dv in doc_vecs]
+    try:
+        import numpy as np
+
+        q = np.asarray(query_vec, dtype=np.float64)
+        d = np.asarray(doc_vecs, dtype=np.float64)
+        qn = float(np.linalg.norm(q))
+        dn = np.linalg.norm(d, axis=1)
+        denom = dn * qn
+        dots = d @ q
+        with np.errstate(divide="ignore", invalid="ignore"):
+            scores = np.where(denom == 0.0, 0.0, dots / denom)
+        return scores.tolist()
+    except ImportError:
+        return [embeddings.cosine_similarity(query_vec, dv) for dv in doc_vecs]
+
+
 class StateDatabase:
     def __init__(self, db_path: Path) -> None:
         self.db_path = db_path
@@ -355,14 +388,19 @@ class StateDatabase:
             params.append(memory_type)
         rows = self.connection.execute(sql, params).fetchall()
 
-        scored: list[tuple[MemoryRecord, float]] = []
+        mems: list[MemoryRecord] = []
+        vecs: list[list[float]] = []
         for row in rows:
             mem = self._row_to_memory(row)
             if mem.embedding is None:
                 continue
-            score = embeddings.cosine_similarity(query_embedding, mem.embedding)
-            scored.append((mem, score))
+            mems.append(mem)
+            vecs.append(mem.embedding)
+        if not mems:
+            return []
 
+        scores = _cosine_scores(query_embedding, vecs)
+        scored = list(zip(mems, scores))
         scored.sort(key=lambda x: x[1], reverse=True)
         return scored[:limit]
 

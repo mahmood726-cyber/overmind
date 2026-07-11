@@ -1,0 +1,211 @@
+{
+  "_meta": {
+    "generated_at": "2026-07-09T21:31:38+00:00"
+  },
+  "benchmark": "gold_corpus_external",
+  "extraction_f1": {
+    "axis": "extraction_f1",
+    "conformal_coverage_rejection_sweep": [
+      {
+        "accepted_error": 0.0,
+        "alpha": 0.02,
+        "coverage": 0.9958847736625515,
+        "rejection_rate": 0.00819672131147541,
+        "tau": 0.71
+      },
+      {
+        "accepted_error": 0.0,
+        "alpha": 0.05,
+        "coverage": 0.9958847736625515,
+        "rejection_rate": 0.00819672131147541,
+        "tau": 0.71
+      },
+      {
+        "accepted_error": 0.0,
+        "alpha": 0.1,
+        "coverage": 0.9958847736625515,
+        "rejection_rate": 0.00819672131147541,
+        "tau": 0.71
+      },
+      {
+        "accepted_error": 0.0,
+        "alpha": 0.2,
+        "coverage": 0.9958847736625515,
+        "rejection_rate": 0.00819672131147541,
+        "tau": 0.71
+      },
+      {
+        "accepted_error": 0.0,
+        "alpha": 0.4,
+        "coverage": 0.9958847736625515,
+        "rejection_rate": 0.00819672131147541,
+        "tau": 0.71
+      },
+      {
+        "accepted_error": 0.0,
+        "alpha": 0.6,
+        "coverage": 0.36213991769547327,
+        "rejection_rate": 0.639344262295082,
+        "tau": 0.77
+      }
+    ],
+    "conformal_note": "base two-parser precision is already ~0.99 on this corpus, so at usable alpha the calibrated tau rejects ~nothing (before==after) \u2014 an honest ceiling, not a bug. The sweep shows the layer engages (coverage falls, rejection rises) as alpha tightens; a noisier base extractor is where it pays off (see unit test).",
+    "conformal_thresholds": {
+      "__default__": 0.0,
+      "ratio": 0.7100000000000001
+    },
+    "corpus": {
+      "adversarial": 40,
+      "calibration": 128,
+      "clean": 384,
+      "test": 296
+    },
+    "method": "two heterogeneous deterministic parsers (labeled + proximity); consensus-or-flag quorum; conformal per-field abstention. Model-free; gold used for scoring only.",
+    "quorum_only": {
+      "abstained": 52,
+      "accepted": 244,
+      "adversarial_abstention_rate": 0.975,
+      "adversarial_hallucinations": 1,
+      "adversarial_n": 40,
+      "f1": 0.972,
+      "fn": 13,
+      "fp": 1,
+      "precision": 0.9959,
+      "recall": 0.9492,
+      "tn": 39,
+      "tp": 243
+    },
+    "quorum_plus_conformal": {
+      "abstained": 54,
+      "accepted": 242,
+      "adversarial_abstention_rate": 1.0,
+      "adversarial_hallucinations": 0,
+      "adversarial_n": 40,
+      "f1": 0.9719,
+      "fn": 14,
+      "fp": 0,
+      "precision": 1.0,
+      "recall": 0.9453,
+      "tn": 40,
+      "tp": 242
+    },
+    "status": "ran"
+  },
+  "open_n": {
+    "axis": "open_n",
+    "note": "open-access = a resolvable PMC id (PubMed Central full text). Measured fresh from the gold records; NOT a hardcoded fraction.",
+    "overall": {
+      "n": 427,
+      "open_fraction": 1.0,
+      "open_pmc": 427
+    },
+    "sources": {
+      "gold_v3": {
+        "n": 43,
+        "open_fraction": 1.0,
+        "open_pmc": 43
+      },
+      "real_pdf_gold": {
+        "n": 384,
+        "open_fraction": 1.0,
+        "open_pmc": 384
+      }
+    },
+    "status": "ran"
+  },
+  "pooling_parity": {
+    "axis": "pooling_parity",
+    "cochrane_corpus": {
+      "ambiguous_matches": 767,
+      "best_of_config_rate": 0.9933,
+      "by_effect_type": {
+        "GIV": {
+          "matched": 1349,
+          "total": 1350
+        },
+        "MD": {
+          "matched": 176,
+          "total": 182
+        },
+        "logRR": {
+          "matched": 3529,
+          "total": 3556
+        }
+      },
+      "distinct_reviews_matched": 486,
+      "exact_reproductions": 5054,
+      "median_deviation": 5.638989275524864e-12,
+      "note": "best_of_config is an UPPER BOUND (accepts any of ~24 measure x selection x method combos within tol); unambiguous_rate is the single-config like-for-like floor.",
+      "reference": "ma4_results_pairwise70.csv",
+      "references_total": 5088,
+      "status": "ran",
+      "unambiguous_rate": 0.8426,
+      "unambiguous_single_config": 4287
+    },
+    "in_repo": {
+      "all_passed": true,
+      "fixtures_passed": 43,
+      "fixtures_total": 43,
+      "pooled_reviews": 41,
+      "worst_pooled_logdev": 3.234215813041619e-05
+    },
+    "metafor_validation": {
+      "exact_reproductions": 100,
+      "median_deviation": 2.220446049250313e-16,
+      "rate": 1.0,
+      "references_total": 100,
+      "status": "ran"
+    }
+  },
+  "remediation_pr": {
+    "axis": "remediation_pr",
+    "clean_controls": 6,
+    "defect_classes": 7,
+    "false_alarm_rate": 0.0,
+    "false_negatives": 0,
+    "false_positives": 0,
+    "honest_note": "wrong_drug/comparator-swap is NOT deterministically catchable (no drug field in the contract) \u2014 it is an honest FN that motivates the semantic quorum layer; counted in recall_all, excluded from recall_on_catchable.",
+    "per_class": {
+      "impossible_cell": {
+        "deterministically_catchable": true,
+        "expected_gate": "validate_trial_soft",
+        "flagged": true
+      },
+      "incommensurable_measure": {
+        "deterministically_catchable": true,
+        "expected_gate": "pooling_engine",
+        "flagged": true
+      },
+      "invalid_estimand": {
+        "deterministically_catchable": true,
+        "expected_gate": "validate_trial_hard",
+        "flagged": true
+      },
+      "inverted_hr": {
+        "deterministically_catchable": true,
+        "expected_gate": "validate_trial_soft",
+        "flagged": true
+      },
+      "mistyped_measure": {
+        "deterministically_catchable": true,
+        "expected_gate": "validate_trial_soft",
+        "flagged": true
+      },
+      "transposed_ci": {
+        "deterministically_catchable": true,
+        "expected_gate": "validate_trial_soft",
+        "flagged": true
+      },
+      "wrong_drug": {
+        "deterministically_catchable": false,
+        "expected_gate": null,
+        "flagged": false
+      }
+    },
+    "precision": 1.0,
+    "recall_all_including_uncatchable": 1.0,
+    "recall_on_catchable": 1.0,
+    "status": "ran",
+    "true_positives": 6
+  }
+}
