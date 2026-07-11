@@ -117,6 +117,34 @@ class MemoryStore:
                 break
         return merged
 
+    def rerank_search(
+        self, query: str, scope: str | None = None, memory_type: str | None = None,
+        limit: int = 10, candidate_pool: int = 50,
+    ) -> list[MemoryRecord]:
+        """Retrieve-then-rerank: pull a dense candidate pool, reorder by cross-encoder.
+
+        A bi-encoder cosine (``semantic_search_memories``) is cheap but coarse; it
+        gets the right item into a top-N pool far more reliably than into the exact
+        top-k. A cross-encoder then re-scores each ``(query, candidate)`` jointly and
+        promotes the true match up the list. Recall@k after reranking is therefore
+        bounded above by the dense recall@``candidate_pool`` (rerank only reorders the
+        pool, never adds to it), so ``candidate_pool`` should be >> ``limit``.
+
+        COST (flagged): fires one small local CPU cross-encoder forward pass per
+        pooled candidate — no LLM, no network, no tokens. When the cross-encoder
+        backend is unavailable this degrades to the plain dense order (``reranker``
+        returns candidates unchanged), i.e. identical to ``semantic`` retrieval with
+        zero added cost. This is OPT-IN; the shipped default retrieval path
+        (``hybrid_search``) is unchanged.
+        """
+        from overmind.memory import reranker
+
+        scored = self.db.semantic_search_memories(
+            query, scope=scope, memory_type=memory_type, limit=candidate_pool,
+        )
+        candidates = [mem for mem, _score in scored]
+        return reranker.rerank(query, candidates, text_of=lambda m: f"{m.title}\n{m.content}", top_k=limit)
+
     def supersede(self, old_memory_id: str, new_memory: MemoryRecord) -> bool:
         """Close an existing memory (set valid_until) and save a new one that replaces it.
 

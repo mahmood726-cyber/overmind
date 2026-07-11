@@ -8,6 +8,7 @@ falls through to FTS5-only -- zero runtime cost.
 from __future__ import annotations
 
 import math
+import os
 from typing import TYPE_CHECKING
 
 if TYPE_CHECKING:
@@ -15,6 +16,14 @@ if TYPE_CHECKING:
 
 _model = None
 _model_load_attempted = False
+
+# Production default. Overridable via OVERMIND_EMBED_MODEL for A/B evaluation of
+# stronger embedders (e.g. BAAI/bge-small-en-v1.5) without touching the default.
+DEFAULT_EMBED_MODEL = "all-MiniLM-L6-v2"
+
+
+def _model_name() -> str:
+    return os.environ.get("OVERMIND_EMBED_MODEL", DEFAULT_EMBED_MODEL)
 
 
 def _load_model():
@@ -26,7 +35,7 @@ def _load_model():
     try:
         from sentence_transformers import SentenceTransformer
 
-        _model = SentenceTransformer("all-MiniLM-L6-v2")
+        _model = SentenceTransformer(_model_name())
     except (ImportError, Exception):
         _model = None
     return _model

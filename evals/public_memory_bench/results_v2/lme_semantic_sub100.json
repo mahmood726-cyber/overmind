@@ -1,0 +1,38 @@
+{
+  "dataset": "longmemeval",
+  "config": "semantic",
+  "unit_granularity": "session",
+  "ks": [
+    1,
+    5,
+    10
+  ],
+  "n_questions": 100,
+  "n_samples": 100,
+  "n_units_total": 5091,
+  "embedding_backend_available": true,
+  "recall_at_k": {
+    "1": 0.61,
+    "5": 0.83,
+    "10": 0.91
+  },
+  "coverage_at_k": {
+    "1": 0.43650000000000033,
+    "5": 0.8021666666666667,
+    "10": 0.905
+  },
+  "by_category_recall": {
+    "single-session-user": {
+      "1": 0.5142857142857142,
+      "5": 0.7714285714285715,
+      "10": 0.8714285714285714
+    },
+    "multi-session": {
+      "1": 0.8333333333333334,
+      "5": 0.9666666666666667,
+      "10": 1.0
+    }
+  },
+  "excluded_no_gold": 0,
+  "notes": "documented subset: first 100 samples of the full set"
+}

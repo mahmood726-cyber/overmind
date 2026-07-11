@@ -30,16 +30,19 @@ def main() -> dict:
     ap = argparse.ArgumentParser(description="Public memory-recall benchmark (read-only).")
     ap.add_argument("--dataset", required=True, choices=["locomo", "longmemeval"])
     ap.add_argument("--data", required=True, help="Path to the dataset JSON file.")
-    ap.add_argument("--config", default="fts", choices=["fts", "hybrid", "semantic"])
+    ap.add_argument("--config", default="fts", choices=["fts", "hybrid", "semantic", "rerank"])
     ap.add_argument("--ks", default="1,3,5,10", help="Comma-separated k values.")
     ap.add_argument("--limit", type=int, default=0, help="Cap #samples (0 = all). Documented subset.")
+    ap.add_argument("--context-window", type=int, default=0,
+                    help="LoCoMo only: prepend N preceding same-session turns to each turn's "
+                         "embedded content (unit id unchanged). 0 = off (default).")
     ap.add_argument("--out", default="", help="Write result JSON to this path.")
     args = ap.parse_args()
 
     ks = tuple(int(x) for x in args.ks.split(","))
 
     if args.dataset == "locomo":
-        samples = load_locomo(args.data)
+        samples = load_locomo(args.data, context_window=args.context_window)
         gran = "turn"
     else:
         samples = load_longmemeval(args.data)

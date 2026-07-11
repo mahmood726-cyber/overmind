@@ -27,6 +27,7 @@ gold units retrieved) for transparency.
 from __future__ import annotations
 
 import json
+import os
 import tempfile
 from dataclasses import dataclass, field
 from pathlib import Path
@@ -37,7 +38,12 @@ from overmind.memory.store import MemoryStore
 from overmind.storage.db import StateDatabase
 from overmind.storage.models import MemoryRecord
 
-Config = Literal["fts", "hybrid", "semantic"]
+Config = Literal["fts", "hybrid", "semantic", "rerank"]
+
+# Candidate pool the "rerank" config pulls from the dense index before the
+# cross-encoder reorders it. Recall@k after rerank is bounded by dense recall@pool.
+# Overridable via RERANK_POOL env var for pool-size sweeps (measurement only).
+RERANK_POOL = int(os.environ.get("RERANK_POOL", "50"))
 
 
 @dataclass(frozen=True)
@@ -141,6 +147,10 @@ def _retrieve_ids(store: MemoryStore, query: str, k: int, config: Config) -> lis
     if config == "semantic":
         scored = store.db.semantic_search_memories(query, limit=k)
         return [m.memory_id for m, _ in scored]
+    if config == "rerank":
+        # Pull a dense pool >= k, then cross-encoder reorder and take top-k.
+        pool = max(RERANK_POOL, k)
+        return [m.memory_id for m in store.rerank_search(query, limit=k, candidate_pool=pool)]
     raise ValueError(f"unknown config: {config}")
 
 
@@ -154,7 +164,7 @@ def run_recall(
     notes: str = "",
 ) -> RecallResult:
     """Ingest each sample into a fresh store and measure recall@k over its questions."""
-    with_emb = config in ("hybrid", "semantic")
+    with_emb = config in ("hybrid", "semantic", "rerank")
     backend = embeddings.is_available()
 
     kmax = max(ks)
@@ -229,10 +239,17 @@ LOCOMO_CATEGORIES = {
 }
 
 
-def load_locomo(path: str | Path) -> list[Sample]:
+def load_locomo(path: str | Path, *, context_window: int = 0) -> list[Sample]:
     """LoCoMo: retrieval unit = one conversation turn (keyed by ``dia_id``);
     gold = the QA's ``evidence`` dia_ids. Adversarial (cat 5) / no-evidence QAs
     have empty gold and are excluded from recall (reported as excluded_no_gold).
+
+    ``context_window``>0 enriches each turn's embedded/scored *content* with the N
+    preceding turns from the same session (Anthropic-style contextual retrieval).
+    The retrieval unit is UNCHANGED — ``unit_id`` stays the turn's ``dia_id`` and
+    only that turn's id is scored against gold — so this measures whether giving a
+    short, context-poor turn some surrounding dialogue makes its embedding easier
+    to match, not a change in retrieval granularity.
     """
     raw = json.loads(Path(path).read_text(encoding="utf-8"))
     samples: list[Sample] = []
@@ -245,16 +262,26 @@ def load_locomo(path: str | Path) -> list[Sample]:
             turns = c[key]
             if not isinstance(turns, list):
                 continue
+            rendered: list[str] = []  # per-turn "speaker: body" for this session
             for t in turns:
                 did = t.get("dia_id")
                 if not did:
+                    rendered.append("")
                     continue
                 speaker = t.get("speaker", "")
                 text = t.get("text", "")
                 # blip_caption/img content when the turn is an image share.
                 cap = t.get("blip_caption") or ""
                 body = text if not cap else f"{text} [shared image: {cap}]"
-                units.append(Unit(unit_id=did, title=speaker, content=f"{speaker}: {body}"))
+                line = f"{speaker}: {body}"
+                idx = len(rendered)
+                rendered.append(line)
+                if context_window > 0:
+                    prior = [r for r in rendered[max(0, idx - context_window):idx] if r]
+                    content = ("\n".join(prior) + "\n" + line) if prior else line
+                else:
+                    content = line
+                units.append(Unit(unit_id=did, title=speaker, content=content))
         questions: list[Question] = []
         for j, qa in enumerate(conv.get("qa", [])):
             ev = qa.get("evidence") or []
