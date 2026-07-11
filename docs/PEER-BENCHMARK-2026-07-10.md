@@ -25,6 +25,24 @@ R/metafor ≤1e-4); live cross-vendor round today (Codex+agy+deterministic: 3 AC
 
 ---
 
+## 0. Measured update (2026-07-10, refresh) — the two "no-number" gaps are now closed
+
+Since the first cut of this doc, two of our 🟡F ("we have code, no published number") cells became measured 🟢L
+(master `a8131b0`, 1282 tests green):
+
+- **Live cross-vendor verification** (sealed held-out A/B/C slice, n=139, both vendors 100% usable, single pass,
+  Codex effort=medium): **caught-defect 0.9524 [0.900, 0.978]** (120/126); decomposition floor 0.341 → agy-only
+  0.937 → C 0.9524; **false-alarm 0.692 raw → 0.308 with the conformal gate** (gate engaged: 16 abstentions,
+  recall→0.865). See `LIVE-VENDOR-ACCURACY-2026-07-10.md`.
+- **Memory retrieval recall@k** (our shipped `MemoryStore`, hybrid): **LongMemEval_s R@10 96.4%** (n=500) /
+  **LoCoMo R@10 45.8%** (n=1982). See `MEMORY-RECALL-BENCHMARK-2026-07-10.md`.
+
+**These numbers force two honest revisions, made in full below:** (1) the cross-vendor claim moves from *recall*
+to *calibration/precision* (§3c — the recall increment is only +1.6pp); (2) our false-alarm rate and our LoCoMo
+recall are now measured and, on those axes, we are **behind** named peers (§4).
+
+---
+
 ## 1. Peer landscape, by relevance to our purpose (with sourced numbers)
 
 ### Tier 1 — direct niche peers (automated evidence-synthesis reproduction / verification)
@@ -125,16 +143,20 @@ agent frameworks (LangGraph/CrewAI/AG2/SDK) · **SG** static gates (semgrep/Code
 | Verdict **bound to objective witnesses** (tests + numeric-to-tol + R/metafor GT, signed) | 🟢**L** | ○ | — | — | — | — | — | ○ | — |
 | **Overclaim / fabrication** linting | 🟢**L** | ✎ | — | — | — | ○ | — | ○ | — |
 | **Heterogeneous-vendor multi-PC** execution substrate | 🟢**L** | — | — | — | — | — | ○ | — | — |
-| **Conformal / calibrated** abstention (risk bound) | 🟡**F** | — | — | — | ★ | — | — | — | — |
+| **Conformal / calibrated** abstention | 🟢**L**¹ | — | — | — | ★ | — | — | — | — |
 | Semantic/dataflow **static gate** (measured P/R) | ○ | — | — | — | — | — | — | ★ | — |
-| Durable **long-term memory** (measured recall) | 🟡**F** | — | — | — | — | — | ○ | — | ★ |
-| **Publicly benchmarked** accuracy number for the task | 🟡**F** | — | ★ | ★ | ★ | ★ | ★ | ★ | ★ |
+| Durable **long-term memory** (measured recall) | 🟢**L**² | — | — | — | — | — | ○ | — | ★ |
+| **Publicly benchmarked** accuracy number for the task | 🟢**L**³ | — | ★ | ★ | ★ | ★ | ★ | ★ | ★ |
 
-**Reading it:** the **top seven rows are the truth-gate core; no single peer holds more than two.** meta-pipe is
-closest on *domain* (executes + reads-from-R + overclaim), ARA closest on *cross-model*, JE closest on *panels*,
-CF/GS closest on *abstention/groundedness* — but only our column holds all seven, and it's the one marked 🟢**L**.
-The **bottom four rows are where peers lead — and every one of those is a *measurement* gap** (we have code/ideas,
-they have a published number).
+¹ measured (gate engaged, FAR 0.692→0.308) but **empirical, not a formal risk bound** — CF (CAP/SCOPE) still
+leads on the *guarantee*. ² LongMemEval_s R@10 **96.4%** / LoCoMo R@10 **45.8%** — competitive on the former,
+**behind** on the latter (§4). ³ defect-detection caught 0.9524 / FAR 0.692 raw (0.308 gated) — recall strong,
+**FAR poor** (§4).
+
+**Reading it:** the **top seven rows are the truth-gate core; no single peer holds more than two** — only our
+column holds all seven (all 🟢**L**). The **bottom four "measurement" rows are now measured** for us — and the
+numbers are honestly mixed: strong defect *recall* and LongMemEval retrieval, but poor *false-alarm/precision*
+and behind on LoCoMo. Having the number is progress; the number is not uniformly a win (§4).
 
 ---
 
@@ -152,24 +174,43 @@ they have a published number).
 - **Cross-model corroboration** as a concept → ARA and judge ensembles do it.
 - **Abstention** → conformal systems abstain, and with a *formal* guarantee we lack.
 
-### 3c. The heterogeneity thesis — honest handling of the strongest counter-evidence
-Our differentiator rests on "a *different* vendor catches what the first missed." *Rethinking MoA*
-([2502.00674](https://arxiv.org/pdf/2502.00674)) is the sharpest challenge: for **generation quality**, mixing
-different models is **not** automatically better — **Self-MoA** (resampling the single best model) often wins when
-one model dominates. I take that seriously. The reconciliation is a **task-type distinction**:
-- *Rethinking MoA* optimizes **answer quality** (AlpacaEval win-rate) — there, a weak model can *dilute* a strong
-  one, so same-model resampling is efficient.
-- Our task is **error-catch verification of a checkable numeric result** — there the relevant quantity is
-  **decorrelated failure** (β / co-failure), and the [co-failure-ceiling paper (2606.27288)](https://arxiv.org/abs/2606.27288)
-  says explicitly that on *checkable* tasks gains come from models **failing on different questions**, with
-  low-ρ heterogeneous ensembles beating high-ρ ones.
-- Three independent lines converge for **our** task-type: (i) our measured **A/B/C** — homogeneous B (0.770)
-  catches **fewer** defects than single-agent A (0.802), heterogeneous C **0.921**; (ii) co-failure-ceiling
-  theory; (iii) meta-pipe's own concession that intra-model retest "is not inter-rater reliability."
+### 3c. What cross-vendor actually buys — the recall claim FAILS, the calibration claim HOLDS
 
-**Honest scope:** the heterogeneity claim is defensible **for checkable-result verification**, which is our
-purpose — **not** as a universal "mixing always helps" (which *Rethinking MoA* correctly refutes for generation).
-We should never cite our cross-vendor edge outside the verification setting.
+This is the uncomfortable finding, stated plainly because the clean measured data demands it.
+
+**The recall-boost claim is not supported.** On the clean two-healthy-vendor run (both vendors 100% usable), the
+best single vendor already saturates recall — **agy-only 0.937**, and the heterogeneous panel **C 0.9524** is
+only **+1.6pp**. That is not a meaningful "heterogeneous panel boosts recall" effect. It is exactly the case
+*Rethinking MoA* ([2502.00674](https://arxiv.org/pdf/2502.00674)) warns about — when one model already dominates,
+adding another barely moves the headline metric. **The earlier A/B/C runs that showed a big heterogeneity recall
+gain were on a *degraded* agy; with agy healthy the recall gain evaporates.** We must retire the "cross-vendor
+lifts recall" framing — the data doesn't support it.
+
+**What the second vendor *does* buy is calibration — and that is real and measured.** The two vendors have
+sharply different false-alarm profiles: **agy-only FAR 0.692, Codex-only FAR 0.308** — their errors on the clean
+set are *decorrelated*. Flag-on-any-dissent alone can't exploit this (it unions the false alarms → raw C FAR
+0.692), but the **conformal gate uses the *disagreement* between the two vendors as the abstention signal**: on a
+clean artifact that agy over-flags but Codex passes, the gate abstains. Measured result — **at a matched
+false-alarm rate of 0.308, the 2-vendor+gate panel reaches 0.865 recall vs the single best-calibrated vendor
+(Codex-only) at 0.786 — a +7.9pp recall gain at equal FAR.** *That* is the cross-vendor payoff on this evidence.
+
+**Restated defensible claim (novelty repositioned honestly):**
+> Cross-vendor heterogeneity, on measured evidence, buys **precision/calibration, not recall.** When one vendor
+> already saturates recall, a second **error-decorrelated** vendor supplies the disagreement signal a conformal
+> gate exploits to suppress the dominant vendor's false alarms — yielding a better recall–false-alarm operating
+> point (**+7.9pp recall at matched FAR** vs the best single vendor). This is *precisely* what the co-failure /
+> Rethinking-MoA line predicts (a second model helps by decorrelating errors, not by adding capability), applied
+> to the false-alarm axis of checkable-result verification.
+
+This is a narrower claim than the original, and correctly so. It concedes the recall point to the frontier
+critique and relocates the novelty to calibrated cross-vendor abstention — which the clean data does support.
+
+### 3d. Why the groundedness-scorer numbers still vindicate the design
+SOTA text-groundedness (HHEM-2.1 ~**67% F1**) and the finding that **reasoning models hallucinate *more* on
+grounded summarization** (>10%, up to 20.2%) show that *scoring text* for faithfulness is inherently lossy. Our
+gate sidesteps that class of error by binding "pass" to a **recomputed** number checked against R/metafor — a
+stronger primitive than any text-faithfulness score for the quantitative-claims domain. (This is about the
+*witness binding*, independent of the cross-vendor recall/calibration question above.)
 
 ### 3d. Why the groundedness-scorer numbers vindicate our design
 SOTA text-groundedness (HHEM-2.1 ~**67% F1**) and the finding that **reasoning models hallucinate *more* on
@@ -182,41 +223,53 @@ stronger primitive than any text-faithfulness score for the quantitative-claims 
 ## 4. Verdict — lead / parity / lag (purpose-anchored)
 
 **LEAD (verified-live, uniquely ours as a combination):** execution-based reproduction + deterministic,
-model-free, fail-closed **cross-vendor** consensus + objective-witness/R-metafor binding, across heterogeneous
-vendor nodes. Across the 11-row matrix **no peer holds >2 of the 7 core primitives; we hold all 7**, and the
-block is verified-live. The heterogeneity basis is triangulated (measured A/B/C + co-failure theory + a
-competitor's own concession), and correctly scoped to *verification*, not generation.
+model-free, fail-closed consensus + objective-witness/R-metafor binding, across heterogeneous vendor nodes — the
+7-primitive core block, no peer holds >2, we hold all 7. **Now with a measured number:** defect-detection
+**recall 0.9524 [0.900, 0.978]** on a blinded held-out slice. And a **repositioned, narrower** cross-vendor
+claim that the clean data *does* support: a decorrelated second vendor + conformal gate buys **calibration**
+(+7.9pp recall at matched FAR 0.308) — see §3c.
 
 **PARITY (not ours alone):** read-from-computation provenance binding (meta-pipe); overclaim/fabrication linting
-(meta-pipe, semgrep-class); cross-model corroboration as a concept (ARA, judge ensembles); abstention disposition
-(conformal — more formal there).
+(meta-pipe, semgrep-class); cross-model corroboration as a concept (ARA, judge ensembles); calibrated abstention
+as a mechanism (conformal — CF has the formal bound, we have an empirical one). **LongMemEval retrieval:** our
+**R@10 96.4%** is competitive with the memory peers' published range (caveat: ours is retrieval-recall@k, several
+peer numbers are end-to-end QA accuracy — not strictly apples-to-apples).
 
-**LAG (peers beat us — five *measurement* gaps, one *mechanism*):**
-- **ARA** — a published reproducibility-accuracy number (~61%); we have none peer-comparable.
-- **CAP / SCOPE / ToolChain-CRC** — a *formal* conformal risk bound (+22.2% AUROC etc.); ours is a fixture-only gate.
-- **semgrep / CodeQL / VibeGuard / Qodo** — semantic/dataflow static analysis with measured P/R (88%/5%, 82%/12%,
-  100%R/89.5%P, 60.1% F1); Sentinel is regex-dominant, unmeasured.
-- **Mem0 / Letta / Zep** — published LoCoMo/LongMemEval recall (92.5/94.4, 63.8%); we've never benchmarked memory.
-- **CompassVerifier** — a *trained* verifier; ours is a prompt+regex guard *(mechanism, not just measurement)*.
+**LAG (peers beat us — now with our own numbers making it concrete, not just "unmeasured"):**
+- **False-alarm / precision — our weakest axis, now measured and genuinely poor.** Raw C FAR **0.692**; even
+  gated **0.308**. Against precision-reporting peers — CodeQL **5% FP**, semgrep **12% FP**, VibeGuard **89.5%
+  precision** — a 30–69% false-positive rate is bad. (Caveat: different task + only 13 adversarial cleans; but
+  the axis is a real weakness, not an artifact.)
+- **LoCoMo memory — measured and behind:** our **R@10 45.8%** vs **MemPalace 88.9% R@10** (same metric,
+  ~half). Strong on LongMemEval_s (96.4%), weak on the harder LoCoMo — honestly mixed, net behind on LoCoMo.
+- **CAP / SCOPE / ToolChain-CRC** — a *formal* conformal risk bound; ours is empirical (gate engaged this run
+  but data-dependent, no coverage guarantee).
+- **semgrep / CodeQL / VibeGuard / Qodo** — semantic/dataflow static analysis with measured P/R; Sentinel is
+  regex-dominant, still unmeasured.
+- **CompassVerifier** — a *trained* verifier; ours is a prompt+regex guard *(mechanism gap)*.
 - **LangGraph** — durable checkpoint/time-travel graph; our Dispatch does lease/requeue, not resumable-graph.
 
-**One line:** *We uniquely combine execution-based reproduction with a deterministic, fail-closed, cross-vendor,
-witness-bound consensus gate (verified-live), scoped correctly to verification, and match-or-beat on a private
-R/metafor-checked corpus — but, unlike ARA and the memory/SAST peers, we have no publicly-comparable accuracy or
-recall number yet.* Defensible; "world's best verifier" is not, yet.
+**One line (revised, honest):** *We uniquely combine execution-based reproduction with a deterministic,
+fail-closed, witness-bound consensus gate, now with a measured blinded defect **recall of 0.9524** and a
+repositioned cross-vendor claim (calibration, not recall). But our **false-alarm rate (0.692 raw / 0.308 gated)
+is measurably poor** vs precision-reporting peers, and our **LoCoMo memory recall (45.8%) is behind** MemPalace
+(88.9%). We can claim best-in-class **recall + architecture** for the reproduction-verification niche; we cannot
+yet claim **precision**, and "world's best verifier" remains unearned on the false-alarm axis.*
 
 ---
 
-## 5. To credibly claim best-for-purpose, still need (tied to scorecard open items)
-1. **★ Live-vendor accuracy number (scorecard #4).** ARA sets the bar (~61% on a public reproducibility corpus);
-   publish ours (reconstruct-and-beat is the natural instrument — report a caught-defect/calibration figure vs
-   held-out truth).
-2. **Run LongMemEval/LoCoMo once (adopt-#7)** — every memory peer posts a number; we post none.
-3. **Formal coverage bound for the conformal gate (adopt-#3/#4)** — so abstention can stand next to CAP/SCOPE.
-4. **Measure Sentinel P/R + move hot rules to AST/semgrep-class (adopt-#5)** — next to semgrep 82%/12%, CodeQL 88%/5%.
-5. **A learned-verifier tier (adopt-#2)** — CompassVerifier-class, to harden past regex guards.
+## 5. To credibly claim best-for-purpose, still need — re-ranked (two prior items now DONE)
+- ~~Live-vendor accuracy number~~ **DONE** (0.9524 recall, §0). ~~Run LongMemEval/LoCoMo~~ **DONE** (96.4% / 45.8%).
+1. **★ FIX FALSE-ALARM / PRECISION — now the single highest-value gap.** 0.692 raw is the number that most
+   undercuts a "world-class verifier" claim. Concretely: fix agy's "CI-crosses-1 → direction defect" over-read
+   (≈6 of 9 false alarms), require 2-vendor agreement for borderline flags instead of flag-on-any-dissent, and
+   add a real per-flag confidence so the conformal gate abstains reliably (not data-dependently).
+2. **Close the LoCoMo memory gap** (45.8% → toward MemPalace's 88.9%) — turn/temporal retrieval, not session.
+3. **Formal coverage bound for the conformal gate** — so the abstention can stand next to CAP/SCOPE.
+4. **Measure Sentinel P/R + move hot rules to AST/semgrep-class.**
+5. **A learned-verifier tier (CompassVerifier-class).**
 
-Until #1–#2 land, the truthful headline is the §4 "one line" — a bounded, defensible, triangulated claim.
+The recall and architecture claims are now earned; the honest headline is bounded by precision, per §4.
 
 ---
 
