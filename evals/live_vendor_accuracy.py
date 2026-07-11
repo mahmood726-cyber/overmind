@@ -27,9 +27,15 @@ from __future__ import annotations
 import json
 import subprocess
 import sys
+import threading
 import time
 from concurrent.futures import ThreadPoolExecutor, as_completed
 from pathlib import Path
+
+# Set once a Codex response reports credit exhaustion mid-run. When set, new
+# collection tasks short-circuit (stop burning), and main() prints an INCOMPLETE
+# banner instead of a clean headline — never silently produce a degraded number.
+CREDITS_DEAD = threading.Event()
 
 import os
 # Force UTF-8 for child processes (the agy driver prints its JSON result through
@@ -106,8 +112,15 @@ def _load_done(path: Path) -> dict:
 
 def _collect(task, codex_rev, agy_rev):
     """One task -> (task_id, codex_verdict_dict, agy_verdict_dict, witness_defect).
-    Uses the harness's real BackendReviewer (real prompt + real parser)."""
+    Uses the harness's real BackendReviewer (real prompt + real parser).
+    Short-circuits once Codex credit-exhaustion is detected so we stop burning."""
+    if CREDITS_DEAD.is_set():
+        from overmind.benchmark.reviewers import ReviewerVerdict
+        return task.id, ReviewerVerdict(flag=False, vendor="codex", usable=False,
+                                        raw="SKIPPED: credits dead"), None, bool(run_witness(task).defect)
     cv = codex_rev(task)
+    if "out of credits" in (cv.raw or "").lower():
+        CREDITS_DEAD.set()
     av = agy_rev(task)
     wd = bool(run_witness(task).defect)
     return task.id, cv, av, wd
@@ -163,12 +176,23 @@ def main() -> int:
         futs = {ex.submit(_collect, t, codex_rev, agy_rev): t for t in todo}
         for i, fut in enumerate(as_completed(futs), 1):
             tid, cv, av, wd = fut.result()
+            if av is None:      # credit-skipped: don't record, leave for resume
+                continue
             rec = {"task_id": tid, "codex": cv.to_dict(), "agy": av.to_dict(), "witness_defect": wd,
                    "codex_raw": (cv.raw or "")[:200], "agy_raw": (av.raw or "")[:200]}
             sink.write(json.dumps(rec) + "\n"); sink.flush()
             if i % 10 == 0 or i == len(todo):
                 el = round(time.time() - t_start)
-                print(f"[live-accuracy] {len(done)+i}/{len(held)} done ({el}s elapsed)", flush=True)
+                flag = " [CREDITS DEAD - draining]" if CREDITS_DEAD.is_set() else ""
+                print(f"[live-accuracy] {len(done)+i}/{len(held)} done ({el}s elapsed){flag}", flush=True)
+    if CREDITS_DEAD.is_set():
+        recs_now = _load_done(jsonl)
+        cu_now = sum(1 for r in recs_now.values() if r.get("codex", {}).get("usable"))
+        print(f"\n#### CREDIT EXHAUSTION MID-RUN — STOPPED. Codex usable so far: {cu_now}/{len(held)}. "
+              f"This is INCOMPLETE and NOT a clean number. Resume with `python -m evals.live_vendor_accuracy` "
+              f"when Codex credits return (re-runs only the Codex-failed items). No scorecard emitted.",
+              flush=True)
+        return 2
 
     # ---- everything below is deterministic; uses the harness's real code ----
     from overmind.benchmark.reviewers import ReviewerVerdict
