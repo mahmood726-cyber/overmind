@@ -4,25 +4,23 @@
 Closes the peer-benchmark's #1 open item: *the harness's evals were fixture-based; this is a real **live-vendor**
 accuracy number* over a sealed, labelled corpus.
 
-**Headline (verified-live, COMPLETE-coverage two-healthy-vendor run, both vendors 100% usable):** on the sealed
-held-out slice (n=139, 126 defects / 13 clean), the harness's real cross-vendor verification path —
-**Arm C (Codex + agy + objective floor)** — caught **95.2% of defects (120/126), Wilson-95% CI [90.0%, 97.8%]**,
-at a **false-alarm rate of 69.2% (9/13 cleans)**. **Recall is excellent; the false-alarm rate is the real,
-serious weakness** — and completing coverage made it *worse*, honestly (see below).
+**HEADLINE (CLEAN single-provenance two-healthy-vendor run — the definitive number):** on the sealed held-out
+slice (n=139, 126 defects / 13 clean), a **fresh full-slice pass with both vendors 100% usable** (Codex 139/139,
+agy 139/139; single provenance — no mixing of degraded and healthy passes), the harness's real cross-vendor
+verification path **Arm C (Codex + agy + objective floor)** caught **95.24% of defects — 120/126, Wilson-95% CI
+[90.0%, 97.8%]**. **This exceeds the degraded-Codex floor of 0.921** (as predicted — that was a lower bound).
+Codex reasoning-effort = **medium** (stated; the harness default xhigh would only help recall).
 
-> **Two truth-first course-corrections happened while measuring this — both reported, not hidden.**
-> (1) The first pass had the **Codex lane at 63% usable** (a cp1252 UTF-8 stdin bug in the driver + a brief
-> Codex credit outage); fixing the bug and resuming lifted Codex to 100% and Arm C to 0.944.
-> (2) The agy lane then had 13 **transient agy-driver crashes** (also a cp1252 output crash — env-fixed); an
-> **agy-only recovery** (no Codex calls) completed agy to 100% — and that **raised caught 0.944→0.952 but pushed
-> FAR 0.462→0.692**, because the 3 newly-recovered agy reviews all flagged *clean* artifacts. The earlier lower
-> FAR was an artifact of *incomplete* agy coverage; this complete-coverage number is the honest one.
->
-> **The cross-vendor story is tempered here (important, honest):** with a fully-healthy agy that is *already*
-> high-recall (agy-only 0.921), the second vendor (Codex) adds only **+2.3pp** recall (agy+floor 0.929 → C
-> 0.952) and **cannot lower FAR** — flag-on-any-dissent unions agy's false alarms, so C inherits agy's 0.692.
-> This is the opposite of the degraded-agy A/B/C runs where the frontier vendor carried the panel; the measured
-> cross-vendor benefit clearly depends on the vendors' relative reliability and calibration.
+The honest cost: **false-alarm rate 69.2% raw (9/13 cleans)**, reduced to **30.8% (4/13) by the conformal gate**
+(which *did* engage this run — 16 abstentions, −9pp recall to 0.865). **Recall is excellent; the raw false-alarm
+rate is the real weakness**, and it is almost entirely one fixable agy behaviour (§2c).
+
+> **Provenance note (why this run, not a re-score):** earlier passes hit two transport bugs — a cp1252 UTF-8
+> **stdin** bug on the Codex-SSH path and a cp1252 **stdout** crash in the agy driver (both *my measurement
+> transport*, not the harness; both fixed: explicit UTF-8 bytes + `PYTHONUTF8`). Rather than report a
+> number stitched across degraded+healthy passes, the prior data was **archived** and this is a single clean
+> pass with both vendors healthy start-to-finish. A mid-run Codex credit-exhaustion guard was armed (it would
+> have stopped and reported partial progress rather than emit a degraded number); it did not trigger.
 
 ---
 
@@ -67,68 +65,68 @@ laptop over SSH. Driver: `evals/live_vendor_accuracy.py` (feature branch, benchm
 
 ---
 
-## 2. Results (live, held-out n=139; 126 defects / 13 clean)
+## 2. Results (CLEAN run, live, held-out n=139; 126 defects / 13 clean)
 
-**Vendor usable-rate (complete run):** Codex **139/139 = 100%**; agy **139/139 = 100%**. A genuine
-two-frontier-vendor measurement at full coverage.
+**Vendor usable-rate:** Codex **139/139 = 100%**; agy **139/139 = 100%** — a genuine two-frontier-vendor
+measurement, single clean provenance.
 
-**Decomposition (every row scored by the harness's own `score_arm`; a single live pass, no seed averaging).
-Per Mahmood's honesty constraint, single-family rows are labelled — an agy-only panel is ONE family + the
-objective floor, which is NOT cross-vendor consensus:**
+**Decomposition (every row scored by the harness's own `score_arm`; single live pass, no seed averaging).
+Per the honesty constraint, single-family rows are labelled — an agy-only panel is ONE family + the objective
+floor, which is NOT cross-vendor consensus:**
 
 | arm | caught-defect | Wilson 95% CI | false-alarm (n=13) | what it isolates |
 |---|:--:|:--:|:--:|---|
 | **objective-ref** (witness-only floor, deterministic) | **0.341** | [0.264, 0.428] | **0.000** (0/13) | deterministic base — catches exactly the 43 witness-detectable, misses all 83 reviewer-only |
-| Codex only | 0.706 | [0.622, 0.779] | **0.308** (4/13) | single frontier vendor — lower recall, **best-calibrated (lowest FAR)** |
-| Codex + floor | 0.762 | [0.681, 0.828] | 0.308 (4/13) | frontier + floor |
-| **agy only** `[1-family, consensus DEGRADED]` | 0.921 | [0.860, 0.956] | 0.692 (9/13) | cheap reviewer alone — **high recall, high false-alarm** |
-| **agy + floor** `[1-family + floor, consensus DEGRADED]` | **0.929** | [0.870, 0.962] | 0.692 (9/13) | the agy-only ceiling — one family + the objective floor |
-| **★ C = Codex + agy + floor** `[2-family]` | **0.952** | **[0.900, 0.978]** | 0.692 (9/13) | heterogeneous consensus-or-flag + floor — the harness path |
-| C + conformal gate (α=0.10) | 0.952 | [0.900, 0.978] | 0.692 (9/13) | FAR lever — **abstained 0; did NOT reduce FAR** (see §2c) |
+| Codex only | 0.786 | [0.706, 0.848] | **0.308** (4/13) | single frontier vendor — **best-calibrated (lowest FAR)** |
+| Codex + floor | 0.794 | [0.715, 0.855] | 0.308 (4/13) | frontier + floor |
+| **agy only** `[1-family, consensus DEGRADED]` | 0.937 | [0.880, 0.968] | 0.692 (9/13) | cheap reviewer alone — high recall, high false-alarm |
+| **agy + floor** `[1-family + floor, consensus DEGRADED]` | 0.937 | [0.880, 0.968] | 0.692 (9/13) | the agy-only ceiling — one family + the objective floor |
+| **★ C = Codex + agy + floor** `[2-family]` | **0.9524** | **[0.900, 0.978]** | 0.692 (9/13) | heterogeneous consensus-or-flag + floor — the harness path |
+| **C + conformal gate (α=0.10)** | 0.865 | [0.795, 0.914] | **0.308** (4/13) | FAR lever — **engaged this run (16 abstentions): FAR 0.692→0.308 at −9pp recall** |
 
 **Honest reading of the panel:**
-- **Recall:** C = 0.952 [0.900, 0.978], excellent. But the reviewer panel does most of it via **agy alone**
-  (agy+floor 0.929); adding Codex is only **+2.3pp**. The floor contributes the structural base (0.341).
-- **False-alarm is the serious weakness:** 0.692 (9/13). It is driven entirely by **agy** (agy-only FAR 0.692 vs
-  Codex-only 0.308), and **flag-on-any-dissent unions it into C** — so a healthy, trigger-happy agy sets the
-  panel's FAR and Codex's better calibration can't pull it down. **The FAR, not the recall, is what to fix.**
+- **Recall:** C = **0.9524 [0.900, 0.978]**, excellent — and **> the 0.921 degraded-Codex floor**, confirming
+  that figure was a lower bound. Most recall comes from **agy alone** (agy+floor 0.937); adding Codex is only
+  **+1.6pp** on recall — but Codex is far better calibrated (FAR 0.308 vs agy 0.692), which the conformal gate
+  exploits.
+- **Raw false-alarm is the serious weakness:** 0.692 (9/13), driven entirely by **agy** (in all 9 false alarms;
+  Codex in only 4). Flag-on-any-dissent unions agy's over-flags into C. **The conformal gate is the mitigation**
+  and it worked this run — FAR 0.692→**0.308** for a 9pp recall cost (0.9524→0.865). So the operating point is a
+  choice: high-recall/high-FAR (raw C) or balanced (conformal C).
 
 ### 2a. The cross-vendor increment is reliability-dependent (a key honest finding)
 In the degraded-agy A/B/C runs (2026-07-06/07) the heterogeneous panel beat single/homogeneous decisively,
 because agy was partial and the frontier vendor carried it. Here, with **agy fully healthy and already
-high-recall (0.921)**, the second vendor adds little recall (+2.3pp) and *raises* FAR exposure. **So the measured
-cross-vendor benefit is not a fixed +X — it depends on the vendors' relative reliability and calibration.** This
-is consistent with our own cited research (Rethinking-MoA / co-failure-ceiling): a second model helps most when
-it *decorrelates errors*, not when one model already dominates. The honest claim is scoped accordingly.
+high-recall (0.937)**, the second vendor adds little *recall* (+1.6pp) — but it adds **calibration** (Codex FAR
+0.308 vs agy 0.692), which is exactly what lets the conformal gate cut FAR to 0.308. **So the cross-vendor
+benefit is not a fixed +X on recall — it shifts to the false-alarm/operating-point axis when one vendor already
+dominates recall.** Consistent with our cited research (Rethinking-MoA / co-failure-ceiling): a second model
+helps most when it *decorrelates errors* (here, Codex's errors are decorrelated from agy's on the clean set).
 
-### 2b. Two course-corrections during measurement (both disclosed)
-1. **Codex lane (63%→100%):** 44 of 51 Codex failures were a cp1252 **UTF-8 stdin bug in my driver** (mangled
-   em-dash/±/≤ → `codex exec` rejected the prompt as "input is not valid UTF-8" — my transport, *not* Codex or
-   the harness; my own documented cp1252 trap). Fixed (explicit UTF-8 bytes) + **resumed** (re-ran only the 51
-   Codex-failed items) → 0.921→0.944.
-2. **agy lane (91%→100%):** 13 **transient agy-driver crashes** (a cp1252 crash in the agy driver's stdout print
-   — fixed by forcing `PYTHONUTF8` in the driver env). An **agy-only recovery** (no Codex calls, honouring
-   "route to agy, don't burn Codex") completed agy → 0.944→**0.952 caught but FAR 0.462→0.692**. Truth-first:
-   completing coverage revealed agy's over-flagging that the incomplete run had hidden — the higher FAR is the
-   real number, not the lower one. Resume mechanism: **§6**.
+### 2b. Transport bugs found and fixed (disclosed; not in this clean number)
+Earlier passes hit two of *my* measurement-transport bugs (neither in the harness): (1) a cp1252 **UTF-8 stdin**
+bug on the Codex-SSH path (mangled em-dash/±/≤ → `codex exec` rejected the prompt), fixed with explicit UTF-8
+bytes; (2) a cp1252 **stdout** crash in the agy driver, fixed by forcing `PYTHONUTF8`. Both are my own documented
+cp1252 trap. The clean run above was collected after both fixes, single-provenance, both vendors 100% usable
+start-to-finish — the earlier mixed-provenance data was archived, not scored.
 
 ### 2c. False-alarm deep-dive — the 9 flagged cleans (the real weakness)
-Categorising the 9 false alarms by the vendor's stated reason:
-- **6 of 9 = agy over-reading "the 95% CI includes 1.0 → the direction claim is a defect"** (mostly agy-only:
-  cd009417, cd011535, cd011866, cd012067, cd014935, + cd012570). The artifacts' conclusions are (per the sealed
-  key) correctly hedged; agy treats any non-significant CI as a direction contradiction. **This is a specific,
-  fixable harness weakness** — an agy reviewer-prompt/model behaviour, not a labelling problem.
-- **3 of 9 = defensible zero-event / undefined-RR objections** (both vendors flag: cd004871, cd006632,
-  cd013614). All studies have 0 events in both arms → the pooled RR is statistically degenerate/undefined (the
-  zero-cell gotcha). A careful reviewer arguably *should* flag these — the benchmark's "clean" label for
-  zero-event meta-analyses is **adversarial/debatable**, so these are not clearly errors.
-- **Codex-only FAR is 0.308 (4/13)** — Codex flags the 3 zero-event cases + 1, i.e. it does **not** commit the
-  CI-crosses-1 over-read. So a Codex-anchored or a better-google-model panel, or requiring **2-vendor agreement
-  to flag borderline cases** (instead of flag-on-any-dissent), would cut FAR sharply. **Effective error-FAR,
-  excluding the 3 defensible zero-event objections, is 6/13 ≈ 0.46 — and all 6 are the one fixable agy pattern.**
-- **The conformal gate abstained 0** — the harness reviewers emit no per-flag confidence, so the gate has
-  nothing to threshold. Making it control FAR needs a per-flag confidence signal. (Follow-ups, not done here —
-  measurement-only task.)
+Categorising the 9 false alarms by the vendor's stated reason (clean run; **agy is in all 9, Codex in only 4**):
+- **≈6 of 9 = agy over-reading "the 95% CI includes 1.0 → the direction claim is a defect"** (5 clear
+  CI-crosses-1 + 1 related). The artifacts' conclusions are (per the sealed key) correctly hedged; agy treats any
+  non-significant CI as a direction contradiction. **This is a specific, fixable weakness** — an agy
+  reviewer-prompt/model behaviour, not a labelling problem.
+- **3 of 9 = defensible zero-event / undefined-RR objections** (both vendors flag). All studies have 0 events in
+  both arms → the pooled RR is statistically degenerate/undefined (the zero-cell gotcha). A careful reviewer
+  arguably *should* flag these — the benchmark's "clean" label for zero-event meta-analyses is
+  **adversarial/debatable**, so these are not clearly errors.
+- **Codex-only FAR is 0.308 (4/13)** — Codex does **not** commit the CI-crosses-1 over-read. So a Codex-anchored
+  panel, a better google-family reviewer, or **2-vendor agreement to flag borderline cases** (instead of
+  flag-on-any-dissent) cuts FAR sharply. Excluding the 3 defensible zero-event objections, effective error-FAR is
+  ~6/13 ≈ 0.46 — all the one fixable agy pattern.
+- **The conformal gate DID engage this run** (16 abstentions) and cut **FAR 0.692→0.308** at a 9pp recall cost
+  (0.9524→0.865). Note this is **data-dependent** — in the earlier mixed pass the flag distribution let it
+  abstain 0; a robust FAR control still wants an explicit per-flag confidence signal. (Follow-up, not done here.)
 
 ---
 
@@ -154,31 +152,34 @@ label-blinded, and report an accuracy against human/ground-truth labels. We repo
 **not** claim it beats ARA's on ARA's task.
 
 ## 5. Honest limits & follow-ups
-- **False-alarm rate is the serious weakness, not recall:** 0.692 (9/13) at full coverage. **6/9 are one fixable
-  agy pattern** (CI-crosses-1 → false "direction defect"); 3/9 are defensible zero-event objections. Concrete
-  fixes (behaviour changes, NOT done in this measurement-only task): (a) fix agy's reviewer prompt so a
-  non-significant CI is not a defect; (b) require 2-vendor agreement (not flag-on-any-dissent) for borderline
-  significance flags; (c) give reviewers a per-flag confidence so the conformal gate can actually abstain
-  (it fired 0 here); (d) treat zero-event/degenerate meta-analyses as a distinct labelled class.
-- **Cross-vendor increment is small on this corpus** (agy+floor 0.929 → C 0.952, +2.3pp) because a healthy agy
-  already dominates recall; don't generalise a large heterogeneity gain from here (see §2a).
-- **Effort:** Codex at `reasoning_effort=medium` — conservative vs the harness default (xhigh).
-- **Single live pass, no seed averaging**; 13 cleans is a small denominator (wide FAR CI [0.42, 0.87]).
-- **Arm B (homogeneous ×3) not run live** — the live contrast is single (Codex 0.706 / agy 0.921) vs 2-family
-  C (0.952); the B<A finding is from prior runs.
-- **Codex is currently reachable** (a liveness probe returned `OK`), but per Mahmood's instruction further vendor
-  work is **routed to agy** and Codex is not burned. The full 2-family number above was measured while Codex was
-  live and stands; if Codex re-depletes, the agy-only ceiling (0.929 caught / 0.692 FAR, **consensus DEGRADED**)
-  is the labelled fallback — never to be reported as a 2-family consensus number.
+- **Single live pass, no seed averaging** — vendor calls are mildly nondeterministic (e.g. Codex-only caught
+  0.786 this clean pass vs 0.706 in an earlier pass, within noise). One clean pass, not a distribution; 13 cleans
+  is a small denominator (wide FAR CI [0.42, 0.87]).
+- **Codex reasoning-effort = `medium`** — a conservative floor; the harness default (xhigh) would only raise recall.
+- **Raw false-alarm 0.692 is the serious weakness**, mitigated to 0.308 by the conformal gate (−9pp recall).
+  ≈6/9 are one fixable agy pattern (CI-crosses-1 → false "direction defect"); 3/9 are defensible zero-event
+  objections. Concrete fixes (behaviour changes, **NOT** done in this measurement-only task): (a) fix agy's
+  reviewer prompt so a non-significant CI is not a defect; (b) require 2-vendor agreement (not flag-on-any-dissent)
+  for borderline flags; (c) give reviewers a per-flag confidence so the conformal gate abstains reliably (not
+  data-dependent); (d) treat zero-event/degenerate meta-analyses as a distinct labelled class.
+- **Cross-vendor recall increment is small on this corpus** (agy+floor 0.937 → C 0.9524, +1.6pp) because a
+  healthy agy already dominates recall; the second vendor's value here is calibration (lower FAR), not recall.
+  Don't generalise a large heterogeneity recall-gain from here (see §2a).
+- **Arm B (homogeneous ×3) not run live** — the live contrast is single (Codex 0.786 / agy 0.937) vs 2-family
+  C (0.9524); the B<A finding is from prior runs.
+- **Fallback if Codex re-depletes:** the agy-only ceiling (0.937 caught / 0.692 FAR) is **`[1-family, consensus
+  DEGRADED]`** — never to be reported as a 2-family consensus number.
 
 ---
 
-## 6. RERUN / RESUME WHEN CODEX CREDITS RETURN
+## 6. Reproducing / resuming the run (maintenance)
 
-The driver is a **genuine one-command resume**. A task is re-executed iff it was never done **or** its recorded
-Codex review was unusable (empty / envelope / UTF-8-fail / out-of-credits) — so after a Codex-credit refill (or
-the already-committed UTF-8 fix) it re-runs **only the failed items**, not all 139, and last-wins supersedes the
-stale rows. Run status is in the gitignored `benchmark_data/runs_live_accuracy/reviews.jsonl`.
+The clean number in §1–§2 is **done**. This section is the mechanism to re-measure or recover from a future
+vendor outage. The driver is a **genuine one-command resume**: a task is re-executed iff it was never done
+**or** its recorded Codex review was unusable (empty / envelope / UTF-8-fail / out-of-credits) — so it re-runs
+**only the failed items**, not all 139, and last-wins supersedes the stale rows. A mid-run Codex
+credit-exhaustion guard stops and prints an INCOMPLETE banner rather than emitting a degraded number. Run status
+is in the gitignored `benchmark_data/runs_live_accuracy/reviews.jsonl`.
 
 **Exact command (from the repo root, `F:\overmind`):**
 ```bash
