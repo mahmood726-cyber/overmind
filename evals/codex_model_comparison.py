@@ -35,6 +35,7 @@ from __future__ import annotations
 import json
 import os
 import re
+import shutil
 import subprocess
 import sys
 import threading
@@ -46,6 +47,7 @@ os.environ.setdefault("PYTHONIOENCODING", "utf-8")
 os.environ.setdefault("PYTHONUTF8", "1")
 
 ROOT = Path(__file__).resolve().parents[1]
+HOME = os.path.expanduser("~")
 sys.path.insert(0, str(ROOT))
 
 from overmind.benchmark.arms import arm_a, arm_c  # noqa: E402
@@ -137,6 +139,65 @@ class SshCodexBackendM:
         return out or "JUDGE_ERROR: empty stdout"
 
 
+class LocalCodexBackendM:
+    """Same measurement as SshCodexBackendM but runs `codex exec` on the LOCAL
+    machine (PC1) rather than over SSH to the laptop. Used when the laptop seat's
+    workspace credits are exhausted but the local mahmood726 workspace is still
+    live (per-workspace credit balances differ under one email). Model weights +
+    prompt + effort + slices + scorer are identical, so the seat/machine is not a
+    model variable — only WHERE the identical model runs. Disclosed in the report."""
+
+    def __init__(self, model: str, effort: str = EFFORT, timeout: int = 180):
+        self.model = model
+        self.effort = effort
+        self.timeout = timeout
+        self.last_elapsed = 0.0
+        self.last_tokens = 0
+        self.last_err = ""
+
+    def query(self, prompt: str) -> str:
+        codex = shutil.which("codex") or "codex"
+        if os.name == "nt":
+            argv = ["cmd", "/c", codex, "exec", "--skip-git-repo-check", "--sandbox",
+                    "read-only", "--config", f"model_reasoning_effort={self.effort}",
+                    "-m", self.model, "-"]
+        else:
+            argv = [codex, "exec", "--skip-git-repo-check", "--sandbox", "read-only",
+                    "--config", f"model_reasoning_effort={self.effort}", "-m", self.model, "-"]
+        env = dict(os.environ, CODEX_HOME=os.path.join(HOME, ".codex"))
+        t0 = time.time()
+        try:
+            p = subprocess.run(argv, input=prompt.encode("utf-8"), capture_output=True,
+                               timeout=self.timeout, env=env)
+        except Exception as exc:  # noqa: BLE001
+            self.last_elapsed = time.time() - t0
+            self.last_tokens = 0
+            self.last_err = f"local codex exec failed: {exc}"
+            return f"JUDGE_ERROR: {self.last_err}"
+        self.last_elapsed = time.time() - t0
+        out = (p.stdout or b"").decode("utf-8", errors="replace")
+        err = (p.stderr or b"").decode("utf-8", errors="replace")
+        mt = _TOKENS_RE.search(err) or _TOKENS_RE.search(out)
+        self.last_tokens = int(mt.group(1).replace(",", "")) if mt else 0
+        self.last_err = ""
+        low = (out + "\n" + err).lower()
+        if any(m in low for m in _CREDIT_MARKERS):
+            CREDITS_DEAD.set()
+            self.last_err = "credit/quota EXHAUSTION marker"
+            return f"JUDGE_ERROR: credits/quota exhausted: {err[-160:]}"
+        if p.returncode != 0:
+            if any(m in low for m in _THROTTLE_MARKERS):
+                self.last_err = f"throttle rc={p.returncode} (transient, will retry)"
+            else:
+                self.last_err = f"rc={p.returncode}: {err[-160:]}"
+            return f"JUDGE_ERROR: codex {self.last_err}"
+        return out or "JUDGE_ERROR: empty stdout"
+
+
+def make_backend(model: str, local: bool):
+    return LocalCodexBackendM(model) if local else SshCodexBackendM(model)
+
+
 # ---- slices ---------------------------------------------------------------
 
 def build_slices():
@@ -200,20 +261,21 @@ def run_agy(all_tasks) -> int:
 
 # ---- phase 2: one Codex model arm -----------------------------------------
 
-def run_model(model: str, all_tasks, max_tasks=None) -> int:
+def run_model(model: str, all_tasks, max_tasks=None, local=False) -> int:
     OUT.mkdir(parents=True, exist_ok=True)
     tag = model.replace(".", "").replace("-", "")
     path = OUT / f"codex_{tag}.jsonl"
     tasks = all_tasks[:max_tasks] if max_tasks else all_tasks
     done = _load_jsonl(path)
     todo = [t for t in tasks if t.id not in done or not done[t.id].get("codex", {}).get("usable", False)]
-    print(f"[{model}] total={len(tasks)} done={len(done)} todo={len(todo)} effort={EFFORT}", flush=True)
+    seat = "LOCAL(pc1)" if local else "SSH(laptop)"
+    print(f"[{model}] total={len(tasks)} done={len(done)} todo={len(todo)} effort={EFFORT} seat={seat}", flush=True)
     if not todo:
         print(f"[{model}] nothing to do", flush=True)
         return 0
 
     def _one(t):
-        be = SshCodexBackendM(model)  # one backend per call -> clean telemetry
+        be = make_backend(model, local)  # one backend per call -> clean telemetry
         raw = be.query(build_prompt(t))
         v = parse_reviewer_output(raw, vendor="codex")
         return t.id, v, be.last_elapsed, be.last_tokens, be.last_err
@@ -401,7 +463,7 @@ def main() -> int:
         return score()
     model = next((args[i+1] for i, a in enumerate(args) if a == "--model"), None)
     if model:
-        return run_model(model, all_tasks, max_tasks)
+        return run_model(model, all_tasks, max_tasks, local="--local" in args)
     print("nothing to do; pass --agy | --model <m> | --score", flush=True)
     return 1
 

@@ -42,7 +42,7 @@ sys.path.insert(0, str(ROOT))
 
 from overmind.benchmark.reviewers import parse_reviewer_output  # noqa: E402
 from overmind.benchmark.scoring import wilson_ci  # noqa: E402
-from evals.codex_model_comparison import SshCodexBackendM, OUT as _OUT  # noqa: E402
+from evals.codex_model_comparison import make_backend, OUT as _OUT  # noqa: E402
 
 OUT = _OUT.parent / "runs_significance_probe"
 
@@ -142,16 +142,16 @@ def _load(path):
     return d
 
 
-def run_model(model):
+def run_model(model, local=False):
     OUT.mkdir(parents=True, exist_ok=True)
     tag = model.replace(".", "").replace("-", "")
     path = OUT / f"probe_{tag}.jsonl"
     done = _load(path)
     todo = [it for it in ITEMS if it["id"] not in done or not done[it["id"]].get("usable", False)]
-    print(f"[{model}] probe items={len(ITEMS)} todo={len(todo)}", flush=True)
+    print(f"[{model}] probe items={len(ITEMS)} todo={len(todo)} seat={'LOCAL' if local else 'SSH'}", flush=True)
 
     def _one(it):
-        be = SshCodexBackendM(model)
+        be = make_backend(model, local)
         raw = be.query(f"{PROMPT}\n\n--- ARTIFACT ---\n{it['art']}\n--- END ---\n")
         v = parse_reviewer_output(raw, vendor="codex")
         return it, v, be.last_elapsed, be.last_tokens
@@ -205,7 +205,7 @@ def main():
         return score()
     model = next((args[i+1] for i, a in enumerate(args) if a == "--model"), None)
     if model:
-        return run_model(model)
+        return run_model(model, local="--local" in args)
     print("pass --model <m> | --score")
     return 1
 
