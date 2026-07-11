@@ -78,3 +78,47 @@ def arm_c(task_id: str, reviewer_verdicts: list, witness_defect: bool, gate=None
         return ArmVerdict(task_id, "C", True, False, "consensus_or_flag(review_flag)", flags, False)
     # all reviewers agree clean AND witness clean
     return ArmVerdict(task_id, "C", False, True, "consensus_clean+witness_clean", flags, False)
+
+
+def arm_c_corroborated(task_id: str, reviewer_verdicts: list, witness_defect: bool) -> ArmVerdict:
+    """Heterogeneous panel with SCOPED corroboration (PV-C, precision fix #2).
+
+    Identical to ``arm_c`` EXCEPT for one relaxation of flag-on-any-dissent, applied
+    *only* to borderline flags:
+
+      * **witness floor** — a deterministic defect always flags (fail-closed, never
+        relaxed).
+      * **structural dissent** — if ANY usable reviewer cites a concrete structural /
+        arithmetic defect (mislabel, comparator swap, missing arm, method/heterogeneity
+        mismatch, subgroup mismatch, impossible cell, transposed CI, reproduction
+        mismatch), the panel flags on that single dissent — **fail-closed preserved**
+        for the entire hard/high-severity class.
+      * **borderline (sig-only) flag** — a flag that rests ONLY on a
+        significance/degeneracy objection (CI crosses the null, non-significant, zero
+        events, "not estimable") is relaxed: it flags **only if >= 2 distinct vendors
+        corroborate it**. A lone significance objection (one vendor flags, the other
+        accepts) is NOT a defect — it accepts.
+
+    Where fail-closed is preserved: the witness floor and every structural defect
+    (any single dissent still flags). Where it is relaxed: single-vendor
+    significance-only objections on data that passes every deterministic check. This
+    is exactly the false-alarm class from the live run (agy's CI-crosses-1 over-read)
+    — never a hard defect. ``arm_c`` is unchanged; this is a separate, opt-in path so
+    the harness default is byte-for-byte identical until promoted."""
+    from overmind.benchmark.conformal import panel_signals
+    flags = [bool(v.flag) for v in reviewer_verdicts]
+    if witness_defect:
+        return ArmVerdict(task_id, "C", True, False, "objective_gate_floor", flags, True)
+    sig = panel_signals(reviewer_verdicts)
+    if sig.n_flag_vendors == 0:
+        # no usable reviewer flagged -> accept (mirrors arm_c's clean/empty branches)
+        deciding = "witness_only_no_reviewers" if not flags else "consensus_clean+witness_clean"
+        return ArmVerdict(task_id, "C", False, True, deciding, flags, False)
+    if sig.any_structural:
+        # fail-closed: a structural defect flags on any single dissent, as in arm_c.
+        return ArmVerdict(task_id, "C", True, False, "structural_flag(any_dissent)", flags, False)
+    # all flaggers are significance/degeneracy-only -> require >=2 vendors to corroborate.
+    if sig.n_flag_vendors >= 2:
+        return ArmVerdict(task_id, "C", True, False,
+                          f"corroborated_borderline({sig.n_flag_vendors}v)", flags, False)
+    return ArmVerdict(task_id, "C", False, True, "uncorroborated_borderline->accept", flags, False)

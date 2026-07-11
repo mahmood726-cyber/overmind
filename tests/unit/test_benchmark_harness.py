@@ -267,6 +267,46 @@ def test_score_arm_counts_abstain_and_excludes_from_far_and_caught():
     assert d["abstained"] == 2 and d["abstain_rate"] is not None
 
 
+# --- corroboration arm (precision fix #2) ---------------------------------------
+
+def test_arm_c_corroborated_witness_floor_always_flags():
+    from overmind.benchmark.arms import arm_c_corroborated
+    v = arm_c_corroborated("t", [_rev(False), _rev(False)], witness_defect=True)
+    assert v.flag is True and v.deciding == "objective_gate_floor"
+
+
+def test_arm_c_corroborated_structural_flags_on_any_single_dissent():
+    # fail-closed PRESERVED: one vendor citing a structural defect flags even alone.
+    from overmind.benchmark.arms import arm_c_corroborated
+    v = arm_c_corroborated("t", [_rev(True, "comparator arms are swapped", "codex"),
+                                 _rev(False, "looks fine", "agy")], witness_defect=False)
+    assert v.flag is True and v.deciding == "structural_flag(any_dissent)"
+
+
+def test_arm_c_corroborated_lone_sig_only_flag_accepts():
+    # fail-closed RELAXED: a single vendor's significance-only objection does NOT flag.
+    from overmind.benchmark.arms import arm_c_corroborated
+    v = arm_c_corroborated("t", [_rev(True, "95% CI includes 1.0, non-significant", "agy"),
+                                 _rev(False, "correct", "codex")], witness_defect=False)
+    assert v.flag is False and v.accepted is True
+    assert v.deciding == "uncorroborated_borderline->accept"
+
+
+def test_arm_c_corroborated_two_vendor_sig_only_flags():
+    # two DISTINCT vendors raising the same borderline objection -> corroborated -> flag.
+    from overmind.benchmark.arms import arm_c_corroborated
+    v = arm_c_corroborated("t", [_rev(True, "zero events, RR not estimable", "codex"),
+                                 _rev(True, "all zero events, undefined RR", "agy")],
+                           witness_defect=False)
+    assert v.flag is True and v.deciding.startswith("corroborated_borderline")
+
+
+def test_arm_c_corroborated_no_flags_accepts():
+    from overmind.benchmark.arms import arm_c_corroborated
+    v = arm_c_corroborated("t", [_rev(False), _rev(False)], witness_defect=False)
+    assert v.flag is False and v.accepted is True
+
+
 # --- reviewer parsing -----------------------------------------------------------
 
 def test_parse_reviewer_output():
@@ -276,6 +316,30 @@ def test_parse_reviewer_output():
 
 def test_parse_reviewer_empty_is_no_flag():
     assert parse_reviewer_output("").flag is False
+
+
+def test_parse_reviewer_confidence(_=None):
+    # PV-A: an emitted CONFIDENCE is parsed and clamped to [0,1]; absent -> None.
+    v = parse_reviewer_output("FLAG: yes\nREASON: swapped arms\nCONFIDENCE: 0.85")
+    assert v.confidence == 0.85
+    assert parse_reviewer_output("FLAG: no\nREASON: fine").confidence is None
+    assert parse_reviewer_output("FLAG: yes\nREASON: x\nCONFIDENCE: 1.7").confidence == 1.0
+
+
+def test_backend_reviewer_uses_supplied_instruction():
+    # the calibrated prompt must actually reach the backend (Fix #1 plumbing).
+    from overmind.benchmark.reviewers import (
+        REVIEW_INSTRUCTION_CALIBRATED, BackendReviewer)
+    captured = {}
+
+    class _Echo:
+        def query(self, prompt):
+            captured["p"] = prompt
+            return "FLAG: no\nREASON: fine\nCONFIDENCE: 0.1"
+
+    r = BackendReviewer(_Echo(), vendor="x", instruction=REVIEW_INSTRUCTION_CALIBRATED)
+    r(Task("t", CLEAN, "an artifact", data={}))
+    assert "NOT defects" in captured["p"] and "non-significant" in captured["p"].lower()
 
 
 # --- scoring + win condition (incl. NOT-winning) --------------------------------
