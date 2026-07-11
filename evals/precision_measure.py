@@ -93,12 +93,18 @@ def _arm_c_gated(task_id, verdicts, witness_defect, gate):
     return arm_c(task_id, verdicts, witness_defect, gate=gate)
 
 
-def measure(reviews_path: str, *, alpha: float = 0.10) -> dict:
+def measure(reviews_path: str, *, alpha: float = 0.10, restrict_held_out: bool = False) -> dict:
     tasks = load_tasks(DATA / "tasks.json")
     keys = load_keys(DATA / "keys" / "keys.json")
-    ho = held_out_ids([t.id for t in tasks])
     recs = load_reviews(Path(reviews_path))
-    ho_ids = sorted(tid for tid in ho if tid in recs and tid in keys)
+    # Slice-agnostic: score exactly the tasks present in this reviews file (∩ keys).
+    # The reviews file already IS the slice (held-out, or slice-2 = frozen ∪ dev-cleans),
+    # so we never re-impose a slice filter and cannot accidentally drop a slice-2 task.
+    if restrict_held_out:
+        allow = held_out_ids([t.id for t in tasks])
+        ho_ids = sorted(tid for tid in recs if tid in keys and tid in allow)
+    else:
+        ho_ids = sorted(tid for tid in recs if tid in keys)
     ho_keys = {tid: keys[tid] for tid in ho_ids}
 
     reviewer_records = {}   # task_id -> [codex_verdict, agy_verdict]

@@ -36,7 +36,8 @@ from overmind.benchmark.reviewers import (  # noqa: E402
     REVIEW_INSTRUCTION_CALIBRATED, REVIEW_INSTRUCTION_CALIBRATED_PLUS,
     BackendReviewer, ReviewerVerdict,
 )
-from overmind.benchmark.tasks import held_out_ids, load_keys, load_tasks  # noqa: E402
+from overmind.benchmark.tasks import (  # noqa: E402
+    dev_ids, frozen_ids, held_out_ids, load_keys, load_tasks)
 from overmind.benchmark.witnesses import run_witness  # noqa: E402
 from overmind.verification.judge_backends import AgyBackend  # noqa: E402
 from evals.live_vendor_accuracy import SshCodexBackend  # noqa: E402
@@ -79,19 +80,34 @@ def main() -> int:
     spot = next((int(a.split("=", 1)[1]) for a in sys.argv if a.startswith("--spot=")), None)
     agy_only = "--agy-only" in sys.argv
     use_plus = "--plus" in sys.argv
+    slice2 = "--slice2" in sys.argv
+    effort = next((a.split("=", 1)[1] for a in sys.argv if a.startswith("--effort=")), "medium")
     instruction = REVIEW_INSTRUCTION_CALIBRATED_PLUS if use_plus else REVIEW_INSTRUCTION_CALIBRATED
     tasks = load_tasks(DATA / "tasks.json")
     keys = load_keys(DATA / "keys" / "keys.json")
-    ho = held_out_ids([t.id for t in tasks])
-    held = sorted([t for t in tasks if t.id in ho], key=lambda t: t.id)
+    ids = [t.id for t in tasks]
+    if slice2:
+        # SLICE 2 = the frozen slice (never touched by fix development) PLUS the dev
+        # cleans, because the frozen slice is clean-starved (1 clean). This is the
+        # genuinely-unseen validation set: 72 fresh frozen defects (recall) + 20 fresh
+        # cleans (FAR = frozen 1 + dev 19). All from fixtures disjoint from slice 1.
+        fz = frozen_ids(ids)
+        dev_cleans = {tid for tid in dev_ids(ids)
+                      if tid in keys and not keys[tid].has_defect}
+        sel = fz | dev_cleans
+    else:
+        sel = held_out_ids(ids)
+    held = sorted([t for t in tasks if t.id in sel], key=lambda t: t.id)
     if spot is not None:
         held = held[:spot]
     ho_keys = {t.id: keys[t.id] for t in held if t.id in keys}
     OUT.mkdir(parents=True, exist_ok=True)
-    suffix = f"_spot{spot}" if spot else ("_AGYONLY" if agy_only else ("_PLUS" if use_plus else ""))
+    eff_tag = "" if effort == "medium" else f"_{effort}"
+    suffix = (f"_spot{spot}" if spot else ("_AGYONLY" if agy_only
+              else (("_SLICE2" if slice2 else "") + ("_PLUS" if use_plus else "") + eff_tag)))
     jsonl = OUT / f"reviews_CALIBRATED{suffix}.jsonl"
 
-    codex_rev = BackendReviewer(SshCodexBackend(), vendor="codex", instruction=instruction)
+    codex_rev = BackendReviewer(SshCodexBackend(effort=effort), vendor="codex", instruction=instruction)
     agy_rev = BackendReviewer(AgyBackend(), vendor="agy", instruction=instruction)
 
     done = _load_done(jsonl)
@@ -117,8 +133,9 @@ def main() -> int:
         return r is None or not bool(r.get("codex", {}).get("usable", True))
     todo = [t for t in held if _needs(t)]
     n_def = sum(1 for t in held if ho_keys[t.id].has_defect)
-    print(f"[precision-reeval] held-out n={len(held)} (defects={n_def}, clean={len(held)-n_def}); "
-          f"done={len(done)}, todo={len(todo)}; CALIBRATED prompt, both vendors", flush=True)
+    print(f"[precision-reeval] n={len(held)} (defects={n_def}, clean={len(held)-n_def}); "
+          f"done={len(done)}, todo={len(todo)}; prompt={'PLUS' if use_plus else 'CALIB'} "
+          f"effort={effort} both-vendors slice2={slice2}", flush=True)
 
     t0 = time.time()
     with jsonl.open("a", encoding="utf-8") as sink, ThreadPoolExecutor(max_workers=MAX_WORKERS) as ex:
