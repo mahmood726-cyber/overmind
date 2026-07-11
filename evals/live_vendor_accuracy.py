@@ -31,6 +31,14 @@ import time
 from concurrent.futures import ThreadPoolExecutor, as_completed
 from pathlib import Path
 
+import os
+# Force UTF-8 for child processes (the agy driver prints its JSON result through
+# the default stdout, which on Windows is cp1252 — a single non-Latin1 char in the
+# answer crashes the driver's final print with UnicodeEncodeError, the cause of the
+# transient agy `exit 1: Traceback` failures). The agy subprocess inherits this env.
+os.environ.setdefault("PYTHONIOENCODING", "utf-8")
+os.environ.setdefault("PYTHONUTF8", "1")
+
 ROOT = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(ROOT))
 
@@ -121,15 +129,30 @@ def main() -> int:
     agy_rev = BackendReviewer(AgyBackend(), vendor="agy")
 
     done = _load_done(jsonl)
-    # Resume policy: a task is TODO if it was never done OR its recorded Codex
-    # review was UNUSABLE (empty/envelope/UTF-8-fail/credits) — so a resume after
-    # the driver's UTF-8 fix / a Codex-credit refill re-executes ONLY the
-    # Codex-failed items, not all 139. Re-run rows are appended; _load_done is
-    # last-wins so the fresh usable verdict supersedes the stale unusable one.
-    def _needs_redo(t):
-        r = done.get(t.id)
-        return r is None or not bool(r.get("codex", {}).get("usable", True))
-    todo = [t for t in held if _needs_redo(t)]
+    # --agy-recover: re-run ONLY agy on tasks whose recorded agy review was unusable
+    # (transient agy-driver crashes), keeping the existing Codex verdict. Touches
+    # NO Codex (honours "route to agy, don't burn Codex"). Completes the agy lane's
+    # own coverage. Otherwise: Codex-resume policy (re-run tasks whose Codex was
+    # unusable). Both are last-wins over the existing rows.
+    agy_recover = "--agy-recover" in sys.argv
+    if agy_recover:
+        todo = [t for t in held if t.id in done and not bool(done[t.id].get("agy", {}).get("usable", True))]
+        print(f"[agy-recover] re-running agy only on {len(todo)} agy-unusable tasks (no Codex calls)", flush=True)
+        with jsonl.open("a", encoding="utf-8") as sink:
+            for t in todo:
+                av = agy_rev(t)
+                base = done[t.id]
+                rec = {"task_id": t.id, "codex": base["codex"], "agy": av.to_dict(),
+                       "witness_defect": bool(base.get("witness_defect")),
+                       "codex_raw": base.get("codex_raw", ""), "agy_raw": (av.raw or "")[:200]}
+                sink.write(json.dumps(rec) + "\n"); sink.flush()
+        # fall through to scoring below (todo consumed)
+        todo = []
+    else:
+        def _needs_redo(t):
+            r = done.get(t.id)
+            return r is None or not bool(r.get("codex", {}).get("usable", True))
+        todo = [t for t in held if _needs_redo(t)]
     n_def = sum(1 for t in held if ho_keys[t.id].has_defect)
     n_cln = len(held) - n_def
     print(f"[live-accuracy] held-out n={len(held)} (defects={n_def}, clean={n_cln}); "
