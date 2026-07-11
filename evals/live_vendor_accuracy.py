@@ -121,7 +121,15 @@ def main() -> int:
     agy_rev = BackendReviewer(AgyBackend(), vendor="agy")
 
     done = _load_done(jsonl)
-    todo = [t for t in held if t.id not in done]
+    # Resume policy: a task is TODO if it was never done OR its recorded Codex
+    # review was UNUSABLE (empty/envelope/UTF-8-fail/credits) — so a resume after
+    # the driver's UTF-8 fix / a Codex-credit refill re-executes ONLY the
+    # Codex-failed items, not all 139. Re-run rows are appended; _load_done is
+    # last-wins so the fresh usable verdict supersedes the stale unusable one.
+    def _needs_redo(t):
+        r = done.get(t.id)
+        return r is None or not bool(r.get("codex", {}).get("usable", True))
+    todo = [t for t in held if _needs_redo(t)]
     n_def = sum(1 for t in held if ho_keys[t.id].has_defect)
     n_cln = len(held) - n_def
     print(f"[live-accuracy] held-out n={len(held)} (defects={n_def}, clean={n_cln}); "

@@ -4,15 +4,16 @@
 Closes the peer-benchmark's #1 open item: *the harness's evals were fixture-based; this is a real **live-vendor**
 accuracy number* over a sealed, labelled corpus.
 
-**Headline (verified-live, with an honest asterisk):** on the sealed held-out slice (n=139, 126 defects), the
-harness's real cross-vendor verification path — **Arm C (Codex + agy + objective floor)** — caught
-**92.1% of defects, 116/126, Wilson-95% CI [86.0%, 95.6%]**, at a false-alarm rate of 46.2% (6/13 cleans),
-reduced to **30.8%** by the conformal gate while still catching 86.5%. **The asterisk:** the Codex lane was
-**degraded to 63% usable** this pass (a UTF-8 stdin bug in my driver — now fixed — plus the Codex seat running
-out of credits mid-run), so the number is carried mainly by **agy + the deterministic floor** (0.873), with the
-degraded Codex adding a real but modest **+4.8pp**. It is therefore a **conservative floor**: a healthy Codex
-lane would match or exceed it. This is a genuine live-vendor number, honestly bounded — not a clean
-two-healthy-frontier-vendor measurement.
+**Headline (verified-live, CLEAN two-healthy-vendor run):** on the sealed held-out slice (n=139, 126 defects),
+the harness's real cross-vendor verification path — **Arm C (Codex + agy + objective floor)** — caught
+**94.4% of defects, 119/126, Wilson-95% CI [89.0%, 97.3%]**, with **both vendors healthy** (Codex 100% usable,
+agy 91%). The honest cost: a **false-alarm rate of 46.2% (6/13 cleans)** — high recall bought with high
+false-alarm on the small clean set (the conformal gate did **not** reduce it this pass; see §5).
+
+> **This number supersedes an earlier degraded figure.** The first full pass reported Arm C = 0.921 with the
+> Codex lane at only 63% usable (a cp1252 UTF-8 stdin bug in the driver + the Codex seat briefly out of credits).
+> The bug was fixed and the run **resumed** (re-executing only the 51 Codex-failed items, §2b); with a healthy
+> Codex the number rose to **0.944**, confirming 0.921 was a lower bound. All figures below are the clean run.
 
 ---
 
@@ -59,36 +60,44 @@ laptop over SSH. Driver: `evals/live_vendor_accuracy.py` (feature branch, benchm
 
 ## 2. Results (live, held-out n=139; 126 defects / 13 clean)
 
-**Vendor usable-rate this pass:** agy **124/139 = 89%** (healthy); Codex **88/139 = 63%** (DEGRADED — see §2a).
-Both clear the `MIN_USABLE_RATE=0.5` valid-measurement bar, so no arm is INVALID; but the Codex degradation is
-material and disclosed.
+**Vendor usable-rate (clean run):** Codex **139/139 = 100%**; agy **126/139 = 91%**. Both healthy — a genuine
+two-frontier-vendor measurement.
 
 **Decomposition (every row scored by the harness's own `score_arm`; a single live pass, no seed averaging):**
 
 | arm | caught-defect | Wilson 95% CI | false-alarm (n=13) | what it isolates |
 |---|:--:|:--:|:--:|---|
 | **objective-ref** (witness-only floor, deterministic) | **0.341** | [0.264, 0.428] | 0.000 (0/13) | the deterministic base — catches exactly the 43 witness-detectable defects, structurally misses all 83 reviewer-only |
-| Codex only (**DEGRADED**, 63% usable) | 0.436 | [0.353, 0.524] | 0.308 (4/13) | single-vendor baseline — artificially low (unusable → no flag) |
-| agy only (89% usable) | 0.825 | [0.750, 0.882] | 0.462 (6/13) | one reliable cheap reviewer alone |
-| agy + floor | 0.873 | [0.804, 0.920] | 0.462 (6/13) | one vendor + the deterministic floor |
-| Codex + floor (degraded) | 0.556 | [0.468, 0.639] | 0.308 (4/13) | degraded frontier + floor |
-| **★ C = Codex + agy + floor** (the harness path) | **0.921** | **[0.860, 0.956]** | 0.462 (6/13) | **heterogeneous consensus-or-flag + floor — the differentiator** |
-| C + conformal gate (α=0.10) | 0.865 | [0.795, 0.914] | **0.308** (4/13) | FAR-control lever: 9 abstained (7 on defects), FAR 0.462→0.308 |
+| Codex only | 0.706 | [0.622, 0.779] | 0.308 (4/13) | single frontier vendor alone |
+| agy only | 0.841 | [0.768, 0.895] | 0.462 (6/13) | one reliable cheap reviewer alone |
+| Codex + floor | 0.762 | [0.681, 0.828] | 0.308 (4/13) | frontier + deterministic floor |
+| agy + floor | 0.881 | [0.813, 0.927] | 0.462 (6/13) | cheap reviewer + deterministic floor |
+| **★ C = Codex + agy + floor** (the harness path) | **0.944** | **[0.890, 0.973]** | 0.462 (6/13) | **heterogeneous consensus-or-flag + floor — the differentiator** |
+| C + conformal gate (α=0.10) | 0.944 | [0.890, 0.973] | 0.462 (6/13) | FAR-control lever — **abstained 0 this pass; did not reduce FAR** (see §5) |
 
-**The differentiator holds live:** C (0.921) > best single reviewer agy (0.825, +9.6pp) > degraded Codex
-(0.436) > deterministic floor (0.341, +58pp from reviewers). Even a **degraded** Codex adds **+4.8pp** over
-agy+floor (0.873 → 0.921) — a healthy Codex would add more.
+**The differentiator holds cleanly:** C (0.944) beats **every** single lane — agy+floor (0.881, so heterogeneity
+adds **+6.3pp**), agy-only (0.841), Codex+floor (0.762), Codex-only (0.706), and the deterministic floor alone
+(0.341, +60pp from the reviewer panel). Both vendors contribute: neither alone reaches C, and the second,
+different-family vendor closes real gaps the first misses.
 
-### 2a. Honest disclosure — the Codex degradation (root-caused)
-Of 51 unusable Codex reviews: **44 were a UTF-8 stdin-encoding bug in my driver** (`subprocess` used Windows'
-cp1252 default, mangling non-ASCII artifact chars — em-dashes, ±, ≤ — so `codex exec` rejected the prompt as
-"input is not valid UTF-8"). This is *my measurement transport*, **not** Codex or the harness — I hit my own
-documented cp1252 trap. It is **fixed** in the driver (send explicit UTF-8 bytes), verified on a
-previously-failing artifact. The remaining failures appeared late in the run when the **Codex mahmood726 seat
-ran out of credits** ("Your workspace is out of credits"). Because only agy (google) remains live, a **clean
-re-run with both frontier vendors healthy is deferred** until Codex credits return — the UTF-8 fix is already in
-place, so the re-run is a one-command resume. The degraded Codex means Arm C = 0.921 is a **lower bound** on the
-harness's healthy-panel accuracy.
+### 2a. Reading the number honestly
+- **Recall is strong and clean:** 0.944 [0.890, 0.973] on 126 blinded defects, both vendors healthy.
+- **False-alarm is the genuine weakness:** 6 of 13 correct artifacts flagged (0.462). Consensus-or-flag
+  (flag-on-any-dissent) unions the two vendors' false alarms, and agy over-flags cleans (agy-only FAR 0.462);
+  13 cleans is a small denominator (wide CI [0.232, 0.709]). **This is the real gap to close**, not the recall.
+- **The conformal FAR lever did not fire this pass** (0 abstentions) — the harness's reviewers emit no numeric
+  confidence, so the gate had no sub-τ flags to abstain; FAR stayed 0.462. (In the earlier degraded pass the
+  flag distribution happened to let it cut FAR to 0.308 — data-dependent, not reliable.) Making the conformal
+  gate actually control FAR needs a per-flag confidence signal — a concrete follow-up.
+
+### 2b. The degradation encountered, and the resume that resolved it
+The first full pass had Codex at only 63% usable: **44 of 51 failures were a cp1252 UTF-8 stdin bug in the
+driver** (`subprocess` mangled non-ASCII artifact chars — em-dash, ±, ≤ — so `codex exec` rejected the prompt as
+"input is not valid UTF-8"; *my transport, not Codex or the harness* — I hit my own documented cp1252 trap), the
+rest a brief Codex credit blip. Fixed the driver (send explicit UTF-8 bytes) and **resumed**: the runner
+re-executes only tasks whose recorded Codex review was unusable, so the resume redid **51** items, not all 139,
+lifting Codex to 100% usable and Arm C from 0.921 → **0.944**. The resume mechanism is documented in
+**§6 (RERUN / RESUME)** for future credit outages.
 
 ---
 
@@ -114,22 +123,44 @@ label-blinded, and report an accuracy against human/ground-truth labels. We repo
 **not** claim it beats ARA's on ARA's task.
 
 ## 5. Honest limits
-- **Codex lane degraded (63% usable)** — the headline is a **lower bound**; see §2a. Fixed for the re-run.
-- **agy carried the result:** agy-only 0.825, agy+floor 0.873 — so most of the caught-defect rate is **one
-  reliable cheap reviewer + the deterministic floor**, and the *cross-vendor* increment this pass is only
-  **+4.8pp** (with Codex degraded). Don't over-attribute the 0.921 to "two frontier vendors" — it's
-  "floor + agy + partial Codex." (Notable: agy `flash_lite`, a fast/cheap model, alone caught 82.5% — the
-  reviewer-only defects are catchable by careful cheap reading.)
-- **False-alarm rate is the real weakness:** 46.2% raw (6/13 cleans wrongly flagged), 30.8% gated. Flag-on-any-
-  dissent is trigger-happy on correct artifacts, and 13 cleans is a small denominator (wide CI). The conformal
-  gate is the right lever; more clean cases are needed to pin FAR down.
-- **Effort:** Codex at `reasoning_effort=medium` — conservative vs the harness default (xhigh).
-- **Single live pass, no seed averaging** — mildly nondeterministic; re-running lands a slightly different point
-  within the CI. Notably C-caught (0.921), C-CI, and C-FAR (0.462) **match the prior 2026-07-07 held-out run
-  (Claude+agy) almost exactly** — consistent with the floor + agy dominating and the frontier vendor at the
-  margin.
-- **Arm B (homogeneous ×3) not run live this pass** (seat cost + Codex credits) — the live contrast here is
-  single (A) vs heterogeneous (C); the B<A finding is from prior runs.
+- **False-alarm rate is the real weakness, not recall:** 46.2% (6/13 cleans wrongly flagged). Both vendors
+  contribute false alarms and consensus-or-flag unions them; 13 cleans is a small denominator (wide CI). The
+  conformal gate **did not reduce it this pass** (0 abstentions — the reviewers emit no per-flag confidence
+  signal for the gate to threshold on). Closing FAR needs (a) a per-flag confidence, and (b) more clean cases.
+- **Effort:** Codex at `reasoning_effort=medium` — conservative vs the harness default (xhigh), which would only
+  help recall.
+- **agy `flash_lite` alone caught 84.1%** — a cheap model reads reviewer-only defects well; the heterogeneity
+  gain (agy+floor 0.881 → C 0.944, +6.3pp) is real but modest, i.e. one reliable vendor + floor already gets
+  ~88%, and the second different-family vendor adds the last few points and closes specific blind spots.
+- **Single live pass, no seed averaging** — vendor calls are mildly nondeterministic; a re-run lands a slightly
+  different point within the CI. This is one clean pass, not a distribution.
+- **Arm B (homogeneous ×3) not run live** — the live contrast here is single (A, 0.706) vs heterogeneous
+  (C, 0.944); the B<A finding is from prior runs, not re-measured here.
 
-*Driver: `evals/live_vendor_accuracy.py`. Raw per-task reviews: `benchmark_data/runs_live_accuracy/reviews.jsonl`
-(gitignored). Measurement-only; no harness behaviour changed.*
+---
+
+## 6. RERUN / RESUME WHEN CODEX CREDITS RETURN
+
+The driver is a **genuine one-command resume**. A task is re-executed iff it was never done **or** its recorded
+Codex review was unusable (empty / envelope / UTF-8-fail / out-of-credits) — so after a Codex-credit refill (or
+the already-committed UTF-8 fix) it re-runs **only the failed items**, not all 139, and last-wins supersedes the
+stale rows. Run status is in the gitignored `benchmark_data/runs_live_accuracy/reviews.jsonl`.
+
+**Exact command (from the repo root, `F:\overmind`):**
+```bash
+python -m evals.live_vendor_accuracy
+```
+That's it — no flags. It reads the existing `reviews.jsonl`, re-executes only the tasks whose Codex review is
+unusable, then re-scores all 139 and rewrites `benchmark_data/runs_live_accuracy/scorecard.json` and prints the
+arm table. (Was used successfully this pass: 51 items resumed → Codex 63%→100% usable → Arm C 0.921→0.944.)
+
+**Cheap liveness precheck (real exec, not `codex login status` which lies):**
+```bash
+python -c "import sys;sys.path.insert(0,'.');from evals.live_vendor_accuracy import SshCodexBackend;print(SshCodexBackend(timeout=60).query('Reply with exactly: OK'))"
+```
+If it prints `OK`, Codex is live — run the resume. If it prints `... out of credits ...`, it's still blocked;
+leave it primed and wait (no retry loop). Requires the laptop node up (Tailscale) + `agy` local.
+
+*Driver: `evals/live_vendor_accuracy.py`. Raw per-task reviews + scorecard:
+`benchmark_data/runs_live_accuracy/` (gitignored). Measurement-only; no harness behaviour changed;
+benchmark unit tests green (130 passed / 8 skipped).*
