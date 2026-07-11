@@ -1,5 +1,13 @@
 # Precision Fix 2026-07-10 — cutting the false-alarm rate without losing recall
 
+> **⚠ SUPERSEDED IN PART by `HARDENING-FIXES-2026-07-11.md` (cross-vendor review).** That review found a
+> **blind spot**: this doc's rule "a CI crossing 1.0 is never a defect" let an OVERSTATED-SIGNIFICANCE defect (a
+> conclusion CLAIMING significance while the CI spans the null) sail through — and that class was in **neither
+> slice**, so the recall=1.000 here never tested it. It is now a seeded defect class in both slices and
+> re-measured: winning config still **recall 1.000 / pooled FAR 0.0303 (212/212, 1/33)**, but the criterion makes
+> the RAW prompt much noisier (raw FAR 0.54–0.60), so **Fix #2 corroboration is now LOAD-BEARING, not "redundant"
+> as §5–§6 below claim.** See the hardening doc for the corrected picture.
+
 **Date:** 2026-07-10 · **feature branch `precision-fix-2026-07-10` off master `a8131b0`, isolated worktree, held for go (NOT merged/pushed).**
 Closes the peer-benchmark's #1 open item (`PEER-BENCHMARK-2026-07-10.md` §5): *fix the false-alarm / precision axis* — the number that most undercuts a "world-class verifier" claim.
 
@@ -293,8 +301,16 @@ mode the fix targeted — it is the honest residual, and the remaining precision
 held-out and 0.050 frozen, both ≫ better than baseline 0.692) — it is a **real benefit, not eval-fit**. Still held
 for go pending sign-off; the residual 1/20 and the new failure mode are disclosed, not smoothed over.
 
-_(xhigh ship-effort pass + clean full-Codex slice-1 `_PLUS` pass running; effort affects only Codex and recall is
-already saturated + the residual FA is agy-driven, so little change expected — numbers appended when complete.)_
+**xhigh ship-effort pass — attempted, transport-degraded, NOT a clean number (disclosed).** A full xhigh re-run
+(both slices) hit a **transport failure, not a vendor/credit issue**: the Codex laptop's SSH link dropped mid-chain
+(55/92 slice-2 tasks returned `ssh rc=255: connect timed out`) and agy hit 27 local timeouts under the longer-held
+xhigh connections; the laptop is currently unreachable (2/2 connect-timeout probes). Per "no degraded number
+presented as clean", the xhigh pass is **not** reported as a headline. The **both-vendors-usable subset** (biased,
+small) is consistent with medium — slice-1 recall 90/90, FAR 0/6; slice-2 recall 22/22, FAR **1/6** (the *same*
+single zero-event residual FA) — i.e. no evidence effort changes the story, as expected (recall already saturated;
+the residual FA is agy-driven and effort only affects Codex). The clean full-Codex slice-1 `_PLUS` resume (to
+remove the 20-task conservative fill) also awaits the laptop. **The clean, complete, validated result is the
+MEDIUM two-slice above; xhigh remains unverified pending the laptop.**
 
 ---
 
@@ -325,8 +341,10 @@ already saturated + the residual FA is agy-driven, so little change expected —
   reset), **NOT a hard balance cap** — an earlier draft mis-stated this. The first `_PLUS` Codex lane did hit
   exhaustion mid-run (the driver's guard stopped cleanly at 119/139 and emitted no degraded number — working as
   designed); after a top-up the seat is fully on and the two-slice validation + clean full-Codex `_PLUS` pass ran.
-  Codex effort was **medium** (a conservative floor); an **xhigh** ship-effort pass is reported in §7 (effort
-  affects only Codex; recall is already saturated and the residual FA is agy-driven, so it moves little).
+  Codex effort was **medium** (a conservative floor). An **xhigh** ship-effort pass was attempted but hit a
+  transport failure (the laptop SSH link dropped mid-run; see §7) and is **not** reported as a clean number; the
+  usable subset is consistent with medium. A clean xhigh pass + the clean full-Codex slice-1 resume both await the
+  laptop coming back online.
 - **Single live pass per config, no seed averaging** (vendor calls mildly nondeterministic).
 - **Not promoted.** All changes opt-in (harness default byte-for-byte, deterministic core still model-free /
   network-free). The two-slice gate (`scoring.two_slice_promotion`) now **passes** (wins on both slices) — held

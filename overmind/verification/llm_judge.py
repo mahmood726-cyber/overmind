@@ -704,6 +704,16 @@ class QuorumJudge:
                 ))
             return resolve_consensus(responses)
         except Exception:  # noqa: BLE001 — observational; never break the judge path
+            # P1-3 (2026-07-11): returning None silently DISABLES the orchestrator's
+            # fail-closed enforcement (no outcome to act on → the panel falls back to
+            # threshold-only). A regression in resolve_consensus / kish_neff / the
+            # family map must be VISIBLE, not swallowed — WARN-log with a traceback so
+            # the silent-fail-open cannot hide. Still non-raising (circular import +
+            # hot-path safety) but no longer silent.
+            logger.warning(
+                "consensus resolution failed; fail-closed enforcement DISABLED for "
+                "this verdict (threshold-only fallback)", exc_info=True,
+            )
             return None
 
 

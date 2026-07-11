@@ -478,13 +478,40 @@ def test_run_arm_c_uses_witness_floor(tmp_path):
 
 def test_generate_produces_balanced_slice():
     from overmind.benchmark.generate import generate
-    from overmind.benchmark.tasks import ALL_KINDS
+    from overmind.benchmark.tasks import ALL_KINDS, OVERSTATED_SIGNIFICANCE
     tasks, keys = generate(max_fixtures=3)
-    assert len(tasks) == len(keys) == 30   # 3 fixtures x 10 kinds
-    assert {t.kind for t in tasks} == set(ALL_KINDS)
+    # Each fixture yields 10 fixed kinds (clean + 3 witness + 6 reviewer-only) PLUS an
+    # optional overstated_significance defect — generated ONLY when the true CI spans
+    # the null — so >= 30 tasks with the 10 core kinds always present.
+    core_kinds = set(ALL_KINDS) - {OVERSTATED_SIGNIFICANCE}
+    assert len(tasks) == len(keys)
+    assert len(tasks) >= 30 and len(tasks) <= 3 * len(ALL_KINDS)
+    kinds = {t.kind for t in tasks}
+    assert kinds >= core_kinds                 # all 10 core kinds present per sample
+    assert kinds <= set(ALL_KINDS)             # nothing unexpected
     kd = {k.id: k for k in keys}
     for t in tasks:
         assert kd[t.id].has_defect == (t.kind != CLEAN)
+
+
+def test_overstated_significance_seeded_only_when_ci_spans_null():
+    """P0-3 (cross-vendor review 2026-07-11): the overstated-significance defect
+    class is seeded — and ONLY for fixtures whose true 95% CI includes 1.0 (else the
+    significance claim would be TRUE, not a defect)."""
+    from overmind.benchmark.generate import generate
+    from overmind.benchmark.tasks import OVERSTATED_SIGNIFICANCE
+    import re
+    tasks, keys = generate()
+    kd = {k.id: k for k in keys}
+    ov = [t for t in tasks if kd[t.id].defect_type == OVERSTATED_SIGNIFICANCE]
+    assert ov, "expected at least one overstated_significance task in the full corpus"
+    for t in ov:
+        assert kd[t.id].has_defect is True
+        # artifact claims significance, and the stated CI actually includes 1.0
+        assert "SIGNIFICANTLY" in t.artifact
+        m = re.search(r"95% CI \[([-\d.]+), ([-\d.]+)\]", t.artifact)
+        lo, hi = float(m.group(1)), float(m.group(2))
+        assert lo < 1.0 < hi, (t.id, lo, hi)   # the claim is genuinely unsupported
 
 
 def test_witness_integrity_fires_only_on_witness_detectable():

@@ -23776,6 +23776,1656 @@
     "tolerance": 0.05
    },
    "source": "cochrane_cd015790_pub2_an2"
+  },
+  {
+   "id": "cochrane_cd004508_pub5_an6_5__overstated_significance",
+   "kind": "overstated_significance",
+   "artifact": "Meta-analysis (RR, REML random-effects). Studies:\n  label | events(trt)/N(trt) | events(ctrl)/N(ctrl)\n  Balayla 2015 | 0/61 | 0/58\n  MacMillan 2000 | 0/67 | 1/72\n  Pearl 1998 | 3/92 | 7/103\nClaimed pooled RR = 0.4904, 95% CI [0.1528, 1.5735].\nConclusion: treatment SIGNIFICANTLY reduces the outcome \u2014 a statistically significant, conclusive effect was demonstrated.",
+   "data": {
+    "studies": [
+     {
+      "label": "Balayla 2015",
+      "ai": 0,
+      "n1": 61,
+      "ci": 0,
+      "n2": 58
+     },
+     {
+      "label": "MacMillan 2000",
+      "ai": 0,
+      "n1": 67,
+      "ci": 1,
+      "n2": 72
+     },
+     {
+      "label": "Pearl 1998",
+      "ai": 3,
+      "n1": 92,
+      "ci": 7,
+      "n2": 103
+     }
+    ],
+    "measure": "RR",
+    "method": "REML",
+    "claimed_value": 0.4904,
+    "claimed_ci": [
+     0.1528,
+     1.5735
+    ],
+    "tolerance": 0.05
+   },
+   "source": "cochrane_cd004508_pub5_an6"
+  },
+  {
+   "id": "cochrane_cd004871_pub5_an8_7__overstated_significance",
+   "kind": "overstated_significance",
+   "artifact": "Meta-analysis (RR, REML random-effects). Studies:\n  label | events(trt)/N(trt) | events(ctrl)/N(ctrl)\n  Antolinos-Campillo 2014 | 0/20 | 0/20\n  Briem 2007 | 0/20 | 0/20\n  Capo-Juan 2017 | 0/25 | 0/25\n  Gemmell 2008 | 0/15 | 0/15\n  Haller 2016 | 0/27 | 0/27\n  Irnich 2001 | 0/57 | 0/57\n  Klein 2013 | 0/30 | 0/31\n  Segura-Orti 2016 | 0/8 | 0/6\n  Skillgate 2020 | 0/147 | 0/139\nClaimed pooled RR = 0.9688, 95% CI [0.2663, 3.5242].\nConclusion: treatment SIGNIFICANTLY reduces the outcome \u2014 a statistically significant, conclusive effect was demonstrated.",
+   "data": {
+    "studies": [
+     {
+      "label": "Antolinos-Campillo 2014",
+      "ai": 0,
+      "n1": 20,
+      "ci": 0,
+      "n2": 20
+     },
+     {
+      "label": "Briem 2007",
+      "ai": 0,
+      "n1": 20,
+      "ci": 0,
+      "n2": 20
+     },
+     {
+      "label": "Capo-Juan 2017",
+      "ai": 0,
+      "n1": 25,
+      "ci": 0,
+      "n2": 25
+     },
+     {
+      "label": "Gemmell 2008",
+      "ai": 0,
+      "n1": 15,
+      "ci": 0,
+      "n2": 15
+     },
+     {
+      "label": "Haller 2016",
+      "ai": 0,
+      "n1": 27,
+      "ci": 0,
+      "n2": 27
+     },
+     {
+      "label": "Irnich 2001",
+      "ai": 0,
+      "n1": 57,
+      "ci": 0,
+      "n2": 57
+     },
+     {
+      "label": "Klein 2013",
+      "ai": 0,
+      "n1": 30,
+      "ci": 0,
+      "n2": 31
+     },
+     {
+      "label": "Segura-Orti 2016",
+      "ai": 0,
+      "n1": 8,
+      "ci": 0,
+      "n2": 6
+     },
+     {
+      "label": "Skillgate 2020",
+      "ai": 0,
+      "n1": 147,
+      "ci": 0,
+      "n2": 139
+     }
+    ],
+    "measure": "RR",
+    "method": "REML",
+    "claimed_value": 0.9688,
+    "claimed_ci": [
+     0.2663,
+     3.5242
+    ],
+    "tolerance": 0.05
+   },
+   "source": "cochrane_cd004871_pub5_an8"
+  },
+  {
+   "id": "cochrane_cd006536_pub5_an8_9__overstated_significance",
+   "kind": "overstated_significance",
+   "artifact": "Meta-analysis (RR, REML random-effects). Studies:\n  label | events(trt)/N(trt) | events(ctrl)/N(ctrl)\n  Grajek 2010 | 3/31 | 4/14\n  Hirsch 2011 | 4/68 | 4/65\n  Schachinger 2006 | 15/101 | 20/103\n  Tendera 2009 | 25/160 | 7/40\n  Traverse 2011 | 1/58 | 2/29\n  Traverse 2018 | 2/79 | 3/41\n  Cao 2009 | 0/41 | 1/45\n  Choudry 2016 | 7/46 | 3/39\n  Lunde 2006 | 12/49 | 9/50\n  Quyyumi 2011 | 2/16 | 1/15\n  Traverse 2010 | 0/30 | 1/10\n  Wollert 2004 | 6/30 | 4/30\nClaimed pooled RR = 0.8913, 95% CI [0.6436, 1.2343].\nConclusion: treatment SIGNIFICANTLY reduces the outcome \u2014 a statistically significant, conclusive effect was demonstrated.",
+   "data": {
+    "studies": [
+     {
+      "label": "Grajek 2010",
+      "ai": 3,
+      "n1": 31,
+      "ci": 4,
+      "n2": 14
+     },
+     {
+      "label": "Hirsch 2011",
+      "ai": 4,
+      "n1": 68,
+      "ci": 4,
+      "n2": 65
+     },
+     {
+      "label": "Schachinger 2006",
+      "ai": 15,
+      "n1": 101,
+      "ci": 20,
+      "n2": 103
+     },
+     {
+      "label": "Tendera 2009",
+      "ai": 25,
+      "n1": 160,
+      "ci": 7,
+      "n2": 40
+     },
+     {
+      "label": "Traverse 2011",
+      "ai": 1,
+      "n1": 58,
+      "ci": 2,
+      "n2": 29
+     },
+     {
+      "label": "Traverse 2018",
+      "ai": 2,
+      "n1": 79,
+      "ci": 3,
+      "n2": 41
+     },
+     {
+      "label": "Cao 2009",
+      "ai": 0,
+      "n1": 41,
+      "ci": 1,
+      "n2": 45
+     },
+     {
+      "label": "Choudry 2016",
+      "ai": 7,
+      "n1": 46,
+      "ci": 3,
+      "n2": 39
+     },
+     {
+      "label": "Lunde 2006",
+      "ai": 12,
+      "n1": 49,
+      "ci": 9,
+      "n2": 50
+     },
+     {
+      "label": "Quyyumi 2011",
+      "ai": 2,
+      "n1": 16,
+      "ci": 1,
+      "n2": 15
+     },
+     {
+      "label": "Traverse 2010",
+      "ai": 0,
+      "n1": 30,
+      "ci": 1,
+      "n2": 10
+     },
+     {
+      "label": "Wollert 2004",
+      "ai": 6,
+      "n1": 30,
+      "ci": 4,
+      "n2": 30
+     }
+    ],
+    "measure": "RR",
+    "method": "REML",
+    "claimed_value": 0.8913,
+    "claimed_ci": [
+     0.6436,
+     1.2343
+    ],
+    "tolerance": 0.05
+   },
+   "source": "cochrane_cd006536_pub5_an8"
+  },
+  {
+   "id": "cochrane_cd006632_pub3_an12_10__overstated_significance",
+   "kind": "overstated_significance",
+   "artifact": "Meta-analysis (RR, REML random-effects). Studies:\n  label | events(trt)/N(trt) | events(ctrl)/N(ctrl)\n  Aizawa 2002 | 0/32 | 0/37\n  Bernard 2011 | 0/87 | 0/89\n  Brook 1999 | 0/162 | 0/159\n  Doig 2008 | 0/540 | 0/537\n  Falconer 1993 | 0/53 | 0/68\n  Kim 2002 | 0/9 | 0/9\n  Kiyama 2003a | 0/47 | 0/38\n  Marrie 2000 | 0/87 | 0/124\n  Panella 2009 | 0/201 | 0/201\n  Panella 2018 | 0/283 | 0/195\n  Roberts 1997 | 0/82 | 0/83\n  Sulch 2002 | 0/76 | 0/76\nClaimed pooled RR = 1.0143, 95% CI [0.3289, 3.1274].\nConclusion: treatment SIGNIFICANTLY increases the outcome \u2014 a statistically significant, conclusive effect was demonstrated.",
+   "data": {
+    "studies": [
+     {
+      "label": "Aizawa 2002",
+      "ai": 0,
+      "n1": 32,
+      "ci": 0,
+      "n2": 37
+     },
+     {
+      "label": "Bernard 2011",
+      "ai": 0,
+      "n1": 87,
+      "ci": 0,
+      "n2": 89
+     },
+     {
+      "label": "Brook 1999",
+      "ai": 0,
+      "n1": 162,
+      "ci": 0,
+      "n2": 159
+     },
+     {
+      "label": "Doig 2008",
+      "ai": 0,
+      "n1": 540,
+      "ci": 0,
+      "n2": 537
+     },
+     {
+      "label": "Falconer 1993",
+      "ai": 0,
+      "n1": 53,
+      "ci": 0,
+      "n2": 68
+     },
+     {
+      "label": "Kim 2002",
+      "ai": 0,
+      "n1": 9,
+      "ci": 0,
+      "n2": 9
+     },
+     {
+      "label": "Kiyama 2003a",
+      "ai": 0,
+      "n1": 47,
+      "ci": 0,
+      "n2": 38
+     },
+     {
+      "label": "Marrie 2000",
+      "ai": 0,
+      "n1": 87,
+      "ci": 0,
+      "n2": 124
+     },
+     {
+      "label": "Panella 2009",
+      "ai": 0,
+      "n1": 201,
+      "ci": 0,
+      "n2": 201
+     },
+     {
+      "label": "Panella 2018",
+      "ai": 0,
+      "n1": 283,
+      "ci": 0,
+      "n2": 195
+     },
+     {
+      "label": "Roberts 1997",
+      "ai": 0,
+      "n1": 82,
+      "ci": 0,
+      "n2": 83
+     },
+     {
+      "label": "Sulch 2002",
+      "ai": 0,
+      "n1": 76,
+      "ci": 0,
+      "n2": 76
+     }
+    ],
+    "measure": "RR",
+    "method": "REML",
+    "claimed_value": 1.0143,
+    "claimed_ci": [
+     0.3289,
+     3.1274
+    ],
+    "tolerance": 0.05
+   },
+   "source": "cochrane_cd006632_pub3_an12"
+  },
+  {
+   "id": "cochrane_cd006742_pub3_an2_11__overstated_significance",
+   "kind": "overstated_significance",
+   "artifact": "Meta-analysis (RR, REML random-effects). Studies:\n  label | events(trt)/N(trt) | events(ctrl)/N(ctrl)\n  MRC 1985 | 73/3012 | 79/3049\n  PREVEND IT 2004 | 4/112 | 8/100\n  SHEP 1991 | 0/3 | 0/4\n  VA-NHLBI 1978 | 8/508 | 5/504\nClaimed pooled RR = 0.9282, 95% CI [0.6933, 1.2427].\nConclusion: treatment SIGNIFICANTLY reduces the outcome \u2014 a statistically significant, conclusive effect was demonstrated.",
+   "data": {
+    "studies": [
+     {
+      "label": "MRC 1985",
+      "ai": 73,
+      "n1": 3012,
+      "ci": 79,
+      "n2": 3049
+     },
+     {
+      "label": "PREVEND IT 2004",
+      "ai": 4,
+      "n1": 112,
+      "ci": 8,
+      "n2": 100
+     },
+     {
+      "label": "SHEP 1991",
+      "ai": 0,
+      "n1": 3,
+      "ci": 0,
+      "n2": 4
+     },
+     {
+      "label": "VA-NHLBI 1978",
+      "ai": 8,
+      "n1": 508,
+      "ci": 5,
+      "n2": 504
+     }
+    ],
+    "measure": "RR",
+    "method": "REML",
+    "claimed_value": 0.9282,
+    "claimed_ci": [
+     0.6933,
+     1.2427
+    ],
+    "tolerance": 0.05
+   },
+   "source": "cochrane_cd006742_pub3_an2"
+  },
+  {
+   "id": "cochrane_cd007024_pub3_an1_12__overstated_significance",
+   "kind": "overstated_significance",
+   "artifact": "Meta-analysis (RR, REML random-effects). Studies:\n  label | events(trt)/N(trt) | events(ctrl)/N(ctrl)\n  Carroll 1998 dataset a | 0/24 | 0/18\n  Carroll 1998 dataset b | 0/25 | 0/23\n  Baldacara 2013 | 0/15 | 0/15\n  Carroll 2004 dataset a | 0/30 | 0/30\n  Carroll 2004 dataset b | 0/30 | 0/31\n  Carroll 2012 dataset a | 0/27 | 0/26\n  Carroll 2012 dataset b | 0/28 | 0/26\n  Carroll 2016 dataset a | 0/23 | 0/22\n  Carroll 2016 dataset b | 0/28 | 0/26\n  George 2000 | 0/11 | 0/9\n  Petrakis 2000 | 0/36 | 0/31\n  Pettinati 2008 dataset a | 0/53 | 0/54\n  Schottenfeld 2013 | 0/91 | 0/86\n  Carroll 1993 | 0/9 | 0/9\n  Pettinati 2008 dataset b | 0/53 | 0/52\nClaimed pooled RR = 0.9398, 95% CI [0.3453, 2.5580].\nConclusion: treatment SIGNIFICANTLY reduces the outcome \u2014 a statistically significant, conclusive effect was demonstrated.",
+   "data": {
+    "studies": [
+     {
+      "label": "Carroll 1998 dataset a",
+      "ai": 0,
+      "n1": 24,
+      "ci": 0,
+      "n2": 18
+     },
+     {
+      "label": "Carroll 1998 dataset b",
+      "ai": 0,
+      "n1": 25,
+      "ci": 0,
+      "n2": 23
+     },
+     {
+      "label": "Baldacara 2013",
+      "ai": 0,
+      "n1": 15,
+      "ci": 0,
+      "n2": 15
+     },
+     {
+      "label": "Carroll 2004 dataset a",
+      "ai": 0,
+      "n1": 30,
+      "ci": 0,
+      "n2": 30
+     },
+     {
+      "label": "Carroll 2004 dataset b",
+      "ai": 0,
+      "n1": 30,
+      "ci": 0,
+      "n2": 31
+     },
+     {
+      "label": "Carroll 2012 dataset a",
+      "ai": 0,
+      "n1": 27,
+      "ci": 0,
+      "n2": 26
+     },
+     {
+      "label": "Carroll 2012 dataset b",
+      "ai": 0,
+      "n1": 28,
+      "ci": 0,
+      "n2": 26
+     },
+     {
+      "label": "Carroll 2016 dataset a",
+      "ai": 0,
+      "n1": 23,
+      "ci": 0,
+      "n2": 22
+     },
+     {
+      "label": "Carroll 2016 dataset b",
+      "ai": 0,
+      "n1": 28,
+      "ci": 0,
+      "n2": 26
+     },
+     {
+      "label": "George 2000",
+      "ai": 0,
+      "n1": 11,
+      "ci": 0,
+      "n2": 9
+     },
+     {
+      "label": "Petrakis 2000",
+      "ai": 0,
+      "n1": 36,
+      "ci": 0,
+      "n2": 31
+     },
+     {
+      "label": "Pettinati 2008 dataset a",
+      "ai": 0,
+      "n1": 53,
+      "ci": 0,
+      "n2": 54
+     },
+     {
+      "label": "Schottenfeld 2013",
+      "ai": 0,
+      "n1": 91,
+      "ci": 0,
+      "n2": 86
+     },
+     {
+      "label": "Carroll 1993",
+      "ai": 0,
+      "n1": 9,
+      "ci": 0,
+      "n2": 9
+     },
+     {
+      "label": "Pettinati 2008 dataset b",
+      "ai": 0,
+      "n1": 53,
+      "ci": 0,
+      "n2": 52
+     }
+    ],
+    "measure": "RR",
+    "method": "REML",
+    "claimed_value": 0.9398,
+    "claimed_ci": [
+     0.3453,
+     2.558
+    ],
+    "tolerance": 0.05
+   },
+   "source": "cochrane_cd007024_pub3_an1"
+  },
+  {
+   "id": "cochrane_cd008688_pub3_an3_13__overstated_significance",
+   "kind": "overstated_significance",
+   "artifact": "Meta-analysis (RR, REML random-effects). Studies:\n  label | events(trt)/N(trt) | events(ctrl)/N(ctrl)\n  Bassi 1999 | 0/14 | 0/15\n  Diener 2011 | 1/177 | 2/175\n  Shimada 2021 | 0/68 | 0/66\nClaimed pooled RR = 0.6753, 95% CI [0.1113, 4.0969].\nConclusion: treatment SIGNIFICANTLY reduces the outcome \u2014 a statistically significant, conclusive effect was demonstrated.",
+   "data": {
+    "studies": [
+     {
+      "label": "Bassi 1999",
+      "ai": 0,
+      "n1": 14,
+      "ci": 0,
+      "n2": 15
+     },
+     {
+      "label": "Diener 2011",
+      "ai": 1,
+      "n1": 177,
+      "ci": 2,
+      "n2": 175
+     },
+     {
+      "label": "Shimada 2021",
+      "ai": 0,
+      "n1": 68,
+      "ci": 0,
+      "n2": 66
+     }
+    ],
+    "measure": "RR",
+    "method": "REML",
+    "claimed_value": 0.6753,
+    "claimed_ci": [
+     0.1113,
+     4.0969
+    ],
+    "tolerance": 0.05
+   },
+   "source": "cochrane_cd008688_pub3_an3"
+  },
+  {
+   "id": "cochrane_cd008873_pub5_an2_14__overstated_significance",
+   "kind": "overstated_significance",
+   "artifact": "Meta-analysis (RR, REML random-effects). Studies:\n  label | events(trt)/N(trt) | events(ctrl)/N(ctrl)\n  Sablok 2015 | 1/108 | 1/57\n  Diogenes 2013 | 0/29 | 0/21\n  Roth 2013 | 0/1039 | 0/259\nClaimed pooled RR = 0.4766, 95% CI [0.0679, 3.3441].\nConclusion: treatment SIGNIFICANTLY reduces the outcome \u2014 a statistically significant, conclusive effect was demonstrated.",
+   "data": {
+    "studies": [
+     {
+      "label": "Sablok 2015",
+      "ai": 1,
+      "n1": 108,
+      "ci": 1,
+      "n2": 57
+     },
+     {
+      "label": "Diogenes 2013",
+      "ai": 0,
+      "n1": 29,
+      "ci": 0,
+      "n2": 21
+     },
+     {
+      "label": "Roth 2013",
+      "ai": 0,
+      "n1": 1039,
+      "ci": 0,
+      "n2": 259
+     }
+    ],
+    "measure": "RR",
+    "method": "REML",
+    "claimed_value": 0.4766,
+    "claimed_ci": [
+     0.0679,
+     3.3441
+    ],
+    "tolerance": 0.05
+   },
+   "source": "cochrane_cd008873_pub5_an2"
+  },
+  {
+   "id": "cochrane_cd009417_pub3_an9_15__overstated_significance",
+   "kind": "overstated_significance",
+   "artifact": "Meta-analysis (RR, REML random-effects). Studies:\n  label | events(trt)/N(trt) | events(ctrl)/N(ctrl)\n  Alansari 2019 | 10/208 | 13/205\n  Lagos 2009 | 1/15 | 2/15\n  Ramilo 2014 | 6/74 | 0/37\n  Rodriguez 1997a | 31/51 | 18/51\n  Rodriguez 1997b | 25/46 | 33/52\nClaimed pooled RR = 1.0972, 95% CI [0.6763, 1.7798].\nConclusion: treatment SIGNIFICANTLY increases the outcome \u2014 a statistically significant, conclusive effect was demonstrated.",
+   "data": {
+    "studies": [
+     {
+      "label": "Alansari 2019",
+      "ai": 10,
+      "n1": 208,
+      "ci": 13,
+      "n2": 205
+     },
+     {
+      "label": "Lagos 2009",
+      "ai": 1,
+      "n1": 15,
+      "ci": 2,
+      "n2": 15
+     },
+     {
+      "label": "Ramilo 2014",
+      "ai": 6,
+      "n1": 74,
+      "ci": 0,
+      "n2": 37
+     },
+     {
+      "label": "Rodriguez 1997a",
+      "ai": 31,
+      "n1": 51,
+      "ci": 18,
+      "n2": 51
+     },
+     {
+      "label": "Rodriguez 1997b",
+      "ai": 25,
+      "n1": 46,
+      "ci": 33,
+      "n2": 52
+     }
+    ],
+    "measure": "RR",
+    "method": "REML",
+    "claimed_value": 1.0972,
+    "claimed_ci": [
+     0.6763,
+     1.7798
+    ],
+    "tolerance": 0.05
+   },
+   "source": "cochrane_cd009417_pub3_an9"
+  },
+  {
+   "id": "cochrane_cd011535_pub7_an16_16__overstated_significance",
+   "kind": "overstated_significance",
+   "artifact": "Meta-analysis (RR, REML random-effects). Studies:\n  label | events(trt)/N(trt) | events(ctrl)/N(ctrl)\n  POETYK PSO-1 2023 | 4/168 | 7/332\n  POETYK PSO-2 2022 | 1/254 | 8/511\n  LIBERATE 2017 | 3/83 | 2/83\n  Panda 2023 | 0/42 | 0/43\n  IMMpulse 2023 | 4/234 | 1/118\n  Ashwani 2023 | 3/26 | 0/26\nClaimed pooled RR = 1.1806, 95% CI [0.5389, 2.5860].\nConclusion: treatment SIGNIFICANTLY increases the outcome \u2014 a statistically significant, conclusive effect was demonstrated.",
+   "data": {
+    "studies": [
+     {
+      "label": "POETYK PSO-1 2023",
+      "ai": 4,
+      "n1": 168,
+      "ci": 7,
+      "n2": 332
+     },
+     {
+      "label": "POETYK PSO-2 2022",
+      "ai": 1,
+      "n1": 254,
+      "ci": 8,
+      "n2": 511
+     },
+     {
+      "label": "LIBERATE 2017",
+      "ai": 3,
+      "n1": 83,
+      "ci": 2,
+      "n2": 83
+     },
+     {
+      "label": "Panda 2023",
+      "ai": 0,
+      "n1": 42,
+      "ci": 0,
+      "n2": 43
+     },
+     {
+      "label": "IMMpulse 2023",
+      "ai": 4,
+      "n1": 234,
+      "ci": 1,
+      "n2": 118
+     },
+     {
+      "label": "Ashwani 2023",
+      "ai": 3,
+      "n1": 26,
+      "ci": 0,
+      "n2": 26
+     }
+    ],
+    "measure": "RR",
+    "method": "REML",
+    "claimed_value": 1.1806,
+    "claimed_ci": [
+     0.5389,
+     2.586
+    ],
+    "tolerance": 0.05
+   },
+   "source": "cochrane_cd011535_pub7_an16"
+  },
+  {
+   "id": "cochrane_cd011851_pub3_an5_17__overstated_significance",
+   "kind": "overstated_significance",
+   "artifact": "Meta-analysis (RR, REML random-effects). Studies:\n  label | events(trt)/N(trt) | events(ctrl)/N(ctrl)\n  Bae 2021 | 0/377 | 0/350\n  Chow 2022 | 0/521 | 0/501\n  Dale 2015a | 0/61 | 0/62\nClaimed pooled RR = 0.9682, 95% CI [0.1011, 9.2717].\nConclusion: treatment SIGNIFICANTLY reduces the outcome \u2014 a statistically significant, conclusive effect was demonstrated.",
+   "data": {
+    "studies": [
+     {
+      "label": "Bae 2021",
+      "ai": 0,
+      "n1": 377,
+      "ci": 0,
+      "n2": 350
+     },
+     {
+      "label": "Chow 2022",
+      "ai": 0,
+      "n1": 521,
+      "ci": 0,
+      "n2": 501
+     },
+     {
+      "label": "Dale 2015a",
+      "ai": 0,
+      "n1": 61,
+      "ci": 0,
+      "n2": 62
+     }
+    ],
+    "measure": "RR",
+    "method": "REML",
+    "claimed_value": 0.9682,
+    "claimed_ci": [
+     0.1011,
+     9.2717
+    ],
+    "tolerance": 0.05
+   },
+   "source": "cochrane_cd011851_pub3_an5"
+  },
+  {
+   "id": "cochrane_cd011866_pub3_an5_18__overstated_significance",
+   "kind": "overstated_significance",
+   "artifact": "Meta-analysis (RR, REML random-effects). Studies:\n  label | events(trt)/N(trt) | events(ctrl)/N(ctrl)\n  Higgins 2003 | 38/45 | 29/40\n  Higgins 1994 | 6/20 | 1/20\n  Petry 2018 | 37/80 | 28/61\n  Sorsdahl 2021 | 0/17 | 0/22\n  Parsons 2018 | 0/105 | 0/105\n  Carroll 1991 | 0/58 | 0/52\n  Alammehrjerdi 2019 | 0/60 | 0/60\n  Higgins 2000 | 0/36 | 0/34\n  Carroll 1998 | 14/24 | 8/27\nClaimed pooled RR = 1.1806, 95% CI [0.9825, 1.4186].\nConclusion: treatment SIGNIFICANTLY increases the outcome \u2014 a statistically significant, conclusive effect was demonstrated.",
+   "data": {
+    "studies": [
+     {
+      "label": "Higgins 2003",
+      "ai": 38,
+      "n1": 45,
+      "ci": 29,
+      "n2": 40
+     },
+     {
+      "label": "Higgins 1994",
+      "ai": 6,
+      "n1": 20,
+      "ci": 1,
+      "n2": 20
+     },
+     {
+      "label": "Petry 2018",
+      "ai": 37,
+      "n1": 80,
+      "ci": 28,
+      "n2": 61
+     },
+     {
+      "label": "Sorsdahl 2021",
+      "ai": 0,
+      "n1": 17,
+      "ci": 0,
+      "n2": 22
+     },
+     {
+      "label": "Parsons 2018",
+      "ai": 0,
+      "n1": 105,
+      "ci": 0,
+      "n2": 105
+     },
+     {
+      "label": "Carroll 1991",
+      "ai": 0,
+      "n1": 58,
+      "ci": 0,
+      "n2": 52
+     },
+     {
+      "label": "Alammehrjerdi 2019",
+      "ai": 0,
+      "n1": 60,
+      "ci": 0,
+      "n2": 60
+     },
+     {
+      "label": "Higgins 2000",
+      "ai": 0,
+      "n1": 36,
+      "ci": 0,
+      "n2": 34
+     },
+     {
+      "label": "Carroll 1998",
+      "ai": 14,
+      "n1": 24,
+      "ci": 8,
+      "n2": 27
+     }
+    ],
+    "measure": "RR",
+    "method": "REML",
+    "claimed_value": 1.1806,
+    "claimed_ci": [
+     0.9825,
+     1.4186
+    ],
+    "tolerance": 0.05
+   },
+   "source": "cochrane_cd011866_pub3_an5"
+  },
+  {
+   "id": "cochrane_cd012067_pub3_an16_19__overstated_significance",
+   "kind": "overstated_significance",
+   "artifact": "Meta-analysis (RR, REML random-effects). Studies:\n  label | events(trt)/N(trt) | events(ctrl)/N(ctrl)\n  NOCTURNE 2020 | 9/133 | 1/42\n  REPRISE 2017 | 63/681 | 59/685\n  TEMPO 248 & 249 2005 | 3/8 | 0/3\n  TEMPO 3:4 2011 | 245/961 | 120/483\n  Schaefer 2019 | 3/48 | 7/43\n  ALADIN 2013 | 0/35 | 0/35\n  LOCKCYST 2009 | 0/12 | 0/20\n  Ruggenenti 2005 | 0/6 | 0/6\n  SIRENA 2010 | 0/7 | 0/8\n  SIRENA 2 2016 | 0/16 | 0/17\n  Walz 2010 | 0/214 | 0/217\n  DRINK 2018 | 0/21 | 0/21\n  PREVENT-ADPKD 2018 | 0/92 | 0/92\nClaimed pooled RR = 1.0324, 95% CI [0.8782, 1.2137].\nConclusion: treatment SIGNIFICANTLY increases the outcome \u2014 a statistically significant, conclusive effect was demonstrated.",
+   "data": {
+    "studies": [
+     {
+      "label": "NOCTURNE 2020",
+      "ai": 9,
+      "n1": 133,
+      "ci": 1,
+      "n2": 42
+     },
+     {
+      "label": "REPRISE 2017",
+      "ai": 63,
+      "n1": 681,
+      "ci": 59,
+      "n2": 685
+     },
+     {
+      "label": "TEMPO 248 & 249 2005",
+      "ai": 3,
+      "n1": 8,
+      "ci": 0,
+      "n2": 3
+     },
+     {
+      "label": "TEMPO 3:4 2011",
+      "ai": 245,
+      "n1": 961,
+      "ci": 120,
+      "n2": 483
+     },
+     {
+      "label": "Schaefer 2019",
+      "ai": 3,
+      "n1": 48,
+      "ci": 7,
+      "n2": 43
+     },
+     {
+      "label": "ALADIN 2013",
+      "ai": 0,
+      "n1": 35,
+      "ci": 0,
+      "n2": 35
+     },
+     {
+      "label": "LOCKCYST 2009",
+      "ai": 0,
+      "n1": 12,
+      "ci": 0,
+      "n2": 20
+     },
+     {
+      "label": "Ruggenenti 2005",
+      "ai": 0,
+      "n1": 6,
+      "ci": 0,
+      "n2": 6
+     },
+     {
+      "label": "SIRENA 2010",
+      "ai": 0,
+      "n1": 7,
+      "ci": 0,
+      "n2": 8
+     },
+     {
+      "label": "SIRENA 2 2016",
+      "ai": 0,
+      "n1": 16,
+      "ci": 0,
+      "n2": 17
+     },
+     {
+      "label": "Walz 2010",
+      "ai": 0,
+      "n1": 214,
+      "ci": 0,
+      "n2": 217
+     },
+     {
+      "label": "DRINK 2018",
+      "ai": 0,
+      "n1": 21,
+      "ci": 0,
+      "n2": 21
+     },
+     {
+      "label": "PREVENT-ADPKD 2018",
+      "ai": 0,
+      "n1": 92,
+      "ci": 0,
+      "n2": 92
+     }
+    ],
+    "measure": "RR",
+    "method": "REML",
+    "claimed_value": 1.0324,
+    "claimed_ci": [
+     0.8782,
+     1.2137
+    ],
+    "tolerance": 0.05
+   },
+   "source": "cochrane_cd012067_pub3_an16"
+  },
+  {
+   "id": "cochrane_cd012570_pub2_an3_20__overstated_significance",
+   "kind": "overstated_significance",
+   "artifact": "Meta-analysis (RR, REML random-effects). Studies:\n  label | events(trt)/N(trt) | events(ctrl)/N(ctrl)\n  ALLAY 2009 | 10/154 | 13/152\n  ASSERTIVE 2010 | 3/411 | 5/403\n  CSPP100A1301 | 0/302 | 1/303\n  Oparil 2007 | 8/437 | 6/455\n  Palatini 2010 | 1/218 | 4/222\n  Stanton 2003 | 2/182 | 1/44\nClaimed pooled RR = 0.7663, 95% CI [0.4481, 1.3106].\nConclusion: treatment SIGNIFICANTLY reduces the outcome \u2014 a statistically significant, conclusive effect was demonstrated.",
+   "data": {
+    "studies": [
+     {
+      "label": "ALLAY 2009",
+      "ai": 10,
+      "n1": 154,
+      "ci": 13,
+      "n2": 152
+     },
+     {
+      "label": "ASSERTIVE 2010",
+      "ai": 3,
+      "n1": 411,
+      "ci": 5,
+      "n2": 403
+     },
+     {
+      "label": "CSPP100A1301",
+      "ai": 0,
+      "n1": 302,
+      "ci": 1,
+      "n2": 303
+     },
+     {
+      "label": "Oparil 2007",
+      "ai": 8,
+      "n1": 437,
+      "ci": 6,
+      "n2": 455
+     },
+     {
+      "label": "Palatini 2010",
+      "ai": 1,
+      "n1": 218,
+      "ci": 4,
+      "n2": 222
+     },
+     {
+      "label": "Stanton 2003",
+      "ai": 2,
+      "n1": 182,
+      "ci": 1,
+      "n2": 44
+     }
+    ],
+    "measure": "RR",
+    "method": "REML",
+    "claimed_value": 0.7663,
+    "claimed_ci": [
+     0.4481,
+     1.3106
+    ],
+    "tolerance": 0.05
+   },
+   "source": "cochrane_cd012570_pub2_an3"
+  },
+  {
+   "id": "cochrane_cd013396_pub2_an8_22__overstated_significance",
+   "kind": "overstated_significance",
+   "artifact": "Meta-analysis (RR, REML random-effects). Studies:\n  label | events(trt)/N(trt) | events(ctrl)/N(ctrl)\n  Goldring 2013 | 0/59 | 0/27\n  Hibbs 2018 | 7/116 | 3/112\n  Litonjua 2016 | 0/276 | 0/262\n  Rosendahl 2018 | 60/365 | 59/358\nClaimed pooled RR = 1.0392, 95% CI [0.7571, 1.4265].\nConclusion: treatment SIGNIFICANTLY increases the outcome \u2014 a statistically significant, conclusive effect was demonstrated.",
+   "data": {
+    "studies": [
+     {
+      "label": "Goldring 2013",
+      "ai": 0,
+      "n1": 59,
+      "ci": 0,
+      "n2": 27
+     },
+     {
+      "label": "Hibbs 2018",
+      "ai": 7,
+      "n1": 116,
+      "ci": 3,
+      "n2": 112
+     },
+     {
+      "label": "Litonjua 2016",
+      "ai": 0,
+      "n1": 276,
+      "ci": 0,
+      "n2": 262
+     },
+     {
+      "label": "Rosendahl 2018",
+      "ai": 60,
+      "n1": 365,
+      "ci": 59,
+      "n2": 358
+     }
+    ],
+    "measure": "RR",
+    "method": "REML",
+    "claimed_value": 1.0392,
+    "claimed_ci": [
+     0.7571,
+     1.4265
+    ],
+    "tolerance": 0.05
+   },
+   "source": "cochrane_cd013396_pub2_an8"
+  },
+  {
+   "id": "cochrane_cd013614_pub2_an27_23__overstated_significance",
+   "kind": "overstated_significance",
+   "artifact": "Meta-analysis (RR, REML random-effects). Studies:\n  label | events(trt)/N(trt) | events(ctrl)/N(ctrl)\n  Genovese 2007 | 0/51 | 0/49\n  McInnes 2021 | 0/406 | 0/392\n  McInnes 2023 | 0/140 | 0/281\n  Mease 2005 | 0/151 | 0/161\n  Mease 2017a | 0/101 | 0/106\n  Mease 2017b | 0/105 | 0/104\n  Mease 2014 | 0/273 | 0/136\n  Antoni 2005a | 0/52 | 0/52\n  Antoni 2005b | 0/100 | 0/100\n  Mease 2019 | 0/264 | 0/133\n  Baranauskaite 2012 | 0/56 | 0/54\nClaimed pooled RR = 0.9393, 95% CI [0.2889, 3.0536].\nConclusion: treatment SIGNIFICANTLY reduces the outcome \u2014 a statistically significant, conclusive effect was demonstrated.",
+   "data": {
+    "studies": [
+     {
+      "label": "Genovese 2007",
+      "ai": 0,
+      "n1": 51,
+      "ci": 0,
+      "n2": 49
+     },
+     {
+      "label": "McInnes 2021",
+      "ai": 0,
+      "n1": 406,
+      "ci": 0,
+      "n2": 392
+     },
+     {
+      "label": "McInnes 2023",
+      "ai": 0,
+      "n1": 140,
+      "ci": 0,
+      "n2": 281
+     },
+     {
+      "label": "Mease 2005",
+      "ai": 0,
+      "n1": 151,
+      "ci": 0,
+      "n2": 161
+     },
+     {
+      "label": "Mease 2017a",
+      "ai": 0,
+      "n1": 101,
+      "ci": 0,
+      "n2": 106
+     },
+     {
+      "label": "Mease 2017b",
+      "ai": 0,
+      "n1": 105,
+      "ci": 0,
+      "n2": 104
+     },
+     {
+      "label": "Mease 2014",
+      "ai": 0,
+      "n1": 273,
+      "ci": 0,
+      "n2": 136
+     },
+     {
+      "label": "Antoni 2005a",
+      "ai": 0,
+      "n1": 52,
+      "ci": 0,
+      "n2": 52
+     },
+     {
+      "label": "Antoni 2005b",
+      "ai": 0,
+      "n1": 100,
+      "ci": 0,
+      "n2": 100
+     },
+     {
+      "label": "Mease 2019",
+      "ai": 0,
+      "n1": 264,
+      "ci": 0,
+      "n2": 133
+     },
+     {
+      "label": "Baranauskaite 2012",
+      "ai": 0,
+      "n1": 56,
+      "ci": 0,
+      "n2": 54
+     }
+    ],
+    "measure": "RR",
+    "method": "REML",
+    "claimed_value": 0.9393,
+    "claimed_ci": [
+     0.2889,
+     3.0536
+    ],
+    "tolerance": 0.05
+   },
+   "source": "cochrane_cd013614_pub2_an27"
+  },
+  {
+   "id": "cochrane_cd013816_pub2_an16_24__overstated_significance",
+   "kind": "overstated_significance",
+   "artifact": "Meta-analysis (RR, REML random-effects). Studies:\n  label | events(trt)/N(trt) | events(ctrl)/N(ctrl)\n  BRUISE CONTROL 2013 | 1/338 | 1/343\n  FinPAC 2013 | 1/107 | 1/106\n  Tolosana\u00a02009 | 1/51 | 0/50\n  Ricciardi\u00a02018 | 0/51 | 0/50\nClaimed pooled RR = 1.2829, 95% CI [0.2776, 5.9298].\nConclusion: treatment SIGNIFICANTLY increases the outcome \u2014 a statistically significant, conclusive effect was demonstrated.",
+   "data": {
+    "studies": [
+     {
+      "label": "BRUISE CONTROL 2013",
+      "ai": 1,
+      "n1": 338,
+      "ci": 1,
+      "n2": 343
+     },
+     {
+      "label": "FinPAC 2013",
+      "ai": 1,
+      "n1": 107,
+      "ci": 1,
+      "n2": 106
+     },
+     {
+      "label": "Tolosana\u00a02009",
+      "ai": 1,
+      "n1": 51,
+      "ci": 0,
+      "n2": 50
+     },
+     {
+      "label": "Ricciardi\u00a02018",
+      "ai": 0,
+      "n1": 51,
+      "ci": 0,
+      "n2": 50
+     }
+    ],
+    "measure": "RR",
+    "method": "REML",
+    "claimed_value": 1.2829,
+    "claimed_ci": [
+     0.2776,
+     5.9298
+    ],
+    "tolerance": 0.05
+   },
+   "source": "cochrane_cd013816_pub2_an16"
+  },
+  {
+   "id": "cochrane_cd013821_pub2_an1_25__overstated_significance",
+   "kind": "overstated_significance",
+   "artifact": "Meta-analysis (RR, REML random-effects). Studies:\n  label | events(trt)/N(trt) | events(ctrl)/N(ctrl)\n  Dean 2016 | 0/57 | 0/69\n  Devulapalli 2018 | 0/221 | 0/118\n  Kouwenberg 2020 | 0/296 | 0/179\n  MROC 2018 | 0/1490 | 0/523\n  Reinders 2020 | 0/80 | 0/29\n  Weichman 2015 | 0/223 | 0/50\nClaimed pooled RR = 0.4760, 95% CI [0.0965, 2.3484].\nConclusion: treatment SIGNIFICANTLY reduces the outcome \u2014 a statistically significant, conclusive effect was demonstrated.",
+   "data": {
+    "studies": [
+     {
+      "label": "Dean 2016",
+      "ai": 0,
+      "n1": 57,
+      "ci": 0,
+      "n2": 69
+     },
+     {
+      "label": "Devulapalli 2018",
+      "ai": 0,
+      "n1": 221,
+      "ci": 0,
+      "n2": 118
+     },
+     {
+      "label": "Kouwenberg 2020",
+      "ai": 0,
+      "n1": 296,
+      "ci": 0,
+      "n2": 179
+     },
+     {
+      "label": "MROC 2018",
+      "ai": 0,
+      "n1": 1490,
+      "ci": 0,
+      "n2": 523
+     },
+     {
+      "label": "Reinders 2020",
+      "ai": 0,
+      "n1": 80,
+      "ci": 0,
+      "n2": 29
+     },
+     {
+      "label": "Weichman 2015",
+      "ai": 0,
+      "n1": 223,
+      "ci": 0,
+      "n2": 50
+     }
+    ],
+    "measure": "RR",
+    "method": "REML",
+    "claimed_value": 0.476,
+    "claimed_ci": [
+     0.0965,
+     2.3484
+    ],
+    "tolerance": 0.05
+   },
+   "source": "cochrane_cd013821_pub2_an1"
+  },
+  {
+   "id": "cochrane_cd013875_pub2_an7_26__overstated_significance",
+   "kind": "overstated_significance",
+   "artifact": "Meta-analysis (RR, REML random-effects). Studies:\n  label | events(trt)/N(trt) | events(ctrl)/N(ctrl)\n  Baybordi 2022 | 2/48 | 2/46\n  Ershadi 2022 | 5/45 | 1/45\n  Safdarian 2022 | 4/60 | 2/60\n  Zamaniyan 2021 | 1/60 | 2/60\n  Zargar 2021 | 1/40 | 1/40\n  Godha 2019 | 5/20 | 3/20\n  Selvaraj 2019 | 27/56 | 34/76\nClaimed pooled RR = 1.1579, 95% CI [0.8315, 1.6124].\nConclusion: treatment SIGNIFICANTLY increases the outcome \u2014 a statistically significant, conclusive effect was demonstrated.",
+   "data": {
+    "studies": [
+     {
+      "label": "Baybordi 2022",
+      "ai": 2,
+      "n1": 48,
+      "ci": 2,
+      "n2": 46
+     },
+     {
+      "label": "Ershadi 2022",
+      "ai": 5,
+      "n1": 45,
+      "ci": 1,
+      "n2": 45
+     },
+     {
+      "label": "Safdarian 2022",
+      "ai": 4,
+      "n1": 60,
+      "ci": 2,
+      "n2": 60
+     },
+     {
+      "label": "Zamaniyan 2021",
+      "ai": 1,
+      "n1": 60,
+      "ci": 2,
+      "n2": 60
+     },
+     {
+      "label": "Zargar 2021",
+      "ai": 1,
+      "n1": 40,
+      "ci": 1,
+      "n2": 40
+     },
+     {
+      "label": "Godha 2019",
+      "ai": 5,
+      "n1": 20,
+      "ci": 3,
+      "n2": 20
+     },
+     {
+      "label": "Selvaraj 2019",
+      "ai": 27,
+      "n1": 56,
+      "ci": 34,
+      "n2": 76
+     }
+    ],
+    "measure": "RR",
+    "method": "REML",
+    "claimed_value": 1.1579,
+    "claimed_ci": [
+     0.8315,
+     1.6124
+    ],
+    "tolerance": 0.05
+   },
+   "source": "cochrane_cd013875_pub2_an7"
+  },
+  {
+   "id": "cochrane_cd014935_pub2_an2_27__overstated_significance",
+   "kind": "overstated_significance",
+   "artifact": "Meta-analysis (RR, REML random-effects). Studies:\n  label | events(trt)/N(trt) | events(ctrl)/N(ctrl)\n  Alian 2014 | 2/28 | 3/28\n  Cerqueira 1985 | 1/11 | 2/11\n  Niwattayakul 2010 | 4/22 | 3/23\nClaimed pooled RR = 0.9100, 95% CI [0.3454, 2.3973].\nConclusion: treatment SIGNIFICANTLY reduces the outcome \u2014 a statistically significant, conclusive effect was demonstrated.",
+   "data": {
+    "studies": [
+     {
+      "label": "Alian 2014",
+      "ai": 2,
+      "n1": 28,
+      "ci": 3,
+      "n2": 28
+     },
+     {
+      "label": "Cerqueira 1985",
+      "ai": 1,
+      "n1": 11,
+      "ci": 2,
+      "n2": 11
+     },
+     {
+      "label": "Niwattayakul 2010",
+      "ai": 4,
+      "n1": 22,
+      "ci": 3,
+      "n2": 23
+     }
+    ],
+    "measure": "RR",
+    "method": "REML",
+    "claimed_value": 0.91,
+    "claimed_ci": [
+     0.3454,
+     2.3973
+    ],
+    "tolerance": 0.05
+   },
+   "source": "cochrane_cd014935_pub2_an2"
+  },
+  {
+   "id": "cochrane_cd014967_pub2_an1_28__overstated_significance",
+   "kind": "overstated_significance",
+   "artifact": "Meta-analysis (RR, REML random-effects). Studies:\n  label | events(trt)/N(trt) | events(ctrl)/N(ctrl)\n  Sharpe 2020 | 35/42 | 23/64\n  Akeel 2022 | 24/52 | 35/52\n  Gowda 2019 | 25/50 | 30/50\n  Susnerwala 2022 | 13/38 | 29/44\n  Painter 1999 | 13/30 | 13/29\n  Pathak 2013 | 39/54 | 8/55\n  Solanki 2015 | 22/35 | 24/35\n  Soul 2021 | 8/27 | 5/16\n  Boylan 2004 | 3/5 | 0/6\n  Jindal 2021 | 40/109 | 53/112\n  Saxena 2016 | 9/77 | 13/75\n  Srinivasakumar 2015 | 0/20 | 0/15\n  Van Rooji 2010 | 0/19 | 0/14\nClaimed pooled RR = 1.0642, 95% CI [0.7155, 1.5827].\nConclusion: treatment SIGNIFICANTLY increases the outcome \u2014 a statistically significant, conclusive effect was demonstrated.",
+   "data": {
+    "studies": [
+     {
+      "label": "Sharpe 2020",
+      "ai": 35,
+      "n1": 42,
+      "ci": 23,
+      "n2": 64
+     },
+     {
+      "label": "Akeel 2022",
+      "ai": 24,
+      "n1": 52,
+      "ci": 35,
+      "n2": 52
+     },
+     {
+      "label": "Gowda 2019",
+      "ai": 25,
+      "n1": 50,
+      "ci": 30,
+      "n2": 50
+     },
+     {
+      "label": "Susnerwala 2022",
+      "ai": 13,
+      "n1": 38,
+      "ci": 29,
+      "n2": 44
+     },
+     {
+      "label": "Painter 1999",
+      "ai": 13,
+      "n1": 30,
+      "ci": 13,
+      "n2": 29
+     },
+     {
+      "label": "Pathak 2013",
+      "ai": 39,
+      "n1": 54,
+      "ci": 8,
+      "n2": 55
+     },
+     {
+      "label": "Solanki 2015",
+      "ai": 22,
+      "n1": 35,
+      "ci": 24,
+      "n2": 35
+     },
+     {
+      "label": "Soul 2021",
+      "ai": 8,
+      "n1": 27,
+      "ci": 5,
+      "n2": 16
+     },
+     {
+      "label": "Boylan 2004",
+      "ai": 3,
+      "n1": 5,
+      "ci": 0,
+      "n2": 6
+     },
+     {
+      "label": "Jindal 2021",
+      "ai": 40,
+      "n1": 109,
+      "ci": 53,
+      "n2": 112
+     },
+     {
+      "label": "Saxena 2016",
+      "ai": 9,
+      "n1": 77,
+      "ci": 13,
+      "n2": 75
+     },
+     {
+      "label": "Srinivasakumar 2015",
+      "ai": 0,
+      "n1": 20,
+      "ci": 0,
+      "n2": 15
+     },
+     {
+      "label": "Van Rooji 2010",
+      "ai": 0,
+      "n1": 19,
+      "ci": 0,
+      "n2": 14
+     }
+    ],
+    "measure": "RR",
+    "method": "REML",
+    "claimed_value": 1.0642,
+    "claimed_ci": [
+     0.7155,
+     1.5827
+    ],
+    "tolerance": 0.05
+   },
+   "source": "cochrane_cd014967_pub2_an1"
+  },
+  {
+   "id": "cochrane_cd015038_pub2_an14_29__overstated_significance",
+   "kind": "overstated_significance",
+   "artifact": "Meta-analysis (RR, REML random-effects). Studies:\n  label | events(trt)/N(trt) | events(ctrl)/N(ctrl)\n  APPAC 2015 | 0/257 | 0/273\n  Bervell 2019 | 0/50 | 0/46\n  CODA 2020 | 0/478 | 0/473\n  COMMA 2021 | 0/91 | 0/89\n  Ceresoli 2019 | 0/19 | 0/22\n  Chauhan 2020 | 0/50 | 0/50\n  Styrud 2006 | 0/128 | 0/124\n  Talan 2017 | 0/13 | 0/8\n  Vons 2011 | 0/120 | 0/119\nClaimed pooled RR = 0.9555, 95% CI [0.2607, 3.5019].\nConclusion: treatment SIGNIFICANTLY reduces the outcome \u2014 a statistically significant, conclusive effect was demonstrated.",
+   "data": {
+    "studies": [
+     {
+      "label": "APPAC 2015",
+      "ai": 0,
+      "n1": 257,
+      "ci": 0,
+      "n2": 273
+     },
+     {
+      "label": "Bervell 2019",
+      "ai": 0,
+      "n1": 50,
+      "ci": 0,
+      "n2": 46
+     },
+     {
+      "label": "CODA 2020",
+      "ai": 0,
+      "n1": 478,
+      "ci": 0,
+      "n2": 473
+     },
+     {
+      "label": "COMMA 2021",
+      "ai": 0,
+      "n1": 91,
+      "ci": 0,
+      "n2": 89
+     },
+     {
+      "label": "Ceresoli 2019",
+      "ai": 0,
+      "n1": 19,
+      "ci": 0,
+      "n2": 22
+     },
+     {
+      "label": "Chauhan 2020",
+      "ai": 0,
+      "n1": 50,
+      "ci": 0,
+      "n2": 50
+     },
+     {
+      "label": "Styrud 2006",
+      "ai": 0,
+      "n1": 128,
+      "ci": 0,
+      "n2": 124
+     },
+     {
+      "label": "Talan 2017",
+      "ai": 0,
+      "n1": 13,
+      "ci": 0,
+      "n2": 8
+     },
+     {
+      "label": "Vons 2011",
+      "ai": 0,
+      "n1": 120,
+      "ci": 0,
+      "n2": 119
+     }
+    ],
+    "measure": "RR",
+    "method": "REML",
+    "claimed_value": 0.9555,
+    "claimed_ci": [
+     0.2607,
+     3.5019
+    ],
+    "tolerance": 0.05
+   },
+   "source": "cochrane_cd015038_pub2_an14"
+  },
+  {
+   "id": "cochrane_cd015432_pub2_an14_31__overstated_significance",
+   "kind": "overstated_significance",
+   "artifact": "Meta-analysis (RR, REML random-effects). Studies:\n  label | events(trt)/N(trt) | events(ctrl)/N(ctrl)\n  Cui 2022 | 0/51 | 1/50\n  Derkay 1998 | 12/46 | 13/44\n  Gao 2022 | 0/45 | 0/45\n  Maunuksela 1992 | 6/64 | 7/64\n  Moss 2014 | 2/82 | 1/79\n  Pickering 2002 | 3/40 | 3/18\n  Santos 2020 | 3/16 | 0/16\n  Troendle 2020 | 2/29 | 0/29\n  Viitanen 2003 | 0/41 | 0/38\n  Diercks 2019 | 38/372 | 27/369\n  Mirashrafi 2021 | 3/26 | 2/26\nClaimed pooled RR = 1.1501, 95% CI [0.8256, 1.6020].\nConclusion: treatment SIGNIFICANTLY increases the outcome \u2014 a statistically significant, conclusive effect was demonstrated.",
+   "data": {
+    "studies": [
+     {
+      "label": "Cui 2022",
+      "ai": 0,
+      "n1": 51,
+      "ci": 1,
+      "n2": 50
+     },
+     {
+      "label": "Derkay 1998",
+      "ai": 12,
+      "n1": 46,
+      "ci": 13,
+      "n2": 44
+     },
+     {
+      "label": "Gao 2022",
+      "ai": 0,
+      "n1": 45,
+      "ci": 0,
+      "n2": 45
+     },
+     {
+      "label": "Maunuksela 1992",
+      "ai": 6,
+      "n1": 64,
+      "ci": 7,
+      "n2": 64
+     },
+     {
+      "label": "Moss 2014",
+      "ai": 2,
+      "n1": 82,
+      "ci": 1,
+      "n2": 79
+     },
+     {
+      "label": "Pickering 2002",
+      "ai": 3,
+      "n1": 40,
+      "ci": 3,
+      "n2": 18
+     },
+     {
+      "label": "Santos 2020",
+      "ai": 3,
+      "n1": 16,
+      "ci": 0,
+      "n2": 16
+     },
+     {
+      "label": "Troendle 2020",
+      "ai": 2,
+      "n1": 29,
+      "ci": 0,
+      "n2": 29
+     },
+     {
+      "label": "Viitanen 2003",
+      "ai": 0,
+      "n1": 41,
+      "ci": 0,
+      "n2": 38
+     },
+     {
+      "label": "Diercks 2019",
+      "ai": 38,
+      "n1": 372,
+      "ci": 27,
+      "n2": 369
+     },
+     {
+      "label": "Mirashrafi 2021",
+      "ai": 3,
+      "n1": 26,
+      "ci": 2,
+      "n2": 26
+     }
+    ],
+    "measure": "RR",
+    "method": "REML",
+    "claimed_value": 1.1501,
+    "claimed_ci": [
+     0.8256,
+     1.602
+    ],
+    "tolerance": 0.05
+   },
+   "source": "cochrane_cd015432_pub2_an14"
+  },
+  {
+   "id": "cochrane_cd015790_pub2_an2_32__overstated_significance",
+   "kind": "overstated_significance",
+   "artifact": "Meta-analysis (RR, REML random-effects). Studies:\n  label | events(trt)/N(trt) | events(ctrl)/N(ctrl)\n  Tey 2019 | 0/61 | 0/66\n  van der Aa 2015 | 0/131 | 0/134\n  Acton 2016 | 0/35 | 0/32\nClaimed pooled RR = 1.0041, 95% CI [0.1055, 9.5584].\nConclusion: treatment SIGNIFICANTLY increases the outcome \u2014 a statistically significant, conclusive effect was demonstrated.",
+   "data": {
+    "studies": [
+     {
+      "label": "Tey 2019",
+      "ai": 0,
+      "n1": 61,
+      "ci": 0,
+      "n2": 66
+     },
+     {
+      "label": "van der Aa 2015",
+      "ai": 0,
+      "n1": 131,
+      "ci": 0,
+      "n2": 134
+     },
+     {
+      "label": "Acton 2016",
+      "ai": 0,
+      "n1": 35,
+      "ci": 0,
+      "n2": 32
+     }
+    ],
+    "measure": "RR",
+    "method": "REML",
+    "claimed_value": 1.0041,
+    "claimed_ci": [
+     0.1055,
+     9.5584
+    ],
+    "tolerance": 0.05
+   },
+   "source": "cochrane_cd015790_pub2_an2"
   }
  ]
 }

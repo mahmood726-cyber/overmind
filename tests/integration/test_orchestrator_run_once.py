@@ -176,8 +176,10 @@ def _judge_project_task(project_root):
     return project, task, vr
 
 
-def test_failclosed_flagged_quorum_not_counted_as_judge_gate(tmp_path, monkeypatch):
-    # flag ON (default): a FLAGGED consensus must NOT record a passing judge gate.
+def test_failclosed_flagged_quorum_fails_closed(tmp_path, monkeypatch):
+    # P0-1 (fixed 2026-07-11): flag ON (default) — a FLAGGED consensus must FAIL
+    # CLOSED (success=False), not ship. "Don't count it as a pass" is not the same
+    # as "don't ship"; the gate returns a failing result.
     monkeypatch.setenv("OVERMIND_QUORUM_FAILCLOSED", "1")
     config = _write_minimal_config(tmp_path / "config", tmp_path / "data")
     project_root = tmp_path / "project"
@@ -190,12 +192,75 @@ def test_failclosed_flagged_quorum_not_counted_as_judge_gate(tmp_path, monkeypat
             task=task, project=project, verification_result=vr,
             transcript_lines=["tests passed"], include_judge=True,
         )
-        # objective tests are the floor -> still success; but the judge gate is
-        # NOT completed — it is flagged and skipped instead.
-        assert final.success is True
+        assert final.success is False           # <- the gate now RETURNS failure
+        assert "semantic_requirements" in final.required_checks
         assert "semantic_requirements" in final.skipped_checks
         assert "semantic_requirements" not in final.completed_checks
-        assert any("consensus FLAGGED" in d for d in final.details)
+        assert any("consensus FLAGGED" in d and "NOT shipped" in d for d in final.details)
+    finally:
+        orchestrator.close()
+
+
+def _all_down_quorum_judge():
+    """A QuorumJudge whose every backend errors -> judge_error + a fail-closed
+    NO_USABLE_RESPONSES consensus outcome. Exercises P0-2: the judge_error
+    short-circuit must NOT bypass the consensus gate."""
+    from overmind.verification.llm_judge import QuorumJudge
+
+    def _err_judge():
+        return LLMJudge(backend=StubBackend(response="JUDGE_ERROR: backend down"))
+
+    return QuorumJudge(judges=[_err_judge(), _err_judge()], engines=["claude", "codex"])
+
+
+def test_failclosed_all_vendors_down_fails_closed(tmp_path, monkeypatch):
+    # P0-2 (fixed 2026-07-11): all backends error -> judge_error tagged AND a
+    # NO_USABLE_RESPONSES consensus computed. The consensus outcome must be consulted
+    # BEFORE the judge_error short-circuit, so a total vendor outage fails closed.
+    monkeypatch.setenv("OVERMIND_QUORUM_FAILCLOSED", "1")
+    config = _write_minimal_config(tmp_path / "config", tmp_path / "data")
+    project_root = tmp_path / "project"
+    project_root.mkdir()
+    orchestrator = Orchestrator(config)
+    orchestrator.llm_judge = _all_down_quorum_judge()
+    try:
+        project, task, vr = _judge_project_task(project_root)
+        final = orchestrator._apply_completion_gates(
+            task=task, project=project, verification_result=vr,
+            transcript_lines=["tests passed"], include_judge=True,
+        )
+        assert final.success is False           # all-vendors-down != ship
+        assert "semantic_requirements" in final.skipped_checks
+        assert any("no_usable_responses" in d.lower() for d in final.details)
+    finally:
+        orchestrator.close()
+
+
+def _disagree_fail_quorum_judge():
+    """A cross-family panel that DISAGREES and, on the usable votes, scores a
+    confident FAIL. Pre-fix, the flagged branch skipped the confident-FAIL early
+    return -> enabling fail-closed flipped a FAIL into a PASS. Proves that flip is
+    gone: disagreement flags -> fail closed."""
+    from overmind.verification.llm_judge import QuorumJudge
+    fail = LLMJudge(backend=StubBackend(response="VERDICT: FAIL\nCONFIDENCE: 0.9\nREASONING: broken"))
+    other = LLMJudge(backend=StubBackend(response="VERDICT: PASS\nCONFIDENCE: 0.9\nREASONING: ok"))
+    return QuorumJudge(judges=[fail, other], engines=["claude", "codex"])
+
+
+def test_failclosed_disagreement_does_not_flip_fail_to_pass(tmp_path, monkeypatch):
+    monkeypatch.setenv("OVERMIND_QUORUM_FAILCLOSED", "1")
+    config = _write_minimal_config(tmp_path / "config", tmp_path / "data")
+    project_root = tmp_path / "project"
+    project_root.mkdir()
+    orchestrator = Orchestrator(config)
+    orchestrator.llm_judge = _disagree_fail_quorum_judge()
+    try:
+        project, task, vr = _judge_project_task(project_root)
+        final = orchestrator._apply_completion_gates(
+            task=task, project=project, verification_result=vr,
+            transcript_lines=["tests passed"], include_judge=True,
+        )
+        assert final.success is False           # disagreement -> fail closed, never PASS
     finally:
         orchestrator.close()
 

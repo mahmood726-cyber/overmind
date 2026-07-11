@@ -41,6 +41,7 @@ from overmind.benchmark.tasks import (
     IMPOSSIBLE_CELL,
     METHOD_MISMATCH,
     MISSING_REFERENCE,
+    OVERSTATED_SIGNIFICANCE,
     REPRODUCTION,
     SUBGROUP_MISMATCH,
     WRONG_MEASURE_LABEL,
@@ -215,6 +216,23 @@ def generate(max_fixtures: int | None = None) -> tuple[list[Task], list[AnswerKe
              dict(valid_data),
              AnswerKey(f"{slug}__subgroup_mismatch", True, "subgroup_mismatch",
                        note="analysis label claims a subgroup restriction that the data do not reflect"))
+
+        # --- overstated significance (cross-vendor review P0-3, 2026-07-11) ---
+        # A conclusion that CLAIMS a statistically significant / conclusive effect
+        # while the reported 95% CI SPANS the null (includes 1.0) is a defect — the
+        # data are valid (point estimate + CI correct, direction matches), so no
+        # deterministic witness fires and the calibrated "a CI crossing 1.0 is not a
+        # defect" rule alone would wave it through. Only generated when the true CI
+        # actually spans 1.0 (otherwise the claim would be true, not a defect).
+        if true_ci[0] < 1.0 < true_ci[1]:
+            _add("overstated_significance", OVERSTATED_SIGNIFICANCE,
+                 _artifact(measure, method, table, true_ratio, true_ci,
+                           f"treatment SIGNIFICANTLY {dir_word} the outcome — a statistically "
+                           f"significant, conclusive effect was demonstrated."),
+                 dict(valid_data),
+                 AnswerKey(f"{slug}__overstated_significance", True, "overstated_significance",
+                           note=f"conclusion claims a SIGNIFICANT/conclusive effect but 95% CI "
+                                f"[{true_ci[0]:.4f}, {true_ci[1]:.4f}] includes 1.0 (non-significant)"))
 
     return tasks, keys
 

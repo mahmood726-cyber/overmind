@@ -52,6 +52,18 @@ def kill_process_tree(proc: subprocess.Popen) -> None:
 
     Uses `taskkill /F /T /PID` on Windows to reach grandchildren that a plain
     `proc.kill()` would miss.
+
+    Boundary (P1-7, 2026-07-11): this reaches only the LOCAL process tree. A lane
+    that runs ``ssh <node> codex …`` spawns the vendor process on the REMOTE node —
+    NOT a local descendant — so taskkill cannot reach it. Remote termination is the
+    SSH invoker's responsibility (see ``SshCodexBackend``: ServerAliveInterval so a
+    dropped/killed local ssh tears the channel down promptly, which SIGHUPs the
+    remote command). A fully robust remote kill needs remote-side PID tracking —
+    tracked as follow-up, not silently claimed here.
+
+    Also (P1-7): ``taskkill`` is run with ``check=True`` so a taskkill FAILURE (e.g.
+    the parent already exited, leaving grandchildren) raises and triggers the
+    ``proc.kill()`` fallback instead of being silently swallowed.
     """
     try:
         if sys.platform == "win32":
@@ -59,10 +71,11 @@ def kill_process_tree(proc: subprocess.Popen) -> None:
                 ["taskkill", "/F", "/T", "/PID", str(proc.pid)],
                 capture_output=True,
                 timeout=5,
+                check=True,   # a taskkill failure must fall through to proc.kill()
             )
         else:
             proc.kill()
-    except (OSError, subprocess.TimeoutExpired):
+    except (OSError, subprocess.TimeoutExpired, subprocess.CalledProcessError):
         try:
             proc.kill()
         except OSError:
@@ -122,6 +135,27 @@ WINDOWS_EXECUTABLE_CANDIDATES = {
 }
 
 
+def _ps_flag_is_command_or_encoded(token: str) -> bool:
+    """True if ``token`` is a PowerShell flag that resolves to ``-Command`` or
+    ``-EncodedCommand`` — including any unambiguous PREFIX PowerShell accepts.
+
+    PowerShell matches parameters by unambiguous prefix, so ``-e``/``-en``/``-enc``/
+    ``-ec`` all bind ``-EncodedCommand`` and ``-c``/``-com`` bind ``-Command``. The
+    ``-File``-only verification policy has no legitimate use for either, so any such
+    token is blocked. Case-insensitive; the leading ``-``/``/`` is stripped."""
+    if not token or token[0] not in "-/":
+        return False
+    a = token.lstrip("-/").lower()
+    if not a:
+        return False
+    # a prefix of "command" or "encodedcommand", or a known EncodedCommand short form.
+    return (
+        "command".startswith(a)
+        or "encodedcommand".startswith(a)
+        or a in {"e", "ec", "enc"}
+    )
+
+
 def _strip_matching_quotes(token: str) -> str:
     if len(token) >= 2 and token[0] == token[-1] and token[0] in {'"', "'"}:
         return token[1:-1]
@@ -129,7 +163,16 @@ def _strip_matching_quotes(token: str) -> str:
 
 
 def _should_use_windows_split(command: str) -> bool:
-    return bool(re.match(WINDOWS_ABSOLUTE_EXECUTABLE_RE, command))
+    # P1-10 (2026-07-11): use Windows (non-posix) splitting for an ABSOLUTE path
+    # (drive-letter) OR any command containing a backslash. A relative Windows path
+    # like ``pytest tests\integration.py`` has no drive letter, so it previously hit
+    # posix ``shlex.split`` which treats ``\`` as an escape and eats it →
+    # ``testsintegration.py`` (a silently-corrupted verification command). A
+    # backslash in a POSIX command is virtually always a Windows path separator here,
+    # so preserving it is the correct, safe behavior on this platform.
+    if re.match(WINDOWS_ABSOLUTE_EXECUTABLE_RE, command):
+        return True
+    return "\\" in command
 
 
 def _split_for_validation(command: str) -> list[str]:
@@ -251,9 +294,14 @@ def validate_command_prefix_with_detail(
         return True, None
 
     if executable in POWERSHELL_WRAPPERS:
-        lowered_parts = [part.lower() for part in parts[1:]]
-        if any(part in {"-command", "-encodedcommand", "-c"} for part in lowered_parts):
-            return False, "Blocked: PowerShell verification must use -File with a repo-local .ps1 script"
+        # P1-11 (2026-07-11): the block-list was EXACT-match, but PowerShell resolves
+        # unambiguous parameter PREFIXES — `-e`, `-en`, `-enc`, `-ec` all mean
+        # `-EncodedCommand`; `-c`, `-com` mean `-Command` — so `powershell -enc <b64>
+        # -File ok.ps1` slipped past (a valid -File made it pass while -enc smuggled
+        # arbitrary base64 code). Block ANY arg that PowerShell would resolve to
+        # -Command / -EncodedCommand, regardless of a co-present -File.
+        if any(_ps_flag_is_command_or_encoded(part) for part in parts[1:]):
+            return False, "Blocked: PowerShell -Command/-EncodedCommand (or a prefix) is not allowed; use -File with a repo-local .ps1 script"
         for index, part in enumerate(parts[1:-1], start=1):
             if part.lower() == "-file":
                 control = next((token for token in parts[index + 2 :] if token in SHELL_CONTROL_TOKENS), None)

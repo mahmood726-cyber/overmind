@@ -818,37 +818,65 @@ class Orchestrator:
                 verification_result=verification_result,
                 transcript_lines=transcript_lines,
             )
+            # W-A/W-B fail-closed enforcement (hardening 2026-07-10; P0-1/P0-2 fix
+            # 2026-07-11): a QuorumVerdict can carry a deterministic consensus-or-flag
+            # outcome (consensus_gate.resolve_consensus). The fail-closed decision is
+            # a RETURNED FAILURE, not a relabel — "don't count it as a pass" is not
+            # the same as "don't ship" (lessons: a gate that cannot return failure is
+            # not a gate).
+            #
+            # P0-2: this is consulted BEFORE the judge_error short-circuit. When ALL
+            # backends error, QuorumJudge tags judge_error AND computes a fail-closed
+            # NO_USABLE_RESPONSES outcome; reading the outcome first means a total
+            # vendor outage fails closed instead of the judge_error path bypassing the
+            # gate into success=True.
+            outcome = getattr(judge_verdict, "consensus_outcome", None)
+            failclosed = _quorum_failclosed_enabled()
+            # Any non-PASS consensus (FLAGGED: correlated panel / too-few witnesses /
+            # partial availability / disagreement / all-down; OR CONSENSUS_FAIL) must
+            # fail closed. `.passed` is True ONLY for CONSENSUS_PASS.
+            consensus_blocks = (
+                failclosed
+                and outcome is not None
+                and not getattr(outcome, "passed", False)
+            )
+            if consensus_blocks:
+                # P0-1: RETURN a failing result (record semantic_requirements as a
+                # REQUIRED, failed check) — do not fall through to success=True, and
+                # do not let a flag suppress a would-be confident FAIL.
+                reasons = ",".join(
+                    getattr(r, "value", str(r)) for r in getattr(outcome, "reasons", [])
+                )
+                verdict_name = getattr(getattr(outcome, "verdict", None), "value", "flagged")
+                required_checks = self._append_unique_check(required_checks, "semantic_requirements")
+                skipped_checks = self._append_unique_check(skipped_checks, "semantic_requirements")
+                details.append(
+                    f"judge: consensus {verdict_name.upper()} ({reasons}) — fail-closed: "
+                    "cross-vendor semantic verification not corroborated; NOT shipped"
+                )
+                return VerificationResult(
+                    task_id=verification_result.task_id,
+                    success=False,
+                    required_checks=required_checks,
+                    completed_checks=completed_checks,
+                    skipped_checks=skipped_checks,
+                    details=details,
+                    trace_id=verification_result.trace_id,
+                )
+
             judge_available = "judge_error" not in judge_verdict.concerns
             if judge_available:
-                # W-A/W-B fail-closed enforcement (hardening 2026-07-10): a
-                # QuorumVerdict can carry a deterministic consensus-or-flag outcome
-                # (consensus_gate.resolve_consensus). When it FLAGS — correlated
-                # panel below the Kish n_eff floor, too few independent witnesses,
-                # partial availability, or vendor disagreement — the panel's
-                # threshold-PASS must NOT be recorded as an independent-judge gate.
-                # We flag it (record skipped + reason) rather than silently counting
-                # it. Gated by OVERMIND_QUORUM_FAILCLOSED (default ON); a no-op when
-                # the verdict has no consensus outcome (single LLMJudge / legacy).
-                outcome = getattr(judge_verdict, "consensus_outcome", None)
-                consensus_flagged = (
-                    _quorum_failclosed_enabled()
-                    and outcome is not None
-                    and getattr(outcome, "flagged", False)
-                )
-                if consensus_flagged:
-                    reasons = ",".join(
-                        getattr(r, "value", str(r)) for r in getattr(outcome, "reasons", [])
-                    )
+                required_checks = self._append_unique_check(required_checks, "semantic_requirements")
+                # A judge FAIL is never recorded as a pass. A CONFIDENT fail blocks
+                # (fail-closed); a low-confidence fail is not trusted enough to block
+                # a task whose objective tests passed, but it is recorded as SKIPPED
+                # (not counted as a completed semantic gate) — "don't count a FAIL as
+                # a pass" (P1-4), without over-blocking on a single flaky low-conf
+                # negative.
+                if not judge_verdict.passed:
                     skipped_checks = self._append_unique_check(skipped_checks, "semantic_requirements")
-                    details.append(
-                        f"judge: consensus FLAGGED ({reasons}) — fail-closed, not "
-                        "counted as an independent-judge gate"
-                    )
-                else:
-                    required_checks = self._append_unique_check(required_checks, "semantic_requirements")
-                    if not judge_verdict.passed and judge_verdict.confidence >= 0.7:
-                        skipped_checks = self._append_unique_check(skipped_checks, "semantic_requirements")
-                        details.append(f"judge: {judge_verdict.reasoning[:200]}")
+                    details.append(f"judge: {judge_verdict.reasoning[:200]}")
+                    if judge_verdict.confidence >= 0.7:
                         return VerificationResult(
                             task_id=verification_result.task_id,
                             success=False,
@@ -858,6 +886,7 @@ class Orchestrator:
                             details=details,
                             trace_id=verification_result.trace_id,
                         )
+                else:
                     completed_checks = self._append_unique_check(completed_checks, "semantic_requirements")
                     details.append(f"judge: pass (conf={judge_verdict.confidence:.2f})")
 

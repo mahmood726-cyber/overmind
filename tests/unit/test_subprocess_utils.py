@@ -190,3 +190,62 @@ def test_kill_process_tree_uses_taskkill_on_windows(monkeypatch):
     assert "/T" in captured["args"]
     assert "/F" in captured["args"]
     assert str(9999) in captured["args"]
+
+
+def test_kill_process_tree_falls_back_when_taskkill_fails(monkeypatch):
+    """P1-7 (2026-07-11): a taskkill FAILURE (non-zero exit) must trigger the
+    proc.kill() fallback — previously it was swallowed (no check=True), so local
+    grandchildren leaked when taskkill errored."""
+    import subprocess as _subprocess
+    import sys as _sys
+    if _sys.platform != "win32":
+        import pytest
+        pytest.skip("Windows-specific taskkill behavior")
+    from overmind.subprocess_utils import kill_process_tree
+
+    called: dict[str, object] = {}
+
+    def failing_run(args, **kwargs):
+        # emulate `subprocess.run(..., check=True)` on a non-zero taskkill exit
+        assert kwargs.get("check") is True   # the fix passes check=True
+        raise _subprocess.CalledProcessError(128, args)
+
+    monkeypatch.setattr(_subprocess, "run", failing_run)
+
+    class StubProc:
+        pid = 4242
+
+        def kill(self):
+            called["fallback_kill"] = True
+
+    kill_process_tree(StubProc())
+    assert called.get("fallback_kill") is True
+
+
+def test_split_command_preserves_windows_relative_backslash():
+    """P1-10 (2026-07-11): a relative Windows path (no drive letter) must not be
+    corrupted by posix shlex eating the backslash."""
+    parts = split_command(r"pytest tests\integration\test_x.py")
+    assert "pytest" in parts[0].lower()                   # executable (may be resolved to a full path)
+    assert parts[-1] == r"tests\integration\test_x.py"    # backslashes preserved (the P1-10 fix)
+    assert "testsintegration" not in "".join(parts)       # not silently glued
+
+
+def test_validate_powershell_blocks_encodedcommand_prefixes(tmp_path):
+    """P1-11 (2026-07-11): PowerShell resolves parameter prefixes, so -e/-en/-enc/-ec
+    (-> -EncodedCommand) and -c/-com (-> -Command) must all be blocked — even when a
+    valid -File is also present (the smuggling case)."""
+    scripts_dir = tmp_path / "scripts"
+    scripts_dir.mkdir()
+    (scripts_dir / "verify.ps1").write_text("Write-Output 'ok'\n", encoding="utf-8")
+    ok_file = r".\scripts\verify.ps1"
+    for flag in ("-enc", "-e", "-ec", "-en", "-command", "-c", "-com", "-EncodedCommand"):
+        # smuggled alongside a valid -File must STILL be blocked
+        valid, detail = validate_command_prefix_with_detail(
+            f"powershell {flag} ZWNobyBoaQ== -File {ok_file}", cwd=tmp_path)
+        assert valid is False, f"{flag!r} should be blocked"
+        assert detail and "EncodedCommand" in detail
+    # the legitimate -File-only form is still allowed (no false positive)
+    valid, _ = validate_command_prefix_with_detail(
+        f"powershell -NoProfile -File {ok_file}", cwd=tmp_path)
+    assert valid is True

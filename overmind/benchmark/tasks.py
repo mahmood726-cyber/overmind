@@ -26,11 +26,12 @@ METHOD_MISMATCH = "method_mismatch"    # stated model/heterogeneity method incon
 COMPARATOR_SWAP = "comparator_swap"    # narrative swaps treatment/control arms (comparator/HR mismatch)
 MISSING_REFERENCE = "missing_reference"        # claims borrowing/adjustment but the required null/reference arm is absent
 SUBGROUP_MISMATCH = "subgroup_mismatch"        # analysis label doesn't match the outcome/subgroup described
+OVERSTATED_SIGNIFICANCE = "overstated_significance"  # conclusion CLAIMS a significant/conclusive effect while the CI spans the null (cross-vendor review P0-3, 2026-07-11)
 
 WITNESS_DETECTABLE_KINDS = frozenset({IMPOSSIBLE_CELL, REPRODUCTION, CI_INVALID})
 REVIEWER_ONLY_KINDS = frozenset({
     DIRECTION, WRONG_MEASURE_LABEL, METHOD_MISMATCH, COMPARATOR_SWAP,
-    MISSING_REFERENCE, SUBGROUP_MISMATCH,
+    MISSING_REFERENCE, SUBGROUP_MISMATCH, OVERSTATED_SIGNIFICANCE,
 })
 DEFECT_KINDS = WITNESS_DETECTABLE_KINDS | REVIEWER_ONLY_KINDS
 ALL_KINDS = DEFECT_KINDS | {CLEAN}
