@@ -1,0 +1,218 @@
+[slices] s1(held_out)=139 s2(frozen-dev)=92 total=231
+[gpt-5.6-sol] total=231 done=0 todo=231 effort=medium
+[gpt-5.6-sol] 10/231 (76s, 76012 tok)
+[gpt-5.6-sol] 20/231 (118s, 124334 tok)
+[gpt-5.6-sol] 30/231 (156s, 170075 tok)
+[gpt-5.6-sol] 40/231 (186s, 202423 tok)  [CREDITS DEAD]
+[gpt-5.6-sol] 50/231 (221s, 235567 tok)  [CREDITS DEAD]
+[gpt-5.6-sol] 60/231 (255s, 252762 tok)  [CREDITS DEAD]
+[gpt-5.6-sol] 70/231 (307s, 289823 tok)  [CREDITS DEAD]
+[gpt-5.6-sol] 80/231 (353s, 319277 tok)  [CREDITS DEAD]
+[gpt-5.6-sol] 90/231 (399s, 343774 tok)  [CREDITS DEAD]
+[gpt-5.6-sol] 100/231 (436s, 360627 tok)  [CREDITS DEAD]
+[slices] s1(held_out)=139 s2(frozen-dev)=92 total=231
+[gpt-5.6-sol] total=231 done=102 todo=130 effort=medium
+[gpt-5.6-sol] 112/231 (28s, 28142 tok)
+[gpt-5.6-sol] 122/231 (75s, 39708 tok)
+[gpt-5.6-sol] 132/231 (104s, 67124 tok)
+[gpt-5.6-sol] 142/231 (143s, 81286 tok)
+[gpt-5.6-sol] 152/231 (207s, 117188 tok)
+[gpt-5.6-sol] 162/231 (252s, 139121 tok)
+[gpt-5.6-sol] 172/231 (282s, 164744 tok)
+[gpt-5.6-sol] 182/231 (327s, 176092 tok)
+[gpt-5.6-sol] 192/231 (357s, 197873 tok)
+[gpt-5.6-sol] 202/231 (396s, 208850 tok)
+[gpt-5.6-sol] 212/231 (426s, 242062 tok)  [CREDITS DEAD]
+[gpt-5.6-sol] 222/231 (444s, 244857 tok)  [CREDITS DEAD]
+[gpt-5.6-sol] 232/231 (460s, 244857 tok)  [CREDITS DEAD]
+
+#### CREDIT/QUOTA EXHAUSTION during gpt-5.6-sol — INCOMPLETE, not a clean number. Resume when quota returns (re-runs only failed items). No score emitted for this arm.
+[slices] s1(held_out)=139 s2(frozen-dev)=92 total=231
+[gpt-5.6-sol] total=231 done=231 todo=20 effort=medium
+[gpt-5.6-sol] 241/231 (15s, 0 tok)  [CREDITS DEAD]
+[gpt-5.6-sol] 251/231 (28s, 6943 tok)  [CREDITS DEAD]
+
+#### CREDIT/QUOTA EXHAUSTION during gpt-5.6-sol — INCOMPLETE, not a clean number. Resume when quota returns (re-runs only failed items). No score emitted for this arm.
+[slices] s1(held_out)=139 s2(frozen-dev)=92 total=231
+[gpt-5.6-sol] total=231 done=231 todo=19 effort=medium
+[gpt-5.6-sol] 241/231 (15s, 0 tok)  [CREDITS DEAD]
+[gpt-5.6-sol] 250/231 (64s, 11160 tok)  [CREDITS DEAD]
+
+#### CREDIT/QUOTA EXHAUSTION during gpt-5.6-sol — INCOMPLETE, not a clean number. Resume when quota returns (re-runs only failed items). No score emitted for this arm.
+[slices] s1(held_out)=139 s2(frozen-dev)=92 total=231
+[gpt-5.6-sol] total=231 done=231 todo=17 effort=medium
+[gpt-5.6-sol] 241/231 (15s, 0 tok)  [CREDITS DEAD]
+[gpt-5.6-sol] 248/231 (22s, 0 tok)  [CREDITS DEAD]
+
+#### CREDIT/QUOTA EXHAUSTION during gpt-5.6-sol — INCOMPLETE, not a clean number. Resume when quota returns (re-runs only failed items). No score emitted for this arm.
+[slices] s1(held_out)=139 s2(frozen-dev)=92 total=231
+[gpt-5.6-sol] total=231 done=231 todo=17 effort=medium
+[gpt-5.6-sol] 241/231 (17s, 0 tok)  [CREDITS DEAD]
+[gpt-5.6-sol] 248/231 (27s, 1032 tok)  [CREDITS DEAD]
+
+#### CREDIT/QUOTA EXHAUSTION during gpt-5.6-sol — INCOMPLETE, not a clean number. Resume when quota returns (re-runs only failed items). No score emitted for this arm.
+[slices] s1(held_out)=139 s2(frozen-dev)=92 total=231
+[gpt-5.6-sol] total=231 done=231 todo=16 effort=medium
+[gpt-5.6-sol] 241/231 (15s, 0 tok)  [CREDITS DEAD]
+[gpt-5.6-sol] 247/231 (23s, 0 tok)  [CREDITS DEAD]
+
+#### CREDIT/QUOTA EXHAUSTION during gpt-5.6-sol — INCOMPLETE, not a clean number. Resume when quota returns (re-runs only failed items). No score emitted for this arm.
+[slices] s1(held_out)=139 s2(frozen-dev)=92 total=231
+[gpt-5.6-sol] total=231 done=231 todo=16 effort=medium
+[gpt-5.6-sol] 241/231 (16s, 0 tok)  [CREDITS DEAD]
+[gpt-5.6-sol] 247/231 (23s, 0 tok)  [CREDITS DEAD]
+
+#### CREDIT/QUOTA EXHAUSTION during gpt-5.6-sol — INCOMPLETE, not a clean number. Resume when quota returns (re-runs only failed items). No score emitted for this arm.
+[slices] s1(held_out)=139 s2(frozen-dev)=92 total=231
+[gpt-5.6-sol] total=231 done=231 todo=16 effort=medium
+[gpt-5.6-sol] 241/231 (16s, 0 tok)  [CREDITS DEAD]
+[gpt-5.6-sol] 247/231 (28s, 1077 tok)  [CREDITS DEAD]
+
+#### CREDIT/QUOTA EXHAUSTION during gpt-5.6-sol — INCOMPLETE, not a clean number. Resume when quota returns (re-runs only failed items). No score emitted for this arm.
+[slices] s1(held_out)=139 s2(frozen-dev)=92 total=231
+[gpt-5.6-sol] total=231 done=231 todo=15 effort=medium
+[gpt-5.6-sol] 241/231 (17s, 1136 tok)  [CREDITS DEAD]
+[gpt-5.6-sol] 246/231 (24s, 1136 tok)  [CREDITS DEAD]
+
+#### CREDIT/QUOTA EXHAUSTION during gpt-5.6-sol — INCOMPLETE, not a clean number. Resume when quota returns (re-runs only failed items). No score emitted for this arm.
+[slices] s1(held_out)=139 s2(frozen-dev)=92 total=231
+[gpt-5.6-sol] total=231 done=231 todo=14 effort=medium
+[gpt-5.6-sol] 241/231 (15s, 0 tok)  [CREDITS DEAD]
+[gpt-5.6-sol] 245/231 (18s, 999 tok)  [CREDITS DEAD]
+
+#### CREDIT/QUOTA EXHAUSTION during gpt-5.6-sol — INCOMPLETE, not a clean number. Resume when quota returns (re-runs only failed items). No score emitted for this arm.
+[slices] s1(held_out)=139 s2(frozen-dev)=92 total=231
+[gpt-5.6-sol] total=231 done=231 todo=13 effort=medium
+[gpt-5.6-sol] 241/231 (17s, 0 tok)  [CREDITS DEAD]
+[gpt-5.6-sol] 244/231 (20s, 0 tok)  [CREDITS DEAD]
+
+#### CREDIT/QUOTA EXHAUSTION during gpt-5.6-sol — INCOMPLETE, not a clean number. Resume when quota returns (re-runs only failed items). No score emitted for this arm.
+[slices] s1(held_out)=139 s2(frozen-dev)=92 total=231
+[gpt-5.6-sol] total=231 done=231 todo=13 effort=medium
+[gpt-5.6-sol] 241/231 (15s, 0 tok)  [CREDITS DEAD]
+[gpt-5.6-sol] 244/231 (18s, 0 tok)  [CREDITS DEAD]
+
+#### CREDIT/QUOTA EXHAUSTION during gpt-5.6-sol — INCOMPLETE, not a clean number. Resume when quota returns (re-runs only failed items). No score emitted for this arm.
+[slices] s1(held_out)=139 s2(frozen-dev)=92 total=231
+[gpt-5.6-sol] total=231 done=231 todo=13 effort=medium
+[gpt-5.6-sol] 241/231 (15s, 0 tok)  [CREDITS DEAD]
+[gpt-5.6-sol] 244/231 (19s, 0 tok)  [CREDITS DEAD]
+
+#### CREDIT/QUOTA EXHAUSTION during gpt-5.6-sol — INCOMPLETE, not a clean number. Resume when quota returns (re-runs only failed items). No score emitted for this arm.
+[slices] s1(held_out)=139 s2(frozen-dev)=92 total=231
+[gpt-5.6-sol] total=231 done=231 todo=13 effort=medium
+[gpt-5.6-sol] 241/231 (15s, 0 tok)  [CREDITS DEAD]
+[gpt-5.6-sol] 244/231 (18s, 0 tok)  [CREDITS DEAD]
+
+#### CREDIT/QUOTA EXHAUSTION during gpt-5.6-sol — INCOMPLETE, not a clean number. Resume when quota returns (re-runs only failed items). No score emitted for this arm.
+[slices] s1(held_out)=139 s2(frozen-dev)=92 total=231
+[gpt-5.6-sol] total=231 done=231 todo=13 effort=medium
+[gpt-5.6-sol] 241/231 (18s, 0 tok)  [CREDITS DEAD]
+[gpt-5.6-sol] 244/231 (69s, 13523 tok)  [CREDITS DEAD]
+
+#### CREDIT/QUOTA EXHAUSTION during gpt-5.6-sol — INCOMPLETE, not a clean number. Resume when quota returns (re-runs only failed items). No score emitted for this arm.
+[slices] s1(held_out)=139 s2(frozen-dev)=92 total=231
+[gpt-5.6-sol] total=231 done=231 todo=12 effort=medium
+[gpt-5.6-sol] 241/231 (16s, 0 tok)  [CREDITS DEAD]
+[gpt-5.6-sol] 243/231 (18s, 0 tok)  [CREDITS DEAD]
+
+#### CREDIT/QUOTA EXHAUSTION during gpt-5.6-sol — INCOMPLETE, not a clean number. Resume when quota returns (re-runs only failed items). No score emitted for this arm.
+[slices] s1(held_out)=139 s2(frozen-dev)=92 total=231
+[gpt-5.6-sol] total=231 done=231 todo=12 effort=medium
+[gpt-5.6-sol] 241/231 (22s, 7512 tok)  [CREDITS DEAD]
+[gpt-5.6-sol] 243/231 (23s, 7512 tok)  [CREDITS DEAD]
+
+#### CREDIT/QUOTA EXHAUSTION during gpt-5.6-sol — INCOMPLETE, not a clean number. Resume when quota returns (re-runs only failed items). No score emitted for this arm.
+[slices] s1(held_out)=139 s2(frozen-dev)=92 total=231
+[gpt-5.6-sol] total=231 done=231 todo=11 effort=medium
+[gpt-5.6-sol] 241/231 (15s, 0 tok)  [CREDITS DEAD]
+[gpt-5.6-sol] 242/231 (15s, 0 tok)  [CREDITS DEAD]
+
+#### CREDIT/QUOTA EXHAUSTION during gpt-5.6-sol — INCOMPLETE, not a clean number. Resume when quota returns (re-runs only failed items). No score emitted for this arm.
+[slices] s1(held_out)=139 s2(frozen-dev)=92 total=231
+[gpt-5.6-sol] total=231 done=231 todo=11 effort=medium
+[gpt-5.6-sol] 241/231 (15s, 0 tok)  [CREDITS DEAD]
+[gpt-5.6-sol] 242/231 (15s, 0 tok)  [CREDITS DEAD]
+
+#### CREDIT/QUOTA EXHAUSTION during gpt-5.6-sol — INCOMPLETE, not a clean number. Resume when quota returns (re-runs only failed items). No score emitted for this arm.
+[slices] s1(held_out)=139 s2(frozen-dev)=92 total=231
+[gpt-5.6-sol] total=231 done=231 todo=11 effort=medium
+[gpt-5.6-sol] 241/231 (15s, 0 tok)  [CREDITS DEAD]
+[gpt-5.6-sol] 242/231 (15s, 0 tok)  [CREDITS DEAD]
+
+#### CREDIT/QUOTA EXHAUSTION during gpt-5.6-sol — INCOMPLETE, not a clean number. Resume when quota returns (re-runs only failed items). No score emitted for this arm.
+[slices] s1(held_out)=139 s2(frozen-dev)=92 total=231
+[gpt-5.6-sol] total=231 done=231 todo=11 effort=medium
+[gpt-5.6-sol] 241/231 (16s, 0 tok)  [CREDITS DEAD]
+[gpt-5.6-sol] 242/231 (16s, 0 tok)  [CREDITS DEAD]
+
+#### CREDIT/QUOTA EXHAUSTION during gpt-5.6-sol — INCOMPLETE, not a clean number. Resume when quota returns (re-runs only failed items). No score emitted for this arm.
+[slices] s1(held_out)=139 s2(frozen-dev)=92 total=231
+[gpt-5.6-sol] total=231 done=231 todo=11 effort=medium
+[gpt-5.6-sol] 241/231 (14s, 0 tok)  [CREDITS DEAD]
+[gpt-5.6-sol] 242/231 (19s, 1022 tok)  [CREDITS DEAD]
+
+#### CREDIT/QUOTA EXHAUSTION during gpt-5.6-sol — INCOMPLETE, not a clean number. Resume when quota returns (re-runs only failed items). No score emitted for this arm.
+[slices] s1(held_out)=139 s2(frozen-dev)=92 total=231
+[gpt-5.6-sol] total=231 done=231 todo=10 effort=medium
+[gpt-5.6-sol] 241/231 (17s, 1365 tok)  [CREDITS DEAD]
+
+#### CREDIT/QUOTA EXHAUSTION during gpt-5.6-sol — INCOMPLETE, not a clean number. Resume when quota returns (re-runs only failed items). No score emitted for this arm.
+[slices] s1(held_out)=139 s2(frozen-dev)=92 total=231
+[gpt-5.6-sol] total=231 done=231 todo=9 effort=medium
+[gpt-5.6-sol] 240/231 (12s, 0 tok)  [CREDITS DEAD]
+
+#### CREDIT/QUOTA EXHAUSTION during gpt-5.6-sol — INCOMPLETE, not a clean number. Resume when quota returns (re-runs only failed items). No score emitted for this arm.
+[slices] s1(held_out)=139 s2(frozen-dev)=92 total=231
+[gpt-5.6-sol] total=231 done=231 todo=9 effort=medium
+[gpt-5.6-sol] 240/231 (12s, 0 tok)  [CREDITS DEAD]
+
+#### CREDIT/QUOTA EXHAUSTION during gpt-5.6-sol — INCOMPLETE, not a clean number. Resume when quota returns (re-runs only failed items). No score emitted for this arm.
+[slices] s1(held_out)=139 s2(frozen-dev)=92 total=231
+[gpt-5.6-sol] total=231 done=231 todo=9 effort=medium
+[gpt-5.6-sol] 240/231 (17s, 1050 tok)  [CREDITS DEAD]
+
+#### CREDIT/QUOTA EXHAUSTION during gpt-5.6-sol — INCOMPLETE, not a clean number. Resume when quota returns (re-runs only failed items). No score emitted for this arm.
+[slices] s1(held_out)=139 s2(frozen-dev)=92 total=231
+[gpt-5.6-sol] total=231 done=231 todo=8 effort=medium
+[gpt-5.6-sol] 239/231 (17s, 0 tok)  [CREDITS DEAD]
+
+#### CREDIT/QUOTA EXHAUSTION during gpt-5.6-sol — INCOMPLETE, not a clean number. Resume when quota returns (re-runs only failed items). No score emitted for this arm.
+[slices] s1(held_out)=139 s2(frozen-dev)=92 total=231
+[gpt-5.6-sol] total=231 done=231 todo=8 effort=medium
+[gpt-5.6-sol] 239/231 (13s, 0 tok)  [CREDITS DEAD]
+
+#### CREDIT/QUOTA EXHAUSTION during gpt-5.6-sol — INCOMPLETE, not a clean number. Resume when quota returns (re-runs only failed items). No score emitted for this arm.
+[slices] s1(held_out)=139 s2(frozen-dev)=92 total=231
+[gpt-5.6-sol] total=231 done=231 todo=8 effort=medium
+[gpt-5.6-sol] 239/231 (14s, 0 tok)  [CREDITS DEAD]
+
+#### CREDIT/QUOTA EXHAUSTION during gpt-5.6-sol — INCOMPLETE, not a clean number. Resume when quota returns (re-runs only failed items). No score emitted for this arm.
+[slices] s1(held_out)=139 s2(frozen-dev)=92 total=231
+[gpt-5.6-sol] total=231 done=231 todo=8 effort=medium
+[gpt-5.6-sol] 239/231 (12s, 0 tok)  [CREDITS DEAD]
+
+#### CREDIT/QUOTA EXHAUSTION during gpt-5.6-sol — INCOMPLETE, not a clean number. Resume when quota returns (re-runs only failed items). No score emitted for this arm.
+[slices] s1(held_out)=139 s2(frozen-dev)=92 total=231
+[gpt-5.6-sol] total=231 done=231 todo=8 effort=medium
+[gpt-5.6-sol] 239/231 (11s, 0 tok)  [CREDITS DEAD]
+
+#### CREDIT/QUOTA EXHAUSTION during gpt-5.6-sol — INCOMPLETE, not a clean number. Resume when quota returns (re-runs only failed items). No score emitted for this arm.
+[slices] s1(held_out)=139 s2(frozen-dev)=92 total=231
+[gpt-5.6-sol] total=231 done=231 todo=8 effort=medium
+[gpt-5.6-sol] 239/231 (12s, 0 tok)  [CREDITS DEAD]
+
+#### CREDIT/QUOTA EXHAUSTION during gpt-5.6-sol — INCOMPLETE, not a clean number. Resume when quota returns (re-runs only failed items). No score emitted for this arm.
+[slices] s1(held_out)=139 s2(frozen-dev)=92 total=231
+[gpt-5.6-sol] total=231 done=231 todo=8 effort=medium
+[gpt-5.6-sol] 239/231 (12s, 0 tok)  [CREDITS DEAD]
+
+#### CREDIT/QUOTA EXHAUSTION during gpt-5.6-sol — INCOMPLETE, not a clean number. Resume when quota returns (re-runs only failed items). No score emitted for this arm.
+[slices] s1(held_out)=139 s2(frozen-dev)=92 total=231
+[gpt-5.6-sol] total=231 done=231 todo=8 effort=medium
+[gpt-5.6-sol] 239/231 (19s, 2323 tok)  [CREDITS DEAD]
+
+#### CREDIT/QUOTA EXHAUSTION during gpt-5.6-sol — INCOMPLETE, not a clean number. Resume when quota returns (re-runs only failed items). No score emitted for this arm.
+[slices] s1(held_out)=139 s2(frozen-dev)=92 total=231
+[gpt-5.6-sol] total=231 done=231 todo=6 effort=medium
+[gpt-5.6-sol] 237/231 (23s, 7498 tok)

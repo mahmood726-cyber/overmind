@@ -1,0 +1,6 @@
+{"slice": "held_out", "model": "qwen", "tag": "qwen2.5:7b-instruct-q4_K_M", "kind": "_timing_summary", "n": 139, "total_s": 2682.1, "median_s": 17.69, "p90_s": 28.08, "max_s": 44.19, "ram_peak_gb": 0.12}
+{"slice": "held_out", "model": "llama", "tag": "llama3.1:8b-instruct-q4_K_M", "kind": "_timing_summary", "n": 139, "total_s": 4071.9, "median_s": 24.32, "p90_s": 38.33, "max_s": 391.93, "ram_peak_gb": 0.1}
+{"slice": "held_out", "model": "phi", "tag": "phi3:mini", "kind": "_timing_summary", "n": 139, "total_s": 4413.6, "median_s": 27.34, "p90_s": 46.7, "max_s": 282.02, "ram_peak_gb": 0.1}
+{"slice": "frozen", "model": "qwen", "tag": "qwen2.5:7b-instruct-q4_K_M", "kind": "_timing_summary", "n": 73, "total_s": 2323.3, "median_s": 23.41, "p90_s": 43.16, "max_s": 352.43, "ram_peak_gb": 0.09}
+{"slice": "frozen", "model": "llama", "tag": "llama3.1:8b-instruct-q4_K_M", "kind": "_timing_summary", "n": 73, "total_s": 2008.0, "median_s": 24.62, "p90_s": 33.34, "max_s": 154.35, "ram_peak_gb": 0.1}
+{"slice": "frozen", "model": "phi", "tag": "phi3:mini", "kind": "_timing_summary", "n": 73, "total_s": 2406.9, "median_s": 30.52, "p90_s": 44.05, "max_s": 112.39, "ram_peak_gb": 0.06}

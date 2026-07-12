@@ -1,0 +1,147 @@
+
+#### SLICE held_out: n=139 defects=126 clean=13
+  [qwen=qwen2.5:7b-instruct-q4_K_M] todo=139/139
+    5/139 done | 93s elapsed | median 15.7s/task | RAM peak 0.10GB | last flag=False usable=True
+    10/139 done | 197s elapsed | median 16.9s/task | RAM peak 0.11GB | last flag=False usable=True
+    15/139 done | 305s elapsed | median 16.7s/task | RAM peak 0.11GB | last flag=True usable=True
+    20/139 done | 410s elapsed | median 16.9s/task | RAM peak 0.11GB | last flag=True usable=True
+    25/139 done | 507s elapsed | median 16.9s/task | RAM peak 0.11GB | last flag=False usable=True
+    30/139 done | 612s elapsed | median 18.1s/task | RAM peak 0.11GB | last flag=True usable=True
+    35/139 done | 710s elapsed | median 16.9s/task | RAM peak 0.11GB | last flag=False usable=True
+    40/139 done | 813s elapsed | median 18.1s/task | RAM peak 0.11GB | last flag=True usable=True
+    45/139 done | 904s elapsed | median 16.9s/task | RAM peak 0.11GB | last flag=True usable=True
+    50/139 done | 1032s elapsed | median 18.1s/task | RAM peak 0.12GB | last flag=False usable=True
+    55/139 done | 1121s elapsed | median 17.7s/task | RAM peak 0.12GB | last flag=False usable=True
+    60/139 done | 1218s elapsed | median 18.1s/task | RAM peak 0.12GB | last flag=True usable=True
+    65/139 done | 1304s elapsed | median 17.9s/task | RAM peak 0.12GB | last flag=False usable=True
+    70/139 done | 1395s elapsed | median 17.9s/task | RAM peak 0.12GB | last flag=False usable=True
+    75/139 done | 1466s elapsed | median 17.7s/task | RAM peak 0.12GB | last flag=True usable=True
+    80/139 done | 1568s elapsed | median 17.7s/task | RAM peak 0.12GB | last flag=False usable=True
+    85/139 done | 1673s elapsed | median 17.5s/task | RAM peak 0.12GB | last flag=True usable=True
+    90/139 done | 1767s elapsed | median 17.7s/task | RAM peak 0.12GB | last flag=True usable=True
+    95/139 done | 1853s elapsed | median 17.7s/task | RAM peak 0.12GB | last flag=True usable=True
+    100/139 done | 1949s elapsed | median 17.7s/task | RAM peak 0.12GB | last flag=True usable=True
+    105/139 done | 2046s elapsed | median 17.7s/task | RAM peak 0.12GB | last flag=True usable=True
+    110/139 done | 2153s elapsed | median 17.9s/task | RAM peak 0.12GB | last flag=True usable=True
+    115/139 done | 2244s elapsed | median 17.8s/task | RAM peak 0.12GB | last flag=True usable=True
+    120/139 done | 2345s elapsed | median 17.8s/task | RAM peak 0.12GB | last flag=False usable=True
+    125/139 done | 2442s elapsed | median 17.8s/task | RAM peak 0.12GB | last flag=False usable=True
+    130/139 done | 2516s elapsed | median 17.7s/task | RAM peak 0.12GB | last flag=False usable=True
+    135/139 done | 2610s elapsed | median 17.7s/task | RAM peak 0.12GB | last flag=False usable=True
+    139/139 done | 2684s elapsed | median 17.7s/task | RAM peak 0.12GB | last flag=True usable=True
+  [qwen] TIMING {'slice': 'held_out', 'model': 'qwen', 'tag': 'qwen2.5:7b-instruct-q4_K_M', 'kind': '_timing_summary', 'n': 139, 'total_s': 2682.1, 'median_s': 17.69, 'p90_s': 28.08, 'max_s': 44.19, 'ram_peak_gb': 0.12}
+  [llama=llama3.1:8b-instruct-q4_K_M] todo=139/139
+    5/139 done | 526s elapsed | median 35.1s/task | RAM peak 0.09GB | last flag=True usable=True
+    10/139 done | 660s elapsed | median 27.5s/task | RAM peak 0.10GB | last flag=True usable=True
+    15/139 done | 799s elapsed | median 27.0s/task | RAM peak 0.10GB | last flag=True usable=True
+    20/139 done | 935s elapsed | median 27.0s/task | RAM peak 0.10GB | last flag=False usable=True
+    25/139 done | 1069s elapsed | median 26.5s/task | RAM peak 0.10GB | last flag=True usable=True
+    30/139 done | 1262s elapsed | median 26.6s/task | RAM peak 0.10GB | last flag=False usable=True
+    35/139 done | 1485s elapsed | median 27.5s/task | RAM peak 0.10GB | last flag=True usable=True
+    40/139 done | 1596s elapsed | median 27.5s/task | RAM peak 0.10GB | last flag=True usable=True
+    45/139 done | 1766s elapsed | median 27.0s/task | RAM peak 0.10GB | last flag=True usable=True
+    50/139 done | 2000s elapsed | median 27.5s/task | RAM peak 0.10GB | last flag=True usable=True
+    55/139 done | 2167s elapsed | median 28.1s/task | RAM peak 0.10GB | last flag=False usable=True
+    60/139 done | 2289s elapsed | median 27.5s/task | RAM peak 0.10GB | last flag=True usable=True
+    65/139 done | 2392s elapsed | median 26.6s/task | RAM peak 0.10GB | last flag=True usable=True
+    70/139 done | 2502s elapsed | median 26.6s/task | RAM peak 0.10GB | last flag=True usable=True
+    75/139 done | 2614s elapsed | median 26.5s/task | RAM peak 0.10GB | last flag=True usable=True
+    80/139 done | 2738s elapsed | median 26.5s/task | RAM peak 0.10GB | last flag=True usable=True
+    85/139 done | 2857s elapsed | median 25.4s/task | RAM peak 0.10GB | last flag=True usable=True
+    90/139 done | 2982s elapsed | median 25.0s/task | RAM peak 0.10GB | last flag=False usable=True
+    95/139 done | 3089s elapsed | median 24.8s/task | RAM peak 0.10GB | last flag=True usable=True
+    100/139 done | 3202s elapsed | median 24.8s/task | RAM peak 0.10GB | last flag=True usable=True
+    105/139 done | 3320s elapsed | median 24.7s/task | RAM peak 0.10GB | last flag=False usable=True
+    110/139 done | 3431s elapsed | median 24.7s/task | RAM peak 0.10GB | last flag=True usable=True
+    115/139 done | 3552s elapsed | median 24.6s/task | RAM peak 0.10GB | last flag=True usable=True
+    120/139 done | 3679s elapsed | median 24.6s/task | RAM peak 0.10GB | last flag=False usable=True
+    125/139 done | 3793s elapsed | median 24.4s/task | RAM peak 0.10GB | last flag=False usable=True
+    130/139 done | 3901s elapsed | median 24.4s/task | RAM peak 0.10GB | last flag=True usable=True
+    135/139 done | 4015s elapsed | median 24.4s/task | RAM peak 0.10GB | last flag=False usable=True
+    139/139 done | 4084s elapsed | median 24.3s/task | RAM peak 0.10GB | last flag=False usable=True
+  [llama] TIMING {'slice': 'held_out', 'model': 'llama', 'tag': 'llama3.1:8b-instruct-q4_K_M', 'kind': '_timing_summary', 'n': 139, 'total_s': 4071.9, 'median_s': 24.32, 'p90_s': 38.33, 'max_s': 391.93, 'ram_peak_gb': 0.1}
+  [phi=phi3:mini] todo=139/139
+    5/139 done | 218s elapsed | median 21.7s/task | RAM peak 0.10GB | last flag=True usable=True
+    10/139 done | 359s elapsed | median 27.5s/task | RAM peak 0.10GB | last flag=False usable=True
+    15/139 done | 532s elapsed | median 27.5s/task | RAM peak 0.10GB | last flag=True usable=True
+    20/139 done | 687s elapsed | median 30.8s/task | RAM peak 0.10GB | last flag=True usable=True
+    25/139 done | 1104s elapsed | median 30.8s/task | RAM peak 0.10GB | last flag=True usable=True
+    30/139 done | 1227s elapsed | median 28.8s/task | RAM peak 0.10GB | last flag=True usable=True
+    35/139 done | 1378s elapsed | median 30.0s/task | RAM peak 0.10GB | last flag=True usable=True
+    40/139 done | 1508s elapsed | median 30.0s/task | RAM peak 0.10GB | last flag=True usable=True
+    45/139 done | 1699s elapsed | median 30.0s/task | RAM peak 0.10GB | last flag=True usable=True
+    50/139 done | 1877s elapsed | median 30.0s/task | RAM peak 0.10GB | last flag=True usable=True
+    55/139 done | 1986s elapsed | median 27.6s/task | RAM peak 0.10GB | last flag=True usable=True
+    60/139 done | 2132s elapsed | median 28.8s/task | RAM peak 0.10GB | last flag=True usable=True
+    65/139 done | 2283s elapsed | median 28.8s/task | RAM peak 0.10GB | last flag=True usable=True
+    70/139 done | 2426s elapsed | median 28.8s/task | RAM peak 0.10GB | last flag=True usable=True
+    75/139 done | 2568s elapsed | median 28.5s/task | RAM peak 0.10GB | last flag=True usable=True
+    80/139 done | 2739s elapsed | median 28.5s/task | RAM peak 0.10GB | last flag=True usable=True
+    85/139 done | 2867s elapsed | median 27.6s/task | RAM peak 0.10GB | last flag=True usable=True
+    90/139 done | 2975s elapsed | median 27.5s/task | RAM peak 0.10GB | last flag=False usable=True
+    95/139 done | 3119s elapsed | median 27.3s/task | RAM peak 0.10GB | last flag=True usable=True
+    100/139 done | 3272s elapsed | median 27.6s/task | RAM peak 0.10GB | last flag=True usable=True
+    105/139 done | 3404s elapsed | median 27.5s/task | RAM peak 0.10GB | last flag=True usable=True
+    110/139 done | 3527s elapsed | median 27.4s/task | RAM peak 0.10GB | last flag=True usable=True
+    115/139 done | 3727s elapsed | median 27.6s/task | RAM peak 0.10GB | last flag=True usable=True
+    120/139 done | 3897s elapsed | median 28.3s/task | RAM peak 0.10GB | last flag=True usable=True
+    125/139 done | 4057s elapsed | median 28.3s/task | RAM peak 0.10GB | last flag=True usable=True
+    130/139 done | 4159s elapsed | median 27.5s/task | RAM peak 0.10GB | last flag=True usable=True
+    135/139 done | 4302s elapsed | median 27.4s/task | RAM peak 0.10GB | last flag=True usable=True
+    139/139 done | 4417s elapsed | median 27.3s/task | RAM peak 0.10GB | last flag=True usable=True
+  [phi] TIMING {'slice': 'held_out', 'model': 'phi', 'tag': 'phi3:mini', 'kind': '_timing_summary', 'n': 139, 'total_s': 4413.6, 'median_s': 27.34, 'p90_s': 46.7, 'max_s': 282.02, 'ram_peak_gb': 0.1}
+
+#### SLICE frozen: n=73 defects=72 clean=1
+  [qwen=qwen2.5:7b-instruct-q4_K_M] todo=73/73
+    5/73 done | 558s elapsed | median 43.2s/task | RAM peak 0.07GB | last flag=True usable=True
+    10/73 done | 741s elapsed | median 43.2s/task | RAM peak 0.08GB | last flag=False usable=True
+    15/73 done | 925s elapsed | median 39.4s/task | RAM peak 0.08GB | last flag=False usable=True
+    20/73 done | 1087s elapsed | median 34.7s/task | RAM peak 0.08GB | last flag=True usable=True
+    25/73 done | 1244s elapsed | median 31.9s/task | RAM peak 0.08GB | last flag=True usable=True
+    30/73 done | 1363s elapsed | median 31.5s/task | RAM peak 0.09GB | last flag=True usable=True
+    35/73 done | 1466s elapsed | median 29.3s/task | RAM peak 0.09GB | last flag=True usable=True
+    40/73 done | 1603s elapsed | median 29.3s/task | RAM peak 0.09GB | last flag=True usable=True
+    45/73 done | 1717s elapsed | median 28.6s/task | RAM peak 0.09GB | last flag=True usable=True
+    50/73 done | 1884s elapsed | median 28.9s/task | RAM peak 0.09GB | last flag=True usable=True
+    55/73 done | 1985s elapsed | median 26.7s/task | RAM peak 0.09GB | last flag=True usable=True
+    60/73 done | 2067s elapsed | median 25.3s/task | RAM peak 0.09GB | last flag=False usable=True
+    65/73 done | 2168s elapsed | median 25.0s/task | RAM peak 0.09GB | last flag=False usable=True
+    70/73 done | 2281s elapsed | median 25.0s/task | RAM peak 0.09GB | last flag=False usable=True
+    73/73 done | 2331s elapsed | median 23.4s/task | RAM peak 0.09GB | last flag=True usable=True
+  [qwen] TIMING {'slice': 'frozen', 'model': 'qwen', 'tag': 'qwen2.5:7b-instruct-q4_K_M', 'kind': '_timing_summary', 'n': 73, 'total_s': 2323.3, 'median_s': 23.41, 'p90_s': 43.16, 'max_s': 352.43, 'ram_peak_gb': 0.09}
+  [llama=llama3.1:8b-instruct-q4_K_M] todo=73/73
+    5/73 done | 260s elapsed | median 26.6s/task | RAM peak 0.07GB | last flag=False usable=True
+    10/73 done | 398s elapsed | median 26.6s/task | RAM peak 0.07GB | last flag=True usable=True
+    15/73 done | 508s elapsed | median 25.1s/task | RAM peak 0.07GB | last flag=False usable=True
+    20/73 done | 684s elapsed | median 26.6s/task | RAM peak 0.08GB | last flag=True usable=True
+    25/73 done | 813s elapsed | median 26.2s/task | RAM peak 0.08GB | last flag=False usable=True
+    30/73 done | 927s elapsed | median 25.7s/task | RAM peak 0.08GB | last flag=True usable=True
+    35/73 done | 1035s elapsed | median 25.1s/task | RAM peak 0.08GB | last flag=False usable=True
+    40/73 done | 1172s elapsed | median 25.7s/task | RAM peak 0.10GB | last flag=True usable=True
+    45/73 done | 1293s elapsed | median 25.3s/task | RAM peak 0.10GB | last flag=True usable=True
+    50/73 done | 1449s elapsed | median 25.7s/task | RAM peak 0.10GB | last flag=False usable=True
+    55/73 done | 1579s elapsed | median 25.3s/task | RAM peak 0.10GB | last flag=True usable=True
+    60/73 done | 1687s elapsed | median 25.0s/task | RAM peak 0.10GB | last flag=True usable=True
+    65/73 done | 1808s elapsed | median 24.6s/task | RAM peak 0.10GB | last flag=True usable=True
+    70/73 done | 1941s elapsed | median 25.0s/task | RAM peak 0.10GB | last flag=True usable=True
+    73/73 done | 2011s elapsed | median 24.6s/task | RAM peak 0.10GB | last flag=False usable=True
+  [llama] TIMING {'slice': 'frozen', 'model': 'llama', 'tag': 'llama3.1:8b-instruct-q4_K_M', 'kind': '_timing_summary', 'n': 73, 'total_s': 2008.0, 'median_s': 24.62, 'p90_s': 33.34, 'max_s': 154.35, 'ram_peak_gb': 0.1}
+  [phi=phi3:mini] todo=73/73
+    5/73 done | 238s elapsed | median 31.0s/task | RAM peak 0.06GB | last flag=True usable=True
+    10/73 done | 439s elapsed | median 44.0s/task | RAM peak 0.06GB | last flag=False usable=True
+    15/73 done | 572s elapsed | median 31.0s/task | RAM peak 0.06GB | last flag=True usable=True
+    20/73 done | 741s elapsed | median 32.4s/task | RAM peak 0.06GB | last flag=True usable=True
+    25/73 done | 932s elapsed | median 32.4s/task | RAM peak 0.06GB | last flag=True usable=True
+    30/73 done | 1073s elapsed | median 32.4s/task | RAM peak 0.06GB | last flag=True usable=True
+    35/73 done | 1207s elapsed | median 31.0s/task | RAM peak 0.06GB | last flag=False usable=True
+    40/73 done | 1361s elapsed | median 31.0s/task | RAM peak 0.06GB | last flag=True usable=True
+    45/73 done | 1475s elapsed | median 30.5s/task | RAM peak 0.06GB | last flag=True usable=True
+    50/73 done | 1630s elapsed | median 30.5s/task | RAM peak 0.06GB | last flag=False usable=True
+    55/73 done | 1774s elapsed | median 29.8s/task | RAM peak 0.06GB | last flag=False usable=True
+    60/73 done | 1919s elapsed | median 30.4s/task | RAM peak 0.06GB | last flag=True usable=True
+    65/73 done | 2147s elapsed | median 29.8s/task | RAM peak 0.06GB | last flag=True usable=True
+    70/73 done | 2310s elapsed | median 30.5s/task | RAM peak 0.06GB | last flag=True usable=True
+    73/73 done | 2409s elapsed | median 30.5s/task | RAM peak 0.06GB | last flag=False usable=True
+  [phi] TIMING {'slice': 'frozen', 'model': 'phi', 'tag': 'phi3:mini', 'kind': '_timing_summary', 'n': 73, 'total_s': 2406.9, 'median_s': 30.52, 'p90_s': 44.05, 'max_s': 112.39, 'ram_peak_gb': 0.06}
+
+collection complete. Score with: python -m evals.offline_local_accuracy --score

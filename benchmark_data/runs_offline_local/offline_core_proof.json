@@ -1,0 +1,53 @@
+{
+  "proof": "deterministic core runs fully offline (network hard-cut at socket layer)",
+  "network_blackhole_selftest": {
+    "blackhole_enforced": true,
+    "blocked": "network is CUT: blocked connect to ('8.8.8.8', 53)"
+  },
+  "tasks_processed": 330,
+  "witness_battery_fired_count": 99,
+  "reproduction_pooling_recomputed": 297,
+  "wall_clock_s": 0.23,
+  "objective_floor_by_slice": {
+    "held_out": {
+      "n": 139,
+      "defects": 126,
+      "cleans": 13,
+      "floor_caught": 43,
+      "floor_caught_rate": 0.3413,
+      "floor_caught_ci95": [
+        0.2643,
+        0.4277
+      ],
+      "floor_false_alarms": 0,
+      "floor_far": 0.0
+    },
+    "frozen": {
+      "n": 73,
+      "defects": 72,
+      "cleans": 1,
+      "floor_caught": 21,
+      "floor_caught_rate": 0.2917,
+      "floor_caught_ci95": [
+        0.1994,
+        0.4051
+      ],
+      "floor_false_alarms": 0,
+      "floor_far": 0.0
+    },
+    "dev": {
+      "n": 118,
+      "defects": 99,
+      "cleans": 19,
+      "floor_caught": 35,
+      "floor_caught_rate": 0.3535,
+      "floor_caught_ci95": [
+        0.2664,
+        0.4516
+      ],
+      "floor_false_alarms": 0,
+      "floor_far": 0.0
+    }
+  },
+  "note": "All numbers above were computed with every non-loopback socket blocked; the run completing is the proof the pooling + witness floor + structural gate make ZERO network calls."
+}

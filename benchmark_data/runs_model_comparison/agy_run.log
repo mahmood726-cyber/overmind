@@ -1,0 +1,14 @@
+[slices] s1(held_out)=139 s2(frozen-dev)=92 total=231
+[agy-ref] total=231 done=2 todo=231
+[agy-ref] 20/231 (349s)
+[agy-ref] 40/231 (498s)
+[agy-ref] 60/231 (616s)
+[agy-ref] 80/231 (741s)
+[agy-ref] 100/231 (881s)
+[agy-ref] 120/231 (1021s)
+[agy-ref] 140/231 (1392s)
+[agy-ref] 160/231 (1616s)
+[agy-ref] 180/231 (1741s)
+[agy-ref] 200/231 (1878s)
+[agy-ref] 220/231 (2013s)
+[agy-ref] 231/231 (2097s)

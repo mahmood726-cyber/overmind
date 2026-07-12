@@ -1,0 +1,200 @@
+{
+  "tier2": [
+    {
+      "endpoint": "cv_composite",
+      "status": "ran",
+      "tier": 2,
+      "k": 2,
+      "endpoint_label": "CV composite (CV death / non-fatal MI / non-fatal stroke / HHF)",
+      "trials": [
+        {
+          "trial": "FIDELIO-DKD",
+          "nct": "NCT02540993",
+          "outcome_title": "The First Occurrence of the Composite Endpoint of Cardiovascular Death, Non-fatal Myocardial Infarction, Non-fatal Stroke, or Hospitalization for Heart Failure",
+          "hr": 0.86,
+          "ci": [
+            0.747,
+            0.989
+          ],
+          "events_fin": 367,
+          "events_pbo": 420,
+          "log_hr": -0.15082288973458366,
+          "se": 0.07159038347221218,
+          "membrane": "accept",
+          "membrane_reason": "quorum agreement, confident, passed structural check",
+          "provenance": "NCT02540993 :: resultsSection outcome 'The First Occurrence of the Composite Endpoint of Cardiovasc' :: analyses[0]"
+        },
+        {
+          "trial": "FIGARO-DKD",
+          "nct": "NCT02545049",
+          "outcome_title": "The First Occurrence of the Composite Endpoint of Cardiovascular Death, Non-fatal Myocardial Infarction, Non Fatal Stroke, or Hospitalization for Heart Failure.",
+          "hr": 0.87,
+          "ci": [
+            0.76,
+            0.98
+          ],
+          "events_fin": 458,
+          "events_pbo": 519,
+          "log_hr": -0.13926206733350766,
+          "se": 0.0648568393066422,
+          "membrane": "accept",
+          "membrane_reason": "quorum agreement, confident, passed structural check",
+          "provenance": "NCT02545049 :: resultsSection outcome 'The First Occurrence of the Composite Endpoint of Cardiovasc' :: analyses[0]"
+        }
+      ],
+      "published": {
+        "hr": 0.86,
+        "ci": [
+          0.78,
+          0.95
+        ],
+        "source": "FIDELITY pooled, Eur Heart J 2022;43:474 (PMC8830527); IPD pooled HR",
+        "events_fin": 825,
+        "events_pbo": 939
+      },
+      "reconstructed_FE": {
+        "hr": 0.8654779782371014,
+        "ci": [
+          0.7876670478566473,
+          0.950975583975052
+        ],
+        "log": -0.14447334866750688,
+        "se": 0.048065402523052185
+      },
+      "reconstructed_REML": {
+        "hr": 0.8654779782371014,
+        "ci": [
+          0.7876670478566473,
+          0.950975583975052
+        ],
+        "tau2": 0.0,
+        "hksj_ci": null,
+        "pi": [
+          0.4699155910807612,
+          1.5940142124048955
+        ],
+        "pi_note": "k==2: prediction interval has 1 d.f. and is very wide; reported honestly, not suppressed."
+      },
+      "method_axis": {
+        "log_gap_vs_published": 0.006349541067076775,
+        "parity": true,
+        "verdict": "equal",
+        "small_k_caveat": "k=2: FE aggregate reproduces the IPD pooled HR, but the random-effects/HKSJ/PI intervals are very wide (1 d.f.) and correctly say heterogeneity is uncharacterisable from 2 trials."
+      },
+      "completeness_axis": {
+        "events_reconcile_with_published": true,
+        "reconstructed_events": {
+          "fin": 825,
+          "pbo": 939
+        },
+        "published_events": {
+          "fin": 825,
+          "pbo": 939
+        },
+        "all_datapoints_membrane_accepted": true
+      },
+      "transparency_axis": {
+        "verdict": "yes",
+        "reason": "every HR provenance-linked to NCT id + outcome-measure title + source span; re-runs from cached CT.gov v2 JSON."
+      }
+    },
+    {
+      "endpoint": "kidney40_composite",
+      "status": "ran",
+      "tier": 2,
+      "k": 2,
+      "endpoint_label": "Kidney composite (kidney failure / sustained >=40% eGFR decline / renal death)",
+      "trials": [
+        {
+          "trial": "FIDELIO-DKD",
+          "nct": "NCT02540993",
+          "outcome_title": "The First Occurrence of the Composite Endpoint of Onset of Kidney Failure, a Sustained Decrease of eGFR \u226540% From Baseline Over at Least 4 Weeks, or Renal Death",
+          "hr": 0.825,
+          "ci": [
+            0.732,
+            0.928
+          ],
+          "events_fin": 504,
+          "events_pbo": 600,
+          "log_hr": -0.19237189264745613,
+          "se": 0.0605243822581171,
+          "membrane": "accept",
+          "membrane_reason": "quorum agreement, confident, passed structural check",
+          "provenance": "NCT02540993 :: resultsSection outcome 'The First Occurrence of the Composite Endpoint of Onset of K' :: analyses[0]"
+        },
+        {
+          "trial": "FIGARO-DKD",
+          "nct": "NCT02545049",
+          "outcome_title": "The First Occurrence of the Composite Endpoint of Onset of Kidney Failure, a Sustained Decrease of eGFR \u226540% From Baseline Over at Least 4 Weeks, or Renal Death.",
+          "hr": 0.87,
+          "ci": [
+            0.76,
+            1.01
+          ],
+          "events_fin": 350,
+          "events_pbo": 395,
+          "log_hr": -0.13926206733350766,
+          "se": 0.07254908222756597,
+          "membrane": "accept",
+          "membrane_reason": "quorum agreement, confident, passed structural check",
+          "provenance": "NCT02545049 :: resultsSection outcome 'The First Occurrence of the Composite Endpoint of Onset of K' :: analyses[0]"
+        }
+      ],
+      "published": {
+        "hr": 0.85,
+        "ci": [
+          0.77,
+          0.93
+        ],
+        "source": "FIDELITY pooled, Eur Heart J 2022;43:474 (PMC8830527); IPD pooled HR",
+        "events_fin": 854,
+        "events_pbo": 995
+      },
+      "reconstructed_FE": {
+        "hr": 0.8431780035651382,
+        "ci": [
+          0.7697675938914782,
+          0.9235893422090742
+        ],
+        "log": -0.17057718838879596,
+        "se": 0.04647506185712905
+      },
+      "reconstructed_REML": {
+        "hr": 0.8431780035651382,
+        "ci": [
+          0.7697675938914782,
+          0.9235893422090742
+        ],
+        "tau2": 0.0,
+        "hksj_ci": null,
+        "pi": [
+          0.46715281891834814,
+          1.5218770323215285
+        ],
+        "pi_note": "k==2: prediction interval has 1 d.f. and is very wide; reported honestly, not suppressed."
+      },
+      "method_axis": {
+        "log_gap_vs_published": 0.00805825889102102,
+        "parity": true,
+        "verdict": "equal",
+        "small_k_caveat": "k=2: FE aggregate reproduces the IPD pooled HR, but the random-effects/HKSJ/PI intervals are very wide (1 d.f.) and correctly say heterogeneity is uncharacterisable from 2 trials."
+      },
+      "completeness_axis": {
+        "events_reconcile_with_published": true,
+        "reconstructed_events": {
+          "fin": 854,
+          "pbo": 995
+        },
+        "published_events": {
+          "fin": 854,
+          "pbo": 995
+        },
+        "all_datapoints_membrane_accepted": true
+      },
+      "transparency_axis": {
+        "verdict": "yes",
+        "reason": "every HR provenance-linked to NCT id + outcome-measure title + source span; re-runs from cached CT.gov v2 JSON."
+      }
+    }
+  ]
+}

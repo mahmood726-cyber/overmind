@@ -1,0 +1,920 @@
+{
+  "generated": "offline_local_accuracy",
+  "slices": {
+    "held_out": {
+      "n": 139,
+      "defects": 126,
+      "cleans": 13,
+      "reviewer_only_defects": 83,
+      "usable_rate": {
+        "qwen": 1.0,
+        "llama": 1.0,
+        "phi": 1.0
+      },
+      "arms": {
+        "objective_floor": {
+          "arm": "objective_floor",
+          "n": 139,
+          "defects": 126,
+          "cleans": 13,
+          "caught": 43,
+          "false_alarms": 0,
+          "abstained": 0,
+          "abstained_on_defect": 0,
+          "abstain_rate": 0.0,
+          "caught_defect_rate": 0.3413,
+          "caught_defect_ci95": [
+            0.2643,
+            0.4277
+          ],
+          "false_alarm_rate": 0.0,
+          "false_alarm_ci95": [
+            0.0,
+            0.2281
+          ],
+          "parity_rate": 1.0,
+          "agreement_soundness": 0.1354,
+          "accepted": 96,
+          "accepted_correct": 13,
+          "total_cost_usd": 0.0,
+          "cost_per_accepted_change": 0.0,
+          "blended": 0.8413
+        },
+        "qwen_alone": {
+          "arm": "qwen_alone",
+          "n": 139,
+          "defects": 126,
+          "cleans": 13,
+          "caught": 75,
+          "false_alarms": 5,
+          "abstained": 0,
+          "abstained_on_defect": 0,
+          "abstain_rate": 0.0,
+          "caught_defect_rate": 0.5952,
+          "caught_defect_ci95": [
+            0.5079,
+            0.6769
+          ],
+          "false_alarm_rate": 0.3846,
+          "false_alarm_ci95": [
+            0.1771,
+            0.6448
+          ],
+          "parity_rate": 0.1538,
+          "agreement_soundness": 0.1356,
+          "accepted": 59,
+          "accepted_correct": 8,
+          "total_cost_usd": 0.0,
+          "cost_per_accepted_change": 0.0,
+          "blended": 0.2875
+        },
+        "qwen+floor": {
+          "arm": "qwen+floor",
+          "n": 139,
+          "defects": 126,
+          "cleans": 13,
+          "caught": 97,
+          "false_alarms": 5,
+          "abstained": 0,
+          "abstained_on_defect": 0,
+          "abstain_rate": 0.0,
+          "caught_defect_rate": 0.7698,
+          "caught_defect_ci95": [
+            0.689,
+            0.8347
+          ],
+          "false_alarm_rate": 0.3846,
+          "false_alarm_ci95": [
+            0.1771,
+            0.6448
+          ],
+          "parity_rate": 1.0,
+          "agreement_soundness": 0.2162,
+          "accepted": 37,
+          "accepted_correct": 8,
+          "total_cost_usd": 0.0,
+          "cost_per_accepted_change": 0.0,
+          "blended": 0.8852
+        },
+        "llama_alone": {
+          "arm": "llama_alone",
+          "n": 139,
+          "defects": 126,
+          "cleans": 13,
+          "caught": 94,
+          "false_alarms": 10,
+          "abstained": 0,
+          "abstained_on_defect": 0,
+          "abstain_rate": 0.0,
+          "caught_defect_rate": 0.746,
+          "caught_defect_ci95": [
+            0.6635,
+            0.814
+          ],
+          "false_alarm_rate": 0.7692,
+          "false_alarm_ci95": [
+            0.4974,
+            0.9182
+          ],
+          "parity_rate": 0.6923,
+          "agreement_soundness": 0.0857,
+          "accepted": 35,
+          "accepted_correct": 3,
+          "total_cost_usd": 0.0,
+          "cost_per_accepted_change": 0.0,
+          "blended": 0.323
+        },
+        "llama+floor": {
+          "arm": "llama+floor",
+          "n": 139,
+          "defects": 126,
+          "cleans": 13,
+          "caught": 109,
+          "false_alarms": 10,
+          "abstained": 0,
+          "abstained_on_defect": 0,
+          "abstain_rate": 0.0,
+          "caught_defect_rate": 0.8651,
+          "caught_defect_ci95": [
+            0.7945,
+            0.914
+          ],
+          "false_alarm_rate": 0.7692,
+          "false_alarm_ci95": [
+            0.4974,
+            0.9182
+          ],
+          "parity_rate": 1.0,
+          "agreement_soundness": 0.15,
+          "accepted": 20,
+          "accepted_correct": 3,
+          "total_cost_usd": 0.0,
+          "cost_per_accepted_change": 0.0,
+          "blended": 0.5959
+        },
+        "phi_alone": {
+          "arm": "phi_alone",
+          "n": 139,
+          "defects": 126,
+          "cleans": 13,
+          "caught": 109,
+          "false_alarms": 11,
+          "abstained": 0,
+          "abstained_on_defect": 0,
+          "abstain_rate": 0.0,
+          "caught_defect_rate": 0.8651,
+          "caught_defect_ci95": [
+            0.7945,
+            0.914
+          ],
+          "false_alarm_rate": 0.8462,
+          "false_alarm_ci95": [
+            0.5776,
+            0.9567
+          ],
+          "parity_rate": 1.0,
+          "agreement_soundness": 0.1053,
+          "accepted": 19,
+          "accepted_correct": 2,
+          "total_cost_usd": 0.0,
+          "cost_per_accepted_change": 0.0,
+          "blended": 0.5189
+        },
+        "phi+floor": {
+          "arm": "phi+floor",
+          "n": 139,
+          "defects": 126,
+          "cleans": 13,
+          "caught": 115,
+          "false_alarms": 11,
+          "abstained": 0,
+          "abstained_on_defect": 0,
+          "abstain_rate": 0.0,
+          "caught_defect_rate": 0.9127,
+          "caught_defect_ci95": [
+            0.8504,
+            0.9506
+          ],
+          "false_alarm_rate": 0.8462,
+          "false_alarm_ci95": [
+            0.5776,
+            0.9567
+          ],
+          "parity_rate": 1.0,
+          "agreement_soundness": 0.1538,
+          "accepted": 13,
+          "accepted_correct": 2,
+          "total_cost_usd": 0.0,
+          "cost_per_accepted_change": 0.0,
+          "blended": 0.5665
+        },
+        "qwen+llama+floor": {
+          "arm": "qwen+llama+floor",
+          "n": 139,
+          "defects": 126,
+          "cleans": 13,
+          "caught": 121,
+          "false_alarms": 12,
+          "abstained": 0,
+          "abstained_on_defect": 0,
+          "abstain_rate": 0.0,
+          "caught_defect_rate": 0.9603,
+          "caught_defect_ci95": [
+            0.9105,
+            0.9829
+          ],
+          "false_alarm_rate": 0.9231,
+          "false_alarm_ci95": [
+            0.6669,
+            0.9863
+          ],
+          "parity_rate": 1.0,
+          "agreement_soundness": 0.1667,
+          "accepted": 6,
+          "accepted_correct": 1,
+          "total_cost_usd": 0.0,
+          "cost_per_accepted_change": 0.0,
+          "blended": 0.5372
+        },
+        "qwen+phi+floor": {
+          "arm": "qwen+phi+floor",
+          "n": 139,
+          "defects": 126,
+          "cleans": 13,
+          "caught": 125,
+          "false_alarms": 11,
+          "abstained": 0,
+          "abstained_on_defect": 0,
+          "abstain_rate": 0.0,
+          "caught_defect_rate": 0.9921,
+          "caught_defect_ci95": [
+            0.9564,
+            0.9986
+          ],
+          "false_alarm_rate": 0.8462,
+          "false_alarm_ci95": [
+            0.5776,
+            0.9567
+          ],
+          "parity_rate": 1.0,
+          "agreement_soundness": 0.6667,
+          "accepted": 3,
+          "accepted_correct": 2,
+          "total_cost_usd": 0.0,
+          "cost_per_accepted_change": 0.0,
+          "blended": 0.6459
+        },
+        "llama+phi+floor": {
+          "arm": "llama+phi+floor",
+          "n": 139,
+          "defects": 126,
+          "cleans": 13,
+          "caught": 120,
+          "false_alarms": 13,
+          "abstained": 0,
+          "abstained_on_defect": 0,
+          "abstain_rate": 0.0,
+          "caught_defect_rate": 0.9524,
+          "caught_defect_ci95": [
+            0.9,
+            0.978
+          ],
+          "false_alarm_rate": 1.0,
+          "false_alarm_ci95": [
+            0.7719,
+            1.0
+          ],
+          "parity_rate": 1.0,
+          "agreement_soundness": 0.0,
+          "accepted": 6,
+          "accepted_correct": 0,
+          "total_cost_usd": 0.0,
+          "cost_per_accepted_change": null,
+          "blended": 0.4524
+        },
+        "qwen+llama+phi+floor": {
+          "arm": "all+floor",
+          "n": 139,
+          "defects": 126,
+          "cleans": 13,
+          "caught": 125,
+          "false_alarms": 13,
+          "abstained": 0,
+          "abstained_on_defect": 0,
+          "abstain_rate": 0.0,
+          "caught_defect_rate": 0.9921,
+          "caught_defect_ci95": [
+            0.9564,
+            0.9986
+          ],
+          "false_alarm_rate": 1.0,
+          "false_alarm_ci95": [
+            0.7719,
+            1.0
+          ],
+          "parity_rate": 1.0,
+          "agreement_soundness": 0.0,
+          "accepted": 1,
+          "accepted_correct": 0,
+          "total_cost_usd": 0.0,
+          "cost_per_accepted_change": null,
+          "blended": 0.4921
+        }
+      },
+      "decorrelation": {
+        "qwen|llama": {
+          "co_miss_all_defects": {
+            "n": 126,
+            "fail_a": 51,
+            "fail_b": 32,
+            "both_fail": 9,
+            "p_a": 0.4048,
+            "p_b": 0.254,
+            "obs_joint": 0.0714,
+            "indep_joint": 0.1028,
+            "excess_over_indep": -0.0314,
+            "phi": -0.1468
+          },
+          "co_miss_reviewer_only": {
+            "n": 83,
+            "fail_a": 29,
+            "fail_b": 17,
+            "both_fail": 5,
+            "p_a": 0.3494,
+            "p_b": 0.2048,
+            "obs_joint": 0.0602,
+            "indep_joint": 0.0716,
+            "excess_over_indep": -0.0113,
+            "phi": -0.0588
+          },
+          "co_false_alarm_cleans": {
+            "n": 13,
+            "fail_a": 5,
+            "fail_b": 10,
+            "both_fail": 3,
+            "p_a": 0.3846,
+            "p_b": 0.7692,
+            "obs_joint": 0.2308,
+            "indep_joint": 0.2959,
+            "excess_over_indep": -0.0651,
+            "phi": -0.3175
+          }
+        },
+        "qwen|phi": {
+          "co_miss_all_defects": {
+            "n": 126,
+            "fail_a": 51,
+            "fail_b": 17,
+            "both_fail": 3,
+            "p_a": 0.4048,
+            "p_b": 0.1349,
+            "obs_joint": 0.0238,
+            "indep_joint": 0.0546,
+            "excess_over_indep": -0.0308,
+            "phi": -0.1837
+          },
+          "co_miss_reviewer_only": {
+            "n": 83,
+            "fail_a": 29,
+            "fail_b": 11,
+            "both_fail": 1,
+            "p_a": 0.3494,
+            "p_b": 0.1325,
+            "obs_joint": 0.012,
+            "indep_joint": 0.0463,
+            "excess_over_indep": -0.0343,
+            "phi": -0.2119
+          },
+          "co_false_alarm_cleans": {
+            "n": 13,
+            "fail_a": 5,
+            "fail_b": 11,
+            "both_fail": 5,
+            "p_a": 0.3846,
+            "p_b": 0.8462,
+            "obs_joint": 0.3846,
+            "indep_joint": 0.3254,
+            "excess_over_indep": 0.0592,
+            "phi": 0.3371
+          }
+        },
+        "llama|phi": {
+          "co_miss_all_defects": {
+            "n": 126,
+            "fail_a": 32,
+            "fail_b": 17,
+            "both_fail": 7,
+            "p_a": 0.254,
+            "p_b": 0.1349,
+            "obs_joint": 0.0556,
+            "indep_joint": 0.0343,
+            "excess_over_indep": 0.0213,
+            "phi": 0.1432
+          },
+          "co_miss_reviewer_only": {
+            "n": 83,
+            "fail_a": 17,
+            "fail_b": 11,
+            "both_fail": 6,
+            "p_a": 0.2048,
+            "p_b": 0.1325,
+            "obs_joint": 0.0723,
+            "indep_joint": 0.0271,
+            "excess_over_indep": 0.0451,
+            "phi": 0.3299
+          },
+          "co_false_alarm_cleans": {
+            "n": 13,
+            "fail_a": 10,
+            "fail_b": 11,
+            "both_fail": 8,
+            "p_a": 0.7692,
+            "p_b": 0.8462,
+            "obs_joint": 0.6154,
+            "indep_joint": 0.6509,
+            "excess_over_indep": -0.0355,
+            "phi": -0.2335
+          }
+        }
+      }
+    },
+    "frozen": {
+      "n": 73,
+      "defects": 72,
+      "cleans": 1,
+      "reviewer_only_defects": 51,
+      "usable_rate": {
+        "qwen": 1.0,
+        "llama": 1.0,
+        "phi": 1.0
+      },
+      "arms": {
+        "objective_floor": {
+          "arm": "objective_floor",
+          "n": 73,
+          "defects": 72,
+          "cleans": 1,
+          "caught": 21,
+          "false_alarms": 0,
+          "abstained": 0,
+          "abstained_on_defect": 0,
+          "abstain_rate": 0.0,
+          "caught_defect_rate": 0.2917,
+          "caught_defect_ci95": [
+            0.1994,
+            0.4051
+          ],
+          "false_alarm_rate": 0.0,
+          "false_alarm_ci95": [
+            0.0,
+            0.7935
+          ],
+          "parity_rate": 1.0,
+          "agreement_soundness": 0.0192,
+          "accepted": 52,
+          "accepted_correct": 1,
+          "total_cost_usd": 0.0,
+          "cost_per_accepted_change": 0.0,
+          "blended": 0.7917
+        },
+        "qwen_alone": {
+          "arm": "qwen_alone",
+          "n": 73,
+          "defects": 72,
+          "cleans": 1,
+          "caught": 41,
+          "false_alarms": 1,
+          "abstained": 0,
+          "abstained_on_defect": 0,
+          "abstain_rate": 0.0,
+          "caught_defect_rate": 0.5694,
+          "caught_defect_ci95": [
+            0.4544,
+            0.6774
+          ],
+          "false_alarm_rate": 1.0,
+          "false_alarm_ci95": [
+            0.2065,
+            1.0
+          ],
+          "parity_rate": 0.0,
+          "agreement_soundness": 0.0,
+          "accepted": 31,
+          "accepted_correct": 0,
+          "total_cost_usd": 0.0,
+          "cost_per_accepted_change": null,
+          "blended": -0.4306
+        },
+        "qwen+floor": {
+          "arm": "qwen+floor",
+          "n": 73,
+          "defects": 72,
+          "cleans": 1,
+          "caught": 53,
+          "false_alarms": 1,
+          "abstained": 0,
+          "abstained_on_defect": 0,
+          "abstain_rate": 0.0,
+          "caught_defect_rate": 0.7361,
+          "caught_defect_ci95": [
+            0.6242,
+            0.8241
+          ],
+          "false_alarm_rate": 1.0,
+          "false_alarm_ci95": [
+            0.2065,
+            1.0
+          ],
+          "parity_rate": 1.0,
+          "agreement_soundness": 0.0,
+          "accepted": 19,
+          "accepted_correct": 0,
+          "total_cost_usd": 0.0,
+          "cost_per_accepted_change": null,
+          "blended": 0.2361
+        },
+        "llama_alone": {
+          "arm": "llama_alone",
+          "n": 73,
+          "defects": 72,
+          "cleans": 1,
+          "caught": 52,
+          "false_alarms": 0,
+          "abstained": 0,
+          "abstained_on_defect": 0,
+          "abstain_rate": 0.0,
+          "caught_defect_rate": 0.7222,
+          "caught_defect_ci95": [
+            0.6095,
+            0.8124
+          ],
+          "false_alarm_rate": 0.0,
+          "false_alarm_ci95": [
+            0.0,
+            0.7935
+          ],
+          "parity_rate": 0.3333,
+          "agreement_soundness": 0.0476,
+          "accepted": 21,
+          "accepted_correct": 1,
+          "total_cost_usd": 0.0,
+          "cost_per_accepted_change": 0.0,
+          "blended": 0.8888
+        },
+        "llama+floor": {
+          "arm": "llama+floor",
+          "n": 73,
+          "defects": 72,
+          "cleans": 1,
+          "caught": 63,
+          "false_alarms": 0,
+          "abstained": 0,
+          "abstained_on_defect": 0,
+          "abstain_rate": 0.0,
+          "caught_defect_rate": 0.875,
+          "caught_defect_ci95": [
+            0.7792,
+            0.9328
+          ],
+          "false_alarm_rate": 0.0,
+          "false_alarm_ci95": [
+            0.0,
+            0.7935
+          ],
+          "parity_rate": 1.0,
+          "agreement_soundness": 0.1,
+          "accepted": 10,
+          "accepted_correct": 1,
+          "total_cost_usd": 0.0,
+          "cost_per_accepted_change": 0.0,
+          "blended": 1.375
+        },
+        "phi_alone": {
+          "arm": "phi_alone",
+          "n": 73,
+          "defects": 72,
+          "cleans": 1,
+          "caught": 58,
+          "false_alarms": 1,
+          "abstained": 0,
+          "abstained_on_defect": 0,
+          "abstain_rate": 0.0,
+          "caught_defect_rate": 0.8056,
+          "caught_defect_ci95": [
+            0.6997,
+            0.8805
+          ],
+          "false_alarm_rate": 1.0,
+          "false_alarm_ci95": [
+            0.2065,
+            1.0
+          ],
+          "parity_rate": 0.6667,
+          "agreement_soundness": 0.0,
+          "accepted": 14,
+          "accepted_correct": 0,
+          "total_cost_usd": 0.0,
+          "cost_per_accepted_change": null,
+          "blended": 0.1389
+        },
+        "phi+floor": {
+          "arm": "phi+floor",
+          "n": 73,
+          "defects": 72,
+          "cleans": 1,
+          "caught": 62,
+          "false_alarms": 1,
+          "abstained": 0,
+          "abstained_on_defect": 0,
+          "abstain_rate": 0.0,
+          "caught_defect_rate": 0.8611,
+          "caught_defect_ci95": [
+            0.7629,
+            0.9228
+          ],
+          "false_alarm_rate": 1.0,
+          "false_alarm_ci95": [
+            0.2065,
+            1.0
+          ],
+          "parity_rate": 1.0,
+          "agreement_soundness": 0.0,
+          "accepted": 10,
+          "accepted_correct": 0,
+          "total_cost_usd": 0.0,
+          "cost_per_accepted_change": null,
+          "blended": 0.3611
+        },
+        "qwen+llama+floor": {
+          "arm": "qwen+llama+floor",
+          "n": 73,
+          "defects": 72,
+          "cleans": 1,
+          "caught": 71,
+          "false_alarms": 1,
+          "abstained": 0,
+          "abstained_on_defect": 0,
+          "abstain_rate": 0.0,
+          "caught_defect_rate": 0.9861,
+          "caught_defect_ci95": [
+            0.9254,
+            0.9975
+          ],
+          "false_alarm_rate": 1.0,
+          "false_alarm_ci95": [
+            0.2065,
+            1.0
+          ],
+          "parity_rate": 1.0,
+          "agreement_soundness": 0.0,
+          "accepted": 1,
+          "accepted_correct": 0,
+          "total_cost_usd": 0.0,
+          "cost_per_accepted_change": null,
+          "blended": 0.4861
+        },
+        "qwen+phi+floor": {
+          "arm": "qwen+phi+floor",
+          "n": 73,
+          "defects": 72,
+          "cleans": 1,
+          "caught": 68,
+          "false_alarms": 1,
+          "abstained": 0,
+          "abstained_on_defect": 0,
+          "abstain_rate": 0.0,
+          "caught_defect_rate": 0.9444,
+          "caught_defect_ci95": [
+            0.8657,
+            0.9782
+          ],
+          "false_alarm_rate": 1.0,
+          "false_alarm_ci95": [
+            0.2065,
+            1.0
+          ],
+          "parity_rate": 1.0,
+          "agreement_soundness": 0.0,
+          "accepted": 4,
+          "accepted_correct": 0,
+          "total_cost_usd": 0.0,
+          "cost_per_accepted_change": null,
+          "blended": 0.4444
+        },
+        "llama+phi+floor": {
+          "arm": "llama+phi+floor",
+          "n": 73,
+          "defects": 72,
+          "cleans": 1,
+          "caught": 67,
+          "false_alarms": 1,
+          "abstained": 0,
+          "abstained_on_defect": 0,
+          "abstain_rate": 0.0,
+          "caught_defect_rate": 0.9306,
+          "caught_defect_ci95": [
+            0.8475,
+            0.97
+          ],
+          "false_alarm_rate": 1.0,
+          "false_alarm_ci95": [
+            0.2065,
+            1.0
+          ],
+          "parity_rate": 1.0,
+          "agreement_soundness": 0.0,
+          "accepted": 5,
+          "accepted_correct": 0,
+          "total_cost_usd": 0.0,
+          "cost_per_accepted_change": null,
+          "blended": 0.4306
+        },
+        "qwen+llama+phi+floor": {
+          "arm": "all+floor",
+          "n": 73,
+          "defects": 72,
+          "cleans": 1,
+          "caught": 71,
+          "false_alarms": 1,
+          "abstained": 0,
+          "abstained_on_defect": 0,
+          "abstain_rate": 0.0,
+          "caught_defect_rate": 0.9861,
+          "caught_defect_ci95": [
+            0.9254,
+            0.9975
+          ],
+          "false_alarm_rate": 1.0,
+          "false_alarm_ci95": [
+            0.2065,
+            1.0
+          ],
+          "parity_rate": 1.0,
+          "agreement_soundness": 0.0,
+          "accepted": 1,
+          "accepted_correct": 0,
+          "total_cost_usd": 0.0,
+          "cost_per_accepted_change": null,
+          "blended": 0.4861
+        }
+      },
+      "decorrelation": {
+        "qwen|llama": {
+          "co_miss_all_defects": {
+            "n": 72,
+            "fail_a": 31,
+            "fail_b": 20,
+            "both_fail": 7,
+            "p_a": 0.4306,
+            "p_b": 0.2778,
+            "obs_joint": 0.0972,
+            "indep_joint": 0.1196,
+            "excess_over_indep": -0.0224,
+            "phi": -0.1009
+          },
+          "co_miss_reviewer_only": {
+            "n": 51,
+            "fail_a": 19,
+            "fail_b": 9,
+            "both_fail": 1,
+            "p_a": 0.3725,
+            "p_b": 0.1765,
+            "obs_joint": 0.0196,
+            "indep_joint": 0.0657,
+            "excess_over_indep": -0.0461,
+            "phi": -0.2503
+          },
+          "co_false_alarm_cleans": {
+            "n": 1,
+            "fail_a": 1,
+            "fail_b": 0,
+            "both_fail": 0,
+            "p_a": 1.0,
+            "p_b": 0.0,
+            "obs_joint": 0.0,
+            "indep_joint": 0.0,
+            "excess_over_indep": 0.0,
+            "phi": null
+          }
+        },
+        "qwen|phi": {
+          "co_miss_all_defects": {
+            "n": 72,
+            "fail_a": 31,
+            "fail_b": 14,
+            "both_fail": 7,
+            "p_a": 0.4306,
+            "p_b": 0.1944,
+            "obs_joint": 0.0972,
+            "indep_joint": 0.0837,
+            "excess_over_indep": 0.0135,
+            "phi": 0.0689
+          },
+          "co_miss_reviewer_only": {
+            "n": 51,
+            "fail_a": 19,
+            "fail_b": 10,
+            "both_fail": 4,
+            "p_a": 0.3725,
+            "p_b": 0.1961,
+            "obs_joint": 0.0784,
+            "indep_joint": 0.073,
+            "excess_over_indep": 0.0054,
+            "phi": 0.028
+          },
+          "co_false_alarm_cleans": {
+            "n": 1,
+            "fail_a": 1,
+            "fail_b": 1,
+            "both_fail": 1,
+            "p_a": 1.0,
+            "p_b": 1.0,
+            "obs_joint": 1.0,
+            "indep_joint": 1.0,
+            "excess_over_indep": 0.0,
+            "phi": null
+          }
+        },
+        "llama|phi": {
+          "co_miss_all_defects": {
+            "n": 72,
+            "fail_a": 20,
+            "fail_b": 14,
+            "both_fail": 7,
+            "p_a": 0.2778,
+            "p_b": 0.1944,
+            "obs_joint": 0.0972,
+            "indep_joint": 0.054,
+            "excess_over_indep": 0.0432,
+            "phi": 0.2438
+          },
+          "co_miss_reviewer_only": {
+            "n": 51,
+            "fail_a": 9,
+            "fail_b": 10,
+            "both_fail": 5,
+            "p_a": 0.1765,
+            "p_b": 0.1961,
+            "obs_joint": 0.098,
+            "indep_joint": 0.0346,
+            "excess_over_indep": 0.0634,
+            "phi": 0.4191
+          },
+          "co_false_alarm_cleans": {
+            "n": 1,
+            "fail_a": 0,
+            "fail_b": 1,
+            "both_fail": 0,
+            "p_a": 0.0,
+            "p_b": 1.0,
+            "obs_joint": 0.0,
+            "indep_joint": 0.0,
+            "excess_over_indep": 0.0,
+            "phi": null
+          }
+        }
+      }
+    }
+  },
+  "frontier_comparison": {
+    "source": "reviews.jsonl",
+    "slice": "held_out",
+    "pair": "codex|agy",
+    "co_miss_all_defects": {
+      "n": 126,
+      "fail_a": 27,
+      "fail_b": 8,
+      "both_fail": 6,
+      "p_a": 0.2143,
+      "p_b": 0.0635,
+      "obs_joint": 0.0476,
+      "indep_joint": 0.0136,
+      "excess_over_indep": 0.034,
+      "phi": 0.3399
+    },
+    "co_miss_reviewer_only": {
+      "n": 83,
+      "fail_a": 26,
+      "fail_b": 8,
+      "both_fail": 6,
+      "p_a": 0.3133,
+      "p_b": 0.0964,
+      "obs_joint": 0.0723,
+      "indep_joint": 0.0302,
+      "excess_over_indep": 0.0421,
+      "phi": 0.3075
+    },
+    "co_false_alarm_cleans": {
+      "n": 13,
+      "fail_a": 4,
+      "fail_b": 9,
+      "both_fail": 4,
+      "p_a": 0.3077,
+      "p_b": 0.6923,
+      "obs_joint": 0.3077,
+      "indep_joint": 0.213,
+      "excess_over_indep": 0.0947,
+      "phi": 0.4444
+    }
+  }
+}

@@ -1,0 +1,150 @@
+[orch] waiting for sol to reach 231 usable...
+[orch] sol usable=109 running=15504 23:15:59
+[orch] sol usable=118 running=15504 23:16:31
+[orch] sol usable=127 running=15504 23:17:04
+[orch] sol usable=135 running=15504 23:17:36
+[orch] sol usable=145 running=15504 23:18:09
+[orch] sol usable=148 running=15504 23:18:41
+[orch] sol usable=154 running=15504 23:19:13
+[orch] sol usable=161 running=15504 23:19:46
+[orch] sol usable=172 running=15504 23:20:18
+[orch] sol usable=178 running=15504 23:20:50
+[orch] sol usable=189 running=15504 23:21:23
+[orch] sol usable=197 running=15504 23:21:56
+[orch] sol usable=206 running=15504 23:22:28
+[orch] sol usable=211 running=15504 23:23:01
+[orch] sol usable=211 running=none 23:23:33
+[orch] sol proc gone at 211; relaunching resume
+[orch] sol usable=212 running=none 23:24:25
+[orch] sol proc gone at 212; relaunching resume
+[orch] sol usable=213 running=7916 23:25:17
+[orch] sol usable=214 running=none 23:25:49
+[orch] sol proc gone at 214; relaunching resume
+[orch] sol usable=214 running=none 23:26:42
+[orch] sol proc gone at 214; relaunching resume
+[orch] sol usable=215 running=none 23:27:34
+[orch] sol proc gone at 215; relaunching resume
+[orch] sol usable=215 running=none 23:28:26
+[orch] sol proc gone at 215; relaunching resume
+[orch] sol usable=215 running=none 23:29:19
+[orch] sol proc gone at 215; relaunching resume
+[orch] sol usable=216 running=none 23:30:11
+[orch] sol proc gone at 216; relaunching resume
+[orch] sol usable=217 running=none 23:31:03
+[orch] sol proc gone at 217; relaunching resume
+[orch] sol usable=218 running=none 23:31:56
+[orch] sol proc gone at 218; relaunching resume
+[orch] sol usable=218 running=none 23:32:48
+[orch] sol proc gone at 218; relaunching resume
+[orch] sol usable=218 running=none 23:33:41
+[orch] sol proc gone at 218; relaunching resume
+[orch] sol usable=218 running=none 23:34:34
+[orch] sol proc gone at 218; relaunching resume
+[orch] sol usable=218 running=none 23:35:27
+[orch] sol proc gone at 218; relaunching resume
+[orch] sol usable=218 running=1064 23:36:20
+[orch] sol usable=219 running=none 23:36:52
+[orch] sol proc gone at 219; relaunching resume
+[orch] sol usable=219 running=none 23:37:44
+[orch] sol proc gone at 219; relaunching resume
+[orch] sol usable=220 running=none 23:38:37
+[orch] sol proc gone at 220; relaunching resume
+[orch] sol usable=220 running=none 23:39:29
+[orch] sol proc gone at 220; relaunching resume
+[orch] sol usable=220 running=none 23:40:22
+[orch] sol proc gone at 220; relaunching resume
+[orch] sol usable=220 running=none 23:41:14
+[orch] sol proc gone at 220; relaunching resume
+[orch] sol usable=220 running=none 23:42:07
+[orch] sol proc gone at 220; relaunching resume
+[orch] sol usable=221 running=none 23:42:59
+[orch] sol proc gone at 221; relaunching resume
+[orch] sol usable=222 running=none 23:43:51
+[orch] sol proc gone at 222; relaunching resume
+[orch] sol usable=222 running=none 23:44:43
+[orch] sol proc gone at 222; relaunching resume
+[orch] sol usable=222 running=none 23:45:36
+[orch] sol proc gone at 222; relaunching resume
+[orch] sol usable=223 running=none 23:46:28
+[orch] sol proc gone at 223; relaunching resume
+[orch] sol usable=223 running=none 23:47:20
+[orch] sol proc gone at 223; relaunching resume
+[orch] sol usable=223 running=none 23:48:13
+[orch] sol proc gone at 223; relaunching resume
+[orch] sol usable=223 running=none 23:49:05
+[orch] sol proc gone at 223; relaunching resume
+[orch] sol usable=223 running=none 23:49:57
+[orch] sol proc gone at 223; relaunching resume
+[orch] sol usable=223 running=none 23:50:51
+[orch] sol proc gone at 223; relaunching resume
+[orch] sol usable=223 running=none 23:51:44
+[orch] sol proc gone at 223; relaunching resume
+[orch] sol usable=223 running=none 23:52:36
+[orch] sol proc gone at 223; relaunching resume
+[orch] sol usable=225 running=none 23:53:29
+[orch] sol proc gone at 225; relaunching resume
+[orch] sol usable=231 running=none 23:54:24
+[orch] sol complete
+[orch] launching chain
+
+########## SLICE gpt-5.5 ##########
+[slices] s1(held_out)=139 s2(frozen-dev)=92 total=231
+[gpt-5.5] total=231 done=0 todo=231 effort=medium
+[gpt-5.5] 10/231 (43s, 100260 tok)
+[gpt-5.5] 20/231 (150s, 191628 tok)
+[gpt-5.5] 30/231 (214s, 272101 tok)
+[gpt-5.5] 40/231 (345s, 340947 tok)
+[gpt-5.5] 50/231 (391s, 379573 tok)
+[gpt-5.5] 60/231 (434s, 410913 tok)
+[gpt-5.5] 70/231 (527s, 455567 tok)
+[gpt-5.5] 80/231 (618s, 512576 tok)
+[gpt-5.5] 90/231 (731s, 575341 tok)
+[gpt-5.5] 100/231 (790s, 609842 tok)
+[gpt-5.5] 110/231 (861s, 652599 tok)
+[gpt-5.5] 120/231 (940s, 685861 tok)
+[gpt-5.5] 130/231 (1004s, 730377 tok)
+[gpt-5.5] 140/231 (1075s, 765576 tok)
+[gpt-5.5] 150/231 (1178s, 813193 tok)
+[gpt-5.5] 160/231 (1242s, 858420 tok)
+[gpt-5.5] 170/231 (1342s, 916691 tok)
+[gpt-5.5] 180/231 (1434s, 968112 tok)
+[gpt-5.5] 190/231 (1539s, 1018213 tok)
+[gpt-5.5] 200/231 (1591s, 1056563 tok)
+[gpt-5.5] 210/231 (1679s, 1090552 tok)
+[gpt-5.5] 220/231 (1728s, 1113793 tok)
+[gpt-5.5] 230/231 (1790s, 1145649 tok)
+[gpt-5.5] 231/231 (1815s, 1152634 tok)
+########## SLICE gpt-5.5 exit=0 ##########
+
+########## SLICE gpt-5.6-terra ##########
+[slices] s1(held_out)=139 s2(frozen-dev)=92 total=231
+[gpt-5.6-terra] total=231 done=0 todo=231 effort=medium
+[gpt-5.6-terra] 10/231 (163s, 102242 tok)
+[gpt-5.6-terra] 20/231 (201s, 138969 tok)
+[gpt-5.6-terra] 30/231 (271s, 168408 tok)
+[gpt-5.6-terra] 40/231 (350s, 193172 tok)
+[gpt-5.6-terra] 50/231 (402s, 218273 tok)
+[gpt-5.6-terra] 60/231 (438s, 231530 tok)
+[gpt-5.6-terra] 70/231 (537s, 264933 tok)
+[gpt-5.6-terra] 80/231 (566s, 277829 tok)
+[gpt-5.6-terra] 90/231 (676s, 300057 tok)
+[gpt-5.6-terra] 100/231 (720s, 312221 tok)
+[gpt-5.6-terra] 110/231 (752s, 318542 tok)
+[gpt-5.6-terra] 120/231 (840s, 342959 tok)
+[gpt-5.6-terra] 130/231 (881s, 351849 tok)
+[gpt-5.6-terra] 140/231 (975s, 374152 tok)
+[gpt-5.6-terra] 150/231 (997s, 390241 tok)  [CREDITS DEAD]
+[gpt-5.6-terra] 160/231 (1009s, 390241 tok)  [CREDITS DEAD]
+[gpt-5.6-terra] 170/231 (1021s, 390871 tok)  [CREDITS DEAD]
+[gpt-5.6-terra] 180/231 (1034s, 390871 tok)  [CREDITS DEAD]
+[gpt-5.6-terra] 190/231 (1049s, 390871 tok)  [CREDITS DEAD]
+[gpt-5.6-terra] 200/231 (1063s, 399472 tok)  [CREDITS DEAD]
+[gpt-5.6-terra] 210/231 (1078s, 399472 tok)  [CREDITS DEAD]
+[gpt-5.6-terra] 220/231 (1090s, 399472 tok)  [CREDITS DEAD]
+[gpt-5.6-terra] 230/231 (1102s, 399472 tok)  [CREDITS DEAD]
+[gpt-5.6-terra] 231/231 (1103s, 399472 tok)  [CREDITS DEAD]
+
+#### CREDIT/QUOTA EXHAUSTION during gpt-5.6-terra — INCOMPLETE, not a clean number. Resume when quota returns (re-runs only failed items). No score emitted for this arm.
+########## SLICE gpt-5.6-terra exit=2 ##########
+STOP: credit exhaustion on main slice; not continuing.
+[orch] DONE
