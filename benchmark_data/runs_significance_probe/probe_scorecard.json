@@ -1,0 +1,74 @@
+{
+  "gpt-5.5": {
+    "catch_rate": "8/8 = 1.0",
+    "catch_ci": [
+      0.6756,
+      1.0
+    ],
+    "false_alarm": "0/8 = 0.0",
+    "false_alarm_ci": [
+      0.0,
+      0.3244
+    ],
+    "by_class_flagged": {
+      "equivalence_overclaim": "4/4",
+      "overstated_significance": "4/4",
+      "proper_inconclusive": "0/4",
+      "proper_significant": "0/4"
+    }
+  },
+  "gpt-5.6-luna": {
+    "catch_rate": "8/8 = 1.0",
+    "catch_ci": [
+      0.6756,
+      1.0
+    ],
+    "false_alarm": "0/8 = 0.0",
+    "false_alarm_ci": [
+      0.0,
+      0.3244
+    ],
+    "by_class_flagged": {
+      "equivalence_overclaim": "4/4",
+      "overstated_significance": "4/4",
+      "proper_inconclusive": "0/4",
+      "proper_significant": "0/4"
+    }
+  },
+  "gpt-5.6-sol": {
+    "catch_rate": "8/8 = 1.0",
+    "catch_ci": [
+      0.6756,
+      1.0
+    ],
+    "false_alarm": "0/8 = 0.0",
+    "false_alarm_ci": [
+      0.0,
+      0.3244
+    ],
+    "by_class_flagged": {
+      "equivalence_overclaim": "4/4",
+      "overstated_significance": "4/4",
+      "proper_inconclusive": "0/4",
+      "proper_significant": "0/4"
+    }
+  },
+  "gpt-5.6-terra": {
+    "catch_rate": "8/8 = 1.0",
+    "catch_ci": [
+      0.6756,
+      1.0
+    ],
+    "false_alarm": "0/8 = 0.0",
+    "false_alarm_ci": [
+      0.0,
+      0.3244
+    ],
+    "by_class_flagged": {
+      "equivalence_overclaim": "4/4",
+      "overstated_significance": "4/4",
+      "proper_inconclusive": "0/4",
+      "proper_significant": "0/4"
+    }
+  }
+}
