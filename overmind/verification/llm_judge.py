@@ -703,7 +703,20 @@ class QuorumJudge:
                     detail=(v.concerns[0] if v.concerns else ""),
                 ))
             return resolve_consensus(responses)
-        except Exception:  # noqa: BLE001 — observational; never break the judge path
+        except Exception:  # noqa: BLE001 — never break the judge hot path...
+            # ...but do NOT fail silently (P1-3, cross-vendor 2026-07-11): a
+            # regression in resolve_consensus / kish_neff / the family map would
+            # otherwise return None here, and orchestrator fail-closed enforcement
+            # keys on `outcome is not None` — a silent None DISABLES the fail-closed
+            # gate. Log at ERROR (with the engines that triggered it) so a resolver
+            # regression is loud and detectable, never a silent downgrade to
+            # threshold-only. Returning None is still the safe hot-path choice
+            # (engine names may legitimately be absent); the log is the signal.
+            logger.error(
+                "consensus resolver raised — fail-closed enforcement DISABLED for "
+                "this verdict (engines=%s); treating as no consensus outcome",
+                list(self.engines), exc_info=True,
+            )
             return None
 
 

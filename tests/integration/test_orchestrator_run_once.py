@@ -176,8 +176,38 @@ def _judge_project_task(project_root):
     return project, task, vr
 
 
-def test_failclosed_flagged_quorum_not_counted_as_judge_gate(tmp_path, monkeypatch):
-    # flag ON (default): a FLAGGED consensus must NOT record a passing judge gate.
+def _erroring_quorum_judge():
+    """A QuorumJudge whose entire panel errors (both seats down). QuorumJudge
+    returns concerns=[judge_error, quorum_unreachable] (judge_available False) AND
+    a fail-closed consensus_outcome (NO_USABLE_RESPONSES). Exercises P0-2: the
+    all-vendors-down outage path must fail closed, not ship on judge_available."""
+    from overmind.verification.llm_judge import QuorumJudge
+
+    def _err_judge():
+        return LLMJudge(backend=StubBackend(response="JUDGE_ERROR: backend down"))
+
+    return QuorumJudge(judges=[_err_judge(), _err_judge()], engines=["claude", "codex"])
+
+
+def _consensus_fail_quorum_judge():
+    """A QuorumJudge whose panel unanimously FAILs -> CONSENSUS_FAIL. Exercises the
+    P1-4 consensus-path leak: a corroborated cross-vendor FAIL must block even
+    though the scalar avg-confidence path is not the thing gating it."""
+    from overmind.verification.llm_judge import QuorumJudge
+
+    def _fail_judge():
+        return LLMJudge(backend=StubBackend(
+            response="VERDICT: FAIL\nCONFIDENCE: 0.55\nREASONING: broken"))
+
+    return QuorumJudge(judges=[_fail_judge(), _fail_judge()], engines=["claude", "codex"])
+
+
+def test_failclosed_flagged_quorum_fails_closed_not_shipped(tmp_path, monkeypatch):
+    # TRIP TEST (P0-1). flag ON (default): a FLAGGED consensus must FAIL CLOSED —
+    # success=False. Green objective tests are NOT sufficient once a cross-vendor
+    # judge gate was requested and could not corroborate: the module's own contract
+    # is "flagged, not shipped." (This assertion previously read `is True`, which
+    # was itself encoding the fail-open — the bug was in the safety net.)
     monkeypatch.setenv("OVERMIND_QUORUM_FAILCLOSED", "1")
     config = _write_minimal_config(tmp_path / "config", tmp_path / "data")
     project_root = tmp_path / "project"
@@ -190,12 +220,56 @@ def test_failclosed_flagged_quorum_not_counted_as_judge_gate(tmp_path, monkeypat
             task=task, project=project, verification_result=vr,
             transcript_lines=["tests passed"], include_judge=True,
         )
-        # objective tests are the floor -> still success; but the judge gate is
-        # NOT completed — it is flagged and skipped instead.
-        assert final.success is True
+        assert final.success is False
         assert "semantic_requirements" in final.skipped_checks
         assert "semantic_requirements" not in final.completed_checks
-        assert any("consensus FLAGGED" in d for d in final.details)
+        assert any("consensus FLAGGED" in d and "NOT shipped" in d for d in final.details)
+    finally:
+        orchestrator.close()
+
+
+def test_failclosed_all_vendors_down_fails_closed(tmp_path, monkeypatch):
+    # TRIP TEST (P0-2). All backends error -> judge_available is False, so the OLD
+    # code skipped the whole gate block and shipped success=True. The flagged
+    # NO_USABLE_RESPONSES outcome must now be honoured BEFORE the judge_available
+    # shortcut and fail the result closed.
+    monkeypatch.setenv("OVERMIND_QUORUM_FAILCLOSED", "1")
+    config = _write_minimal_config(tmp_path / "config", tmp_path / "data")
+    project_root = tmp_path / "project"
+    project_root.mkdir()
+    orchestrator = Orchestrator(config)
+    orchestrator.llm_judge = _erroring_quorum_judge()
+    try:
+        project, task, vr = _judge_project_task(project_root)
+        final = orchestrator._apply_completion_gates(
+            task=task, project=project, verification_result=vr,
+            transcript_lines=["tests passed"], include_judge=True,
+        )
+        assert final.success is False
+        assert "semantic_requirements" in final.skipped_checks
+        assert any("no_usable_responses" in d.lower() for d in final.details)
+    finally:
+        orchestrator.close()
+
+
+def test_failclosed_consensus_fail_blocks_low_confidence(tmp_path, monkeypatch):
+    # TRIP TEST (P1-4, consensus path). A unanimous cross-vendor FAIL resolves to
+    # CONSENSUS_FAIL. Even though each vote's confidence (0.55) is below the 0.7
+    # scalar early-return threshold, a corroborated negative must fail closed.
+    monkeypatch.setenv("OVERMIND_QUORUM_FAILCLOSED", "1")
+    config = _write_minimal_config(tmp_path / "config", tmp_path / "data")
+    project_root = tmp_path / "project"
+    project_root.mkdir()
+    orchestrator = Orchestrator(config)
+    orchestrator.llm_judge = _consensus_fail_quorum_judge()
+    try:
+        project, task, vr = _judge_project_task(project_root)
+        final = orchestrator._apply_completion_gates(
+            task=task, project=project, verification_result=vr,
+            transcript_lines=["tests passed"], include_judge=True,
+        )
+        assert final.success is False
+        assert any("consensus CONSENSUS_FAIL" in d for d in final.details)
     finally:
         orchestrator.close()
 
