@@ -842,16 +842,32 @@ class Orchestrator:
             # is byte-for-byte unchanged. `not outcome.passed` blocks FLAGGED and
             # CONSENSUS_FAIL, never CONSENSUS_PASS.
             outcome = getattr(judge_verdict, "consensus_outcome", None)
+            _failclosed = _quorum_failclosed_enabled()
             consensus_blocks = (
-                _quorum_failclosed_enabled()
+                _failclosed
                 and outcome is not None
                 and not getattr(outcome, "passed", False)
             )
-            if consensus_blocks:
-                verdict_name = getattr(getattr(outcome, "verdict", None), "value", "flagged")
-                reasons = ",".join(
-                    getattr(r, "value", str(r)) for r in getattr(outcome, "reasons", [])
-                ) or verdict_name
+            # Codex cross-vendor review 2026-07-12 (routed on this diff): even with
+            # NO consensus_outcome attached (an engineless QuorumJudge, or a resolver
+            # that returned None), a QuorumJudge OUTAGE must still fail closed under
+            # failclosed — otherwise a quorum outage ships on the judge_available
+            # shortcut. The `quorum_unreachable` concern is emitted ONLY by
+            # QuorumJudge's outage path, never by a single LLMJudge, so this closes
+            # the gap without touching the advisory-single-judge happy path.
+            quorum_outage_blocks = (
+                _failclosed and "quorum_unreachable" in judge_verdict.concerns
+            )
+            if consensus_blocks or quorum_outage_blocks:
+                if outcome is not None:
+                    verdict_name = getattr(getattr(outcome, "verdict", None), "value", "flagged")
+                    reasons = ",".join(
+                        getattr(r, "value", str(r)) for r in getattr(outcome, "reasons", [])
+                    ) or verdict_name
+                else:
+                    # quorum outage with no attached outcome (engineless QuorumJudge)
+                    verdict_name = "flagged"
+                    reasons = "quorum_unreachable"
                 required_checks = self._append_unique_check(required_checks, "semantic_requirements")
                 skipped_checks = self._append_unique_check(skipped_checks, "semantic_requirements")
                 details.append(

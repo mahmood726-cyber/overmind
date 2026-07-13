@@ -228,6 +228,37 @@ def test_failclosed_flagged_quorum_fails_closed_not_shipped(tmp_path, monkeypatc
         orchestrator.close()
 
 
+def test_failclosed_engineless_quorum_outage_fails_closed(tmp_path, monkeypatch):
+    # TRIP TEST (Codex cross-vendor review 2026-07-12). An engineless QuorumJudge
+    # attaches NO consensus_outcome, so consensus_blocks is False; but a quorum
+    # OUTAGE (all backends error -> quorum_unreachable) must still fail closed via
+    # the concern, not ship on the judge_available shortcut.
+    from overmind.verification.llm_judge import QuorumJudge
+
+    monkeypatch.setenv("OVERMIND_QUORUM_FAILCLOSED", "1")
+    config = _write_minimal_config(tmp_path / "config", tmp_path / "data")
+    project_root = tmp_path / "project"
+    project_root.mkdir()
+    orchestrator = Orchestrator(config)
+
+    def _err_judge():
+        return LLMJudge(backend=StubBackend(response="JUDGE_ERROR: backend down"))
+
+    # NO engines -> consensus_outcome is None (the gap Codex found)
+    orchestrator.llm_judge = QuorumJudge(judges=[_err_judge(), _err_judge()])
+    try:
+        project, task, vr = _judge_project_task(project_root)
+        final = orchestrator._apply_completion_gates(
+            task=task, project=project, verification_result=vr,
+            transcript_lines=["tests passed"], include_judge=True,
+        )
+        assert final.success is False
+        assert "semantic_requirements" in final.skipped_checks
+        assert any("quorum_unreachable" in d for d in final.details)
+    finally:
+        orchestrator.close()
+
+
 def test_failclosed_all_vendors_down_fails_closed(tmp_path, monkeypatch):
     # TRIP TEST (P0-2). All backends error -> judge_available is False, so the OLD
     # code skipped the whole gate block and shipped success=True. The flagged
