@@ -50,12 +50,26 @@ def _key() -> bytes:
     return env.encode("utf-8") if env else _PROCESS_KEY
 
 
-def _sign(subject: str, queries, sources, reviewer_family: str, candidates) -> str:
+def has_durable_key() -> bool:
+    """True iff a cross-process key is configured. A token signed with the
+    per-process fallback key CANNOT be verified in another process — so a search
+    executed by the nightly runner and consumed by a separate slide generator would
+    (correctly) fail closed. The env key is what makes a token portable. Never
+    hardcode or commit the key (the TruthCert lesson); read it only from the env."""
+    return bool(os.environ.get("OVERMIND_PRIORART_KEY"))
+
+
+def _sign(subject: str, queries, sources, reviewer_family: str, candidates,
+          sanctioned: bool = False) -> str:
     payload = json.dumps({
         "subject": subject,
         "queries": list(queries),
         "sources": list(sources),
         "family": reviewer_family,
+        # Codex round-4: 'sanctioned' (was the REAL cross-process codex executor used,
+        # vs an injected in-process stub) must be SIGNED, else it is forgeable via the
+        # unsigned meta dict. In the token now, so a stub cannot claim to be sanctioned.
+        "sanctioned": bool(sanctioned),
         "candidates": [(c.citation, c.similar, c.reason) for c in candidates],
     }, sort_keys=True, ensure_ascii=True).encode("utf-8")
     return hmac.new(_key(), payload, hashlib.sha256).hexdigest()
@@ -84,6 +98,7 @@ class PriorArtSearch:
     executed: bool = False
     date: str = ""                     # caller stamps (Date.now is unavailable here)
     token: str = ""                    # HMAC proof of execution — only the executor mints it
+    sanctioned: bool = False           # was the REAL cross-process codex executor used
     meta: dict = field(default_factory=dict)
 
     @property
@@ -95,13 +110,21 @@ class PriorArtSearch:
         if not self.token:
             return False
         expected = _sign(self.subject, self.queries, self.sources,
-                         self.reviewer_family, self.candidates)
+                         self.reviewer_family, self.candidates, self.sanctioned)
         return hmac.compare_digest(self.token, expected)
 
 
 def guard_novelty(claim, search: Optional[PriorArtSearch], *,
-                  claimant_family: str = "anthropic") -> PriorArtSearch:
-    """Fail closed unless a real, different-family search cleared the novelty claim."""
+                  claimant_family: str = "anthropic",
+                  require_sanctioned: bool = False) -> PriorArtSearch:
+    """Fail closed unless a real, different-family search cleared the novelty claim.
+
+    ``require_sanctioned`` (Codex round-4, the executor trust seam): when True, the
+    search must carry the SIGNED sanctioned flag — i.e. it was run by the real
+    cross-process codex executor, not an in-process stub. Off by default so unit
+    tests can inject a stub executor; PRODUCTION novelty emission should pass True.
+    Even signed, this is an in-process trust boundary — the hard guarantee is the
+    separate-process executor (named residual)."""
     if search is None:
         raise PriorArtError(
             f"BLOCKED: novelty claim {getattr(claim, 'text', claim)!r} has no "
@@ -122,6 +145,11 @@ def guard_novelty(claim, search: Optional[PriorArtSearch], *,
             f"(token_valid=False). 'executed=True' set by hand or a mutated field cannot "
             f"clear the gate — only execute_prior_art_search mints a valid token."
         )
+    if require_sanctioned and not search.sanctioned:
+        raise PriorArtError(
+            f"BLOCKED: prior-art search for {search.subject!r} was not run by the "
+            f"sanctioned cross-process codex executor (sanctioned=False) — an in-process "
+            f"stub cannot clear a production novelty claim (executor trust seam).")
     if not search.queries or not any(q.strip() for q in search.queries):
         raise PriorArtError(
             f"BLOCKED: prior-art search for {search.subject!r} ran no concrete query.")
@@ -202,10 +230,29 @@ def execute_prior_art_search(subject: str, queries, *, sources=None,
     cands, src, family = executor(subject, queries)
     used_sources = tuple(sources) if sources else (src,)
     cands = tuple(cands)
-    token = _sign(subject, queries, used_sources, family, cands)
+    exec_name = getattr(executor, "__name__", "custom")
+    sanctioned = exec_name == "_codex_executor"
+    token = _sign(subject, queries, used_sources, family, cands, sanctioned)
+    if not has_durable_key():
+        # Named residual #1: the token is signed with a per-process key, so it will
+        # NOT verify in another process. Warn rather than silently mint a
+        # non-portable token — a cross-process consumer must set OVERMIND_PRIORART_KEY.
+        import warnings
+        warnings.warn(
+            "OVERMIND_PRIORART_KEY not set — prior-art token signed with a per-process "
+            "key and will NOT verify cross-process (fail-closed there by design). Set the "
+            "env key for a token that survives the process boundary.",
+            RuntimeWarning, stacklevel=2)
+    # Named residual #2 (executor trust seam): 'executed=True' certifies that SOME
+    # executor returned — it does NOT prove the executor genuinely shelled to a
+    # different-family model. An in-process caller can inject a stub. We record the
+    # executor name AND whether it was the sanctioned cross-process default, so a
+    # reviewer/consumer can tell a real decorrelated search from an injected stub.
     return PriorArtSearch(
         subject=subject, queries=queries, sources=used_sources,
         reviewer_family=family, candidates=cands,
-        executed=True, date=date, token=token,
-        meta={"executor": getattr(executor, "__name__", "custom")},
+        executed=True, date=date, token=token, sanctioned=sanctioned,
+        meta={"executor": exec_name,
+              "sanctioned_executor": sanctioned,
+              "durable_key": has_durable_key()},
     )

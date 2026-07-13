@@ -318,6 +318,295 @@ def test_derived_parent_must_clear_layer_gate_too():
         _chan().emit(child)
 
 
+# --- round 4: arm / timepoint / unit binding (the SELECTION error) --------------
+
+class _DimResolver(LocatorResolver):
+    """A stub whose om ground truth carries arm/timepoint/unit — so the binding can
+    be proven deterministically without the AACT snapshot."""
+    def __init__(self, **gt):
+        super().__init__(aact_path=None)
+        self._gt = {"value": 11.1, "title": "Number of Oocytes Retrieved",
+                    "arm": "GnRH Agonist (GONAPEPTYL)", "timepoint": "day of oocyte retrieval",
+                    "unit": "Oocytes"}
+        self._gt.update(gt)
+    def resolve(self, locator, claimed_value=None):
+        if "om[" in (locator or ""):
+            return Resolution(True, True, "stub", ground_truth=dict(self._gt))
+        return Resolution(False, None, "stub", reason="no")
+
+
+def _dim_claim(**meta):
+    base = {"outcome": "Number of Oocytes Retrieved", "arm": "GnRH Agonist (GONAPEPTYL)",
+            "timepoint": "day of oocyte retrieval", "unit": "Oocytes"}
+    base.update(meta)
+    return Claim("oocytes retrieved", 11.1, SourceTier.REGISTRY,
+                 "NCT03809429#om[1571418270]", meta=base)
+
+
+def test_om_claim_with_full_arm_timepoint_unit_passes():
+    ch = ExportChannel(resolver=_DimResolver())
+    assert ch.emit(_dim_claim()).value == 11.1
+
+
+def test_om_claim_missing_arm_is_blocked():
+    """The number is real for THIS trial+outcome but the claim never says which arm —
+    exactly how 11.1 (agonist) gets shipped as if it were 9.6 (antagonist)."""
+    ch = ExportChannel(resolver=_DimResolver())
+    with pytest.raises(ChannelViolation, match="does not declare its arm|wrong arm"):
+        ch.emit(_dim_claim(arm=""))
+
+
+def test_om_claim_wrong_arm_is_blocked():
+    ch = ExportChannel(resolver=_DimResolver())
+    with pytest.raises(ChannelViolation, match="wrong arm|arm="):
+        ch.emit(_dim_claim(arm="GnRH Antagonist (CETROTIDE)"))
+
+
+def test_om_claim_wrong_timepoint_is_blocked():
+    ch = ExportChannel(resolver=_DimResolver())
+    with pytest.raises(ChannelViolation, match="timepoint"):
+        ch.emit(_dim_claim(timepoint="week 52 follow-up"))
+
+
+def test_om_claim_missing_unit_is_blocked():
+    ch = ExportChannel(resolver=_DimResolver())
+    with pytest.raises(ChannelViolation, match="unit"):
+        ch.emit(_dim_claim(unit=""))
+
+
+def test_dimension_binding_is_noop_when_ground_truth_lacks_it():
+    """Backward compat: a resolver that does not surface arm/timepoint/unit (older
+    stub, or an om with null fields) imposes no requirement — the binding is
+    'required WHEN checkable', not 'always required'."""
+    ch = ExportChannel(resolver=_DimResolver(arm=None, timepoint=None, unit=None))
+    lean = Claim("oocytes retrieved", 11.1, SourceTier.REGISTRY,
+                 "NCT03809429#om[1]", meta={"outcome": "Number of Oocytes Retrieved"})
+    assert ch.emit(lean).value == 11.1
+
+
+def test_real_aact_wrong_arm_selection_error_blocks():
+    """End-to-end on the AACT snapshot (skips if absent): NCT03809429 om 1571418270
+    is 11.1 oocytes for the AGONIST arm. A claim that declares the ANTAGONIST arm for
+    that same number is the wrong-arm selection error and must block."""
+    from overmind.gates.resolver import default_resolver
+    r = default_resolver()
+    probe = r.resolve("NCT03809429#om[1571418270]", claimed_value=11.1)
+    if not probe.resolved:
+        pytest.skip("AACT snapshot not present")
+    assert isinstance(probe.ground_truth, dict) and probe.ground_truth.get("arm")
+    ch = ExportChannel(resolver=r)
+    right = Claim("oocytes retrieved", 11.1, SourceTier.REGISTRY,
+                  "NCT03809429#om[1571418270]",
+                  meta={"outcome": "Number of Oocytes Retrieved",
+                        "arm": probe.ground_truth["arm"],
+                        "timepoint": probe.ground_truth.get("timepoint") or "n/a",
+                        "unit": probe.ground_truth.get("unit") or "n/a"})
+    assert ch.emit(right).value == 11.1
+    wrong = Claim("oocytes retrieved", 11.1, SourceTier.REGISTRY,
+                  "NCT03809429#om[1571418270]",
+                  meta={"outcome": "Number of Oocytes Retrieved",
+                        "arm": "GnRH Antagonist (CETROTIDE)",
+                        "timepoint": probe.ground_truth.get("timepoint") or "n/a",
+                        "unit": probe.ground_truth.get("unit") or "n/a"})
+    with pytest.raises(ChannelViolation, match="wrong arm|arm="):
+        ch.emit(wrong)
+
+
+# --- round 4: the smaller residuals, named and probed --------------------------
+
+def test_durable_key_flag_reflects_env(monkeypatch):
+    """Residual #1: a token is portable across processes ONLY with the env key."""
+    from overmind.gates import priorart
+    monkeypatch.delenv("OVERMIND_PRIORART_KEY", raising=False)
+    assert priorart.has_durable_key() is False
+    monkeypatch.setenv("OVERMIND_PRIORART_KEY", "shared-secret")
+    assert priorart.has_durable_key() is True
+
+
+def test_search_records_executor_provenance():
+    """Residual #2: the search records WHICH executor ran and whether it was the
+    sanctioned cross-process default — so an injected in-process stub is visible,
+    not indistinguishable from a real decorrelated search."""
+    s = execute_prior_art_search(
+        "X", ["q"],
+        executor=lambda a, b: ([Candidate("adjacent", similar=False)], "codex", "openai"))
+    assert s.meta["sanctioned_executor"] is False   # a stub, not _codex_executor
+    assert "executor" in s.meta and "durable_key" in s.meta
+
+
+def test_token_portable_only_with_shared_key(monkeypatch):
+    """The concrete cross-process failure: mint under key A, verify under key B ->
+    invalid. Set a shared key and the same token verifies. This is why has_durable_key
+    matters — the per-process fallback is fail-closed across a boundary."""
+    from overmind.gates import priorart
+    monkeypatch.setenv("OVERMIND_PRIORART_KEY", "process-A-key")
+    s = execute_prior_art_search(
+        "X", ["q"], executor=lambda a, b: ([Candidate("adj", similar=False)], "codex", "openai"))
+    assert s.token_valid                              # verifies under the same key
+    monkeypatch.setenv("OVERMIND_PRIORART_KEY", "process-B-key")
+    assert s.token_valid is False                     # a different process key -> fails closed
+
+
+# --- round 4 re-attack: Codex's dose false-accept + sanctioned executor ----------
+
+def test_dose_arm_false_accept_is_now_blocked():
+    """Codex round-4: 'IGIV-C 0.2 g/kg' and 'IGIV-C 0.4 g/kg' both tokenised to
+    {igiv, infusion} and a wrong-DOSE arm passed. The dose numbers now discriminate."""
+    ch = ExportChannel(resolver=_DimResolver(
+        arm="IGIV-C 0.2 g/kg bw/Infusion (2 mL/kg bw)"))
+    right = Claim("oocytes retrieved", 11.1, SourceTier.REGISTRY,
+                  "NCT03809429#om[1]",
+                  meta={"outcome": "Number of Oocytes Retrieved",
+                        "arm": "IGIV-C 0.2 g/kg bw/Infusion (2 mL/kg bw)",
+                        "timepoint": "day of oocyte retrieval", "unit": "Oocytes"})
+    assert ch.emit(right).value == 11.1
+    wrong = Claim("oocytes retrieved", 11.1, SourceTier.REGISTRY,
+                  "NCT03809429#om[1]",
+                  meta={"outcome": "Number of Oocytes Retrieved",
+                        "arm": "IGIV-C 0.4 g/kg bw/Infusion (4 mL/kg bw)",
+                        "timepoint": "day of oocyte retrieval", "unit": "Oocytes"})
+    with pytest.raises(ChannelViolation, match="wrong arm|arm="):
+        ch.emit(wrong)
+
+
+def test_vague_arm_without_dose_is_blocked():
+    """Codex round-4: 'Duloxetine' must NOT match a specific-dose arm — a vague label
+    that fits both 60 mg and 120 mg arms is the selection hole. strict_numeric on arm
+    requires the ground-truth dose to be declared."""
+    ch = ExportChannel(resolver=_DimResolver(arm="Duloxetine 60 mg"))
+    vague = Claim("oocytes retrieved", 11.1, SourceTier.REGISTRY, "NCT03809429#om[1]",
+                  meta={"outcome": "Number of Oocytes Retrieved", "arm": "Duloxetine",
+                        "timepoint": "day of oocyte retrieval", "unit": "Oocytes"})
+    with pytest.raises(ChannelViolation, match="wrong arm|arm="):
+        ch.emit(vague)
+
+
+def test_wrong_timepoint_week_is_blocked():
+    """A numeric conflict in the timepoint (week 12 vs week 52) is blocked even though
+    timepoint uses the lenient numeric rule (it blocks conflicts, allows omissions)."""
+    ch = ExportChannel(resolver=_DimResolver(timepoint="week 52 follow-up"))
+    wrong = Claim("oocytes retrieved", 11.1, SourceTier.REGISTRY, "NCT03809429#om[1]",
+                  meta={"outcome": "Number of Oocytes Retrieved",
+                        "arm": "GnRH Agonist (GONAPEPTYL)",
+                        "timepoint": "week 12 follow-up", "unit": "Oocytes"})
+    with pytest.raises(ChannelViolation, match="timepoint"):
+        ch.emit(wrong)
+
+
+def test_sanctioned_executor_enforced_when_required():
+    """Codex round-4 executor seam: with require_sanctioned=True, an in-process stub
+    (sanctioned=False, signed) is refused; only the real codex executor clears it."""
+    stub = execute_prior_art_search(
+        "X", ["q"],
+        executor=lambda a, b: ([Candidate("adjacent", similar=False)], "codex", "openai"))
+    assert stub.token_valid and stub.sanctioned is False
+    c = Claim("X", 1, SourceTier.REGISTRY, "NCT1#a", claim_type=ClaimType.NOVELTY)
+    # default (tests): stub passes the other checks
+    guard_novelty(c, stub)
+    # production posture: require the sanctioned cross-process executor -> stub refused
+    with pytest.raises(PriorArtError, match="sanctioned"):
+        guard_novelty(c, stub, require_sanctioned=True)
+
+
+def test_sanctioned_flag_is_signed_not_forgeable():
+    """Setting sanctioned=True by hand invalidates the token (it is in the signed
+    payload) — a stub cannot forge sanctioned provenance."""
+    stub = execute_prior_art_search(
+        "X", ["q"],
+        executor=lambda a, b: ([Candidate("adj", similar=False)], "codex", "openai"))
+    forged = PriorArtSearch(subject=stub.subject, queries=stub.queries, sources=stub.sources,
+                            reviewer_family=stub.reviewer_family, candidates=stub.candidates,
+                            executed=True, token=stub.token, sanctioned=True)  # flipped
+    assert forged.token_valid is False   # the token was signed over sanctioned=False
+
+
+# --- round 5 re-attack: title-overlap arm, channel-boundary sanctioned ----------
+
+def test_double_blind_arm_title_overlap_is_blocked():
+    """Codex round-5: 'Double-Blind Tocilizumab' vs 'Double-Blind Placebo' shared
+    {double, blind} (Jaccard 0.5) and false-accepted. Arm-boilerplate is now stripped
+    so the drug/comparator name decides."""
+    ch = ExportChannel(resolver=_DimResolver(arm="Double-Blind Tocilizumab"))
+    right = Claim("oocytes retrieved", 11.1, SourceTier.REGISTRY, "NCT02453256#om[1]",
+                  meta={"outcome": "Number of Oocytes Retrieved",
+                        "arm": "Double-Blind Tocilizumab",
+                        "timepoint": "day of oocyte retrieval", "unit": "Oocytes"})
+    assert ch.emit(right).value == 11.1
+    wrong = Claim("oocytes retrieved", 11.1, SourceTier.REGISTRY, "NCT02453256#om[1]",
+                  meta={"outcome": "Number of Oocytes Retrieved",
+                        "arm": "Double-Blind Placebo",
+                        "timepoint": "day of oocyte retrieval", "unit": "Oocytes"})
+    with pytest.raises(ChannelViolation, match="wrong arm|arm="):
+        ch.emit(wrong)
+
+
+def test_channel_blocks_stub_novelty_by_default():
+    """Codex round-5: the channel called guard_novelty WITHOUT require_sanctioned, so a
+    stub-backed NOVELTY emitted. Default channel now requires the sanctioned executor."""
+    def stub(subject, queries):
+        return [Candidate("adjacent", similar=False)], "codex", "openai"
+    s = execute_prior_art_search("brand new method", ["q"], executor=stub)
+    assert s.sanctioned is False
+    c = Claim("brand new method", 3, SourceTier.REGISTRY, "NCT12345678#armcount=3",
+              claim_type=ClaimType.NOVELTY,
+              meta={"panel_verdict": "passed", "prior_art": s})
+    with pytest.raises(ChannelViolation, match="sanctioned"):
+        _chan().emit(c)   # default require_sanctioned_novelty=True
+
+
+# --- round 6 re-attack: header bytes, WITH/WITHOUT, exact group_code -------------
+
+def test_with_without_arm_negation_is_blocked():
+    """Codex round-6: 'With Chronic Pain' was a strict subset of 'Without Chronic Pain'
+    so containment accepted the negated arm. A negation mismatch now blocks."""
+    ch = ExportChannel(resolver=_DimResolver(
+        arm="Success in Phase 1 Among Participants Without Chronic Pain"))
+    wrong = Claim("oocytes retrieved", 11.1, SourceTier.REGISTRY, "NCT00316277#om[1]",
+                  meta={"outcome": "Number of Oocytes Retrieved",
+                        "arm": "Success in Phase 1 Among Participants With Chronic Pain",
+                        "timepoint": "day of oocyte retrieval", "unit": "Oocytes"})
+    with pytest.raises(ChannelViolation, match="wrong arm|arm="):
+        ch.emit(wrong)
+
+
+def test_exact_group_code_binding_is_definitive():
+    """Codex round-6 fix: declaring meta['group_code'] binds the arm by AACT's group
+    code EXACTLY — no title heuristic. A wrong code blocks even if the title matches."""
+    class _GResolver(LocatorResolver):
+        def __init__(self): super().__init__(aact_path=None)
+        def resolve(self, locator, claimed_value=None):
+            if "om[" in (locator or ""):
+                return Resolution(True, True, "stub",
+                                  ground_truth={"value": 11.1, "title": "Number of Oocytes Retrieved",
+                                                "group": "OG001", "arm": "Tocilizumab",
+                                                "timepoint": "wk12", "unit": "Oocytes"})
+            return Resolution(False, None, "stub")
+    ch = ExportChannel(resolver=_GResolver())
+    base = dict(outcome="Number of Oocytes Retrieved", arm="Tocilizumab",
+                timepoint="wk12", unit="Oocytes")
+    ok = Claim("oocytes retrieved", 11.1, SourceTier.REGISTRY, "NCT12345678#om[1]",
+               meta={**base, "group_code": "OG001"})
+    assert ch.emit(ok).value == 11.1
+    wrong = Claim("oocytes retrieved", 11.1, SourceTier.REGISTRY, "NCT12345678#om[1]",
+                  meta={**base, "group_code": "OG000"})   # wrong code, right title
+    with pytest.raises(ChannelViolation, match="group.code|wrong arm"):
+        ch.emit(wrong)
+
+
+def test_write_report_refuses_header_with_a_number():
+    """Codex round-6: the header was written UNSEALED — arbitrary bytes beside sealed
+    Rendered lines. A header carrying a claim-shaped number is refused."""
+    from overmind.gates.channel import write_report
+    good = Claim("matched arm count", 3, SourceTier.REGISTRY, "NCT12345678#armcount=3")
+    r = ExportChannel(resolver=_StubResolver()).emit(good)
+    import tempfile, os as _os
+    p = _os.path.join(tempfile.mkdtemp(), "r.md")
+    with pytest.raises(ChannelViolation, match="header"):
+        write_report(p, [r], header="fabricated mortality 38.1%")
+    # a plain banner (no number) is fine
+    write_report(p, [r], header="# Tuesday slides")
+
+
 def test_scanner_surfaces_syntax_error_file(tmp_path):
     """Round-3 (Codex): a SyntaxError file is 'unparseable', never silently clean."""
     f = tmp_path / "broken.py"
@@ -360,7 +649,10 @@ def test_novelty_claim_through_channel_requires_signed_search():
     c2 = Claim("brand new method", 3, SourceTier.REGISTRY, "NCT12345678#armcount=3",
                claim_type=ClaimType.NOVELTY,
                meta={"panel_verdict": "passed", "prior_art": s})
-    assert _chan().emit(c2).value == 3
+    # stub search is sanctioned=False, so a production channel (require_sanctioned_novelty
+    # default True) would block it; the stub path uses a channel that does not require it
+    lax = ExportChannel(resolver=_StubResolver(), require_sanctioned_novelty=False)
+    assert lax.emit(c2).value == 3
 
 
 # --- enforcement scanner: the inventory is computed, not asserted -----------

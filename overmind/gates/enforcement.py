@@ -28,6 +28,11 @@ _OUTPUT_CALLS = {"print", "write", "writelines", "write_text", "to_csv",
                  # logging surfaces (a number in a log/exception the UI shows)
                  "info", "warning", "warn", "error", "critical", "exception", "debug", "log"}
 _DUMP_CALLS = {"dump", "dumps"}          # json.dump(...) to a file
+# the subset that is a PHYSICAL FILE write — the writes the runtime sink guard
+# (gates.sink) can own at the open() layer. print/echo/log go to stdout and are
+# NOT owned by the file sink; they remain the static ratchet's job (named residual).
+_FILE_WRITE_CALLS = {"write", "writelines", "write_text", "to_csv", "to_markdown",
+                     "to_html", "to_sql", "writeText", "dump"}
 # names that mean an output arg went THROUGH the channel (a routed site, not naked)
 _ROUTED_TOKENS = {"emit", "emit_all", "Rendered"}
 # store reads that return a raw Fact whose .value bypasses consume_verified
@@ -42,9 +47,11 @@ _GATE_TOKENS = ("gates.channel", "gates.export_gate", "guard_export",
 class Site:
     file: str
     line: int
-    kind: str          # "output" | "store_value_leak"
+    kind: str          # "output" | "store_value_leak" | "gate_disabled"
     snippet: str
     routed: bool = False   # the output arg went through channel.emit / Rendered
+    file_write: bool = False  # physical file write (open/write/to_csv/json.dump) —
+                              # the subset the runtime sink guard owns at open()
 
 
 @dataclass
@@ -137,12 +144,14 @@ class _Visitor(ast.NodeVisitor):
                                            _snippet(self.src_lines, node), routed=False))
         if name in _OUTPUT_CALLS and _has_numberish_arg(node):
             self.sites.append(Site(self.path, node.lineno, "output",
-                                   _snippet(self.src_lines, node), routed=_arg_is_routed(node)))
+                                   _snippet(self.src_lines, node), routed=_arg_is_routed(node),
+                                   file_write=name in _FILE_WRITE_CALLS))
         elif name in _DUMP_CALLS and isinstance(node.func, ast.Attribute) \
                 and _module_is(node.func.value, "json") and len(node.args) >= 2:
             # json.dump(obj, file) — writing structured numbers to a sink
             self.sites.append(Site(self.path, node.lineno, "output",
-                                   _snippet(self.src_lines, node), routed=_arg_is_routed(node)))
+                                   _snippet(self.src_lines, node), routed=_arg_is_routed(node),
+                                   file_write=True))
         self.generic_visit(node)
 
     def visit_Attribute(self, node: ast.Attribute) -> None:
@@ -248,6 +257,13 @@ def inventory(roots: Iterable[str]) -> dict:
     # naked (un-routed) emit site — OPEN-HOLE or leaky both count. A leaky file
     # imports the channel but still prints raw numbers; it is not clean.
     world_holes = [r for r in (open_holes + leaky) if _reads_world_data(r.path)]
+    # Split the world-claim holes by whether their NAKED sites are physical FILE
+    # writes (the runtime sink guard owns these at open()) or stdout-only prints
+    # (not owned by the file sink — the static ratchet's job, a named residual).
+    def _has_naked_file_write(r: FileReport) -> bool:
+        return any(s.file_write and not s.routed for s in r.sites)
+    file_write_holes = [r for r in world_holes if _has_naked_file_write(r)]
+    stdout_only_holes = [r for r in world_holes if not _has_naked_file_write(r)]
     return {
         "files_with_emit": len(reports),
         "emit_sites": total_sites,
@@ -259,6 +275,11 @@ def inventory(roots: Iterable[str]) -> dict:
         "routed": sorted(r.path for r in routed),
         "world_claim_holes": sorted(r.path for r in world_holes),
         "world_claim_hole_count": len(world_holes),
+        # runtime-sink-governed subset (physical file writers) vs stdout-only
+        "file_write_holes": sorted(r.path for r in file_write_holes),
+        "file_write_hole_count": len(file_write_holes),
+        "stdout_only_holes": sorted(r.path for r in stdout_only_holes),
+        "stdout_only_hole_count": len(stdout_only_holes),
         "reports": reports,
     }
 

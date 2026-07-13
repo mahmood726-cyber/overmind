@@ -119,20 +119,29 @@ class LocatorResolver:
         m_om = _OM_ANCHOR.search(locator)
         if m_om:
             om_id = int(m_om.group(1))
+            # Round-4 residual (ranked highest by the prompt): bind not just the
+            # outcome TITLE but the ARM, TIMEPOINT, and UNIT of the specific om row.
+            # A number can match an outcome yet be attached to the wrong arm (control
+            # vs treatment), the wrong timepoint (wk12 vs wk52), or the wrong unit
+            # (mg/dL vs mmol/L) — that is the SELECTION error F3 was blind to. The om
+            # id pins ONE row, so its arm/timepoint/unit are ground truth; the channel
+            # requires the claim to declare and match them (when AACT has them).
             row = con.execute(
-                "SELECT param_value_num, title, ctgov_group_code FROM outcome_measurements "
-                "WHERE id = ? AND nct_id = ?", [om_id, nct]).fetchone()
+                "SELECT om.param_value_num, om.title, om.ctgov_group_code, om.units, "
+                "       rg.title AS arm_title, o.time_frame "
+                "FROM outcome_measurements om "
+                "LEFT JOIN result_groups rg ON rg.id = om.result_group_id "
+                "LEFT JOIN outcomes o ON o.id = om.outcome_id "
+                "WHERE om.id = ? AND om.nct_id = ?", [om_id, nct]).fetchone()
             if not row:
                 return Resolution(False, None, "aact",
                                   reason=f"{nct} has no outcome_measurement id={om_id}")
-            gt, title, group = row
+            gt, title, group, units, arm_title, time_frame = row
             ok = _num_eq(claimed_value, gt)
-            # Semantic identity (outcome name / arm / timepoint / unit) is NOT fully
-            # verified here — see the named residual in HARNESS-SELF-REVIEW Part III.
-            # We surface the ground-truth title so a caller (and a reviewer) can catch
-            # an anchor-hijack where the number matches but the outcome does not.
-            return Resolution(True, ok, "aact", ground_truth={"value": gt, "title": title,
-                                                              "group": group},
+            return Resolution(True, ok, "aact",
+                              ground_truth={"value": gt, "title": title, "group": group,
+                                            "arm": arm_title, "timepoint": time_frame,
+                                            "unit": units},
                               reason="" if ok else
                                      f"value {claimed_value!r} != AACT ground truth {gt!r} "
                                      f"at om[{om_id}] ({title!r})")
