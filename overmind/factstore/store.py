@@ -20,6 +20,7 @@ then frozen — that is what makes the synthetic flag unlosable and transitive.
 """
 from __future__ import annotations
 
+import fnmatch
 import json
 import math
 import sqlite3
@@ -165,6 +166,21 @@ CREATE TABLE IF NOT EXISTS value_taints (
     fact_id  INTEGER NOT NULL,
     created  REAL NOT NULL
 );
+-- Hypothesis registry (auto-classify confirms_hypothesis). Mahmood's stated claims
+-- are registered ONCE with their pre-registered refutation criterion. On assert, a
+-- headline whose key matches a hypothesis's patterns (and, if given, satisfies its
+-- direction) is FORCED confirms_hypothesis=True and inherits the pre-registered
+-- refutation — so the cross-family gate fires WITHOUT the lane having to remember to
+-- declare it. This is the gate that must not depend on a lane's honesty (the
+-- recovery-multiplier lane softened a result toward Mahmood twice).
+CREATE TABLE IF NOT EXISTS hypotheses (
+    slug                 TEXT PRIMARY KEY,
+    statement            TEXT NOT NULL,
+    key_patterns         TEXT NOT NULL DEFAULT '[]',   -- JSON list of fnmatch globs
+    refutation_criterion TEXT NOT NULL,
+    direction            TEXT NOT NULL DEFAULT 'null', -- JSON: null | {op, threshold[, field]}
+    created              REAL NOT NULL
+);
 """
 
 # Numeric agreement tolerance for contradiction detection (matches the repo's
@@ -236,6 +252,30 @@ def _taint_forms(value: Any) -> set[str]:
             for nd in (2, 3, 4):
                 forms.add(repr(round(float(x), nd)))
     return forms
+
+
+_DIRECTION_OPS = {
+    ">=": lambda a, b: a >= b, ">": lambda a, b: a > b,
+    "<=": lambda a, b: a <= b, "<": lambda a, b: a < b,
+    "==": lambda a, b: abs(a - b) <= _DEFAULT_ATOL + _DEFAULT_RTOL * max(abs(a), abs(b)),
+    "!=": lambda a, b: abs(a - b) > _DEFAULT_ATOL + _DEFAULT_RTOL * max(abs(a), abs(b)),
+}
+
+
+def _direction_satisfied(direction: dict, value: Any) -> bool:
+    """True iff ``value`` satisfies the hypothesis ``direction`` (see register_hypothesis).
+    A non-numeric value, missing field, or unknown op => not satisfied (fail-closed:
+    we only AUTO-confirm when we can positively show the value supports the claim)."""
+    op = _DIRECTION_OPS.get(str(direction.get("op")))
+    if op is None or "threshold" not in direction:
+        return False
+    field = direction.get("field")
+    raw = value.get(field) if (field and isinstance(value, dict)) else value
+    n = _as_number(raw)
+    thr = _as_number(direction.get("threshold"))
+    if n is None or thr is None:
+        return False
+    return bool(op(n, thr))
 
 
 def open_shared(path: str | Path | None = None, *, lane: str | None = None) -> "FactStore":
@@ -356,6 +396,22 @@ class FactStore:
             derivation = f"{derivation} | TAINTED: {'; '.join(taint_reasons)}"
         elif taint_reasons:
             derivation = "TAINTED: " + "; ".join(taint_reasons)
+        # AUTO-CLASSIFY confirms_hypothesis (do not depend on the lane's honesty). If
+        # this fact's key matches a registered Mahmood hypothesis (and satisfies its
+        # direction, if any), FORCE confirms_hypothesis=True and inherit the
+        # hypothesis's pre-registered refutation criterion. A forgetful/dishonest lane
+        # can no longer omit the flag to dodge the cross-family gate.
+        matched = self._match_hypothesis(key, value)
+        if matched is not None:
+            confirms_hypothesis = True
+            if not hypothesis:
+                hypothesis = matched["statement"]
+            if not refutation_criterion.strip():
+                refutation_criterion = matched["refutation_criterion"]
+            if derivation:
+                derivation = f"{derivation} | AUTO-CONFIRMS hypothesis {matched['slug']!r}"
+            else:
+                derivation = f"AUTO-CONFIRMS hypothesis {matched['slug']!r}"
         # A confirming headline MUST pre-register its refutation criterion at assert
         # time (immutable). Enforced here so it cannot be added post-hoc to rescue a
         # verify() call later.
@@ -626,6 +682,73 @@ class FactStore:
                 "SELECT norm FROM value_taints WHERE norm=?", (norm,)).fetchone()
             if row is not None:
                 return norm
+        return None
+
+    # -- hypothesis registry (auto-classify confirms_hypothesis) -----------
+
+    def register_hypothesis(self, slug: str, *, statement: str,
+                            key_patterns: Sequence[str],
+                            refutation_criterion: str,
+                            direction: dict | None = None) -> None:
+        """Register one of Mahmood's stated hypotheses ONCE, with the refutation
+        criterion PRE-REGISTERED here (not at each headline). Any later fact whose key
+        matches ``key_patterns`` (fnmatch globs) — and satisfies ``direction`` if given
+        — is auto-classified as hypothesis-confirming and inherits this refutation, so
+        the cross-family verify gate fires without the emitting lane declaring it.
+
+        ``refutation_criterion`` is mandatory: a hypothesis with no way to be refuted
+        is not admissible (same rule as a confirming headline).
+
+        ``direction`` (optional) makes the match value-sensitive so a REFUTING result
+        is not mislabeled as confirming. Forms::
+            {"op": ">=", "threshold": 0.8}                 # scalar fact value
+            {"op": ">=", "threshold": 0.8, "field": "se"}  # dict fact value's field
+        Supported ops: >=, >, <=, <, ==, !=.
+        """
+        if not slug or not isinstance(slug, str):
+            raise ValueError("hypothesis slug must be a non-empty string")
+        if not statement.strip():
+            raise ValueError("hypothesis statement is required")
+        if not refutation_criterion.strip():
+            raise SycophancyGateError(
+                f"hypothesis {slug!r} has no refutation_criterion — a hypothesis that "
+                "cannot be refuted is not admissible")
+        pats = [p for p in key_patterns if p]
+        if not pats:
+            raise ValueError("at least one key_pattern is required")
+        self._conn.execute(
+            "INSERT OR REPLACE INTO hypotheses "
+            "(slug, statement, key_patterns, refutation_criterion, direction, created) "
+            "VALUES (?,?,?,?,?,?)",
+            (slug, statement, json.dumps(pats), refutation_criterion,
+             json.dumps(direction), time.time()))
+        self._conn.commit()
+
+    def hypotheses(self) -> list[dict]:
+        """All registered hypotheses (slug, statement, key_patterns, refutation, direction)."""
+        rows = self._conn.execute(
+            "SELECT slug, statement, key_patterns, refutation_criterion, direction, created "
+            "FROM hypotheses ORDER BY slug").fetchall()
+        out = []
+        for r in rows:
+            out.append({
+                "slug": r["slug"], "statement": r["statement"],
+                "key_patterns": json.loads(r["key_patterns"]),
+                "refutation_criterion": r["refutation_criterion"],
+                "direction": json.loads(r["direction"]), "created": float(r["created"]),
+            })
+        return out
+
+    def _match_hypothesis(self, key: str, value: Any) -> dict | None:
+        """Return the first registered hypothesis this (key, value) confirms, else None.
+        A hypothesis matches when the key matches one of its globs AND — if a direction
+        is set — the value satisfies it (so a refuting value is not auto-confirmed)."""
+        for h in self.hypotheses():
+            if not any(fnmatch.fnmatch(key, pat) for pat in h["key_patterns"]):
+                continue
+            direction = h["direction"]
+            if direction is None or _direction_satisfied(direction, value):
+                return h
         return None
 
     def _event(self, fact_id: int, kind: str, *, families: Iterable[str] = (),

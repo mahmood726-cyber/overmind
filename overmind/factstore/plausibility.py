@@ -13,6 +13,7 @@ carries (a scalar, or a dict of meta-analysis fields). A fact that fails is FLAG
 from __future__ import annotations
 
 import math
+import re
 from dataclasses import dataclass, field
 from typing import Any
 
@@ -32,7 +33,28 @@ EFFECT_SOFT_LOW, EFFECT_SOFT_HIGH = 0.2, 5.0
 _PROPORTION_KEYS = ("sensitivity", "specificity", "se", "sp", "proportion",
                     "prevalence", "ppv", "npv")
 _EFFECT_KEYS = ("hr", "or", "rr", "ratio", "effect")
+_PROBABILITY_TOKENS = frozenset({"proportion", "probability", "p", "pvalue", "prob"})
 _TOL = 1e-6
+
+# The scalar ``kind`` hint is matched by WORD TOKEN, never raw substring. A substring
+# match wrongly fires the effect-band rule on a count whose key merely CONTAINS an
+# effect string — "or" inside "c[or]pus", "rr" inside "e[rr]or", "se" inside "u[se]d" —
+# which would block legitimate real numbers and undermine the gate. Dict fields are
+# already matched exactly (``lk in _PROPORTION_KEYS``); this only tightens the hint.
+_TOKEN_RE = re.compile(r"[a-z0-9]+")
+
+
+def _kind_tokens(kind: str | None) -> set[str]:
+    return set(_TOKEN_RE.findall((kind or "").lower()))
+
+
+def _kind_is_proportion(kind: str | None) -> bool:
+    toks = _kind_tokens(kind)
+    return bool(toks & set(_PROPORTION_KEYS)) or bool(toks & _PROBABILITY_TOKENS)
+
+
+def _kind_is_effect(kind: str | None) -> bool:
+    return bool(_kind_tokens(kind) & set(_EFFECT_KEYS))
 
 
 @dataclass(slots=True)
@@ -68,10 +90,10 @@ def check_plausibility(value: Any, *, kind: str | None = None) -> PlausibilityRe
     # -- scalar with a kind hint ------------------------------------------
     scalar = _num(value)
     if scalar is not None:
-        if any(p in kl for p in _PROPORTION_KEYS) or kl in ("proportion", "probability", "p", "pvalue"):
+        if _kind_is_proportion(kl):
             if not (0.0 - _TOL <= scalar <= 1.0 + _TOL):
                 v.append(f"{kind or 'proportion'}={scalar} outside [0,1]")
-        if any(e in kl for e in _EFFECT_KEYS):
+        if _kind_is_effect(kl):
             _effect_check(kind or "effect", scalar, v, w)
 
     # -- proportion fields in a dict --------------------------------------
@@ -175,7 +197,7 @@ def _dispersion_violations(d: dict, kl: str) -> list[str]:
         nums = [n for n in ( _num(x) for x in vals ) if n is not None] if isinstance(vals, (list, tuple)) else []
         if len(nums) >= 2:
             rng = max(nums) - min(nums)
-    metric_is_proportion = any(p in kl for p in _PROPORTION_KEYS) or \
+    metric_is_proportion = _kind_is_proportion(kl) or \
         any(str(d.get("metric", "")).lower().startswith(p) for p in _PROPORTION_KEYS)
     if rng is not None and metric_is_proportion and rng < DISPERSION_TIGHT_RANGE:
         return [f"impossible dispersion: spread {rng} across k={int(k)} studies is "

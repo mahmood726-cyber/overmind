@@ -62,6 +62,27 @@ def test_impossible_and_extreme_effects():
     assert check_plausibility({"or": 1.3}).warnings == []
 
 
+# --- the effect/proportion HINT is matched by word token, not raw substring -----
+
+def test_count_kind_containing_effect_substring_is_not_an_effect():
+    """TRIP the false positive: a COUNT whose key merely contains an effect string
+    ('or' inside 'corpus', 'rr' inside 'error', 'se' inside 'used') must NOT be
+    range-checked as an effect ratio. The gate over-firing on legitimate counts is a
+    bug that pushes users to bypass it."""
+    assert check_plausibility(532, kind="rapidmeta.corpus.provenance_backed").ok is True
+    assert check_plausibility(4151, kind="pico.graph.errors").ok is True
+    assert check_plausibility(2262, kind="pico.trials_used").ok is True
+    # but a genuine effect token still fires
+    assert check_plausibility(500.0, kind="TB.pooled.rr").ok is False
+    assert check_plausibility(0.0, kind="bundle.hr").ok is False
+
+
+def test_proportion_hint_matched_by_token_not_substring():
+    # 'sensitivity' is a token -> range-checked; 'usable' contains 'se' but is not
+    assert check_plausibility(1.4, kind="TB.sensitivity").ok is False
+    assert check_plausibility(1.4, kind="coverage.abstract_usable").ok is True
+
+
 # --- CI must contain its own point (the 1.53 [1.03-1.08] bug) -------------------
 
 def test_ci_not_containing_point_flagged():
