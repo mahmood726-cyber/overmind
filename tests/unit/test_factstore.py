@@ -178,6 +178,93 @@ def test_resumable_from_disk_after_reopen(tmp_path):
     fs2.close()
 
 
+def test_launder_then_summarise_is_blocked(tmp_path):
+    """THE handoff trip-test (context-window laundering). Lane A seeds a synthetic
+    fixture; lane B derives from it (edge path); lane C READS it then re-emits the
+    bare value as a FRESH ROOT fact with NO declared lineage (the laundering path
+    that broke the DAG). The summary gate MUST block BOTH. If this passes silently,
+    the store does not work."""
+    path = tmp_path / "launder.db"
+    # lane A: the synthetic DTA70 figure
+    a = FactStore(path, session_lane="lane-A")
+    fixture = a.record_synthetic("TB.DTA.sens", 0.858, source="DTA70:tb", lane="lane-A")
+    a.close()
+
+    # lane B: derives from it via a fact edge -> transitively synthetic (edge layer)
+    b = FactStore(path, session_lane="lane-B")
+    edge = b.derive("TB.headline.edge", 0.858, from_ids=[fixture],
+                    source="pool", lane="lane-B")
+    assert b.get(edge).provenance == Provenance.SYNTHETIC
+    b.close()
+
+    # lane C: READS the synthetic fixture (context contaminated), then writes a
+    # BRAND-NEW ROOT fact with NO parents, declaring it real (the launder).
+    c = FactStore(path, session_lane="lane-C")
+    _ = c.get(fixture)                                  # <-- rehydrate-on-read taints lane-C
+    laundered = c.assert_fact("TB.headline.laundered", 0.858,
+                              provenance=Provenance.REAL,   # lane CLAIMS real...
+                              source_locator="my summary", lane="lane-C")  # ...no lineage
+    assert c.get(laundered).provenance == Provenance.SYNTHETIC   # ...but forced synthetic
+    c.close()
+
+    # the summary gate blocks BOTH the edge-derived and the laundered headline
+    s = FactStore(path)
+    with pytest.raises(SyntheticFactError):
+        s.consume_verified("TB.headline.edge")
+    with pytest.raises(SyntheticFactError):
+        s.consume_verified("TB.headline.laundered")
+    s.close()
+
+
+def test_value_taint_catches_copy_without_reading(tmp_path):
+    """Even a lane that never READ the fixture, but copies the specific synthetic
+    NUMBER (with rounding), is force-tainted by the value-taint set."""
+    path = tmp_path / "vt.db"
+    a = FactStore(path, session_lane="lane-A")
+    a.record_synthetic("x", 0.858, source="DTA70", lane="lane-A")
+    a.close()
+
+    # a different, un-contaminated lane copies the number (rounded) with fresh lineage
+    d = FactStore(path, session_lane="lane-D")
+    fid = d.record_real("y", 0.86, source="typed-by-hand", lane="lane-D")  # 0.858 -> 0.86
+    assert d.get(fid).provenance == Provenance.SYNTHETIC
+    d.close()
+
+
+def test_clean_lane_non_interference_stays_real(tmp_path):
+    """Non-interference: a lane that NEVER read synthetic data and does NOT reuse a
+    tainted value produces REAL, consumable facts — the store is not sticky-by-default
+    (else lanes route around it). Only contamination taints."""
+    path = tmp_path / "clean.db"
+    a = FactStore(path, session_lane="lane-A")
+    a.record_synthetic("x", 0.858, source="DTA70", lane="lane-A")
+    a.close()
+
+    clean = FactStore(path, session_lane="clean-lane")   # never reads the synthetic fact
+    fid = clean.record_real("real.effect", 0.63, source="PMID:5", lane="clean-lane")
+    clean.verify(fid, families=["openai", "google"])
+    assert clean.consume_verified("real.effect") == 0.63   # clean output, verified
+    assert "clean-lane" not in clean.tainted_lanes()
+    clean.close()
+
+
+def test_tainted_lane_persists_across_reopen(tmp_path):
+    """Cross-session persistence: a lane tainted in one session stays tainted after a
+    restart (a contaminated context can't be laundered by reopening the store)."""
+    path = tmp_path / "persist.db"
+    a = FactStore(path, session_lane="lane-A")
+    fx = a.record_synthetic("x", 0.858, source="DTA70", lane="lane-A")
+    a.close()
+    c1 = FactStore(path, session_lane="lane-C")
+    c1.get(fx)                     # taint lane-C
+    c1.close()
+    # new process/session, same lane id -> still tainted
+    c2 = FactStore(path, session_lane="lane-C")
+    fid = c2.record_real("fresh", 0.5, source="s", lane="lane-C")
+    assert c2.get(fid).provenance == Provenance.SYNTHETIC
+    c2.close()
+
+
 def test_open_shared_resolves_env_path(tmp_path, monkeypatch):
     """The shared store is one conventional location so every lane joins the SAME
     store with one line — no per-lane private notebook."""

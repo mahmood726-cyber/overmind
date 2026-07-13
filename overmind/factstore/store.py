@@ -139,6 +139,25 @@ CREATE TABLE IF NOT EXISTS fact_events (
     created   REAL NOT NULL
 );
 CREATE INDEX IF NOT EXISTS idx_events_fact ON fact_events(fact_id);
+-- Rehydrate-on-read taint (DCPG / NeuroTaint 2604.23374): a lane that READS a
+-- synthetic fact is recorded here; every fact it subsequently writes inherits
+-- synthetic regardless of declared lineage. Persisted so the taint survives a
+-- process restart (cross-session persistence). This closes context-window
+-- laundering — re-stating a synthetic value as a fresh root fact with no edge.
+CREATE TABLE IF NOT EXISTS tainted_lanes (
+    lane            TEXT PRIMARY KEY,
+    tainted_by_fact INTEGER NOT NULL,
+    detail          TEXT NOT NULL DEFAULT '',
+    created         REAL NOT NULL
+);
+-- Value-taint set (agy's cheap patch): normalised numeric forms emitted by any
+-- synthetic fact. A new fact whose numeric leaves match a tainted value is forced
+-- synthetic — catches copy/rounding laundering of a specific number.
+CREATE TABLE IF NOT EXISTS value_taints (
+    norm     TEXT PRIMARY KEY,
+    fact_id  INTEGER NOT NULL,
+    created  REAL NOT NULL
+);
 """
 
 # Numeric agreement tolerance for contradiction detection (matches the repo's
@@ -172,7 +191,47 @@ def _as_number(v: Any) -> float | None:
     return None
 
 
-def open_shared(path: str | Path | None = None) -> "FactStore":
+def _numeric_leaves(value: Any) -> list[float]:
+    """Every numeric value inside ``value`` (scalars, list items, dict values,
+    recursively). Booleans excluded."""
+    out: list[float] = []
+    n = _as_number(value)
+    if n is not None:
+        out.append(n)
+    elif isinstance(value, dict):
+        for v in value.values():
+            out.extend(_numeric_leaves(v))
+    elif isinstance(value, (list, tuple)):
+        for v in value:
+            out.extend(_numeric_leaves(v))
+    return out
+
+
+def _taint_forms(value: Any) -> set[str]:
+    """Normalised string forms of the *specific* numeric leaves worth taint-tracking
+    (the effect-size / Se / Sp / large-N laundering targets). Registers exact plus
+    rounded forms so copy AND rounding laundering (0.858 -> 0.86) both match.
+
+    Deliberately SKIPS small integers (< 1000) and 0/1: study counts, arm counts and
+    trivial values are too common to taint without absurd false positives. The
+    rehydrate-on-read lane taint is the primary defence; this value set is the
+    secondary catch for a specific laundered number."""
+    forms: set[str] = set()
+    for x in _numeric_leaves(value):
+        if not math.isfinite(x):
+            continue
+        is_int = float(x).is_integer()
+        if is_int and abs(x) < 1000:
+            continue  # skip trivial/common small integers (counts, k, arms)
+        forms.add(repr(float(x)))
+        # rounded forms catch copy-with-rounding of a specific float
+        if not is_int:
+            for nd in (2, 3, 4):
+                forms.add(repr(round(float(x), nd)))
+    return forms
+
+
+def open_shared(path: str | Path | None = None, *, lane: str | None = None) -> "FactStore":
     """Open THE shared fact store — the one every lane must read/write so findings
     stop living in twenty private notebooks.
 
@@ -181,7 +240,11 @@ def open_shared(path: str | Path | None = None) -> "FactStore":
     one conventional location, a lane needs a single line to join the shared store::
 
         from overmind.factstore import open_shared
-        open_shared().record_real("key", value, source="PMID:1", lane="my-lane")
+        fs = open_shared(lane="my-lane")
+        fs.record_real("key", value, source="PMID:1", lane="my-lane")
+
+    Pass ``lane`` so rehydrate-on-read taint works: if this handle reads a synthetic
+    fact, the lane is tainted and its subsequent writes are forced synthetic.
     """
     import os
     resolved = (str(path) if path is not None
@@ -189,7 +252,7 @@ def open_shared(path: str | Path | None = None) -> "FactStore":
                 or str(Path.home() / ".overmind" / "factstore.db"))
     if resolved != ":memory:":
         Path(resolved).parent.mkdir(parents=True, exist_ok=True)
-    return FactStore(resolved)
+    return FactStore(resolved, session_lane=lane)
 
 
 class FactStore:
@@ -208,8 +271,13 @@ class FactStore:
     """
 
     def __init__(self, path: str | Path = ":memory:", *,
+                 session_lane: str | None = None,
                  rtol: float = _DEFAULT_RTOL, atol: float = _DEFAULT_ATOL) -> None:
         self.path = str(path)
+        # The lane operating THIS handle. When set, reading a synthetic fact through
+        # this handle taints the lane (rehydrate-on-read), so anything it writes next
+        # is forced synthetic. Each lane should open the store with its own identity.
+        self.session_lane = session_lane
         self.rtol = rtol
         self.atol = atol
         self._conn = sqlite3.connect(self.path)
@@ -259,9 +327,28 @@ class FactStore:
             raise ValueError("lane is required — every fact records who asserted it")
         prov = Provenance(provenance) if not isinstance(provenance, Provenance) else provenance
         parent_ids = [int(p) for p in parents]
-        # TRANSITIVE synthetic: join with every parent's frozen provenance.
+        # TRANSITIVE synthetic (edge layer): join with every parent's frozen provenance.
         parent_provs = [self._provenance_of(pid) for pid in parent_ids]
         effective = Provenance.join(prov, *parent_provs)
+        taint_reasons: list[str] = []
+        # REHYDRATE-ON-READ (the laundering fix): if the WRITER lane has read a
+        # synthetic fact, everything it writes is forced synthetic regardless of the
+        # declared lineage — this catches a lane re-stating a synthetic value as a
+        # fresh root fact with no parents (the DTA70 escape path).
+        if effective != Provenance.SYNTHETIC and self._is_lane_tainted(lane):
+            effective = Provenance.SYNTHETIC
+            taint_reasons.append(f"writer lane {lane!r} is taint-carrying (read synthetic data)")
+        # VALUE-TAINT (copy/rounding launder): if any numeric leaf of the value matches
+        # a value emitted by a synthetic fact, force synthetic.
+        if effective != Provenance.SYNTHETIC:
+            hit = self._value_taint_hit(value)
+            if hit is not None:
+                effective = Provenance.SYNTHETIC
+                taint_reasons.append(f"value matches synthetic-tainted number ({hit})")
+        if taint_reasons and derivation:
+            derivation = f"{derivation} | TAINTED: {'; '.join(taint_reasons)}"
+        elif taint_reasons:
+            derivation = "TAINTED: " + "; ".join(taint_reasons)
         # A confirming headline MUST pre-register its refutation criterion at assert
         # time (immutable). Enforced here so it cannot be added post-hoc to rescue a
         # verify() call later.
@@ -281,6 +368,10 @@ class FactStore:
         )
         fact_id = int(cur.lastrowid)
         self._conn.commit()
+        # A synthetic fact registers its numeric leaves in the value-taint set so a
+        # later copy/rounding re-statement is caught even without a lineage edge.
+        if effective == Provenance.SYNTHETIC:
+            self._register_value_taint(fact_id, value)
         self._detect_contradiction(fact_id, key, value)
         return fact_id
 
@@ -318,7 +409,7 @@ class FactStore:
           ``families`` (cross-family adversarial review) — a same-family panel that
           just agrees with the author is not review (SycophancyGateError).
         """
-        fact = self.get(fact_id)
+        fact = self._get(fact_id)   # verifying is not consuming — do not taint the verifier
         if fact is None:
             raise NoSuchFactError(f"no fact id={fact_id}")
         if fact.is_synthetic:
@@ -364,7 +455,11 @@ class FactStore:
         Raises: NoSuchFactError / SyntheticFactError / ContradictedFactError /
         UnverifiedFactError.
         """
-        facts = self.facts_for(key)
+        # Internal read: consume returns only REAL+VERIFIED values and raises on a
+        # synthetic one without leaking it, so it does not itself taint the caller —
+        # the taint happens when a lane deliberately reads a synthetic fact via the
+        # public get()/facts_for().
+        facts = self._facts_for(key)
         if not facts:
             raise NoSuchFactError(f"no fact recorded for key {key!r}")
         # A live contradiction on any candidate blocks the whole key until adjudicated.
@@ -396,25 +491,42 @@ class FactStore:
         except FactStoreError as exc:
             return False, str(exc)
 
-    # -- reads ------------------------------------------------------------
+    # -- reads (public reads TAINT the session lane; internal reads do not) ------
 
     def get(self, fact_id: int) -> Fact | None:
-        row = self._conn.execute("SELECT * FROM facts WHERE id=?", (fact_id,)).fetchone()
-        if row is None:
-            return None
-        return self._hydrate(row)
+        """Public read — rehydrate-on-read: if this returns a synthetic fact, the
+        session lane is tainted (its future writes inherit synthetic)."""
+        fact = self._get(fact_id)
+        self._rehydrate_taint([fact] if fact is not None else [])
+        return fact
 
     def facts_for(self, key: str) -> list[Fact]:
+        facts = self._facts_for(key)
+        self._rehydrate_taint(facts)
+        return facts
+
+    def all_facts(self) -> list[Fact]:
+        facts = self._all_facts()
+        self._rehydrate_taint(facts)
+        return facts
+
+    def contradictions(self) -> list[Fact]:
+        return [f for f in self._all_facts() if f.status == Status.CONTRADICTED]
+
+    # -- internal (non-tainting) reads ------------------------------------
+
+    def _get(self, fact_id: int) -> Fact | None:
+        row = self._conn.execute("SELECT * FROM facts WHERE id=?", (fact_id,)).fetchone()
+        return self._hydrate(row) if row is not None else None
+
+    def _facts_for(self, key: str) -> list[Fact]:
         rows = self._conn.execute(
             "SELECT * FROM facts WHERE key=? ORDER BY id", (key,)).fetchall()
         return [self._hydrate(r) for r in rows]
 
-    def all_facts(self) -> list[Fact]:
+    def _all_facts(self) -> list[Fact]:
         rows = self._conn.execute("SELECT * FROM facts ORDER BY id").fetchall()
         return [self._hydrate(r) for r in rows]
-
-    def contradictions(self) -> list[Fact]:
-        return [f for f in self.all_facts() if f.status == Status.CONTRADICTED]
 
     # -- internals --------------------------------------------------------
 
@@ -425,9 +537,53 @@ class FactStore:
             raise NoSuchFactError(f"parent fact id={fact_id} does not exist")
         return Provenance(row["provenance"])
 
+    # -- taint (rehydrate-on-read + value-taint) --------------------------
+
+    def _rehydrate_taint(self, facts: list["Fact"]) -> None:
+        """If the session lane read any synthetic fact, taint the lane so anything
+        it writes next inherits synthetic — closes context-window laundering."""
+        if not self.session_lane:
+            return
+        for f in facts:
+            if f is not None and f.provenance == Provenance.SYNTHETIC:
+                self._taint_lane(self.session_lane, f.id,
+                                 detail=f"read synthetic fact {f.id} ({f.key!r})")
+                return
+
+    def _taint_lane(self, lane: str, by_fact: int, detail: str = "") -> None:
+        self._conn.execute(
+            "INSERT OR IGNORE INTO tainted_lanes (lane, tainted_by_fact, detail, created) "
+            "VALUES (?,?,?,?)", (lane, int(by_fact), detail, time.time()))
+        self._conn.commit()
+
+    def _is_lane_tainted(self, lane: str) -> bool:
+        row = self._conn.execute(
+            "SELECT 1 FROM tainted_lanes WHERE lane=?", (lane,)).fetchone()
+        return row is not None
+
+    def tainted_lanes(self) -> list[str]:
+        """Lanes currently carrying taint (read a synthetic fact)."""
+        return [r["lane"] for r in self._conn.execute(
+            "SELECT lane FROM tainted_lanes ORDER BY lane").fetchall()]
+
+    def _register_value_taint(self, fact_id: int, value: Any) -> None:
+        for norm in _taint_forms(value):
+            self._conn.execute(
+                "INSERT OR IGNORE INTO value_taints (norm, fact_id, created) VALUES (?,?,?)",
+                (norm, int(fact_id), time.time()))
+        self._conn.commit()
+
+    def _value_taint_hit(self, value: Any) -> str | None:
+        for norm in _taint_forms(value):
+            row = self._conn.execute(
+                "SELECT norm FROM value_taints WHERE norm=?", (norm,)).fetchone()
+            if row is not None:
+                return norm
+        return None
+
     def _event(self, fact_id: int, kind: str, *, families: Iterable[str] = (),
                reviewer: str = "", detail: str = "") -> None:
-        if self.get(fact_id) is None:
+        if self._get(fact_id) is None:
             raise NoSuchFactError(f"no fact id={fact_id}")
         self._conn.execute(
             "INSERT INTO fact_events (fact_id, kind, families, reviewer, detail, created) "
@@ -445,7 +601,7 @@ class FactStore:
             other_val = json.loads(r["value"])
             if not _values_agree(value, other_val, rtol=self.rtol, atol=self.atol):
                 # Only a still-live (not already-adjudicated) fact conflicts.
-                other = self.get(int(r["id"]))
+                other = self._get(int(r["id"]))
                 if other is not None and other.status != Status.REFUTED:
                     conflicting.append(int(r["id"]))
         if conflicting:
