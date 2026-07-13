@@ -505,6 +505,24 @@ class FactStore:
             f"key {key!r} has no verified value (status={latest.status.value}) — "
             "a partial/unverified number must never be emitted as complete")
 
+    def get_or_compute(self, key: str, compute, *, source: str, lane: str,
+                       provenance: Provenance | str = Provenance.REAL, **record_kw) -> Any:
+        """In-flight checkpointing (#2, work-level): if a live fact already exists for
+        ``key`` (a previous run recorded it), return its value WITHOUT recomputing —
+        so a lane killed mid-run resumes at the fact granularity instead of redoing
+        completed work. Otherwise call ``compute()``, record the result, and return it.
+
+        This is for a lane's own intermediate steps; emitting a HEADLINE still goes
+        through verify()/consume_verified(). A contradicted key is NOT auto-resumed.
+        """
+        existing = [f for f in self._facts_for(key) if f.status != Status.CONTRADICTED]
+        if existing:
+            return existing[-1].value
+        value = compute()
+        self.assert_fact(key, value, provenance=provenance,
+                         source_locator=source, lane=lane, **record_kw)
+        return value
+
     def plausibility(self, fact_id: int):
         """Run the deterministic plausibility gate on a fact's value (standalone —
         does not mutate). Returns a PlausibilityResult."""

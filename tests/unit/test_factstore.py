@@ -281,6 +281,57 @@ def test_open_shared_resolves_env_path(tmp_path, monkeypatch):
     b.close()
 
 
+def test_get_or_compute_resumes_without_redoing_work(tmp_path):
+    """TRIP TEST (#2 work-level checkpointing): a lane killed mid-run must NOT redo
+    completed work — get_or_compute returns the recorded value without recomputing."""
+    path = tmp_path / "ckpt.db"
+    calls = {"n": 0}
+    def expensive():
+        calls["n"] += 1
+        return 0.42
+
+    fs1 = FactStore(path, session_lane="lane")
+    v1 = fs1.get_or_compute("step.1", expensive, source="calc", lane="lane")
+    fs1.close()
+    # simulate a restart: a fresh handle resumes from disk
+    fs2 = FactStore(path, session_lane="lane")
+    v2 = fs2.get_or_compute("step.1", expensive, source="calc", lane="lane")
+    fs2.close()
+    assert v1 == v2 == 0.42
+    assert calls["n"] == 1   # computed once, resumed the second time (work not redone)
+
+
+def test_dta70_retroactively_blocked(tmp_path):
+    """TRIP TEST: seeding the DTA70 contamination makes the fake TB figure
+    unconsumable for every lane — the proof this whole thing was worth building."""
+    from overmind.factstore.seed_dta70 import seed
+    path = tmp_path / "dta70.db"
+    seed(path)
+    fs = FactStore(path)
+    for key in ("TB.Xpert.DTA.sensitivity", "TB.Xpert.DTA.specificity", "TB.Xpert.DTA.headline"):
+        with pytest.raises(SyntheticFactError):
+            fs.consume_verified(key)
+    # and the headline independently fails plausibility (impossible dispersion)
+    headline = fs.facts_for("TB.Xpert.DTA.headline")[0]
+    assert fs.plausibility(headline.id).ok is False
+    fs.close()
+
+
+def test_cli_record_consume_roundtrip(tmp_path, capsys):
+    """The CLI is the cross-repo wiring path: record + consume via one shell line
+    each. consume exits non-zero (fails loud) on a blocked key."""
+    from overmind.factstore.__main__ import main
+    db = str(tmp_path / "cli.db")
+    assert main(["--db", db, "record", "--key", "k", "--value", "0.72",
+                 "--provenance", "real", "--source", "PMID:1", "--lane", "L"]) == 0
+    # unverified -> consume fails loud (exit 3)
+    assert main(["--db", db, "consume", "--key", "k"]) == 3
+    # verify then consume succeeds
+    fid = 1
+    assert main(["--db", db, "verify", "--id", str(fid), "--families", "openai,google"]) == 0
+    assert main(["--db", db, "consume", "--key", "k"]) == 0
+
+
 def test_append_only_value_is_never_mutated(tmp_path):
     """A fact's value/provenance are immutable — verification is a separate event,
     so the audit history is never rewritten."""
