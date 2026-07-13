@@ -29,6 +29,8 @@ from enum import Enum
 from pathlib import Path
 from typing import Any, Iterable, Sequence
 
+from overmind.factstore.plausibility import check_plausibility
+
 
 class Provenance(str, Enum):
     REAL = "real"
@@ -71,6 +73,11 @@ class ContradictedFactError(FactStoreError):
 class SycophancyGateError(FactStoreError):
     """Raised when a hypothesis-confirming headline is verified without the
     required cross-family adversarial review + pre-registered refutation."""
+
+
+class ImplausibleFactError(FactStoreError):
+    """Raised when a numeric fact fails the deterministic plausibility gate
+    (external consistency) — e.g. the DTA70 impossible-dispersion signature."""
 
 
 @dataclass(slots=True)
@@ -419,6 +426,20 @@ class FactStore:
         if fact.status == Status.CONTRADICTED:
             raise ContradictedFactError(
                 f"fact {fact.key!r} (id={fact_id}) is contradicted — adjudicate first")
+        # PLAUSIBILITY (external consistency): an implausible number can never be
+        # verified. Flagged (recorded), never silently dropped — the DTA70
+        # impossible-dispersion / out-of-range / counts-vs-effect class is caught
+        # here BEFORE it can be consumed as a real result.
+        plaus = check_plausibility(fact.value, kind=fact.key)
+        if not plaus.ok:
+            self._event(fact_id, "implausible", detail="; ".join(plaus.violations))
+            raise ImplausibleFactError(
+                f"fact {fact.key!r} (id={fact_id}) fails plausibility and cannot be "
+                f"verified: {'; '.join(plaus.violations)}")
+        if plaus.warnings:
+            # soft flag: surfaced (recorded) but does not block — an extreme-but-
+            # possible number gets eyeballed, not auto-rejected.
+            self._event(fact_id, "plausibility_warning", detail="; ".join(plaus.warnings))
         fams = sorted({f for f in families if f})
         if fact.confirms_hypothesis and len(fams) < _MIN_ADVERSARIAL_FAMILIES:
             raise SycophancyGateError(
@@ -483,6 +504,14 @@ class FactStore:
         raise UnverifiedFactError(
             f"key {key!r} has no verified value (status={latest.status.value}) — "
             "a partial/unverified number must never be emitted as complete")
+
+    def plausibility(self, fact_id: int):
+        """Run the deterministic plausibility gate on a fact's value (standalone —
+        does not mutate). Returns a PlausibilityResult."""
+        fact = self._get(fact_id)
+        if fact is None:
+            raise NoSuchFactError(f"no fact id={fact_id}")
+        return check_plausibility(fact.value, kind=fact.key)
 
     def try_consume(self, key: str) -> tuple[bool, Any]:
         """Non-raising variant: (ok, value_or_reason)."""

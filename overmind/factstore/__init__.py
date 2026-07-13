@@ -29,10 +29,13 @@ from overmind.factstore.store import (
     UnverifiedFactError,
     ContradictedFactError,
     SycophancyGateError,
+    ImplausibleFactError,
 )
+from overmind.factstore.plausibility import check_plausibility, PlausibilityResult
 
 __all__ = [
     "FactStore", "open_shared", "Fact", "Provenance", "Status",
     "FactStoreError", "NoSuchFactError", "SyntheticFactError",
     "UnverifiedFactError", "ContradictedFactError", "SycophancyGateError",
+    "ImplausibleFactError", "check_plausibility", "PlausibilityResult",
 ]
