@@ -316,6 +316,26 @@ class AgyBackend:
     runner: Runner = _default_runner
     driver_path: str | None = None
     max_polls: int = 3            # total attempts (1 initial + up to 2 re-polls) on an envelope
+    # Opt-in pre-flight reaper: when enabled, age-gated stale language_server.exe
+    # daemons are killed before the call (belt-and-suspenders on top of the driver's
+    # own self-heal). Default OFF (None -> env OVERMIND_AGY_REAP_STALE) because a
+    # blanket reap could catch the interactive Antigravity desktop app's daemon; the
+    # driver self-heal is the primary cure, this is for orphan cleanup on a headless box.
+    reap_stale: bool | None = None
+
+    def _reap_enabled(self) -> bool:
+        if self.reap_stale is not None:
+            return self.reap_stale
+        return os.environ.get("OVERMIND_AGY_REAP_STALE", "").strip().lower() in {"1", "true", "yes", "on"}
+
+    def _preflight_reap(self) -> None:
+        if not self._reap_enabled():
+            return
+        try:
+            from overmind.reliability.agy_daemon import reap_stale_daemons
+            reap_stale_daemons()
+        except Exception:  # noqa: BLE001 — reaper is best-effort, never block the call
+            pass
 
     def _driver(self) -> Path | None:
         override = self.driver_path or os.environ.get("AGY_DRIVER_PATH")
@@ -353,10 +373,27 @@ class AgyBackend:
             return all_model
         return text
 
+    @staticmethod
+    def _is_zero_step(raw: str) -> bool:
+        """True when the driver returned a 0-step conversation — a wedged/stale
+        language_server.exe accepted the conversation but produced no agent turn.
+        Defense-in-depth: the hardened driver now exits non-zero on this (so
+        _default_runner already yields a JUDGE_ERROR), but an older/exit-0 driver
+        would emit `{"n_steps": 0, ...}` with exit 0; catch that here so a dead
+        daemon can never surface as an empty-but-'successful' answer."""
+        try:
+            data = json.loads(raw)
+        except (json.JSONDecodeError, TypeError):
+            return False
+        if not isinstance(data, dict):
+            return False
+        return data.get("n_steps") == 0 and not (data.get("text") or "").strip()
+
     def query(self, prompt: str) -> str:
         driver = self._driver()
         if driver is None:
             return f"{JUDGE_ERROR} agy-driver not found"
+        self._preflight_reap()   # opt-in orphan cleanup before the call
         attempts = max(1, self.max_polls)
         last_text = ""
         for i in range(attempts):
@@ -364,6 +401,11 @@ class AgyBackend:
             raw = self.runner(self._argv(driver, prefix + prompt), "", {}, self.timeout)
             if raw.startswith(JUDGE_ERROR):
                 return raw
+            # A 0-step return is a DEAD daemon, not an answer — fail loud, never let
+            # an empty result be recorded as a clean vote. (The driver self-heals +
+            # exits non-zero; this is the harness-side backstop.)
+            if self._is_zero_step(raw):
+                return f"{JUDGE_ERROR} agy returned a 0-step conversation (wedged daemon; no answer)"
             text = self._extract_answer(raw)
             if text:
                 last_text = text
