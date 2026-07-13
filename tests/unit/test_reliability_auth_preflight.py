@@ -114,3 +114,69 @@ def test_all_degraded_no_live_vendors():
                            include_claude=False)
     assert live_vendors(probes) == []
     assert len(degraded_seats(probes)) == 3
+
+
+# --- per-pool / per-model liveness (agy-Gemini-pool 2026-07-12) -----------------
+
+class _ModelBackend(_Backend):
+    """Stub that also carries a .model attribute, like AgyBackend."""
+    def __init__(self, response, model, available=True):
+        super().__init__(response, available=available)
+        self.model = model
+
+
+def test_agy_per_pool_one_exhausted_other_live():
+    """TRIP TEST (#3): one agy model pool over individual quota must NOT mark the
+    OTHER pool dead. Probing the exhausted pool and declaring 'agy dead' while
+    Gemini was 57% live is the exact error this prevents."""
+    from overmind.reliability.auth_preflight import preflight_agy_pools
+
+    backends = {
+        "claude-opus": _ModelBackend(f"{JUDGE_ERROR} individual quota reached", "claude-opus"),
+        "gemini-pro": _ModelBackend("42", "gemini-pro"),
+    }
+    probes = preflight_agy_pools(("claude-opus", "gemini-pro"), backends=backends)
+    by_model = {p.model: p for p in probes}
+    assert by_model["claude-opus"].alive is False
+    assert by_model["claude-opus"].quota == "model_quota"
+    # the live pool is independent — NOT inferred dead from the exhausted one
+    assert by_model["gemini-pro"].alive is True
+    assert by_model["claude-opus"].pool_key != by_model["gemini-pro"].pool_key
+
+
+def test_classify_degradation_distinguishes_quota_classes():
+    from overmind.reliability.auth_preflight import classify_degradation
+
+    assert classify_degradation("Not logged in, 401") == "auth"
+    assert classify_degradation("Ask your workspace owner to refill") == "credit_pool"
+    assert classify_degradation("individual quota reached for this model") == "model_quota"
+    assert classify_degradation("weekly limit hit") == "weekly_quota"
+    assert classify_degradation("everything fine") == "unknown"
+
+
+def test_preflight_cached_runs_probe_once_within_ttl():
+    """The cheap-cache contract: the real-exec smoke runs at most once per TTL
+    window — a dispatch path can re-check liveness every task without re-burning
+    a vendor token."""
+    from overmind.reliability.auth_preflight import clear_probe_cache, preflight_cached
+
+    clear_probe_cache()
+    calls = {"n": 0}
+    clk = {"t": 0.0}
+
+    def _probe():
+        calls["n"] += 1
+        return preflight_codex(backends={"mahmood": _Backend("READY"), "noreen": _Backend("READY")})
+
+    def _clock():
+        return clk["t"]
+
+    first = preflight_cached(_probe, key="k", ttl=100.0, clock=_clock)
+    clk["t"] = 50.0
+    second = preflight_cached(_probe, key="k", ttl=100.0, clock=_clock)
+    assert calls["n"] == 1          # cache hit, no second smoke
+    assert second is first
+    clk["t"] = 250.0                 # past TTL -> re-probe
+    preflight_cached(_probe, key="k", ttl=100.0, clock=_clock)
+    assert calls["n"] == 2
+    clear_probe_cache()
