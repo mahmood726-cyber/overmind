@@ -329,7 +329,12 @@ class AgyBackend:
         return self._driver() is not None
 
     def _argv(self, driver: Path, prompt: str) -> list[str]:
-        return ["python", str(driver), "--json", "--quiet-driver", "--model", self.model, prompt]
+        # `--` before the prompt so a prompt that begins with `-`/`--` (e.g. a code
+        # snippet, or the "--print-timeout 280s" fragility class) is bound as the
+        # POSITIONAL prompt and never mis-parsed as a driver flag. Everything after
+        # `--` is positional to argparse. (agy arg-parsing fragility, #5.)
+        return ["python", str(driver), "--json", "--quiet-driver",
+                "--model", self.model, "--", prompt]
 
     @staticmethod
     def _extract_answer(raw: str) -> str:
