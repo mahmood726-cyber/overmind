@@ -175,6 +175,28 @@ def test_text_annotate_does_not_corrupt_script_blocks():
     assert "om-tier" in [l for l in new.splitlines() if "Bare 40%" in l][0]  # prose tagged
 
 
+def test_banner_is_visible_names_unverified_and_flags_fabricated():
+    """The apply-day fix: source_tier is written to an UNREAD data field, so the retrofit
+    injects a self-contained FIXED banner that renders regardless of the app's JS. It must
+    name the UNVERIFIED trials and flag placeholder-pattern ids as likely fabricated."""
+    from overmind.gates.retrofit import (CascadeCounts, render_provenance_banner,
+                                         inject_banner, _BANNER_ID)
+    counts = CascadeCounts(path="x", registered=5, unverified=2,
+                           unresolved_ncts=["NCT05000550", "NCT01234567"])
+    banner = render_provenance_banner(counts)
+    assert "position:fixed" in banner              # cannot be clipped by overflow-hidden
+    assert "z-index:2147483647" in banner          # on top of the app
+    assert "5 trial record" in banner              # registry-linked count visible
+    assert "NCT01234567" in banner                 # the unverified id NAMED
+    assert "NCT05000550" in banner and "FABRICATED" in banner  # placeholder flagged stronger
+    # injected right after <body>, idempotent
+    page = "<html><body class='x'><div>app</div></body></html>"
+    once = inject_banner(page, counts)
+    assert once.index(_BANNER_ID) > once.index("<body")
+    assert once.index(_BANNER_ID) < once.index("app")   # banner precedes app content
+    assert inject_banner(once, counts) == once          # idempotent
+
+
 @aact
 def test_staging_never_touches_the_live_file(tmp_path):
     from overmind.gates.retrofit import stage_corpus

@@ -110,6 +110,7 @@ class CascadeCounts:
     abstract_attempts: int = 0     # numbers the abstract layer was asked to recover
     page_ncts: int = 0
     page_ncts_resolved: int = 0
+    unresolved_ncts: list = field(default_factory=list)  # the cited-but-not-in-AACT ids
 
     @property
     def located(self) -> int:
@@ -301,6 +302,8 @@ class Retrofit:
                 counts.oa_attempts += 1
                 counts.abstract_attempts += 1
                 counts.unverified += 1
+                if nct not in counts.unresolved_ncts:
+                    counts.unresolved_ncts.append(nct)
                 tier = TIER_UNVERIFIED
             counts.world += 1
             return f"{prefix}{tier}{close}"
@@ -309,6 +312,84 @@ class Retrofit:
         counts.page_ncts = len(pool)
         counts.page_ncts_resolved = sum(1 for v in pool.values() if v)
         return new, counts
+
+
+# --------------------------------------------------------------------------
+# The VISIBLE banner — because a badge in the DOM that never renders is not a badge.
+# --------------------------------------------------------------------------
+# CRITICAL (found on apply-day): the app pages store `source_tier` in a JS data object
+# (window.RapidMeta.outcomeKeys) that NO rendering code reads (`.source_tier` accessor
+# count == 0). Rewriting that field alone changes NOTHING a researcher sees — the exact F1
+# trap ("report what is easy to measure as if it were the truth"). So the retrofit ALSO
+# injects a self-contained, JS-free, high-contrast FIXED banner that renders regardless of
+# the app's own scripts. It is inserted right after the <body> tag as position:fixed so it
+# cannot be clipped by the page's overflow-hidden flex layout.
+
+_BANNER_ID = "overmind-provenance-banner"
+_BODY_OPEN = re.compile(r"(<body\b[^>]*>)", re.IGNORECASE)
+# a non-resolving NCT with a suspiciously round/placeholder tail — likely FABRICATED, not
+# merely 'newer than the snapshot'. Heuristic, stated as such on screen.
+_PLACEHOLDER_NCT = re.compile(r"^NCT0500\d{4}$|^NCT\d{5}0{3}$", re.IGNORECASE)
+
+
+def _esc(s: str) -> str:
+    return (s.replace("&", "&amp;").replace("<", "&lt;").replace(">", "&gt;"))
+
+
+def render_provenance_banner(counts: "CascadeCounts") -> str:
+    """A self-contained, script-free, fixed-position banner a researcher cannot miss. Green
+    for registry-linked records, red for UNVERIFIED with the offending NCTs NAMED, and a
+    stronger ⛔ flag for placeholder-pattern ids that are likely fabricated (not merely
+    unverified). No external CSS/JS; survives the page's own overflow-hidden layout."""
+    registered = counts.registered + counts.located_registry
+    unverified = counts.unverified
+    marked_prose = 0
+    # for prose pages, world+ambiguous unlocated numbers were marked inline; surface a count
+    if not counts.unresolved_ncts and unverified and not registered:
+        marked_prose = unverified
+    parts = [
+        f'<div id="{_BANNER_ID}" style="position:fixed;bottom:0;left:0;right:0;'
+        f'z-index:2147483647;font-family:system-ui,Segoe UI,Arial,sans-serif;font-size:13px;'
+        f'line-height:1.45;background:#0d1117;color:#e6edf3;border-top:3px solid #f0b429;'
+        f'padding:8px 14px;box-shadow:0 -2px 10px rgba(0,0,0,.5);max-height:34vh;overflow:auto">',
+        '<b style="color:#f0b429">&#128269; Provenance check (Overmind)</b> &nbsp;',
+    ]
+    if registered:
+        parts.append(f'<span style="color:#3fb950">&#10003; {registered} trial record(s) '
+                     f'registry-linked (cited trial resolves in ClinicalTrials.gov/AACT)</span>')
+    if marked_prose:
+        parts.append(f'<span style="color:#d29922">&#9888; {marked_prose} number(s) on this '
+                     f'page marked UNVERIFIED &mdash; no resolvable trial id</span>')
+    if counts.unresolved_ncts:
+        fabricated = [n for n in counts.unresolved_ncts if _PLACEHOLDER_NCT.match(n)]
+        real_unv = [n for n in counts.unresolved_ncts if not _PLACEHOLDER_NCT.match(n)]
+        parts.append(' &nbsp;&middot;&nbsp; ')
+        if real_unv:
+            parts.append(f'<span style="color:#f85149;font-weight:bold">&#9888; '
+                         f'{len(real_unv)} UNVERIFIED</span> <span style="opacity:.9">&mdash; '
+                         f'cited trial NOT found in the registry (unverified; may be fabricated '
+                         f'or newer than snapshot): {_esc(", ".join(real_unv))}</span>')
+        if fabricated:
+            parts.append(f' <span style="color:#ff6a69;font-weight:bold">&#9940; '
+                         f'{len(fabricated)} LIKELY FABRICATED</span> <span style="opacity:.9">'
+                         f'&mdash; placeholder-pattern id, not a real registry trial: '
+                         f'{_esc(", ".join(fabricated))}</span>')
+    if not registered and not counts.unresolved_ncts and not marked_prose:
+        parts.append('<span style="color:#3fb950">&#10003; no unlocated world-claim numbers '
+                     'detected on this page</span>')
+    parts.append('</div>')
+    return "".join(parts)
+
+
+def inject_banner(text: str, counts: "CascadeCounts") -> str:
+    """Insert the visible banner right after <body>. Idempotent (skips if already present)."""
+    if _BANNER_ID in text:
+        return text
+    banner = render_provenance_banner(counts)
+    m = _BODY_OPEN.search(text)
+    if m:
+        return text[:m.end()] + banner + text[m.end():]
+    return banner + text   # no <body> (fragment) — prepend so it is still visible
 
 
 # --------------------------------------------------------------------------
@@ -365,6 +446,10 @@ def stage_corpus(paths: Iterable[str], staging_dir: str, *,
             annotated, counts = rf.retrofit_app_page_tiers(text)
         else:
             annotated, counts = rf.annotate(text, html=html)
+        # the VISIBLE layer: inject the fixed banner so the tier is legible to a human,
+        # not hidden in an unread data field (HTML pages only).
+        if html:
+            annotated = inject_banner(annotated, counts)
         counts.path = p
         rep.per_app.append(counts)
         target = p if apply_in_place else os.path.join(staging_dir, os.path.basename(p))
@@ -399,10 +484,13 @@ if __name__ == "__main__":
             txt = open(p, "r", encoding="utf-8", errors="replace").read()
         except OSError:
             continue
+        is_html = p.lower().endswith((".html", ".htm"))
         if _TIER_RECORD.search(txt):
             new, c = rf.retrofit_app_page_tiers(txt); struct.append(c)
         else:
-            new, c = rf.annotate(txt, html=p.lower().endswith((".html", ".htm"))); prose.append(c)
+            new, c = rf.annotate(txt, html=is_html); prose.append(c)
+        if is_html:
+            new = inject_banner(new, c)
         c.path = p
         tgt = p if a.apply else os.path.join(a.staging, os.path.basename(p))
         os.makedirs(os.path.dirname(tgt) or ".", exist_ok=True)
