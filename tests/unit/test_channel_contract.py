@@ -705,6 +705,12 @@ _KNOWN_WORLD_HOLES = {
     # routed, but main() prints per-case BLOCK reasons, and a blocked number has no
     # Rendered to route through. Listed honestly rather than gamed clean.
     "factstore/lanes/routed_emit.py",
+    # the retrofit reporter (Part V Fix #1): it ANNOTATES existing deliverables (rewrites
+    # source_tier strings, appends UNVERIFIED tags) and never emits a NEW numeric
+    # world-claim; its __main__ prints run tallies (located/unverified RECORD counts) —
+    # harness-internal operational metrics, same category as the CLI reporters above.
+    # Listed honestly, not gamed clean.
+    "gates/retrofit.py",
 }
 
 
