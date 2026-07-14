@@ -212,7 +212,8 @@ class ExportChannel:
     def __init__(self, *, resolver: LocatorResolver | None = None,
                  require_resolution: bool = True,
                  require_panel_for_flattering: bool = True,
-                 require_sanctioned_novelty: bool = True):
+                 require_sanctioned_novelty: bool = True,
+                 require_group_code: bool = True):
         self._resolver = resolver or default_resolver()
         # require_resolution=False reopens the gated-laundering hole; it exists
         # ONLY for unit tests that inject a stub resolver. Production leaves it True.
@@ -223,6 +224,15 @@ class ExportChannel:
         # production novelty needs the real cross-process codex executor; tests that
         # inject a stub construct the channel with this False.
         self._require_sanctioned_novelty = require_sanctioned_novelty
+        # Part V Fix #2 — CLOSE the 13.1% wrong-arm title tail. The title-string arm
+        # heuristic measured specificity 0.869 (a 13.1% false-accept tail Codex mined
+        # three ways: dose, boilerplate, negation). The definitive check is the exact
+        # ctgov_group_code the #om[id] already pins (1.0/1.0 by construction). With this
+        # ON, a value claim on an #om row whose AACT arm carries a group_code MUST declare
+        # a matching meta['group_code'] — a title-only declaration is arm-UNVERIFIED and
+        # fails closed, NOT accepted on a fuzzy title match. This removes the title path
+        # (and its tail) for the case that has a definitive check available.
+        self._require_group_code = require_group_code
 
     def emit(self, claim: Claim, *, dest: str = "briefing") -> Rendered:
         """The gate. Accepts a Claim ONLY. Returns a Rendered on success; raises
@@ -364,8 +374,7 @@ class ExportChannel:
                 f"[{res.backend}]: {res.reason}")
         self._guard_semantic(claim, res)
 
-    @staticmethod
-    def _guard_semantic(claim: Claim, resolution: Resolution) -> None:
+    def _guard_semantic(self, claim: Claim, resolution: Resolution) -> None:
         """For a value-bearing #om[id] claim, require the claim to name the outcome
         it expects and match it against AACT's recorded title — defeats a numeric
         coincidence hijack. If the anchor is armcount/existence this is a no-op."""
@@ -412,16 +421,54 @@ class ExportChannel:
         # heuristic, no with/without tail. This is the real fix; the title match below
         # is the best-effort fallback for human-readable declarations.
         gt_group = gt.get("group") if isinstance(gt, dict) else None
+        gt_arm = gt.get("arm") if isinstance(gt, dict) else None
         declared_group = (claim.meta.get("group_code") or "").strip()
-        if gt_group and declared_group and declared_group.upper() != str(gt_group).upper():
+        arm_bound_by_group = False
+        if self._require_group_code and (gt_group or gt_arm):
+            # Part V Fix #2 — CLOSE the 13.1% wrong-arm title tail. The definitive arm
+            # identity is the ctgov_group_code the #om[id] ALREADY pins (1.0/1.0 by
+            # construction). It is now REQUIRED, not optional: a title-only arm
+            # declaration is arm-UNVERIFIED and fails closed, never accepted on a fuzzy
+            # title match (the path Codex mined three ways: dose, boilerplate, negation).
+            if not declared_group:
+                raise ChannelViolation(
+                    f"REFUSED (arm-UNVERIFIED): {claim.text!r} pins a value to {loc!r} whose "
+                    f"AACT arm is group_code={gt_group!r} / arm={gt_arm!r}, but the claim "
+                    f"declares no meta['group_code']. A title-only arm declaration has a "
+                    f"measured 13.1% wrong-arm false-accept tail and is NOT accepted — declare "
+                    f"the exact group_code so the arm is bound definitively.")
+            if gt_group:
+                if declared_group.upper() != str(gt_group).upper():
+                    raise ChannelViolation(
+                        f"REFUSED: {claim.text!r} declares arm group_code={declared_group!r} "
+                        f"but AACT records group {gt_group!r} for {loc!r} — wrong arm "
+                        f"(definitive exact group-code mismatch).")
+                arm_bound_by_group = True   # definitive match — skip the title heuristic
+            else:
+                # AACT surfaces an arm TITLE but no ctgov_group_code for this row: the
+                # definitive check is unavailable, so the arm is UNVERIFIED. Fail closed
+                # rather than accept an ungrounded group_code or fall to a fuzzy title
+                # match (per the mandate: "where group_code genuinely does not exist, the
+                # claim is arm-UNVERIFIED — not silently accepted on a fuzzy title match").
+                raise ChannelViolation(
+                    f"REFUSED (arm-UNVERIFIED): {loc!r} carries an arm title but AACT holds no "
+                    f"ctgov_group_code for this row, so declared group_code={declared_group!r} "
+                    f"cannot be checked against ground truth — the arm cannot be definitively "
+                    f"bound (no silent fuzzy-title accept).")
+        elif gt_group and declared_group and declared_group.upper() != str(gt_group).upper():
+            # require_group_code disabled (test/legacy): still honour an EXACT check when
+            # both sides are present; otherwise the title heuristic below runs.
             raise ChannelViolation(
                 f"REFUSED: {claim.text!r} declares arm group_code={declared_group!r} but "
                 f"AACT records group {gt_group!r} for {loc!r} — wrong arm (exact group-code "
                 f"mismatch; this is the definitive arm-identity check).")
-        ExportChannel._guard_dimension(claim, gt, "arm",
-            "the number belongs to a specific study arm; declare claim.meta['arm'] "
-            "(e.g. the treatment/control group title) so it cannot be read off the "
-            "wrong arm")
+        if not arm_bound_by_group:
+            # title heuristic — the best-effort fallback, reached only when group_code
+            # enforcement is disabled or ground truth pins neither group nor arm.
+            ExportChannel._guard_dimension(claim, gt, "arm",
+                "the number belongs to a specific study arm; declare claim.meta['arm'] "
+                "(e.g. the treatment/control group title) so it cannot be read off the "
+                "wrong arm")
         ExportChannel._guard_dimension(claim, gt, "timepoint",
             "the number is measured at a specific timepoint; declare "
             "claim.meta['timepoint'] (the time_frame) so a wk12 value is not shipped "

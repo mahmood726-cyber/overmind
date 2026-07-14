@@ -325,8 +325,11 @@ class _DimResolver(LocatorResolver):
     be proven deterministically without the AACT snapshot."""
     def __init__(self, **gt):
         super().__init__(aact_path=None)
+        # complete AACT om-row shape: a real outcome_measurement row carries a
+        # ctgov_group_code (the definitive arm identity), not just an arm title.
         self._gt = {"value": 11.1, "title": "Number of Oocytes Retrieved",
-                    "arm": "GnRH Agonist (GONAPEPTYL)", "timepoint": "day of oocyte retrieval",
+                    "arm": "GnRH Agonist (GONAPEPTYL)", "group": "OG000",
+                    "timepoint": "day of oocyte retrieval",
                     "unit": "Oocytes"}
         self._gt.update(gt)
     def resolve(self, locator, claimed_value=None):
@@ -336,8 +339,9 @@ class _DimResolver(LocatorResolver):
 
 
 def _dim_claim(**meta):
+    # the NEW contract: an #om value claim declares the exact group_code (definitive arm)
     base = {"outcome": "Number of Oocytes Retrieved", "arm": "GnRH Agonist (GONAPEPTYL)",
-            "timepoint": "day of oocyte retrieval", "unit": "Oocytes"}
+            "group_code": "OG000", "timepoint": "day of oocyte retrieval", "unit": "Oocytes"}
     base.update(meta)
     return Claim("oocytes retrieved", 11.1, SourceTier.REGISTRY,
                  "NCT03809429#om[1571418270]", meta=base)
@@ -348,18 +352,38 @@ def test_om_claim_with_full_arm_timepoint_unit_passes():
     assert ch.emit(_dim_claim()).value == 11.1
 
 
-def test_om_claim_missing_arm_is_blocked():
-    """The number is real for THIS trial+outcome but the claim never says which arm —
-    exactly how 11.1 (agonist) gets shipped as if it were 9.6 (antagonist)."""
+def test_om_claim_missing_group_code_is_arm_unverified():
+    """Part V Fix #2: the number is real for THIS trial+outcome, but with no declared
+    group_code the arm is UNVERIFIED — fail closed. A title-only 'arm' is NOT enough
+    anymore (that path carried the measured 13.1% wrong-arm tail)."""
     ch = ExportChannel(resolver=_DimResolver())
-    with pytest.raises(ChannelViolation, match="does not declare its arm|wrong arm"):
-        ch.emit(_dim_claim(arm=""))
+    with pytest.raises(ChannelViolation, match="arm-UNVERIFIED|no meta\\['group_code'\\]|group_code"):
+        ch.emit(_dim_claim(group_code=""))
 
 
-def test_om_claim_wrong_arm_is_blocked():
+def test_om_claim_wrong_group_code_is_blocked():
     ch = ExportChannel(resolver=_DimResolver())
+    with pytest.raises(ChannelViolation, match="wrong arm|group-code mismatch|group_code"):
+        ch.emit(_dim_claim(group_code="OG999"))
+
+
+def test_om_title_only_arm_no_longer_accepted_by_default():
+    """The exact tail-closing assertion: a claim that declares only the (correct) arm
+    TITLE but no group_code is REFUSED under the default gate — the fuzzy-title path is
+    gone. (Under require_group_code=False the legacy title heuristic still runs.)"""
+    ch = ExportChannel(resolver=_DimResolver())
+    with pytest.raises(ChannelViolation, match="arm-UNVERIFIED|group_code"):
+        ch.emit(_dim_claim(group_code=""))   # arm title present, group_code absent
+    legacy = ExportChannel(resolver=_DimResolver(), require_group_code=False)
+    assert legacy.emit(_dim_claim(group_code="", arm="GnRH Agonist (GONAPEPTYL)")).value == 11.1
+
+
+def test_om_claim_wrong_arm_title_blocked_in_legacy_heuristic():
+    """The legacy title heuristic (require_group_code=False) still blocks a wrong arm
+    title — retained so the fallback path keeps its coverage."""
+    ch = ExportChannel(resolver=_DimResolver(), require_group_code=False)
     with pytest.raises(ChannelViolation, match="wrong arm|arm="):
-        ch.emit(_dim_claim(arm="GnRH Antagonist (CETROTIDE)"))
+        ch.emit(_dim_claim(group_code="", arm="GnRH Antagonist (CETROTIDE)"))
 
 
 def test_om_claim_wrong_timepoint_is_blocked():
@@ -378,7 +402,7 @@ def test_dimension_binding_is_noop_when_ground_truth_lacks_it():
     """Backward compat: a resolver that does not surface arm/timepoint/unit (older
     stub, or an om with null fields) imposes no requirement — the binding is
     'required WHEN checkable', not 'always required'."""
-    ch = ExportChannel(resolver=_DimResolver(arm=None, timepoint=None, unit=None))
+    ch = ExportChannel(resolver=_DimResolver(arm=None, group=None, timepoint=None, unit=None))
     lean = Claim("oocytes retrieved", 11.1, SourceTier.REGISTRY,
                  "NCT03809429#om[1]", meta={"outcome": "Number of Oocytes Retrieved"})
     assert ch.emit(lean).value == 11.1
@@ -386,30 +410,35 @@ def test_dimension_binding_is_noop_when_ground_truth_lacks_it():
 
 def test_real_aact_wrong_arm_selection_error_blocks():
     """End-to-end on the AACT snapshot (skips if absent): NCT03809429 om 1571418270
-    is 11.1 oocytes for the AGONIST arm. A claim that declares the ANTAGONIST arm for
-    that same number is the wrong-arm selection error and must block."""
+    is 11.1 oocytes for the AGONIST arm. Part V Fix #2 makes group_code the DEFINITIVE
+    binding — the right group_code passes, a wrong group_code blocks (1.0/1.0), and a
+    title-only declaration with no group_code is arm-UNVERIFIED (fail closed)."""
     from overmind.gates.resolver import default_resolver
     r = default_resolver()
     probe = r.resolve("NCT03809429#om[1571418270]", claimed_value=11.1)
     if not probe.resolved:
         pytest.skip("AACT snapshot not present")
-    assert isinstance(probe.ground_truth, dict) and probe.ground_truth.get("arm")
+    gt = probe.ground_truth
+    assert isinstance(gt, dict) and gt.get("group")   # AACT pins the ctgov_group_code
     ch = ExportChannel(resolver=r)
+    base = {"outcome": "Number of Oocytes Retrieved",
+            "timepoint": gt.get("timepoint") or "n/a", "unit": gt.get("unit") or "n/a"}
+    # right: declares the exact ground-truth group_code -> definitive pass
     right = Claim("oocytes retrieved", 11.1, SourceTier.REGISTRY,
-                  "NCT03809429#om[1571418270]",
-                  meta={"outcome": "Number of Oocytes Retrieved",
-                        "arm": probe.ground_truth["arm"],
-                        "timepoint": probe.ground_truth.get("timepoint") or "n/a",
-                        "unit": probe.ground_truth.get("unit") or "n/a"})
+                  "NCT03809429#om[1571418270]", meta={**base, "group_code": gt["group"]})
     assert ch.emit(right).value == 11.1
+    # wrong: a different (sibling) group_code -> definitive block
     wrong = Claim("oocytes retrieved", 11.1, SourceTier.REGISTRY,
                   "NCT03809429#om[1571418270]",
-                  meta={"outcome": "Number of Oocytes Retrieved",
-                        "arm": "GnRH Antagonist (CETROTIDE)",
-                        "timepoint": probe.ground_truth.get("timepoint") or "n/a",
-                        "unit": probe.ground_truth.get("unit") or "n/a"})
-    with pytest.raises(ChannelViolation, match="wrong arm|arm="):
+                  meta={**base, "group_code": str(gt["group"]) + "_SIBLING"})
+    with pytest.raises(ChannelViolation, match="wrong arm|group-code mismatch"):
         ch.emit(wrong)
+    # title-only (correct arm string, NO group_code) -> arm-UNVERIFIED, fail closed
+    title_only = Claim("oocytes retrieved", 11.1, SourceTier.REGISTRY,
+                       "NCT03809429#om[1571418270]",
+                       meta={**base, "arm": gt.get("arm") or "n/a"})
+    with pytest.raises(ChannelViolation, match="arm-UNVERIFIED|group_code"):
+        ch.emit(title_only)
 
 
 # --- round 4: the smaller residuals, named and probed --------------------------
@@ -453,7 +482,7 @@ def test_dose_arm_false_accept_is_now_blocked():
     """Codex round-4: 'IGIV-C 0.2 g/kg' and 'IGIV-C 0.4 g/kg' both tokenised to
     {igiv, infusion} and a wrong-DOSE arm passed. The dose numbers now discriminate."""
     ch = ExportChannel(resolver=_DimResolver(
-        arm="IGIV-C 0.2 g/kg bw/Infusion (2 mL/kg bw)"))
+        arm="IGIV-C 0.2 g/kg bw/Infusion (2 mL/kg bw)"), require_group_code=False)
     right = Claim("oocytes retrieved", 11.1, SourceTier.REGISTRY,
                   "NCT03809429#om[1]",
                   meta={"outcome": "Number of Oocytes Retrieved",
@@ -473,7 +502,7 @@ def test_vague_arm_without_dose_is_blocked():
     """Codex round-4: 'Duloxetine' must NOT match a specific-dose arm — a vague label
     that fits both 60 mg and 120 mg arms is the selection hole. strict_numeric on arm
     requires the ground-truth dose to be declared."""
-    ch = ExportChannel(resolver=_DimResolver(arm="Duloxetine 60 mg"))
+    ch = ExportChannel(resolver=_DimResolver(arm="Duloxetine 60 mg"), require_group_code=False)
     vague = Claim("oocytes retrieved", 11.1, SourceTier.REGISTRY, "NCT03809429#om[1]",
                   meta={"outcome": "Number of Oocytes Retrieved", "arm": "Duloxetine",
                         "timepoint": "day of oocyte retrieval", "unit": "Oocytes"})
@@ -484,7 +513,7 @@ def test_vague_arm_without_dose_is_blocked():
 def test_wrong_timepoint_week_is_blocked():
     """A numeric conflict in the timepoint (week 12 vs week 52) is blocked even though
     timepoint uses the lenient numeric rule (it blocks conflicts, allows omissions)."""
-    ch = ExportChannel(resolver=_DimResolver(timepoint="week 52 follow-up"))
+    ch = ExportChannel(resolver=_DimResolver(timepoint="week 52 follow-up"), require_group_code=False)
     wrong = Claim("oocytes retrieved", 11.1, SourceTier.REGISTRY, "NCT03809429#om[1]",
                   meta={"outcome": "Number of Oocytes Retrieved",
                         "arm": "GnRH Agonist (GONAPEPTYL)",
@@ -526,7 +555,7 @@ def test_double_blind_arm_title_overlap_is_blocked():
     """Codex round-5: 'Double-Blind Tocilizumab' vs 'Double-Blind Placebo' shared
     {double, blind} (Jaccard 0.5) and false-accepted. Arm-boilerplate is now stripped
     so the drug/comparator name decides."""
-    ch = ExportChannel(resolver=_DimResolver(arm="Double-Blind Tocilizumab"))
+    ch = ExportChannel(resolver=_DimResolver(arm="Double-Blind Tocilizumab"), require_group_code=False)
     right = Claim("oocytes retrieved", 11.1, SourceTier.REGISTRY, "NCT02453256#om[1]",
                   meta={"outcome": "Number of Oocytes Retrieved",
                         "arm": "Double-Blind Tocilizumab",
@@ -560,7 +589,7 @@ def test_with_without_arm_negation_is_blocked():
     """Codex round-6: 'With Chronic Pain' was a strict subset of 'Without Chronic Pain'
     so containment accepted the negated arm. A negation mismatch now blocks."""
     ch = ExportChannel(resolver=_DimResolver(
-        arm="Success in Phase 1 Among Participants Without Chronic Pain"))
+        arm="Success in Phase 1 Among Participants Without Chronic Pain"), require_group_code=False)
     wrong = Claim("oocytes retrieved", 11.1, SourceTier.REGISTRY, "NCT00316277#om[1]",
                   meta={"outcome": "Number of Oocytes Retrieved",
                         "arm": "Success in Phase 1 Among Participants With Chronic Pain",
@@ -711,6 +740,10 @@ _KNOWN_WORLD_HOLES = {
     # harness-internal operational metrics, same category as the CLI reporters above.
     # Listed honestly, not gamed clean.
     "gates/retrofit.py",
+    # the arm-gate re-measurement harness (Part V Fix #2): prints accept/block RATE
+    # statistics (sensitivity/specificity/false-accept tail) about the gate itself —
+    # internal measurement metrics, not a trial/effect world-claim.
+    "gates/measure_arm_gate.py",
 }
 
 
