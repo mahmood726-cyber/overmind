@@ -35,6 +35,7 @@ from .export_gate import guard_export, ExportBlocked
 from .layer_gate import guard_layers, LayerCoverageError
 from .resolver import LocatorResolver, default_resolver, Resolution
 from .priorart import guard_novelty, PriorArtError
+from .comparison_gate import guard_comparison, ComparisonError
 from .sink import SINK, SinkViolation
 
 
@@ -310,6 +311,19 @@ class ExportChannel:
         if self._guard_panel(claim):
             passed.append("panel")
 
+        # 6. COMPARISON / BOTH-ARMS — the trial-level PICO check. A pooled
+        # drug-efficacy datum (meta['drug_of_interest'] set) must rest on a trial
+        # whose randomised contrast IS the drug — not a trial where the drug is
+        # background in every arm (OP0201/NCT03818815, found live by a user; the
+        # arm gate above binds the number to the right arm but cannot see that the
+        # whole trial is the wrong comparison). Fail closed once the drug is declared.
+        try:
+            guard_comparison(claim)
+            if (claim.meta or {}).get("drug_of_interest"):
+                passed.append("comparison")
+        except ComparisonError as exc:
+            raise ChannelViolation(str(exc)) from exc
+
         text = f"{claim.value} [{claim.text}] <{claim.locator}>"
         return Rendered(
             text=text,
@@ -373,6 +387,10 @@ class ExportChannel:
                 f"parent {claim.text!r} locator {claim.locator!r} did not resolve "
                 f"[{res.backend}]: {res.reason}")
         self._guard_semantic(claim, res)
+        try:
+            guard_comparison(claim)   # a pooled parent faces the both-arms check too
+        except ComparisonError as exc:
+            raise ChannelViolation(str(exc)) from exc
 
     def _guard_semantic(self, claim: Claim, resolution: Resolution) -> None:
         """For a value-bearing #om[id] claim, require the claim to name the outcome
