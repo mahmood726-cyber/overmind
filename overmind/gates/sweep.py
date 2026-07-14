@@ -106,6 +106,46 @@ def classify_number(sentence: str) -> str:
     return "ambiguous"
 
 
+# --- the different-family classifier layer (the ambiguous-tail shrink, Fix #4) ---
+# The regex classifier's "ambiguous" band is same-family (one author's vocabulary). A
+# DIFFERENT family (Codex/GPT-5 or agy/Gemini) decorrelates it — the whole point. We do
+# NOT trust the second family to run live on every number (it is a model, not a gate);
+# instead its verdicts on the AMBIGUOUS band are cached to a data file and consulted here.
+# A sentence the second family ALSO could not decide stays "ambiguous" and is still marked
+# on screen — bounded and visible beats precise and wrong.
+import json as _json
+
+_SECOND_FAMILY: dict | None = None
+
+
+def _second_family_verdicts() -> dict:
+    global _SECOND_FAMILY
+    if _SECOND_FAMILY is None:
+        path = os.path.join(os.path.dirname(__file__), "data", "second_family_verdicts.json")
+        try:
+            with open(path, "r", encoding="utf-8") as fh:
+                _SECOND_FAMILY = _json.load(fh).get("verdicts", {})
+        except (OSError, ValueError):
+            _SECOND_FAMILY = {}
+    return _SECOND_FAMILY
+
+
+def classify_with_second_family(sentence: str) -> str:
+    """world | internal | ambiguous, consulting a cached DIFFERENT-FAMILY verdict for the
+    regex-ambiguous band. If the regex is already decisive (world/internal) that stands;
+    only the 'ambiguous' residual is offered to the second family, and only its
+    world/internal decisions are taken — a second-family 'ambiguous' (or an unseen
+    sentence) stays ambiguous and is still marked. Decorrelation, not a same-author guess."""
+    base = classify_number(sentence)
+    if base != "ambiguous":
+        return base
+    key = re.sub(r"\s+", " ", sentence).strip()[:160]
+    verdict = _second_family_verdicts().get(key)
+    if verdict in ("world", "internal"):
+        return verdict
+    return "ambiguous"
+
+
 def _destination_bucket(path: str) -> str:
     """Kampala's priority order: what a researcher sees FIRST. app-page > slides >
     deliverable. Used to order the retrofit, not to change the count."""
