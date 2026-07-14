@@ -197,6 +197,29 @@ def test_banner_is_visible_names_unverified_and_flags_fabricated():
     assert inject_banner(once, counts) == once          # idempotent
 
 
+def test_banner_flags_sequential_block_as_fabricated_not_just_digit_pattern():
+    """Undercount fix: a run of >=3 (near-)consecutive non-resolving NCTs is a fabricated
+    placeholder block even when the ids carry no round tail (NCT04550914..916). Scattered
+    non-resolving ids stay honestly UNVERIFIED (may be newer than snapshot)."""
+    from overmind.gates.retrofit import _fabricated_partition, render_provenance_banner, CascadeCounts
+    # sequential block of 3 with gap<=2 -> all fabricated
+    fab, unv = _fabricated_partition(["NCT04550914", "NCT04550915", "NCT04550916"])
+    assert fab == ["NCT04550914", "NCT04550915", "NCT04550916"] and unv == []
+    # scattered non-resolving ids (different prefixes) -> stay unverified
+    fab, unv = _fabricated_partition(["NCT04438151", "NCT05133481", "NCT05179062"])
+    assert fab == [] and set(unv) == {"NCT04438151", "NCT05133481", "NCT05179062"}
+    # a 2-run is not enough (fail toward the weaker, honest label)
+    fab, unv = _fabricated_partition(["NCT04210116", "NCT04210117"])
+    assert fab == [] and len(unv) == 2
+    # digit-placeholder still flagged even when alone
+    fab, unv = _fabricated_partition(["NCT05000550", "NCT01234567"])
+    assert fab == ["NCT05000550"] and unv == ["NCT01234567"]
+    # rendered banner names the sequential block under the FABRICATED flag
+    counts = CascadeCounts(path="x", unresolved_ncts=["NCT06000801", "NCT06000802", "NCT06000803"])
+    banner = render_provenance_banner(counts)
+    assert "3 LIKELY FABRICATED" in banner and "NCT06000801" in banner
+
+
 @aact
 def test_staging_never_touches_the_live_file(tmp_path):
     from overmind.gates.retrofit import stage_corpus

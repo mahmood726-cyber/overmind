@@ -172,6 +172,12 @@ class Retrofit:
         pool = self._page_nct_pool(text)
         counts.page_ncts = len(pool)
         counts.page_ncts_resolved = sum(1 for v in pool.values() if v)
+        # Prose/HTML-annotate path: surface the cited-but-unresolved NCTs so the visible
+        # banner can NAME them (and flag placeholder-pattern ids as LIKELY FABRICATED),
+        # exactly as retrofit_app_page_tiers does for structured pages. Without this the
+        # prose banner shows only a generic "N unverified numbers" line and the fabricated
+        # NCTs render invisible — the on-screen badge the researcher needs is missing.
+        counts.unresolved_ncts = [n for n, ok in pool.items() if not ok]
         tags = _TAG_HTML if html else _TAG_MD
         out = []
         in_script = False   # never annotate inside <script>/<style> — would corrupt JS/JSON
@@ -330,6 +336,43 @@ _BODY_OPEN = re.compile(r"(<body\b[^>]*>)", re.IGNORECASE)
 # a non-resolving NCT with a suspiciously round/placeholder tail — likely FABRICATED, not
 # merely 'newer than the snapshot'. Heuristic, stated as such on screen.
 _PLACEHOLDER_NCT = re.compile(r"^NCT0500\d{4}$|^NCT\d{5}0{3}$", re.IGNORECASE)
+_NCT8 = re.compile(r"^NCT(\d{8})$", re.IGNORECASE)
+
+
+def _fabricated_partition(ncts: list) -> tuple[list, list]:
+    """Split cited-but-non-resolving NCTs into (fabricated, unverified), preserving order.
+
+    A non-resolving id is called FABRICATED when EITHER
+      (a) it matches the round placeholder digit-pattern (_PLACEHOLDER_NCT), OR
+      (b) it belongs to a SEQUENTIAL BLOCK — a run of >=3 non-resolving ids on the same
+          page whose numeric parts are (near-)consecutive (gap <=2). Real trials do not
+          register in tidy consecutive ranges on a single review; a non-resolving
+          consecutive run is a placeholder block, not 'newer than the snapshot'.
+    Everything else stays UNVERIFIED (honestly hedged: may be fabricated OR post-snapshot).
+    This is the undercount fix — digit-shape alone missed sequential fake ranges like
+    NCT04550914..916 / NCT06000801..803 that carry no round tail."""
+    nums = {}
+    for n in ncts:
+        m = _NCT8.match(n)
+        if m:
+            nums[n] = int(m.group(1))
+    ordered = sorted(nums, key=lambda x: nums[x])
+    block: set = set()
+    i = 0
+    while i < len(ordered):
+        j = i
+        while j + 1 < len(ordered) and nums[ordered[j + 1]] - nums[ordered[j]] <= 2:
+            j += 1
+        if j - i + 1 >= 3:
+            block.update(ordered[i:j + 1])
+        i = j + 1
+    fabricated, unverified = [], []
+    for n in ncts:
+        if _PLACEHOLDER_NCT.match(n) or n in block:
+            fabricated.append(n)
+        else:
+            unverified.append(n)
+    return fabricated, unverified
 
 
 def _esc(s: str) -> str:
@@ -361,8 +404,7 @@ def render_provenance_banner(counts: "CascadeCounts") -> str:
         parts.append(f'<span style="color:#d29922">&#9888; {marked_prose} number(s) on this '
                      f'page marked UNVERIFIED &mdash; no resolvable trial id</span>')
     if counts.unresolved_ncts:
-        fabricated = [n for n in counts.unresolved_ncts if _PLACEHOLDER_NCT.match(n)]
-        real_unv = [n for n in counts.unresolved_ncts if not _PLACEHOLDER_NCT.match(n)]
+        fabricated, real_unv = _fabricated_partition(counts.unresolved_ncts)
         parts.append(' &nbsp;&middot;&nbsp; ')
         if real_unv:
             parts.append(f'<span style="color:#f85149;font-weight:bold">&#9888; '
@@ -372,7 +414,8 @@ def render_provenance_banner(counts: "CascadeCounts") -> str:
         if fabricated:
             parts.append(f' <span style="color:#ff6a69;font-weight:bold">&#9940; '
                          f'{len(fabricated)} LIKELY FABRICATED</span> <span style="opacity:.9">'
-                         f'&mdash; placeholder-pattern id, not a real registry trial: '
+                         f'&mdash; non-resolving placeholder / sequential-block id, absent from '
+                         f'ClinicalTrials.gov/AACT &mdash; must NOT be treated as evidence: '
                          f'{_esc(", ".join(fabricated))}</span>')
     if not registered and not counts.unresolved_ncts and not marked_prose:
         parts.append('<span style="color:#3fb950">&#10003; no unlocated world-claim numbers '
