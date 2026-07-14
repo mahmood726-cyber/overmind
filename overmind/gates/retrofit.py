@@ -418,6 +418,29 @@ class StageReport:
         return sum(c.unverified for c in self.per_app)
 
 
+def _process_one(rf: "Retrofit", text: str, html: bool) -> tuple[str, "CascadeCounts"]:
+    """Produce the retrofit output for ONE document, choosing the SAFE path per type:
+
+      * structured app page (has source_tier records) -> rewrite source_tier values
+        (surgical JSON-value change) + inject the visible banner.
+      * HTML PROSE page (no records) -> banner ONLY. The inline text annotator can append
+        a <span> inside a <script> data literal on some pages (found on apply-day: 24/511
+        prose pages), which would corrupt the JS. So for HTML we do NOT modify the body
+        inline — the banner (computed from the same counts) is the visible layer, and it
+        cannot corrupt the page. Counts are still computed via annotate() for the banner.
+      * MARKDOWN / non-HTML -> inline annotation (no scripts to corrupt) + no banner.
+    """
+    if html and _TIER_RECORD.search(text):
+        out, counts = rf.retrofit_app_page_tiers(text)
+        return inject_banner(out, counts), counts
+    if html:
+        # compute counts by annotating a COPY, but ship the ORIGINAL body + banner only
+        _annot, counts = rf.annotate(text, html=True)
+        return inject_banner(text, counts), counts
+    # markdown / fragment: inline annotation is safe (no <script> data literals)
+    return rf.annotate(text, html=False)
+
+
 def stage_corpus(paths: Iterable[str], staging_dir: str, *,
                  retrofit: Optional[Retrofit] = None,
                  apply_in_place: bool = False) -> StageReport:
@@ -438,18 +461,7 @@ def stage_corpus(paths: Iterable[str], staging_dir: str, *,
         except OSError:
             continue
         html = p.lower().endswith((".html", ".htm"))
-        # App pages carry structured `source_tier` records: retrofit those SAFELY (JSON
-        # value rewrite, no script-blob corruption). Prose/markdown uses the text
-        # annotator. A plain HTML page with no tier records also uses the text path,
-        # which now skips <script>/<style> so it cannot corrupt embedded JS.
-        if _TIER_RECORD.search(text):
-            annotated, counts = rf.retrofit_app_page_tiers(text)
-        else:
-            annotated, counts = rf.annotate(text, html=html)
-        # the VISIBLE layer: inject the fixed banner so the tier is legible to a human,
-        # not hidden in an unread data field (HTML pages only).
-        if html:
-            annotated = inject_banner(annotated, counts)
+        annotated, counts = _process_one(rf, text, html)
         counts.path = p
         rep.per_app.append(counts)
         target = p if apply_in_place else os.path.join(staging_dir, os.path.basename(p))
@@ -485,12 +497,8 @@ if __name__ == "__main__":
         except OSError:
             continue
         is_html = p.lower().endswith((".html", ".htm"))
-        if _TIER_RECORD.search(txt):
-            new, c = rf.retrofit_app_page_tiers(txt); struct.append(c)
-        else:
-            new, c = rf.annotate(txt, html=is_html); prose.append(c)
-        if is_html:
-            new = inject_banner(new, c)
+        new, c = _process_one(rf, txt, is_html)
+        (struct if (is_html and _TIER_RECORD.search(txt)) else prose).append(c)
         c.path = p
         tgt = p if a.apply else os.path.join(a.staging, os.path.basename(p))
         os.makedirs(os.path.dirname(tgt) or ".", exist_ok=True)

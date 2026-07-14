@@ -208,5 +208,8 @@ def test_staging_never_touches_the_live_file(tmp_path):
     # live file is byte-for-byte unchanged; annotation only in staging
     assert live.read_text(encoding="utf-8") == original
     staged = (staging / "live_app.html").read_text(encoding="utf-8")
-    assert "om-tier" in staged
+    # HTML prose page is banner-ONLY (safe): the visible banner is injected, the original
+    # body is NOT modified inline (the inline annotator can corrupt <script> data literals).
+    assert "overmind-provenance-banner" in staged
+    assert "<p>Effect 0.67 in" in staged        # original body preserved verbatim
     assert rep.staged == 1
