@@ -379,17 +379,31 @@ def _esc(s: str) -> str:
     return (s.replace("&", "&amp;").replace("<", "&lt;").replace(">", "&gt;"))
 
 
-def render_provenance_banner(counts: "CascadeCounts") -> str:
+def render_provenance_banner(counts: "CascadeCounts", *, recovered=None,
+                             cascade_checked: bool = False) -> str:
     """A self-contained, script-free, fixed-position banner a researcher cannot miss. Green
     for registry-linked records, red for UNVERIFIED with the offending NCTs NAMED, and a
     stronger ⛔ flag for placeholder-pattern ids that are likely fabricated (not merely
-    unverified). No external CSS/JS; survives the page's own overflow-hidden layout."""
+    unverified). No external CSS/JS; survives the page's own overflow-hidden layout.
+
+    THREE-LAYER CASCADE (registry -> PubMed -> Europe PMC OA):
+      * ``recovered`` — NCTs that FAILED the AACT registry lookup but WERE found in PubMed
+        or Europe PMC. These are NOT fabricated (a fabricated trial has no abstract either);
+        they are real trials the local registry snapshot missed. Shown in green, and removed
+        from the fabricated/unverified lists so we never accuse a trial with a real abstract.
+      * ``cascade_checked`` — the fabricated/unverified verdicts were confirmed against
+        PubMed + Europe PMC (not registry alone), so the on-screen wording says so."""
+    recovered = set(recovered or ())
     registered = counts.registered + counts.located_registry
     unverified = counts.unverified
+    unresolved = [n for n in counts.unresolved_ncts if n not in recovered]
+    rec_here = [n for n in counts.unresolved_ncts if n in recovered]
     marked_prose = 0
     # for prose pages, world+ambiguous unlocated numbers were marked inline; surface a count
-    if not counts.unresolved_ncts and unverified and not registered:
+    if not unresolved and unverified and not registered and not rec_here:
         marked_prose = unverified
+    three = (" (checked against ClinicalTrials.gov + PubMed + Europe PMC)"
+             if cascade_checked else "")
     parts = [
         f'<div id="{_BANNER_ID}" style="position:fixed;bottom:0;left:0;right:0;'
         f'z-index:2147483647;font-family:system-ui,Segoe UI,Arial,sans-serif;font-size:13px;'
@@ -400,24 +414,36 @@ def render_provenance_banner(counts: "CascadeCounts") -> str:
     if registered:
         parts.append(f'<span style="color:#3fb950">&#10003; {registered} trial record(s) '
                      f'registry-linked (cited trial resolves in ClinicalTrials.gov/AACT)</span>')
+    if rec_here:
+        parts.append(f' <span style="color:#3fb950">&#10003; {len(rec_here)} recovered</span> '
+                     f'<span style="opacity:.9">&mdash; not in the registry snapshot but a real '
+                     f'trial found in PubMed / Europe PMC (abstract available): '
+                     f'{_esc(", ".join(rec_here))}</span>')
     if marked_prose:
         parts.append(f'<span style="color:#d29922">&#9888; {marked_prose} number(s) on this '
                      f'page marked UNVERIFIED &mdash; no resolvable trial id</span>')
-    if counts.unresolved_ncts:
-        fabricated, real_unv = _fabricated_partition(counts.unresolved_ncts)
+    if unresolved:
+        fabricated, real_unv = _fabricated_partition(unresolved)
         parts.append(' &nbsp;&middot;&nbsp; ')
         if real_unv:
+            tail = (f'not found in ClinicalTrials.gov, PubMed, or Europe PMC{three} '
+                    f'&mdash; unverified (may be fabricated or newer than all three sources)'
+                    if cascade_checked else
+                    'cited trial NOT found in the registry (unverified; may be fabricated '
+                    'or newer than snapshot)')
             parts.append(f'<span style="color:#f85149;font-weight:bold">&#9888; '
                          f'{len(real_unv)} UNVERIFIED</span> <span style="opacity:.9">&mdash; '
-                         f'cited trial NOT found in the registry (unverified; may be fabricated '
-                         f'or newer than snapshot): {_esc(", ".join(real_unv))}</span>')
+                         f'{tail}: {_esc(", ".join(real_unv))}</span>')
         if fabricated:
+            absent = ("absent from ClinicalTrials.gov, PubMed AND Europe PMC (all three "
+                      "layers checked)" if cascade_checked else
+                      "non-resolving placeholder / sequential-block id, absent from "
+                      "ClinicalTrials.gov/AACT")
             parts.append(f' <span style="color:#ff6a69;font-weight:bold">&#9940; '
                          f'{len(fabricated)} LIKELY FABRICATED</span> <span style="opacity:.9">'
-                         f'&mdash; non-resolving placeholder / sequential-block id, absent from '
-                         f'ClinicalTrials.gov/AACT &mdash; must NOT be treated as evidence: '
+                         f'&mdash; {absent} &mdash; must NOT be treated as evidence: '
                          f'{_esc(", ".join(fabricated))}</span>')
-    if not registered and not counts.unresolved_ncts and not marked_prose:
+    if not registered and not unresolved and not marked_prose and not rec_here:
         parts.append('<span style="color:#3fb950">&#10003; no unlocated world-claim numbers '
                      'detected on this page</span>')
     parts.append('</div>')
