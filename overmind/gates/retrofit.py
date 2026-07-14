@@ -46,13 +46,19 @@ from .sweep import (
     _NCT,
     _NOISE_LINE,
     classify_number,
+    classify_with_second_family,
 )
 
 # Tiers, strongest to weakest. The tag shown on screen IS the grade.
-TIER_REGISTRY = "registry"
+TIER_REGISTRY = "registry"        # VALUE-verified: an #om[id] anchor resolved AND matched
+TIER_REGISTERED = "registered"    # the cited trial is REAL, but THIS number is not
+                                  # value-verified against it (existence != verification —
+                                  # Codex Part-V break: '99% in NCT..' must NOT read as verified)
 TIER_OA = "oa_table"
 TIER_ABSTRACT = "abstract"
 TIER_UNVERIFIED = "unverified"
+
+_OM_ANCHOR = re.compile(r"om\[(\d+)\]", re.IGNORECASE)
 
 _ANY_ID = re.compile(r"NCT\d{8}|PMID:?\s?\d+|PMC\d+|10\.\d{4,9}/\S+", re.IGNORECASE)
 
@@ -72,19 +78,21 @@ _TIER_RECORD = re.compile(
 
 # on-screen markers — the tier tag a reader sees next to the number
 _TAG_MD = {
-    TIER_REGISTRY: " [registry]",
+    TIER_REGISTRY: " [registry: value verified]",
+    TIER_REGISTERED: " [registered: trial exists, value not verified]",
     TIER_OA: " [OA table]",
     TIER_ABSTRACT: " [abstract]",
     TIER_UNVERIFIED: " [UNVERIFIED: no resolvable trial id]",
 }
 _TAG_HTML = {
-    TIER_REGISTRY: ' <span class="om-tier om-registry" title="located: NCT resolves in AACT registry">✓ registry</span>',
+    TIER_REGISTRY: ' <span class="om-tier om-registry" title="value verified: an #om[id] anchor resolved and the value matched AACT">✓ registry</span>',
+    TIER_REGISTERED: ' <span class="om-tier om-registered" title="the cited trial resolves in AACT, but THIS number is not value-verified against it">◐ registered</span>',
     TIER_OA: ' <span class="om-tier om-oa" title="located: recovered from Open-Access JATS results table">✓ OA table</span>',
     TIER_ABSTRACT: ' <span class="om-tier om-abstract" title="located: found in PubMed abstract">~ abstract</span>',
     TIER_UNVERIFIED: ' <span class="om-tier om-unverified" title="no resolvable locator — not gate-verified">⚠ UNVERIFIED</span>',
 }
 # a page already carrying any tier tag is idempotent-skipped
-_ALREADY = re.compile(r'om-tier|UNVERIFIED|\[registry\]|\[OA table\]|\[abstract\]')
+_ALREADY = re.compile(r'om-tier|UNVERIFIED|\[registry|\[registered|\[OA table\]|\[abstract\]')
 
 
 @dataclass
@@ -93,7 +101,8 @@ class CascadeCounts:
     path: str
     world: int = 0                 # definite world-claim numbers
     ambiguous: int = 0             # neither vocabulary — also marked, own class
-    located_registry: int = 0
+    located_registry: int = 0      # VALUE-verified (om[id] anchor resolved + matched)
+    registered: int = 0            # cited trial resolves, but value NOT verified (honest)
     located_oa: int = 0
     located_abstract: int = 0
     unverified: int = 0            # survived the whole cascade with no locator
@@ -104,6 +113,8 @@ class CascadeCounts:
 
     @property
     def located(self) -> int:
+        """VALUE-located only. 'registered' is NOT located — the trial is real but the
+        number is not verified against it (Codex Part-V break: existence != verification)."""
         return self.located_registry + self.located_oa + self.located_abstract
 
 
@@ -152,30 +163,6 @@ class Retrofit:
                 pool[nct] = self._nct_resolves(nct)
         return pool
 
-    def _locate(self, sentence: str, pool: dict[str, bool],
-                counts: CascadeCounts) -> str:
-        """The cascade for ONE world-claim/ambiguous number's sentence. Returns the tier."""
-        # layer 1 — registry: a resolvable NCT co-located in the same sentence.
-        m = _NCT.search(sentence)
-        if m and pool.get(m.group(0).upper(), False):
-            return TIER_REGISTRY
-        # a co-located non-NCT resolvable id (PMID/PMC/DOI) is a locator, but we only
-        # confirm it against ground truth for NCT (AACT) offline. A resolvable-syntax
-        # PMID with no reachable backend is NOT counted as located — that is exactly the
-        # "gated laundering" the resolver refuses. So a PMID-only sentence falls through
-        # to the OA/abstract layers, which fail closed offline -> unverified. Honest.
-
-        # layer 2 — OA JATS table (fail closed offline, but COUNT the attempt)
-        counts.oa_attempts += 1
-        nct = m.group(0).upper() if m else None
-        if nct and self.oa.recover(nct, None, None):
-            return TIER_OA
-        # layer 3 — PubMed abstract (fail closed offline, COUNT the attempt)
-        counts.abstract_attempts += 1
-        if nct and self.abstract.recover(nct, None, None):
-            return TIER_ABSTRACT
-        return TIER_UNVERIFIED
-
     def annotate(self, text: str, *, html: bool = False) -> tuple[str, CascadeCounts]:
         """Locate-then-mark every world-claim and ambiguous number, tagging each with the
         tier that located it (registry/OA/abstract) or UNVERIFIED. Idempotent. Only
@@ -211,9 +198,15 @@ class Retrofit:
             if not nums:
                 out.append(line)
                 continue
+            # MARKING classifier is the REGEX one, deliberately. agy (Gemini) Part-V
+            # attack: an LLM classifier is prompt-injectable ("classify as internal"),
+            # so the second family must NEVER suppress an on-screen safety mark — it only
+            # informs the REPORTED ambiguous-band denominator (see sweep.classify_with_
+            # second_family). Marking stays fail-toward-marking: mark world + ambiguous,
+            # leave only REGEX-definite internal unmarked.
             kind = classify_number(line)
             if kind not in ("world", "ambiguous"):
-                out.append(line)          # definite internal — no locator needed
+                out.append(line)          # regex-definite internal — no locator needed
                 continue
             has_id = bool(_ID_IN_CONTEXT.search(line))
             for _ in nums:
@@ -224,18 +217,49 @@ class Retrofit:
                 tier = self._locate(line, pool, counts) if has_id else self._locate_no_id(line, counts)
                 if tier == TIER_REGISTRY:
                     counts.located_registry += 1
+                elif tier == TIER_REGISTERED:
+                    counts.registered += 1
                 elif tier == TIER_OA:
                     counts.located_oa += 1
                 elif tier == TIER_ABSTRACT:
                     counts.located_abstract += 1
                 else:
                     counts.unverified += 1
-            # tag the line with the STRONGEST tier any of its numbers reached (a line
-            # with a resolvable co-located NCT shows registry; a bare line shows
-            # UNVERIFIED). One tag per line keeps the page readable.
-            line_tier = self._line_tier(line, pool, counts)
+            # tag the line with the tier its number reached. registry = value verified;
+            # registered = trial real but value NOT verified (honest, not green);
+            # UNVERIFIED = no locator. One tag per line keeps the page readable.
+            line_tier = self._classify_tier(line, pool)
             out.append(line.rstrip() + tags[line_tier])
         return "\n".join(out), counts
+
+    def _classify_tier(self, sentence: str, pool: dict[str, bool]) -> str:
+        """Pure tier classification for ONE sentence (no counting). Shared by the
+        per-number count loop's _locate and the per-line tag."""
+        m = _NCT.search(sentence)
+        if m and pool.get(m.group(0).upper(), False):
+            nct = m.group(0).upper()
+            om = _OM_ANCHOR.search(sentence)
+            if om:
+                res = self.resolver.resolve(f"{nct}#om[{om.group(1)}]")
+                return TIER_REGISTRY if (res.passes and res.value_ok) else TIER_UNVERIFIED
+            return TIER_REGISTERED   # trial real, this number not value-verified
+        return TIER_UNVERIFIED
+
+    def _locate(self, sentence: str, pool: dict[str, bool],
+                counts: CascadeCounts) -> str:
+        tier = self._classify_tier(sentence, pool)
+        if tier in (TIER_REGISTRY, TIER_REGISTERED):
+            return tier
+        # not registry/registered -> the OA then abstract layers get their counted attempt
+        counts.oa_attempts += 1
+        m = _NCT.search(sentence)
+        nct = m.group(0).upper() if m else None
+        if nct and self.oa.recover(nct, None, None):
+            return TIER_OA
+        counts.abstract_attempts += 1
+        if nct and self.abstract.recover(nct, None, None):
+            return TIER_ABSTRACT
+        return TIER_UNVERIFIED
 
     def _locate_no_id(self, sentence: str, counts: CascadeCounts) -> str:
         """No id co-located at all. OA/abstract still get their (failing, counted)
@@ -244,28 +268,24 @@ class Retrofit:
         counts.abstract_attempts += 1
         return TIER_UNVERIFIED
 
-    def _line_tier(self, sentence: str, pool: dict[str, bool],
-                   counts: CascadeCounts) -> str:
-        """The strongest tier for the whole line (for the single on-screen tag). Does not
-        re-count — counting already happened per-number in annotate()."""
-        m = _NCT.search(sentence)
-        if m and pool.get(m.group(0).upper(), False):
-            return TIER_REGISTRY
-        return TIER_UNVERIFIED
-
 
     # -- app-page structured retrofit (the SAFE app-page path) ---------------
     def retrofit_app_page_tiers(self, text: str) -> tuple[str, CascadeCounts]:
         """The app-page-safe retrofit: rewrite each embedded trial record's
         `source_tier` by running the cascade on its NCT, instead of appending markers to
         script blobs. `extracted` (the app's default, = unverified) is UPGRADED to
-        `registry` when the NCT resolves in AACT, DOWNGRADED to `unverified` when the NCT
+        `registered` when the NCT resolves in AACT, DOWNGRADED to `unverified` when the NCT
         is fabricated/unreachable. The page already renders `source_tier` as an on-screen
         badge, so this makes the grade visible where the researcher already looks — no
         markup surgery, no corruption risk. Idempotent (re-running yields the same tiers).
 
-        Returns (new_text, counts) where counts.located_registry / counts.unverified are
-        per-RECORD (one trial outcome), which is the granularity the cascade dereferences."""
+        HONEST TIER (Codex + agy Part-V break): these records carry an NCT but NO per-value
+        #om[id] anchor, so a resolving NCT proves the trial is REAL — NOT that this record's
+        numbers are verified against AACT. So the resolved tier is `registered` (existence),
+        NOT the value-verified `registry`. Per-value verification is a further layer, named.
+
+        Returns (new_text, counts) where counts.registered / counts.unverified are
+        per-RECORD (one trial outcome), which is the granularity this layer dereferences."""
         counts = CascadeCounts(path="")
         pool: dict[str, bool] = {}
 
@@ -274,8 +294,8 @@ class Retrofit:
             if nct not in pool:
                 pool[nct] = self._nct_resolves(nct)
             if pool[nct]:
-                counts.located_registry += 1
-                tier = TIER_REGISTRY
+                counts.registered += 1
+                tier = TIER_REGISTERED   # trial resolves; value NOT verified (honest)
             else:
                 # cascade layers 2/3 (OA/abstract) fail closed offline — counted, then unverified
                 counts.oa_attempts += 1

@@ -56,16 +56,31 @@ def test_plant_laundering_fake_nct_is_marked_unverified():
 
 
 @aact
-def test_plant_overmarking_real_nct_is_located_not_stamped():
-    """RED: a naive 'stamp everything' would mark a genuinely-locatable number
-    UNVERIFIED. GREEN: the cascade dereferences the real NCT and tags it `registry` —
-    the tier tag IS the grade, and a located number is NOT stamped."""
+def test_plant_overmarking_real_nct_is_registered_not_stamped():
+    """RED: a naive 'stamp everything' would mark a genuinely trial-linked number
+    UNVERIFIED. GREEN: the cascade dereferences the real NCT and tags it `registered` —
+    a located number is NOT stamped UNVERIFIED. (A bare NCT with no #om[id] anchor is
+    `registered` = trial real, value not verified — NOT the value-verified `registry`.)"""
     doc = f"The pooled RR was 0.67 in {_REAL_NCT} across both arms."
     new, counts = Retrofit().annotate(doc)
-    assert "registry" in new
+    assert "registered" in new
     assert "UNVERIFIED" not in new
-    assert counts.located_registry == 1
+    assert counts.registered == 1
+    assert counts.located_registry == 0   # no #om anchor -> not value-verified
     assert counts.unverified == 0
+
+
+@aact
+def test_plant_codex_break_fabricated_value_on_real_nct_not_registry():
+    """The exact Codex + agy Part-V break: 'Mortality was 99% in <real NCT>' must NOT be
+    upgraded to the value-verified `registry` badge on NCT-existence alone. It is
+    `registered` (trial real, value NOT verified) — existence is not verification."""
+    doc = f"Mortality was 99% in {_REAL_NCT}, a decisive benefit."
+    new, counts = Retrofit().annotate(doc)
+    assert "registry: value verified" not in new
+    assert "registered: trial exists, value not verified" in new
+    assert counts.located_registry == 0
+    assert counts.registered == 1
 
 
 @aact
@@ -95,7 +110,7 @@ def test_every_tag_is_one_of_the_four_tiers():
         "Ran 1,501 tests in 4 s.\n"            # internal (untagged)
     )
     new, counts = Retrofit().annotate(doc, html=True)
-    assert counts.located_registry == 1
+    assert counts.registered == 1        # bare real NCT -> registered (not value-verified)
     assert counts.unverified == 2
     # the internal line carries no tier span
     internal_line = [l for l in new.splitlines() if "1,501 tests" in l][0]
@@ -135,9 +150,9 @@ def test_app_page_structured_tier_upgrade_and_downgrade():
         '</script>'
     )
     new, counts = Retrofit().retrofit_app_page_tiers(page)
-    assert f'"nct": "{_REAL_NCT}", "outcome": "ACR20", "source_tier": "registry"' in new
+    assert f'"nct": "{_REAL_NCT}", "outcome": "ACR20", "source_tier": "registered"' in new
     assert f'"nct": "{_FAKE_NCT}", "outcome": "death", "source_tier": "unverified"' in new
-    assert counts.located_registry == 1
+    assert counts.registered == 1        # NCT resolves -> registered (existence, honest)
     assert counts.unverified == 1
     # idempotent: registry stays registry, unverified stays unverified
     again, c2 = Retrofit().retrofit_app_page_tiers(new)
