@@ -5,6 +5,7 @@ import json
 from pathlib import Path
 from typing import Any
 
+from overmind.storage import db as storage_db
 from overmind.storage.db import StateDatabase, _memory_window_active
 from overmind.storage.models import InsightRecord, MemoryRecord, utc_now
 
@@ -43,7 +44,8 @@ class MemoryStore:
         Cycles, unknown IDs, cross-project dependencies, incomplete source
         pointers and excessive depth refuse rather than silently infer evidence.
         """
-        now = utc_now()
+        # Share the database query clock, including pinned synthetic test clocks.
+        now = storage_db.utc_now()
         evaluated: dict[str, bool] = {}
         visiting: set[str] = set()
 
