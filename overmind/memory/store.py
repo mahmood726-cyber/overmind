@@ -127,8 +127,31 @@ class MemoryStore:
     def recall_for_runner(self, runner_id: str, limit: int = 5) -> list[MemoryRecord]:
         return self.list_current(scope=runner_id, memory_type="runner_learning", limit=limit)
 
-    def recall_heuristics(self, task_type: str, limit: int = 5) -> list[MemoryRecord]:
-        return self.search(task_type, memory_type="heuristic", limit=limit)
+    def recall_heuristics(
+        self, task_type: str, limit: int = 5, *, project_id: str | None = None
+    ) -> list[MemoryRecord]:
+        """Only use global and explicitly current-project heuristics in worker prompts.
+
+        The heuristic generator writes project-scoped records, so an unscoped
+        FTS search would otherwise disclose another project's memories.
+        Prefer local guidance, then vetted global guidance; portfolio and
+        unrelated project records are not implicitly global.
+        """
+        if limit <= 0:
+            return []
+        scopes = [project_id] if project_id and project_id != "global" else []
+        scopes.append("global")
+        selected: list[MemoryRecord] = []
+        for scope in scopes:
+            selected.extend(
+                self.search(
+                    task_type, scope=scope, memory_type="heuristic",
+                    limit=limit - len(selected),
+                )
+            )
+            if len(selected) >= limit:
+                break
+        return selected
 
     # Per-type decay rates. Feedback memories encode user preferences and
     # should age very slowly; bundle_failure / regression memories couple to
