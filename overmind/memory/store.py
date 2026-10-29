@@ -202,9 +202,13 @@ class MemoryStore:
 
         Deduplicates by memory_id across both result sets.
         """
+        if limit <= 0:
+            return []
         fts_results = self.search(query, scope=scope, memory_type=memory_type, limit=limit)
 
-        if len(fts_results) >= semantic_fallback_threshold:
+        # A filled FTS quota must never be enlarged by semantic fallback,
+        # even when the caller asks for fewer than the usual threshold.
+        if len(fts_results) >= min(limit, semantic_fallback_threshold):
             return fts_results
 
         semantic_results = self.db.semantic_search_memories(
