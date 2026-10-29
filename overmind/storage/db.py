@@ -1,7 +1,9 @@
 from __future__ import annotations
 
 import json
+import re
 import sqlite3
+from datetime import UTC, datetime
 from pathlib import Path
 from typing import Any, Callable, TypeVar
 
@@ -13,12 +15,40 @@ T = TypeVar("T")
 VALID_TABLES = {"projects", "runners", "tasks", "insights", "checkpoints", "memories", "routing_scores"}
 
 
+def _parse_memory_instant(value: str) -> datetime:
+    """Parse an ISO timestamp without silently truncating sub-microsecond input."""
+    if re.search(r"\.\d{7,}", value):
+        raise ValueError("unsupported timestamp precision")
+    instant = datetime.fromisoformat(value)
+    return instant.replace(tzinfo=UTC) if instant.tzinfo is None else instant.astimezone(UTC)
+
+
+def _memory_window_active(start: str | None, end: str | None, now: str) -> int:
+    """Fail closed on invalid boundaries; compare actual instants to microseconds.
+
+    SQLite julianday() rounds to milliseconds: a future start at +1 microsecond
+    can otherwise be admitted early, and an end at +1 microsecond lost early.
+    """
+    try:
+        instant = _parse_memory_instant(now)
+        return int(
+            (start is None or _parse_memory_instant(start) <= instant)
+            and (end is None or _parse_memory_instant(end) > instant)
+        )
+    except (TypeError, ValueError, OverflowError):
+        return 0
+
+
+
 class StateDatabase:
     def __init__(self, db_path: Path) -> None:
         self.db_path = db_path
         self.db_path.parent.mkdir(parents=True, exist_ok=True)
         self.connection = sqlite3.connect(self.db_path, check_same_thread=False)
         self.connection.row_factory = sqlite3.Row
+        self.connection.create_function(
+            "memory_window_active", 3, _memory_window_active, deterministic=True
+        )
         self.initialize()
 
     def initialize(self) -> None:
@@ -287,12 +317,12 @@ class StateDatabase:
 
     def list_memories(
         self, status: str = "active", memory_type: str | None = None, scope: str | None = None,
-        limit: int = 100, include_expired: bool = False,
+        limit: int = 100, include_expired: bool = False, offset: int = 0,
     ) -> list[MemoryRecord]:
         query = "SELECT * FROM memories WHERE status = ?"
         params: list[object] = [status]
         if status == "active" and not include_expired:
-            query += " AND (valid_until IS NULL OR valid_until > ?)"
+            query += " AND memory_window_active(valid_from, valid_until, ?) = 1"
             params.append(utc_now())
         if memory_type:
             query += " AND memory_type = ?"
@@ -300,13 +330,15 @@ class StateDatabase:
         if scope:
             query += " AND scope = ?"
             params.append(scope)
-        query += " ORDER BY relevance DESC, updated_at DESC LIMIT ?"
-        params.append(limit)
+        # Stable ordering makes paged evidence recall deterministic at equal ranks.
+        query += " ORDER BY relevance DESC, updated_at DESC, id LIMIT ? OFFSET ?"
+        params.extend((limit, offset))
         rows = self.connection.execute(query, params).fetchall()
         return [self._row_to_memory(row) for row in rows]
 
     def search_memories(
-        self, query: str, scope: str | None = None, memory_type: str | None = None, limit: int = 10
+        self, query: str, scope: str | None = None, memory_type: str | None = None,
+        limit: int = 10, offset: int = 0,
     ) -> list[MemoryRecord]:
         # Escape double quotes and strip FTS5 operator keywords to prevent query injection
         fts_operators = {"AND", "OR", "NOT", "NEAR"}
@@ -318,7 +350,7 @@ class StateDatabase:
             SELECT m.* FROM memories m
             JOIN memories_fts f ON m.rowid = f.rowid
             WHERE memories_fts MATCH ? AND m.status = 'active'
-            AND (m.valid_until IS NULL OR m.valid_until > ?)
+            AND memory_window_active(m.valid_from, m.valid_until, ?) = 1
         """
         params: list[object] = [fts_query, utc_now()]
         if scope:
@@ -327,13 +359,14 @@ class StateDatabase:
         if memory_type:
             sql += " AND m.memory_type = ?"
             params.append(memory_type)
-        sql += " ORDER BY rank LIMIT ?"
-        params.append(limit)
+        sql += " ORDER BY rank, m.id LIMIT ? OFFSET ?"
+        params.extend((limit, offset))
         rows = self.connection.execute(sql, params).fetchall()
         return [self._row_to_memory(row) for row in rows]
 
     def semantic_search_memories(
-        self, query: str, scope: str | None = None, memory_type: str | None = None, limit: int = 10
+        self, query: str, scope: str | None = None, memory_type: str | None = None,
+        limit: int | None = 10,
     ) -> list[tuple[MemoryRecord, float]]:
         """Search memories by semantic similarity.  Returns (memory, score) pairs.
 
@@ -345,7 +378,7 @@ class StateDatabase:
 
         # Load candidate memories that have embeddings
         sql = "SELECT * FROM memories WHERE status = 'active' AND embedding IS NOT NULL"
-        sql += " AND (valid_until IS NULL OR valid_until > ?)"
+        sql += " AND memory_window_active(valid_from, valid_until, ?) = 1"
         params: list[object] = [utc_now()]
         if scope:
             sql += " AND scope = ?"
@@ -364,7 +397,9 @@ class StateDatabase:
             scored.append((mem, score))
 
         scored.sort(key=lambda x: x[1], reverse=True)
-        return scored[:limit]
+        # The recall layer may request all ranked candidates for provenance
+        # filtering; the SQL layer already scores all embedded memories.
+        return scored if limit is None else scored[:limit]
 
     def decay_memories(
         self,
@@ -434,11 +469,17 @@ class StateDatabase:
         return stats
 
     def expire_memories(self) -> int:
-        """Transition active memories past their valid_until to 'expired' status."""
+        """Expire memories past valid_until, comparing actual UTC instants.
+
+        Use the same fail-closed predicate as active recall: lexical ISO text
+        comparison misclassifies offset timestamps, and malformed or unsupported
+        precision must not leave a record eligible for use.
+        """
         now = utc_now()
         cursor = self.connection.execute(
             "UPDATE memories SET status = 'expired', updated_at = ? "
-            "WHERE status = 'active' AND valid_until IS NOT NULL AND valid_until <= ?",
+            "WHERE status = 'active' AND valid_until IS NOT NULL "
+            "AND memory_window_active(NULL, valid_until, ?) = 0",
             (now, now),
         )
         self.connection.commit()

@@ -39,7 +39,7 @@ class ContextInjector:
                     sections.append("")
 
                 # Audit history
-                audit_snapshots = self.db.list_memories(
+                audit_snapshots = self.memory_store.list_current(
                     scope=project.project_id,
                     memory_type="audit_snapshot",
                     limit=3,
@@ -51,7 +51,7 @@ class ContextInjector:
                     sections.append("")
 
                 # Review findings
-                reviews = self.db.list_memories(
+                reviews = self.memory_store.list_current(
                     scope=project.project_id,
                     memory_type="decision",
                     limit=2,
@@ -63,8 +63,10 @@ class ContextInjector:
                     sections.append("")
 
         # Heuristics (global)
-        heuristics = self.memory_store.list_all(status="active")
-        heuristic_mems = [m for m in heuristics if m.memory_type == "heuristic"][:3]
+        # Only explicit global heuristics can cross project boundaries.
+        heuristic_mems = self.memory_store.list_current(
+            scope="global", memory_type="heuristic", limit=3,
+        )
         if heuristic_mems:
             sections.append("## Learned Heuristics")
             for h in heuristic_mems:

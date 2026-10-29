@@ -5,7 +5,8 @@ import json
 from pathlib import Path
 from typing import Any
 
-from overmind.storage.db import StateDatabase
+from overmind.storage import db as storage_db
+from overmind.storage.db import StateDatabase, _memory_window_active
 from overmind.storage.models import InsightRecord, MemoryRecord, utc_now
 
 
@@ -36,19 +37,121 @@ class MemoryStore:
     def get(self, memory_id: str) -> MemoryRecord | None:
         return self.db.get_memory(memory_id)
 
+    def _usable_recall(self, candidates: list[MemoryRecord], limit: int) -> list[MemoryRecord]:
+        """Filter stale source bytes and transitive unknown/retracted premises at READ time.
+
+        No mutation: raw get/list_all remain available to administrative audits.
+        Cycles, unknown IDs, cross-project dependencies, incomplete source
+        pointers and excessive depth refuse rather than silently infer evidence.
+        """
+        # Share the database query clock, including pinned synthetic test clocks.
+        now = storage_db.utc_now()
+        evaluated: dict[str, bool] = {}
+        visiting: set[str] = set()
+
+        def eligible(mem: MemoryRecord) -> bool:
+            mid = mem.memory_id
+            if mid in evaluated:
+                return evaluated[mid]
+            if mid in visiting or len(visiting) >= 64:
+                return False
+            if (mem.status != "active"
+                or not _memory_window_active(mem.valid_from, mem.valid_until, now)
+                or bool(mem.source_path) != bool(mem.source_hash)
+                or self.is_stale(mem)):
+                evaluated[mid] = False
+                return False
+            visiting.add(mid)
+            valid = True
+            for parent_id in mem.derived_from:
+                parent = self.db.get_memory(parent_id)
+                if parent is None or parent.scope != mem.scope or not eligible(parent):
+                    valid = False
+                    break
+            visiting.remove(mid)
+            evaluated[mid] = valid
+            return valid
+
+        selected: list[MemoryRecord] = []
+        for mem in candidates:
+            if eligible(mem):
+                selected.append(mem)
+                if len(selected) >= limit:
+                    break
+        return selected
+
+    def list_current(
+        self, *, scope: str | None = None,
+        memory_type: str | None = None, limit: int = 10,
+    ) -> list[MemoryRecord]:
+        """Recall-ready read; unlike list_all, rejects unsupported provenance."""
+        if limit <= 0:
+            return []
+        # Filtering after a fixed LIMIT can hide valid lower-ranked facts if
+        # the first N records are stale. Page through the ranked candidates.
+        selected: list[MemoryRecord] = []
+        offset = 0
+        page_size = max(32, limit * 2)
+        while len(selected) < limit:
+            rows = self.db.list_memories(
+                scope=scope, memory_type=memory_type, limit=page_size, offset=offset,
+            )
+            selected.extend(self._usable_recall(rows, limit - len(selected)))
+            offset += len(rows)
+            if len(rows) < page_size:
+                break
+        return selected
+
     def search(
         self, query: str, scope: str | None = None, memory_type: str | None = None, limit: int = 10
     ) -> list[MemoryRecord]:
-        return self.db.search_memories(query, scope=scope, memory_type=memory_type, limit=limit)
+        if limit <= 0:
+            return []
+        selected: list[MemoryRecord] = []
+        offset = 0
+        page_size = max(32, limit * 2)
+        while len(selected) < limit:
+            rows = self.db.search_memories(
+                query, scope=scope, memory_type=memory_type,
+                limit=page_size, offset=offset,
+            )
+            selected.extend(self._usable_recall(rows, limit - len(selected)))
+            offset += len(rows)
+            if len(rows) < page_size:
+                break
+        return selected
 
     def recall_for_project(self, project_id: str, limit: int = 5) -> list[MemoryRecord]:
-        return self.db.list_memories(scope=project_id, limit=limit)
+        return self.list_current(scope=project_id, limit=limit)
 
     def recall_for_runner(self, runner_id: str, limit: int = 5) -> list[MemoryRecord]:
-        return self.db.list_memories(scope=runner_id, memory_type="runner_learning", limit=limit)
+        return self.list_current(scope=runner_id, memory_type="runner_learning", limit=limit)
 
-    def recall_heuristics(self, task_type: str, limit: int = 5) -> list[MemoryRecord]:
-        return self.db.search_memories(task_type, memory_type="heuristic", limit=limit)
+    def recall_heuristics(
+        self, task_type: str, limit: int = 5, *, project_id: str | None = None
+    ) -> list[MemoryRecord]:
+        """Only use global and explicitly current-project heuristics in worker prompts.
+
+        The heuristic generator writes project-scoped records, so an unscoped
+        FTS search would otherwise disclose another project's memories.
+        Prefer local guidance, then vetted global guidance; portfolio and
+        unrelated project records are not implicitly global.
+        """
+        if limit <= 0:
+            return []
+        scopes = [project_id] if project_id and project_id != "global" else []
+        scopes.append("global")
+        selected: list[MemoryRecord] = []
+        for scope in scopes:
+            selected.extend(
+                self.search(
+                    task_type, scope=scope, memory_type="heuristic",
+                    limit=limit - len(selected),
+                )
+            )
+            if len(selected) >= limit:
+                break
+        return selected
 
     # Per-type decay rates. Feedback memories encode user preferences and
     # should age very slowly; bundle_failure / regression memories couple to
@@ -99,17 +202,21 @@ class MemoryStore:
 
         Deduplicates by memory_id across both result sets.
         """
+        if limit <= 0:
+            return []
         fts_results = self.search(query, scope=scope, memory_type=memory_type, limit=limit)
 
-        if len(fts_results) >= semantic_fallback_threshold:
+        # A filled FTS quota must never be enlarged by semantic fallback,
+        # even when the caller asks for fewer than the usual threshold.
+        if len(fts_results) >= min(limit, semantic_fallback_threshold):
             return fts_results
 
         semantic_results = self.db.semantic_search_memories(
-            query, scope=scope, memory_type=memory_type, limit=limit,
+            query, scope=scope, memory_type=memory_type, limit=None,
         )
         seen_ids = {m.memory_id for m in fts_results}
         merged = list(fts_results)
-        for mem, _score in semantic_results:
+        for mem in self._usable_recall([m for m, _score in semantic_results], limit):
             if mem.memory_id not in seen_ids:
                 merged.append(mem)
                 seen_ids.add(mem.memory_id)
