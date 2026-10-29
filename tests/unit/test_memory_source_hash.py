@@ -310,3 +310,42 @@ def test_context_injector_read_does_not_leak_stale_or_other_project(tmp_path):
             assert forbidden not in injected
     finally:
         db.close()
+
+
+def test_stale_high_ranked_memories_do_not_starve_valid_recall(monkeypatch, tmp_path):
+    """Paging must find lower-ranked live evidence beyond a stale first page."""
+    from overmind.memory import embeddings
+
+    monkeypatch.setattr("overmind.storage.db.embeddings.embed", lambda _: [1.0, 0.0])
+    store, db = _store(tmp_path)
+    try:
+        changed = tmp_path / "changed.txt"
+        changed.write_text("now", encoding="utf-8")
+        for i in range(40):
+            store.save(MemoryRecord(
+                memory_id=f"stale-{i:02}", memory_type="project_learning",
+                scope="project-a", title="Synthetic raretoken",
+                content=f"Synthetic raretoken stale evidence {i}",
+                relevance=1.0, source_path=str(changed),
+                source_hash="0000000000000000",
+                embedding=[1.0, 0.0],
+            ))
+        store.save(MemoryRecord(
+            memory_id="live", memory_type="project_learning",
+            scope="project-a", title="Synthetic raretoken",
+            content="Synthetic raretoken live evidence", relevance=0.1,
+            embedding=[0.0, 1.0],
+        ))
+        store.save(MemoryRecord(
+            memory_id="other", memory_type="project_learning",
+            scope="project-b", title="Synthetic raretoken",
+            content="Synthetic raretoken other-project", embedding=[1.0, 0.0],
+        ))
+        assert [m.memory_id for m in store.recall_for_project("project-a", limit=1)] == ["live"]
+        assert [m.memory_id for m in store.search("raretoken", scope="project-a", limit=1)] == ["live"]
+        assert [m.memory_id for m in store.hybrid_search("unmatchable", scope="project-a", limit=1)] == ["live"]
+        assert [m.memory_id for m in store.recall_for_project("project-b", limit=1)] == ["other"]
+        # Administrative inspection must retain original stale-source records.
+        assert db.get_memory("stale-00").status == "active"
+    finally:
+        db.close()
