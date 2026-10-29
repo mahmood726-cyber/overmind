@@ -705,7 +705,9 @@ class Orchestrator:
                 f"REQUIRED VERIFICATION:\n{verification}\n"
             )
         project_memories = self.memory_store.recall_for_project(project.project_id, limit=3)
-        heuristic_memories = self.memory_store.recall_heuristics(task.task_type, limit=2)
+        heuristic_memories = self.memory_store.recall_heuristics(
+            task.task_type, limit=2, project_id=project.project_id
+        )
         prior_learnings_lines: list[str] = []
         for mem in project_memories:
             prior_learnings_lines.append(f"- [{mem.memory_type}] {mem.title}: {mem.content[:120]}")
