@@ -117,3 +117,45 @@ def test_timezone_offset_windows_and_invalid_time_fail_closed(monkeypatch, tmp_p
         }
     finally:
         db.close()
+
+
+def test_expiry_transition_uses_utc_instant_and_refuses_corrupt_boundaries(
+    monkeypatch, tmp_path
+):
+    """A sweep must not expire future-offset facts or preserve elapsed ones."""
+    monkeypatch.setattr(
+        "overmind.storage.db.utc_now", lambda: "2026-10-29T06:00:00+00:00"
+    )
+    db = StateDatabase(tmp_path / "expiry-transition.db")
+    cases = {
+        "future-offset": ("2026-10-29T03:00:00-04:00", "active"),
+        "elapsed-offset": ("2026-10-29T07:00:00+02:00", "expired"),
+        "future-microsecond": ("2026-10-29T06:00:00.000001+00:00", "active"),
+        "elapsed-microsecond": ("2026-10-29T05:59:59.999999+00:00", "expired"),
+        "invalid-calendar": ("2026-11-31T00:00:00+00:00", "expired"),
+        "unsupported-nanoseconds": (
+            "2026-11-01T00:00:00.000000001+00:00", "expired"
+        ),
+        "no-expiry": (None, "active"),
+    }
+    try:
+        for mid, (end, _expected_status) in cases.items():
+            db.upsert_memory(
+                MemoryRecord(
+                    memory_id=mid,
+                    memory_type="project_learning",
+                    scope="synthetic-project",
+                    title="Synthetic expiry evidence",
+                    content=f"Invented expiry fact for {mid}",
+                    valid_until=end,
+                )
+            )
+        assert db.expire_memories() == 4
+        for mid, (_end, expected_status) in cases.items():
+            actual = db.get_memory(mid)
+            assert actual is not None
+            assert actual.status == expected_status, mid
+        # Idempotent: already-expired records do not change a second time.
+        assert db.expire_memories() == 0
+    finally:
+        db.close()
