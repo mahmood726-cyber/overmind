@@ -142,6 +142,39 @@ def test_heuristic_recall_never_crosses_project_scope(tmp_path):
         db.close()
 
 
+def test_hybrid_recall_never_exceeds_limit_after_fts(monkeypatch, tmp_path):
+    """Semantic fallback cannot exceed the caller's hard retrieval budget."""
+    db = StateDatabase(tmp_path / "test.db")
+    store = MemoryStore(db=db, checkpoints_dir=tmp_path / "cp", logs_dir=tmp_path / "logs")
+    try:
+        fts = MemoryRecord(
+            memory_id="fts", memory_type="project_learning", scope="project-a",
+            title="Synthetic raretoken fact", content="Synthetic raretoken example",
+        )
+        semantic = MemoryRecord(
+            memory_id="semantic", memory_type="project_learning", scope="project-a",
+            title="Synthetic semantic candidate", content="Different invented input",
+        )
+        store.save_batch([fts, semantic])
+        observed_calls: list[bool] = []
+
+        def fake_semantic(*_args, **_kwargs):
+            observed_calls.append(True)
+            return [(semantic, 0.99)]
+
+        monkeypatch.setattr(db, "semantic_search_memories", fake_semantic)
+        assert [m.memory_id for m in store.hybrid_search(
+            "raretoken", scope="project-a", limit=1,
+        )] == ["fts"]
+        assert store.hybrid_search("raretoken", scope="project-a", limit=0) == []
+        assert observed_calls == []  # no semantic fallback when FTS quota filled
+        assert [m.memory_id for m in store.hybrid_search(
+            "nofts", scope="project-a", limit=1,
+        )] == ["semantic"]
+    finally:
+        db.close()
+
+
 def test_memory_store_forget(tmp_path):
     db = StateDatabase(tmp_path / "test.db")
     store = MemoryStore(db=db, checkpoints_dir=tmp_path / "cp", logs_dir=tmp_path / "logs")
