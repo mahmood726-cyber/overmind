@@ -292,8 +292,10 @@ class StateDatabase:
         query = "SELECT * FROM memories WHERE status = ?"
         params: list[object] = [status]
         if status == "active" and not include_expired:
+            now = utc_now()
+            query += " AND (valid_from IS NULL OR valid_from <= ?)"
             query += " AND (valid_until IS NULL OR valid_until > ?)"
-            params.append(utc_now())
+            params.extend((now, now))
         if memory_type:
             query += " AND memory_type = ?"
             params.append(memory_type)
@@ -318,9 +320,11 @@ class StateDatabase:
             SELECT m.* FROM memories m
             JOIN memories_fts f ON m.rowid = f.rowid
             WHERE memories_fts MATCH ? AND m.status = 'active'
+            AND (m.valid_from IS NULL OR m.valid_from <= ?)
             AND (m.valid_until IS NULL OR m.valid_until > ?)
         """
-        params: list[object] = [fts_query, utc_now()]
+        now = utc_now()
+        params: list[object] = [fts_query, now, now]
         if scope:
             sql += " AND m.scope = ?"
             params.append(scope)
@@ -345,8 +349,10 @@ class StateDatabase:
 
         # Load candidate memories that have embeddings
         sql = "SELECT * FROM memories WHERE status = 'active' AND embedding IS NOT NULL"
+        sql += " AND (valid_from IS NULL OR valid_from <= ?)"
         sql += " AND (valid_until IS NULL OR valid_until > ?)"
-        params: list[object] = [utc_now()]
+        now = utc_now()
+        params: list[object] = [now, now]
         if scope:
             sql += " AND scope = ?"
             params.append(scope)
