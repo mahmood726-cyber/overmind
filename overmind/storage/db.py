@@ -293,8 +293,8 @@ class StateDatabase:
         params: list[object] = [status]
         if status == "active" and not include_expired:
             now = utc_now()
-            query += " AND (valid_from IS NULL OR valid_from <= ?)"
-            query += " AND (valid_until IS NULL OR valid_until > ?)"
+            query += " AND (valid_from IS NULL OR julianday(valid_from) <= julianday(?))"
+            query += " AND (valid_until IS NULL OR julianday(valid_until) > julianday(?))"
             params.extend((now, now))
         if memory_type:
             query += " AND memory_type = ?"
@@ -320,8 +320,8 @@ class StateDatabase:
             SELECT m.* FROM memories m
             JOIN memories_fts f ON m.rowid = f.rowid
             WHERE memories_fts MATCH ? AND m.status = 'active'
-            AND (m.valid_from IS NULL OR m.valid_from <= ?)
-            AND (m.valid_until IS NULL OR m.valid_until > ?)
+            AND (m.valid_from IS NULL OR julianday(m.valid_from) <= julianday(?))
+            AND (m.valid_until IS NULL OR julianday(m.valid_until) > julianday(?))
         """
         now = utc_now()
         params: list[object] = [fts_query, now, now]
@@ -349,8 +349,8 @@ class StateDatabase:
 
         # Load candidate memories that have embeddings
         sql = "SELECT * FROM memories WHERE status = 'active' AND embedding IS NOT NULL"
-        sql += " AND (valid_from IS NULL OR valid_from <= ?)"
-        sql += " AND (valid_until IS NULL OR valid_until > ?)"
+        sql += " AND (valid_from IS NULL OR julianday(valid_from) <= julianday(?))"
+        sql += " AND (valid_until IS NULL OR julianday(valid_until) > julianday(?))"
         now = utc_now()
         params: list[object] = [now, now]
         if scope:

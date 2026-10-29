@@ -59,3 +59,54 @@ def test_future_valid_memory_is_hidden_until_effective(monkeypatch, tmp_path):
         }
     finally:
         db.close()
+
+def test_timezone_offset_windows_and_invalid_time_fail_closed(monkeypatch, tmp_path):
+    """SQLite must compare instants, not ISO strings with different UTC offsets."""
+    clock = {"now": "2026-10-29T06:00:00+00:00"}
+    monkeypatch.setattr("overmind.storage.db.utc_now", lambda: clock["now"])
+    monkeypatch.setattr("overmind.storage.db.embeddings.embed", lambda _: [1.0, 0.0])
+
+    db = StateDatabase(tmp_path / "offset-state.db")
+    store = MemoryStore(db, tmp_path / "checkpoints", tmp_path / "logs")
+    try:
+        def synthetic(mid, scope="project-a", start=None, end=None):
+            return MemoryRecord(
+                memory_id=mid, memory_type="project_learning", scope=scope,
+                title="Synthetic offset evidence", content="Synthetic boundary fact",
+                valid_from=start, valid_until=end, embedding=[1.0, 0.0],
+            )
+
+        store.save_batch([
+            synthetic("current-offset", start="2026-10-29T07:00:00+02:00"),
+            synthetic("future-offset", start="2026-10-29T03:00:00-04:00"),
+            synthetic("active-until-offset", end="2026-10-29T03:00:00-04:00"),
+            synthetic("expired-until-offset", end="2026-10-29T07:00:00+02:00"),
+            synthetic("invalid-from", start="not-an-ISO-date"),
+            synthetic("invalid-until", end="not-an-ISO-date"),
+            synthetic("other-project", scope="project-b"),
+        ])
+
+        def observed():
+            return (
+                {m.memory_id for m in store.recall_for_project("project-a")},
+                {m.memory_id for m in store.search("Synthetic", scope="project-a")},
+                {m.memory_id for m, _ in db.semantic_search_memories(
+                    "Synthetic", scope="project-a"
+                )},
+                {m.memory_id for m in store.hybrid_search(
+                    "Synthetic", scope="project-a"
+                )},
+            )
+
+        # At 06:00Z, 07:00+02 is 05:00Z (active), whereas 03:00-04 is
+        # 07:00Z (future). Malformed boundaries must never be treated as live.
+        expected = {"current-offset", "active-until-offset"}
+        assert observed() == (expected,) * 4
+        clock["now"] = "2026-10-29T08:00:00+00:00"
+        expected = {"current-offset", "future-offset"}
+        assert observed() == (expected,) * 4
+        assert {m.memory_id for m in store.recall_for_project("project-b")} == {
+            "other-project"
+        }
+    finally:
+        db.close()
