@@ -1,7 +1,9 @@
 from __future__ import annotations
 
 import json
+import re
 import sqlite3
+from datetime import UTC, datetime
 from pathlib import Path
 from typing import Any, Callable, TypeVar
 
@@ -13,12 +15,40 @@ T = TypeVar("T")
 VALID_TABLES = {"projects", "runners", "tasks", "insights", "checkpoints", "memories", "routing_scores"}
 
 
+def _parse_memory_instant(value: str) -> datetime:
+    """Parse an ISO timestamp without silently truncating sub-microsecond input."""
+    if re.search(r"\\.\\d{7,}", value):
+        raise ValueError("unsupported timestamp precision")
+    instant = datetime.fromisoformat(value)
+    return instant.replace(tzinfo=UTC) if instant.tzinfo is None else instant.astimezone(UTC)
+
+
+def _memory_window_active(start: str | None, end: str | None, now: str) -> int:
+    """Fail closed on invalid boundaries; compare actual instants to microseconds.
+
+    SQLite julianday() rounds to milliseconds: a future start at +1 microsecond
+    can otherwise be admitted early, and an end at +1 microsecond lost early.
+    """
+    try:
+        instant = _parse_memory_instant(now)
+        return int(
+            (start is None or _parse_memory_instant(start) <= instant)
+            and (end is None or _parse_memory_instant(end) > instant)
+        )
+    except (TypeError, ValueError, OverflowError):
+        return 0
+
+
+
 class StateDatabase:
     def __init__(self, db_path: Path) -> None:
         self.db_path = db_path
         self.db_path.parent.mkdir(parents=True, exist_ok=True)
         self.connection = sqlite3.connect(self.db_path, check_same_thread=False)
         self.connection.row_factory = sqlite3.Row
+        self.connection.create_function(
+            "memory_window_active", 3, _memory_window_active, deterministic=True
+        )
         self.initialize()
 
     def initialize(self) -> None:
@@ -292,10 +322,8 @@ class StateDatabase:
         query = "SELECT * FROM memories WHERE status = ?"
         params: list[object] = [status]
         if status == "active" and not include_expired:
-            now = utc_now()
-            query += " AND (valid_from IS NULL OR (date(substr(valid_from, 1, 10), '+0 days') = substr(valid_from, 1, 10) AND julianday(valid_from) <= julianday(?)))"
-            query += " AND (valid_until IS NULL OR (date(substr(valid_until, 1, 10), '+0 days') = substr(valid_until, 1, 10) AND julianday(valid_until) > julianday(?)))"
-            params.extend((now, now))
+            query += " AND memory_window_active(valid_from, valid_until, ?) = 1"
+            params.append(utc_now())
         if memory_type:
             query += " AND memory_type = ?"
             params.append(memory_type)
@@ -320,11 +348,9 @@ class StateDatabase:
             SELECT m.* FROM memories m
             JOIN memories_fts f ON m.rowid = f.rowid
             WHERE memories_fts MATCH ? AND m.status = 'active'
-            AND (m.valid_from IS NULL OR (date(substr(m.valid_from, 1, 10), '+0 days') = substr(m.valid_from, 1, 10) AND julianday(m.valid_from) <= julianday(?)))
-            AND (m.valid_until IS NULL OR (date(substr(m.valid_until, 1, 10), '+0 days') = substr(m.valid_until, 1, 10) AND julianday(m.valid_until) > julianday(?)))
+            AND memory_window_active(m.valid_from, m.valid_until, ?) = 1
         """
-        now = utc_now()
-        params: list[object] = [fts_query, now, now]
+        params: list[object] = [fts_query, utc_now()]
         if scope:
             sql += " AND m.scope = ?"
             params.append(scope)
@@ -349,10 +375,8 @@ class StateDatabase:
 
         # Load candidate memories that have embeddings
         sql = "SELECT * FROM memories WHERE status = 'active' AND embedding IS NOT NULL"
-        sql += " AND (valid_from IS NULL OR (date(substr(valid_from, 1, 10), '+0 days') = substr(valid_from, 1, 10) AND julianday(valid_from) <= julianday(?)))"
-        sql += " AND (valid_until IS NULL OR (date(substr(valid_until, 1, 10), '+0 days') = substr(valid_until, 1, 10) AND julianday(valid_until) > julianday(?)))"
-        now = utc_now()
-        params: list[object] = [now, now]
+        sql += " AND memory_window_active(valid_from, valid_until, ?) = 1"
+        params: list[object] = [utc_now()]
         if scope:
             sql += " AND scope = ?"
             params.append(scope)

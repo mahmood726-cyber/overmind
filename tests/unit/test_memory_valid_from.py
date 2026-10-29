@@ -85,6 +85,10 @@ def test_timezone_offset_windows_and_invalid_time_fail_closed(monkeypatch, tmp_p
             synthetic("invalid-until", end="not-an-ISO-date"),
             synthetic("impossible-calendar-from", start="2026-02-31T00:00:00+00:00"),
             synthetic("impossible-calendar-until", end="2026-11-31T00:00:00+00:00"),
+            synthetic("one-microsecond-future", start="2026-10-29T06:00:00.000001+00:00"),
+            synthetic("one-microsecond-until", end="2026-10-29T06:00:00.000001+00:00"),
+            synthetic("unsupported-nanosecond-start", start="2026-10-29T06:00:00.000000001+00:00"),
+            synthetic("unsupported-nanosecond-end", end="2026-11-29T06:00:00.000000001+00:00"),
             synthetic("other-project", scope="project-b"),
         ])
 
@@ -103,7 +107,7 @@ def test_timezone_offset_windows_and_invalid_time_fail_closed(monkeypatch, tmp_p
         # At 06:00Z, 07:00+02 is 05:00Z (active), whereas 03:00-04 is
         # 07:00Z (future). Malformed timestamps and impossible calendar dates
         # must never be treated as live, even when SQLite normalizes the date.
-        expected = {"current-offset", "active-until-offset"}
+        expected = {"current-offset", "active-until-offset", "one-microsecond-until"}
         assert observed() == (expected,) * 4
         clock["now"] = "2026-10-29T08:00:00+00:00"
         expected = {"current-offset", "future-offset"}
