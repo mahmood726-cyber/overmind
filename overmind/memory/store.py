@@ -5,7 +5,7 @@ import json
 from pathlib import Path
 from typing import Any
 
-from overmind.storage.db import StateDatabase
+from overmind.storage.db import StateDatabase, _memory_window_active
 from overmind.storage.models import InsightRecord, MemoryRecord, utc_now
 
 
@@ -36,19 +36,72 @@ class MemoryStore:
     def get(self, memory_id: str) -> MemoryRecord | None:
         return self.db.get_memory(memory_id)
 
+    def _usable_recall(self, candidates: list[MemoryRecord], limit: int) -> list[MemoryRecord]:
+        """Filter stale source bytes and transitive unknown/retracted premises at READ time.
+
+        No mutation: raw get/list_all remain available to administrative audits.
+        Cycles, unknown IDs, cross-project dependencies, incomplete source
+        pointers and excessive depth refuse rather than silently infer evidence.
+        """
+        now = utc_now()
+        evaluated: dict[str, bool] = {}
+        visiting: set[str] = set()
+
+        def eligible(mem: MemoryRecord) -> bool:
+            mid = mem.memory_id
+            if mid in evaluated:
+                return evaluated[mid]
+            if mid in visiting or len(visiting) >= 64:
+                return False
+            if (mem.status != "active"
+                or not _memory_window_active(mem.valid_from, mem.valid_until, now)
+                or bool(mem.source_path) != bool(mem.source_hash)
+                or self.is_stale(mem)):
+                evaluated[mid] = False
+                return False
+            visiting.add(mid)
+            valid = True
+            for parent_id in mem.derived_from:
+                parent = self.db.get_memory(parent_id)
+                if parent is None or parent.scope != mem.scope or not eligible(parent):
+                    valid = False
+                    break
+            visiting.remove(mid)
+            evaluated[mid] = valid
+            return valid
+
+        return [m for m in candidates if eligible(m)][:max(0, limit)]
+
+    def list_current(
+        self, *, scope: str | None = None,
+        memory_type: str | None = None, limit: int = 10,
+    ) -> list[MemoryRecord]:
+        """Recall-ready read; unlike list_all, rejects unsupported provenance."""
+        if limit <= 0:
+            return []
+        rows = self.db.list_memories(
+            scope=scope, memory_type=memory_type, limit=max(limit * 5, limit + 10),
+        )
+        return self._usable_recall(rows, limit)
+
     def search(
         self, query: str, scope: str | None = None, memory_type: str | None = None, limit: int = 10
     ) -> list[MemoryRecord]:
-        return self.db.search_memories(query, scope=scope, memory_type=memory_type, limit=limit)
+        if limit <= 0:
+            return []
+        rows = self.db.search_memories(
+            query, scope=scope, memory_type=memory_type, limit=limit * 5,
+        )
+        return self._usable_recall(rows, limit)
 
     def recall_for_project(self, project_id: str, limit: int = 5) -> list[MemoryRecord]:
-        return self.db.list_memories(scope=project_id, limit=limit)
+        return self.list_current(scope=project_id, limit=limit)
 
     def recall_for_runner(self, runner_id: str, limit: int = 5) -> list[MemoryRecord]:
-        return self.db.list_memories(scope=runner_id, memory_type="runner_learning", limit=limit)
+        return self.list_current(scope=runner_id, memory_type="runner_learning", limit=limit)
 
     def recall_heuristics(self, task_type: str, limit: int = 5) -> list[MemoryRecord]:
-        return self.db.search_memories(task_type, memory_type="heuristic", limit=limit)
+        return self.search(task_type, memory_type="heuristic", limit=limit)
 
     # Per-type decay rates. Feedback memories encode user preferences and
     # should age very slowly; bundle_failure / regression memories couple to
@@ -109,7 +162,7 @@ class MemoryStore:
         )
         seen_ids = {m.memory_id for m in fts_results}
         merged = list(fts_results)
-        for mem, _score in semantic_results:
+        for mem in self._usable_recall([m for m, _score in semantic_results], limit):
             if mem.memory_id not in seen_ids:
                 merged.append(mem)
                 seen_ids.add(mem.memory_id)

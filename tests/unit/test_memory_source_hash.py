@@ -240,3 +240,73 @@ def test_propagate_retraction_does_not_touch_independent(tmp_path):
         assert set(out["invalidated"]) == {"B", "C"}
     finally:
         db.close()
+
+
+def test_recall_filters_mutated_sources_and_transitive_unknowns(tmp_path):
+    store, db = _store(tmp_path)
+    try:
+        source = _seed_chain(store, tmp_path)
+        assert {m.memory_id for m in store.recall_for_project("p")} == {"A", "B", "C", "D"}
+        store.save_batch([
+            MemoryRecord(
+                memory_id="unknown", memory_type="project_learning", scope="p",
+                title="Synthetic unknown", content="Synthetic unknown parent",
+                derived_from=["unregistered"],
+            ),
+            MemoryRecord(
+                memory_id="partial", memory_type="project_learning", scope="p",
+                title="Synthetic partial", content="Synthetic incomplete source",
+                source_path=str(source),
+            ),
+            MemoryRecord(
+                memory_id="x", memory_type="project_learning", scope="p",
+                title="Synthetic cycle x", content="Synthetic cycle x",
+                derived_from=["y"],
+            ),
+            MemoryRecord(
+                memory_id="y", memory_type="project_learning", scope="p",
+                title="Synthetic cycle y", content="Synthetic cycle y",
+                derived_from=["x"],
+            ),
+            MemoryRecord(
+                memory_id="cross", memory_type="project_learning", scope="p",
+                title="Synthetic cross", content="Synthetic cross scope",
+                derived_from=["other"],
+            ),
+            MemoryRecord(
+                memory_id="other", memory_type="project_learning", scope="q",
+                title="Synthetic other", content="Synthetic other project",
+            ),
+        ])
+        source.write_text("CHANGED", encoding="utf-8")
+        assert {m.memory_id for m in store.recall_for_project("p", limit=30)} == {"D"}
+        assert store.search("Synthetic", scope="p", limit=30) == []
+        assert {m.memory_id for m in store.recall_for_project("q")} == {"other"}
+        assert db.get_memory("A").status == "active"  # read does not falsify audit
+        assert db.get_memory("B").status == "active"
+    finally:
+        db.close()
+
+
+def test_context_injector_read_does_not_leak_stale_or_other_project(tmp_path):
+    from overmind.activation.context_injector import ContextInjector
+    from overmind.storage.models import ProjectRecord
+
+    store, db = _store(tmp_path)
+    try:
+        source = _seed_chain(store, tmp_path)
+        db.upsert_project(ProjectRecord(
+            project_id="p", name="Synthetic project", root_path=str(tmp_path)
+        ))
+        store.save(MemoryRecord(
+            memory_id="other-secret", memory_type="heuristic", scope="other-project",
+            title="PRIVATE_OTHER_PROJECT", content="Synthetic private memory",
+        ))
+        source.write_text("CHANGED", encoding="utf-8")
+        injected = ContextInjector(db).build_context(project_path=str(tmp_path))
+        assert "[project_learning] D: D" in injected
+        for forbidden in ("[project_learning] A:", "[project_learning] B:",
+                          "[project_learning] C:", "PRIVATE_OTHER_PROJECT"):
+            assert forbidden not in injected
+    finally:
+        db.close()
