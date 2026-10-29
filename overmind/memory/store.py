@@ -72,7 +72,13 @@ class MemoryStore:
             evaluated[mid] = valid
             return valid
 
-        return [m for m in candidates if eligible(m)][:max(0, limit)]
+        selected: list[MemoryRecord] = []
+        for mem in candidates:
+            if eligible(mem):
+                selected.append(mem)
+                if len(selected) >= limit:
+                    break
+        return selected
 
     def list_current(
         self, *, scope: str | None = None,
@@ -81,20 +87,39 @@ class MemoryStore:
         """Recall-ready read; unlike list_all, rejects unsupported provenance."""
         if limit <= 0:
             return []
-        rows = self.db.list_memories(
-            scope=scope, memory_type=memory_type, limit=max(limit * 5, limit + 10),
-        )
-        return self._usable_recall(rows, limit)
+        # Filtering after a fixed LIMIT can hide valid lower-ranked facts if
+        # the first N records are stale. Page through the ranked candidates.
+        selected: list[MemoryRecord] = []
+        offset = 0
+        page_size = max(32, limit * 2)
+        while len(selected) < limit:
+            rows = self.db.list_memories(
+                scope=scope, memory_type=memory_type, limit=page_size, offset=offset,
+            )
+            selected.extend(self._usable_recall(rows, limit - len(selected)))
+            offset += len(rows)
+            if len(rows) < page_size:
+                break
+        return selected
 
     def search(
         self, query: str, scope: str | None = None, memory_type: str | None = None, limit: int = 10
     ) -> list[MemoryRecord]:
         if limit <= 0:
             return []
-        rows = self.db.search_memories(
-            query, scope=scope, memory_type=memory_type, limit=limit * 5,
-        )
-        return self._usable_recall(rows, limit)
+        selected: list[MemoryRecord] = []
+        offset = 0
+        page_size = max(32, limit * 2)
+        while len(selected) < limit:
+            rows = self.db.search_memories(
+                query, scope=scope, memory_type=memory_type,
+                limit=page_size, offset=offset,
+            )
+            selected.extend(self._usable_recall(rows, limit - len(selected)))
+            offset += len(rows)
+            if len(rows) < page_size:
+                break
+        return selected
 
     def recall_for_project(self, project_id: str, limit: int = 5) -> list[MemoryRecord]:
         return self.list_current(scope=project_id, limit=limit)
@@ -160,7 +185,7 @@ class MemoryStore:
             return fts_results
 
         semantic_results = self.db.semantic_search_memories(
-            query, scope=scope, memory_type=memory_type, limit=limit,
+            query, scope=scope, memory_type=memory_type, limit=None,
         )
         seen_ids = {m.memory_id for m in fts_results}
         merged = list(fts_results)
