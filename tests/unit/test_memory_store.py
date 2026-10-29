@@ -97,6 +97,51 @@ def test_memory_store_recall_for_project(tmp_path):
         db.close()
 
 
+def test_heuristic_recall_never_crosses_project_scope(tmp_path):
+    """Worker retrieval must not reveal another project's heuristics."""
+    from overmind.memory.store import file_source_hash
+
+    db = StateDatabase(tmp_path / "test.db")
+    store = MemoryStore(db=db, checkpoints_dir=tmp_path / "cp", logs_dir=tmp_path / "logs")
+    source = tmp_path / "source.txt"
+    source.write_text("prior", encoding="utf-8")
+    try:
+        for mid, scope in (
+            ("local-a", "project-a"),
+            ("local-b", "project-b"),
+            ("global", "global"),
+            ("portfolio", "portfolio"),
+        ):
+            store.save(MemoryRecord(
+                memory_id=mid, memory_type="heuristic", scope=scope,
+                title="Synthetic verification guidance",
+                content=f"Synthetic verification guidance from {scope}",
+            ))
+        store.save(MemoryRecord(
+            memory_id="source-stale", memory_type="heuristic", scope="project-a",
+            title="Synthetic verification outdated",
+            content="Synthetic verification outdated source guidance",
+            source_path=str(source), source_hash=file_source_hash(source),
+            relevance=1.0,
+        ))
+        source.write_text("CHANGED", encoding="utf-8")
+
+        assert [m.memory_id for m in store.recall_heuristics("verification")] == ["global"]
+        assert [m.memory_id for m in store.recall_heuristics(
+            "verification", project_id="project-a",
+        )] == ["local-a", "global"]
+        assert [m.memory_id for m in store.recall_heuristics(
+            "verification", project_id="project-b",
+        )] == ["local-b", "global"]
+        assert [m.memory_id for m in store.recall_heuristics(
+            "verification", limit=1, project_id="project-a",
+        )] == ["local-a"]
+        assert store.recall_heuristics("verification", limit=0, project_id="project-a") == []
+        assert db.get_memory("source-stale").status == "active"  # audit remains intact
+    finally:
+        db.close()
+
+
 def test_memory_store_forget(tmp_path):
     db = StateDatabase(tmp_path / "test.db")
     store = MemoryStore(db=db, checkpoints_dir=tmp_path / "cp", logs_dir=tmp_path / "logs")
