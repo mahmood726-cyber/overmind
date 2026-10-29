@@ -464,11 +464,17 @@ class StateDatabase:
         return stats
 
     def expire_memories(self) -> int:
-        """Transition active memories past their valid_until to 'expired' status."""
+        """Expire memories past valid_until, comparing actual UTC instants.
+
+        Use the same fail-closed predicate as active recall: lexical ISO text
+        comparison misclassifies offset timestamps, and malformed or unsupported
+        precision must not leave a record eligible for use.
+        """
         now = utc_now()
         cursor = self.connection.execute(
             "UPDATE memories SET status = 'expired', updated_at = ? "
-            "WHERE status = 'active' AND valid_until IS NOT NULL AND valid_until <= ?",
+            "WHERE status = 'active' AND valid_until IS NOT NULL "
+            "AND memory_window_active(NULL, valid_until, ?) = 0",
             (now, now),
         )
         self.connection.commit()
