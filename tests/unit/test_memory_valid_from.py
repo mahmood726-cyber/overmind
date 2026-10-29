@@ -110,7 +110,7 @@ def test_timezone_offset_windows_and_invalid_time_fail_closed(monkeypatch, tmp_p
         expected = {"current-offset", "active-until-offset", "one-microsecond-until"}
         assert observed() == (expected,) * 4
         clock["now"] = "2026-10-29T08:00:00+00:00"
-        expected = {"current-offset", "future-offset"}
+        expected = {"current-offset", "future-offset", "one-microsecond-future"}
         assert observed() == (expected,) * 4
         assert {m.memory_id for m in store.recall_for_project("project-b")} == {
             "other-project"

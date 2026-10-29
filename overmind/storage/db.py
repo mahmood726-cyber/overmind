@@ -17,7 +17,7 @@ VALID_TABLES = {"projects", "runners", "tasks", "insights", "checkpoints", "memo
 
 def _parse_memory_instant(value: str) -> datetime:
     """Parse an ISO timestamp without silently truncating sub-microsecond input."""
-    if re.search(r"\\.\\d{7,}", value):
+    if re.search(r"\.\d{7,}", value):
         raise ValueError("unsupported timestamp precision")
     instant = datetime.fromisoformat(value)
     return instant.replace(tzinfo=UTC) if instant.tzinfo is None else instant.astimezone(UTC)
