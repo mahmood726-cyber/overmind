@@ -317,7 +317,7 @@ class StateDatabase:
 
     def list_memories(
         self, status: str = "active", memory_type: str | None = None, scope: str | None = None,
-        limit: int = 100, include_expired: bool = False,
+        limit: int = 100, include_expired: bool = False, offset: int = 0,
     ) -> list[MemoryRecord]:
         query = "SELECT * FROM memories WHERE status = ?"
         params: list[object] = [status]
@@ -330,13 +330,15 @@ class StateDatabase:
         if scope:
             query += " AND scope = ?"
             params.append(scope)
-        query += " ORDER BY relevance DESC, updated_at DESC LIMIT ?"
-        params.append(limit)
+        # Stable ordering makes paged evidence recall deterministic at equal ranks.
+        query += " ORDER BY relevance DESC, updated_at DESC, id LIMIT ? OFFSET ?"
+        params.extend((limit, offset))
         rows = self.connection.execute(query, params).fetchall()
         return [self._row_to_memory(row) for row in rows]
 
     def search_memories(
-        self, query: str, scope: str | None = None, memory_type: str | None = None, limit: int = 10
+        self, query: str, scope: str | None = None, memory_type: str | None = None,
+        limit: int = 10, offset: int = 0,
     ) -> list[MemoryRecord]:
         # Escape double quotes and strip FTS5 operator keywords to prevent query injection
         fts_operators = {"AND", "OR", "NOT", "NEAR"}
@@ -357,13 +359,14 @@ class StateDatabase:
         if memory_type:
             sql += " AND m.memory_type = ?"
             params.append(memory_type)
-        sql += " ORDER BY rank LIMIT ?"
-        params.append(limit)
+        sql += " ORDER BY rank, m.id LIMIT ? OFFSET ?"
+        params.extend((limit, offset))
         rows = self.connection.execute(sql, params).fetchall()
         return [self._row_to_memory(row) for row in rows]
 
     def semantic_search_memories(
-        self, query: str, scope: str | None = None, memory_type: str | None = None, limit: int = 10
+        self, query: str, scope: str | None = None, memory_type: str | None = None,
+        limit: int | None = 10,
     ) -> list[tuple[MemoryRecord, float]]:
         """Search memories by semantic similarity.  Returns (memory, score) pairs.
 
@@ -394,7 +397,9 @@ class StateDatabase:
             scored.append((mem, score))
 
         scored.sort(key=lambda x: x[1], reverse=True)
-        return scored[:limit]
+        # The recall layer may request all ranked candidates for provenance
+        # filtering; the SQL layer already scores all embedded memories.
+        return scored if limit is None else scored[:limit]
 
     def decay_memories(
         self,
