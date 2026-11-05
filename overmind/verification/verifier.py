@@ -1,5 +1,8 @@
 from __future__ import annotations
 
+import hashlib
+import json
+import re
 import subprocess
 from pathlib import Path
 
@@ -28,6 +31,28 @@ class VerificationEngine:
         self.planner = VerificationPlanner()
         self.policy_guard = PolicyGuard()
         self.verification_timeout = verification_timeout
+
+    def _artifact_log_path(self, trace_id: str, task_id: str, check: str, index: int) -> Path:
+        """Keep command evidence within artifacts_dir on Windows and POSIX.
+
+        Preserve legacy simple names for compatibility. Unsafe or excessively
+        long identities use a bounded ASCII name with a digest over the full
+        original tuple so distinct normalized names do not alias.
+        """
+        raw = f"{trace_id}_{task_id}_{check}_{index}.log"
+        if len(raw.encode("utf-8")) <= 180 and re.fullmatch(r"[A-Za-z0-9_][A-Za-z0-9_.-]*", raw):
+            return self.artifacts_dir / raw
+
+        parts = [str(trace_id), str(task_id), str(check), index]
+        digest = hashlib.sha256(
+            json.dumps(parts, ensure_ascii=True, separators=(",", ":")).encode("utf-8")
+        ).hexdigest()[:24]
+
+        def slug(value: object) -> str:
+            return re.sub(r"[^A-Za-z0-9_-]", "_", str(value))[:24] or "id"
+
+        name = f"verify_{slug(trace_id)}_{slug(task_id)}_{slug(check)}_{index}_{digest}.log"
+        return self.artifacts_dir / name
 
     def run(self, task: TaskRecord, project: ProjectRecord) -> VerificationResult:
         completed_checks: list[str] = []
@@ -59,11 +84,23 @@ class VerificationEngine:
                 exit_code, stdout, stderr = self._run_command(command, project.root_path)
                 commands_executed += 1
 
-                artifact_path = self.artifacts_dir / f"{trace_id}_{task.task_id}_{check}_{index}.log"
-                artifact_path.write_text(
-                    f"$ {command}\n\nSTDOUT:\n{stdout}\n\nSTDERR:\n{stderr}",
-                    encoding="utf-8",
-                )
+                # A successful subprocess without a readable command log is
+                # missing verification evidence, not a completed check. Unsafe
+                # trace/task/check identifiers must not escape artifacts_dir.
+                try:
+                    artifact_path = self._artifact_log_path(trace_id, task.task_id, check, index)
+                    artifact_path.write_text(
+                        f"$ {command}\n\nSTDOUT:\n{stdout}\n\nSTDERR:\n{stderr}",
+                        encoding="utf-8",
+                    )
+                except (OSError, ValueError) as exc:
+                    details.append(
+                        f"{check}: unverified; command log unavailable ({type(exc).__name__})"
+                    )
+                    cached_results[command] = (False, check)
+                    check_passed = False
+                    success = False
+                    break
                 details.append(f"{check}: exit={exit_code} command={command}")
                 if exit_code == -1:
                     if "timed out" in stderr.lower():
