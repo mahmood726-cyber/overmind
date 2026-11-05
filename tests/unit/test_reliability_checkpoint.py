@@ -164,7 +164,6 @@ def test_legacy_valid_checkpoint_json_still_resumes(tmp_path):
 
 def test_malformed_checkpoint_fails_closed(tmp_path):
     import json
-    import pytest
 
     # Valid JSON can still be structurally corrupt or claim completion from
     # unsupported types. Never promote these values to verified work.
@@ -183,8 +182,9 @@ def test_malformed_checkpoint_fails_closed(tmp_path):
     for payload in invalid:
         store = CheckpointStore(tmp_path)
         store._path("run").write_text(json.dumps(payload), encoding="utf-8")
+        raw_before = store._path("run").read_text(encoding="utf-8")
         assert store.load("run") is None, payload
         assert not store.is_done("run", "done"), payload
         assert store.remaining("run", ["done", "other"]) == ["done", "other"], payload
         # Reading an invalid checkpoint must not silently mutate it.
-        assert json.loads(store._path("run").read_text(encoding="utf-8")) == payload
+        assert store._path("run").read_text(encoding="utf-8") == raw_before
