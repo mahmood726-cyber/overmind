@@ -12,6 +12,7 @@ completion as though it had been saved.
 """
 from __future__ import annotations
 
+import errno
 import hashlib
 import json
 import math
@@ -19,6 +20,7 @@ import os
 import re
 import tempfile
 import time
+from contextlib import contextmanager
 from dataclasses import dataclass, field
 from pathlib import Path
 from typing import Callable, Iterable
@@ -109,6 +111,61 @@ class CheckpointStore:
         digest = hashlib.sha256(loop.encode("utf-8")).hexdigest()
         return self.base_dir / f"{safe}.{digest}.checkpoint.json"
 
+    @contextmanager
+    def _write_lock(self, loop: str):
+        """Serialize same-loop updates across processes, including crash recovery.
+
+        Keep the lock file after release: deleting it can split concurrent
+        processes across distinct inodes and defeat advisory locking.
+        Unsupported platforms or lock contention fail closed for writes.
+        """
+        self.base_dir.mkdir(parents=True, exist_ok=True)
+        lock_path = self._path(loop).with_suffix(".lock")
+        with lock_path.open("a+b") as handle:
+            if os.name == "nt":
+                import msvcrt
+
+                # msvcrt.locking locks a byte range at the current position.
+                # Ensure the byte exists; another opener writing the same zero
+                # during initialization is harmless.
+                if handle.seek(0, os.SEEK_END) == 0:
+                    handle.write(b"\\0")
+                    handle.flush()
+
+                def acquire():
+                    handle.seek(0)
+                    msvcrt.locking(handle.fileno(), msvcrt.LK_NBLCK, 1)
+
+                def release():
+                    handle.seek(0)
+                    msvcrt.locking(handle.fileno(), msvcrt.LK_UNLCK, 1)
+            elif os.name == "posix":
+                import fcntl
+
+                def acquire():
+                    fcntl.flock(handle.fileno(), fcntl.LOCK_EX | fcntl.LOCK_NB)
+
+                def release():
+                    fcntl.flock(handle.fileno(), fcntl.LOCK_UN)
+            else:
+                raise OSError("checkpoint file locking unsupported on this OS")
+
+            deadline = time.monotonic() + 5.0
+            while True:
+                try:
+                    acquire()
+                    break
+                except OSError as exc:
+                    if exc.errno not in (errno.EACCES, errno.EAGAIN):
+                        raise
+                    if time.monotonic() >= deadline:
+                        raise TimeoutError("checkpoint write lock unavailable") from exc
+                    time.sleep(0.02)
+            try:
+                yield
+            finally:
+                release()
+
     def load(self, loop: str) -> Checkpoint | None:
         primary = self._path(loop)
         try:
@@ -142,28 +199,38 @@ class CheckpointStore:
         )
 
     def save(self, loop: str, completed: Iterable[str], state: dict | None = None) -> Checkpoint:
-        cp = Checkpoint(
-            loop=loop, completed=list(dict.fromkeys(completed)),  # dedup, keep order
-            state=dict(state or {}), updated_at=self._clock(),
-            commit_sha=self.commit_sha or "", plan_sha=self.plan_sha or "",
-        )
-        if not self._atomic_write(loop, cp.to_dict()):
+        try:
+            with self._write_lock(loop):
+                cp = Checkpoint(
+                    loop=loop, completed=list(dict.fromkeys(completed)),  # dedup, keep order
+                    state=dict(state or {}), updated_at=self._clock(),
+                    commit_sha=self.commit_sha or "", plan_sha=self.plan_sha or "",
+                )
+                if not self._atomic_write(loop, cp.to_dict()):
+                    return self._last_recorded(loop)
+                return cp
+        except OSError:
             return self._last_recorded(loop)
-        return cp
 
     def mark_done(self, loop: str, item_id: str, *, state: dict | None = None) -> Checkpoint:
         """Record one completed item incrementally (idempotent)."""
-        cp = self.load(loop) or Checkpoint(
-            loop=loop, commit_sha=self.commit_sha or "", plan_sha=self.plan_sha or "",
-        )
-        if item_id not in cp.completed:
-            cp.completed.append(item_id)
-        if state is not None:
-            cp.state.update(state)
-        cp.updated_at = self._clock()
-        if not self._atomic_write(loop, cp.to_dict()):
+        try:
+            # The read/modify/write sequence must be one critical section.
+            # Atomic replacement alone does not protect concurrent increments.
+            with self._write_lock(loop):
+                cp = self.load(loop) or Checkpoint(
+                    loop=loop, commit_sha=self.commit_sha or "", plan_sha=self.plan_sha or "",
+                )
+                if item_id not in cp.completed:
+                    cp.completed.append(item_id)
+                if state is not None:
+                    cp.state.update(state)
+                cp.updated_at = self._clock()
+                if not self._atomic_write(loop, cp.to_dict()):
+                    return self._last_recorded(loop)
+                return cp
+        except OSError:
             return self._last_recorded(loop)
-        return cp
 
     def is_done(self, loop: str, item_id: str) -> bool:
         cp = self.load(loop)
@@ -177,18 +244,22 @@ class CheckpointStore:
 
     def clear(self, loop: str) -> None:
         try:
-            self._path(loop).unlink()
+            with self._write_lock(loop):
+                try:
+                    self._path(loop).unlink()
+                except OSError:
+                    pass
+                # Legacy filenames may alias distinct loops. Never remove an
+                # unrelated loop's historical evidence during a clear.
+                legacy = self._legacy_path(loop)
+                try:
+                    if legacy.exists():
+                        cp = Checkpoint.from_dict(json.loads(legacy.read_text(encoding="utf-8")))
+                        if cp.loop == loop:
+                            legacy.unlink()
+                except (OSError, json.JSONDecodeError, TypeError, ValueError):
+                    pass
         except OSError:
-            pass
-        # A legacy filename may be shared by another loop identity; do not
-        # delete another loop's historical completion evidence on clear().
-        legacy = self._legacy_path(loop)
-        try:
-            if legacy.exists():
-                cp = Checkpoint.from_dict(json.loads(legacy.read_text(encoding="utf-8")))
-                if cp.loop == loop:
-                    legacy.unlink()
-        except (OSError, json.JSONDecodeError, TypeError, ValueError):
             pass
 
     def _atomic_write(self, loop: str, payload: dict) -> bool:
