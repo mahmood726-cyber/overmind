@@ -20,6 +20,7 @@ import os
 import re
 import tempfile
 import time
+from collections.abc import Mapping
 from contextlib import contextmanager
 from dataclasses import dataclass, field
 from pathlib import Path
@@ -53,7 +54,7 @@ class Checkpoint:
         if not isinstance(d, dict) or not isinstance(d.get("loop"), str):
             raise ValueError("checkpoint must contain a string loop identity")
         completed = d.get("completed", [])
-        if not isinstance(completed, list) or any(not isinstance(x, str) for x in completed):
+        if not isinstance(completed, list) or any(not isinstance(x, str) or not x for x in completed):
             raise ValueError("checkpoint completed must be a list of item ids")
         state = d.get("state", {})
         if not isinstance(state, dict):
@@ -212,21 +213,31 @@ class CheckpointStore:
         )
 
     def save(self, loop: str, completed: Iterable[str], state: dict | None = None) -> Checkpoint:
+        # Strings and mappings are iterable, but their characters/keys are
+        # not completed task evidence. Never publish them as completed IDs.
+        if isinstance(completed, (str, bytes, Mapping)):
+            return self._last_recorded(loop)
         try:
             with self._write_lock(loop):
+                items = list(completed)
+                if any(not isinstance(item, str) or not item for item in items):
+                    return self._last_recorded(loop)
                 cp = Checkpoint(
-                    loop=loop, completed=list(dict.fromkeys(completed)),  # dedup, keep order
+                    loop=loop, completed=list(dict.fromkeys(items)),  # dedup, keep order
                     state=dict(state or {}), updated_at=self._clock(),
                     commit_sha=self.commit_sha or "", plan_sha=self.plan_sha or "",
                 )
                 if not self._atomic_write(loop, cp.to_dict()):
                     return self._last_recorded(loop)
                 return cp
-        except OSError:
+        except (OSError, TypeError, ValueError):
+            # Invalid iterables and state mappings must not crash recovery.
             return self._last_recorded(loop)
 
     def mark_done(self, loop: str, item_id: str, *, state: dict | None = None) -> Checkpoint:
         """Record one completed item incrementally (idempotent)."""
+        if not isinstance(item_id, str) or not item_id:
+            return self._last_recorded(loop)
         try:
             # The read/modify/write sequence must be one critical section.
             # Atomic replacement alone does not protect concurrent increments.
@@ -242,7 +253,7 @@ class CheckpointStore:
                 if not self._atomic_write(loop, cp.to_dict()):
                     return self._last_recorded(loop)
                 return cp
-        except OSError:
+        except (OSError, TypeError, ValueError):
             return self._last_recorded(loop)
 
     def is_done(self, loop: str, item_id: str) -> bool:
