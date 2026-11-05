@@ -120,11 +120,14 @@ class CheckpointStore:
                 return None
             # A new revision invalidates prior completed-item evidence. Legacy
             # unbound checkpoints are deliberately not trusted by bound callers.
-            if self.commit_sha is not None and cp.commit_sha != self.commit_sha:
+            # Binding must match in BOTH directions: an unbound caller has no
+            # evidence that a stored revision-bound result belongs to its
+            # checkout, just as a bound caller cannot trust legacy evidence.
+            if cp.commit_sha != (self.commit_sha or ""):
                 return None
-            # A bound caller cannot trust a different or unbound plan at the
-            # same commit, even if its item ids happen to match.
-            if self.plan_sha is not None and cp.plan_sha != self.plan_sha:
+            # Likewise, an omitted plan identity must never accept completion
+            # evidence recorded under a specific verification plan.
+            if cp.plan_sha != (self.plan_sha or ""):
                 return None
             return cp
         except (OSError, json.JSONDecodeError, TypeError, ValueError):

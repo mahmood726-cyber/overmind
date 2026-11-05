@@ -323,3 +323,48 @@ def test_malformed_persisted_plan_digest_never_yields_completion(tmp_path):
         assert store.remaining("check", ["looks_done"]) == ["looks_done"]
         # The invalid source record must not be modified to manufacture PASS.
         assert store._path("check").read_text(encoding="utf-8") == raw
+
+
+def test_unbound_reader_refuses_head_bound_checkpoint(tmp_path):
+    """Missing local head identity must not trust completion from another checkout."""
+    head = "a" * 40
+    CheckpointStore(tmp_path, commit_sha=head).mark_done("run", "task")
+    unbound = CheckpointStore(tmp_path)
+    assert unbound.load("run") is None
+    assert not unbound.is_done("run", "task")
+    assert unbound.remaining("run", ["task"]) == ["task"]
+    assert CheckpointStore(tmp_path, commit_sha=head).is_done("run", "task")
+
+
+def test_unbound_reader_refuses_plan_bound_checkpoint(tmp_path):
+    """Omitting a plan digest must not mean 'accept any saved plan'."""
+    import hashlib
+
+    plan = hashlib.sha256(b"synthetic checks v1").hexdigest()
+    CheckpointStore(tmp_path, plan_sha=plan).mark_done("run", "task")
+    unbound = CheckpointStore(tmp_path)
+    assert unbound.load("run") is None
+    assert not unbound.is_done("run", "task")
+    assert CheckpointStore(tmp_path, plan_sha=plan).is_done("run", "task")
+
+
+def test_partially_bound_reader_refuses_missing_context(tmp_path):
+    import hashlib
+
+    head = "b" * 40
+    plan = hashlib.sha256(b"synthetic checks v2").hexdigest()
+    CheckpointStore(tmp_path, commit_sha=head, plan_sha=plan).mark_done("run", "task")
+    for reader in (
+        CheckpointStore(tmp_path, commit_sha=head),
+        CheckpointStore(tmp_path, plan_sha=plan),
+        CheckpointStore(tmp_path),
+    ):
+        assert reader.load("run") is None
+        assert reader.remaining("run", ["task"]) == ["task"]
+    assert CheckpointStore(tmp_path, commit_sha=head, plan_sha=plan).is_done("run", "task")
+
+
+def test_legacy_unbound_checkpoint_still_resumes_unbound_reader(tmp_path):
+    """Unbound records retain their historical unbound-consumer semantics."""
+    CheckpointStore(tmp_path).mark_done("old", "task")
+    assert CheckpointStore(tmp_path).is_done("old", "task")
