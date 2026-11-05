@@ -798,3 +798,61 @@ def test_valid_completed_generator_retains_dedup_and_revision_binding(tmp_path):
     resumed = CheckpointStore(tmp_path, commit_sha=head, plan_sha=plan)
     assert resumed.remaining("run", ["first", "second", "third"]) == ["third"]
     assert CheckpointStore(tmp_path, commit_sha="c" * 40, plan_sha=plan).load("run") is None
+
+
+def test_clear_from_wrong_revision_preserves_bound_checkpoint(tmp_path):
+    """A caller without matching head/plan must not erase another run's evidence."""
+    bound = CheckpointStore(tmp_path, commit_sha="a" * 40, plan_sha="b" * 64)
+    bound.mark_done("run", "finished")
+    before = bound._path("run").read_bytes()
+
+    for other in (
+        CheckpointStore(tmp_path),
+        CheckpointStore(tmp_path, commit_sha="c" * 40, plan_sha="b" * 64),
+        CheckpointStore(tmp_path, commit_sha="a" * 40, plan_sha="d" * 64),
+        CheckpointStore(tmp_path, commit_sha="a" * 40),
+    ):
+        assert other.load("run") is None
+        other.clear("run")
+        assert bound._path("run").read_bytes() == before
+        assert bound.is_done("run", "finished")
+
+
+def test_clear_does_not_destroy_corrupt_checkpoint_or_foreign_legacy(tmp_path):
+    """Unknown/corrupt checkpoint data and a colliding legacy loop are preserved."""
+    import json
+
+    store = CheckpointStore(tmp_path)
+    store._path("run").write_text('{"loop":"run","completed":"invalid"}', encoding="utf-8")
+    corrupt = store._path("run").read_bytes()
+    store.clear("run")
+    assert store._path("run").read_bytes() == corrupt
+
+    legacy = store._legacy_path("run/one")
+    assert legacy == store._legacy_path("run_one")
+    legacy.write_text(json.dumps({"loop": "run/one", "completed": ["saved"]}), encoding="utf-8")
+    store.clear("run_one")
+    assert legacy.exists()
+    assert store.load("run/one").completed == ["saved"]
+
+
+def test_matching_bound_clear_still_removes_modern_and_legacy(tmp_path):
+    """Correctly bound caller can clear its own checkpoint, including migration."""
+    import json
+
+    store = CheckpointStore(tmp_path, commit_sha="a" * 40, plan_sha="b" * 64)
+    store.mark_done("run", "modern")
+    store.clear("run")
+    assert not store._path("run").exists()
+    assert store.load("run") is None
+
+    legacy = store._legacy_path("old")
+    legacy.write_text(json.dumps({
+        "loop": "old", "completed": ["saved"],
+        "commit_sha": "a" * 40, "plan_sha": "b" * 64,
+    }), encoding="utf-8")
+    assert store.load("old").completed == ["saved"]
+    CheckpointStore(tmp_path).clear("old")
+    assert legacy.exists()  # unbound cannot clear someone else's proof
+    store.clear("old")
+    assert not legacy.exists()
