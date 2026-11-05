@@ -393,7 +393,7 @@ def test_verifier_allows_optional_build_skip_if_real_test_executes(tmp_path):
 
 @pytest.mark.parametrize(
     ("stdout", "stderr"),
-    [("", ""), ("  \\n", "\\t")],
+    [("", ""), ("  \n", "\t")],
 )
 def test_verifier_refuses_silent_success_and_cached_reuse(tmp_path, monkeypatch, stdout, stderr):
     """A zero exit without observed output must not satisfy either reused check."""
