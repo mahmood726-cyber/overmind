@@ -197,6 +197,14 @@ class CheckpointStore:
         # source for os.replace(), silently discarding one completion update.
         tmp: Path | None = None
         try:
+            # Serialize strictly and validate the exact on-disk representation
+            # before replacing the last known-good checkpoint. JSON permits
+            # NaN by default; an unreadable file must never be acknowledged as
+            # completed, nor should an unserializable state crash recovery.
+            encoded = json.dumps(payload, allow_nan=False)
+            validated = Checkpoint.from_dict(json.loads(encoded))
+            if validated.loop != loop:
+                return False
             self.base_dir.mkdir(parents=True, exist_ok=True)
             path = self._path(loop)
             with tempfile.NamedTemporaryFile(
@@ -204,12 +212,12 @@ class CheckpointStore:
                 prefix=".checkpoint-", suffix=".tmp", delete=False,
             ) as handle:
                 tmp = Path(handle.name)
-                handle.write(json.dumps(payload))
+                handle.write(encoded)
             # NamedTemporaryFile is closed before replace for Windows support.
             os.replace(tmp, path)
             return True
-        except OSError:
-            return False  # no completion acknowledgement for failed writes
+        except (OSError, TypeError, ValueError, OverflowError, RecursionError):
+            return False  # no completion acknowledgement for invalid/failed writes
         finally:
             # Also remove abandoned temps after a failed replace/write. Never
             # remove another writer's file: temp names are independently unique.
