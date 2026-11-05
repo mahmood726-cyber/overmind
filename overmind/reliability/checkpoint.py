@@ -16,6 +16,7 @@ import json
 import math
 import os
 import re
+import tempfile
 import time
 from dataclasses import dataclass, field
 from pathlib import Path
@@ -182,11 +183,28 @@ class CheckpointStore:
             pass
 
     def _atomic_write(self, loop: str, payload: dict) -> None:
+        # A PID-only temporary filename is shared by threads in one process.
+        # Interleaved saves could replace each other's bytes or leave a missing
+        # source for os.replace(), silently discarding one completion update.
+        tmp: Path | None = None
         try:
             self.base_dir.mkdir(parents=True, exist_ok=True)
             path = self._path(loop)
-            tmp = path.with_suffix(path.suffix + f".tmp{os.getpid()}")
-            tmp.write_text(json.dumps(payload), encoding="utf-8")
+            with tempfile.NamedTemporaryFile(
+                mode="w", encoding="utf-8", dir=self.base_dir,
+                prefix=".checkpoint-", suffix=".tmp", delete=False,
+            ) as handle:
+                tmp = Path(handle.name)
+                handle.write(json.dumps(payload))
+            # NamedTemporaryFile is closed before replace for Windows support.
             os.replace(tmp, path)
         except OSError:
             pass  # best-effort; never crash the protected loop
+        finally:
+            # Also remove abandoned temps after a failed replace/write. Never
+            # remove another writer's file: temp names are independently unique.
+            if tmp is not None:
+                try:
+                    tmp.unlink(missing_ok=True)
+                except OSError:
+                    pass
