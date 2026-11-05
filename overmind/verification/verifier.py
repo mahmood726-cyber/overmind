@@ -70,8 +70,17 @@ class VerificationEngine:
                         details.append(f"{check}: timed out after {self.verification_timeout}s")
                     elif stderr:
                         details.append(f"{check}: {stderr}")
-                cached_results[command] = (exit_code == 0, check)
-                if exit_code != 0:
+                # An exit code of zero with no observable output is not
+                # sufficient completion evidence. A genuinely quiet command
+                # may still have succeeded, but its status remains unverified
+                # rather than becoming a false PASS.
+                empty_output = exit_code == 0 and not (stdout.strip() or stderr.strip())
+                if empty_output:
+                    details.append(
+                        f"{check}: unverified; command exited 0 with empty stdout/stderr"
+                    )
+                cached_results[command] = (exit_code == 0 and not empty_output, check)
+                if exit_code != 0 or empty_output:
                     check_passed = False
                     success = False
                     break
