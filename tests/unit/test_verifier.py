@@ -370,7 +370,7 @@ def test_verifier_refuses_success_when_only_optional_build_is_unavailable(tmp_pa
 
 def test_verifier_allows_optional_build_skip_if_real_test_executes(tmp_path):
     script = tmp_path / "test_synthetic_proof.py"
-    script.write_text("print('synthetic test passed')\\n", encoding="utf-8")
+    script.write_text("print('synthetic test passed')\n", encoding="utf-8")
     project = ProjectRecord(
         project_id="optional-and-test",
         name="Test-backed",
