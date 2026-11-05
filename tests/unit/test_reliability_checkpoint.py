@@ -745,3 +745,56 @@ def test_failed_first_file_sync_yields_no_completion(tmp_path, monkeypatch):
     assert result.completed == []
     assert store.load("run") is None
     assert not list(tmp_path.glob(".checkpoint-*.tmp"))
+
+
+def test_completed_string_or_mapping_cannot_become_evidence(tmp_path):
+    """Characters and mapping keys are not a caller-provided task-id sequence."""
+    store = CheckpointStore(tmp_path)
+    store.mark_done("run", "previous")
+    before = store._path("run").read_bytes()
+
+    for malformed in ("job", {"phantom": False}, b"job"):
+        result = store.save("run", malformed)
+        assert result.completed == ["previous"]
+        assert store._path("run").read_bytes() == before
+        assert not store.is_done("run", "j")
+        assert not store.is_done("run", "phantom")
+
+
+def test_invalid_completed_iterable_fails_closed_without_exception(tmp_path):
+    """Unhashable and non-iterable input must not kill the supervisor."""
+    store = CheckpointStore(tmp_path)
+    for malformed in ([["unhashable"]], 123, ["valid", None]):
+        result = store.save("run", malformed)
+        assert result.completed == []
+        assert store.load("run") is None
+        assert not store.is_done("run", "valid")
+
+
+def test_blank_item_ids_are_never_completion_evidence(tmp_path):
+    """Reject both caller-supplied and already serialized empty item IDs."""
+    import json
+
+    store = CheckpointStore(tmp_path)
+    assert store.mark_done("run", "").completed == []
+    assert store.save("run", [""]).completed == []
+    assert store.load("run") is None
+
+    store.mark_done("run", "valid")
+    record = json.loads(store._path("run").read_text(encoding="utf-8"))
+    record["completed"] = ["valid", ""]
+    store._path("run").write_text(json.dumps(record), encoding="utf-8")
+    assert store.load("run") is None
+    assert store.is_done("run", "valid") is False
+    assert store.remaining("run", ["valid"]) == ["valid"]
+
+
+def test_valid_completed_generator_retains_dedup_and_revision_binding(tmp_path):
+    """Valid iterable, exact commit and plan still survive a fresh restart."""
+    head, plan = "a" * 40, "b" * 64
+    store = CheckpointStore(tmp_path, commit_sha=head, plan_sha=plan)
+    result = store.save("run", (item for item in ["first", "first", "second"]))
+    assert result.completed == ["first", "second"]
+    resumed = CheckpointStore(tmp_path, commit_sha=head, plan_sha=plan)
+    assert resumed.remaining("run", ["first", "second", "third"]) == ["third"]
+    assert CheckpointStore(tmp_path, commit_sha="c" * 40, plan_sha=plan).load("run") is None
