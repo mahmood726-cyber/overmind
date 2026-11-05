@@ -95,3 +95,56 @@ def test_atomic_no_tmp_leftover(tmp_path):
     store = CheckpointStore(tmp_path)
     store.save("l", ["a"])
     assert not list(tmp_path.glob("*.tmp*"))
+
+
+def test_resume_is_tied_to_exact_commit_head(tmp_path):
+    head_a = "a" * 40
+    head_b = "b" * 40
+    original = CheckpointStore(tmp_path, commit_sha=head_a)
+    original.mark_done("run", "a", state={"phase": "done"})
+    assert CheckpointStore(tmp_path, commit_sha=head_a).remaining("run", ["a", "b"]) == ["b"]
+    changed = CheckpointStore(tmp_path, commit_sha=head_b)
+    assert changed.load("run") is None
+    assert changed.is_done("run", "a") is False
+    assert changed.remaining("run", ["a", "b"]) == ["a", "b"]
+    changed.mark_done("run", "b")
+    restarted = CheckpointStore(tmp_path, commit_sha=head_b).load("run")
+    assert restarted is not None
+    assert restarted.commit_sha == head_b
+    assert restarted.completed == ["b"]  # old 'a' must not leak into new head
+
+
+def test_bound_resume_rejects_legacy_checkpoint_without_head(tmp_path):
+    CheckpointStore(tmp_path).mark_done("run", "finished-on-unknown-revision")
+    bound = CheckpointStore(tmp_path, commit_sha="a" * 40)
+    assert bound.load("run") is None
+    assert bound.remaining("run", ["finished-on-unknown-revision"]) == [
+        "finished-on-unknown-revision"
+    ]
+
+
+def test_sanitized_loop_collision_does_not_reuse_completion(tmp_path):
+    store = CheckpointStore(tmp_path)
+    store.mark_done("run/one", "finished")
+    # Previously this path collision returned the first loop's completed set.
+    assert store._path("run/one") == store._path("run_one")
+    assert store.load("run_one") is None
+    assert store.is_done("run_one", "finished") is False
+    assert store.remaining("run_one", ["finished"]) == ["finished"]
+
+
+def test_commit_head_requires_full_sha(tmp_path):
+    import pytest
+
+    for bad in ("", "abc", "z" * 40, "a" * 39):
+        with pytest.raises(ValueError, match="full 40-character"):
+            CheckpointStore(tmp_path, commit_sha=bad)
+
+
+def test_commit_sha_survives_restart_and_case_normalization(tmp_path):
+    uppercase = "AB" * 20
+    store = CheckpointStore(tmp_path, commit_sha=uppercase)
+    store.save("loop", ["complete"])
+    resumed = CheckpointStore(tmp_path, commit_sha=uppercase.lower())
+    assert resumed.is_done("loop", "complete")
+    assert resumed.load("loop").commit_sha == uppercase.lower()
