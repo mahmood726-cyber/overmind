@@ -11,6 +11,7 @@ crashes the loop it protects.
 """
 from __future__ import annotations
 
+import hashlib
 import json
 import math
 import os
@@ -79,18 +80,31 @@ class CheckpointStore:
         self._clock = clock
         self.commit_sha = commit_sha.lower() if commit_sha is not None else None
 
-    def _path(self, loop: str) -> Path:
+    def _legacy_path(self, loop: str) -> Path:
+        # Original sanitized filename, retained only for read-only migration.
         safe = "".join(c if c.isalnum() or c in "-_." else "_" for c in loop) or "loop"
         return self.base_dir / f"{safe}.checkpoint.json"
 
+    def _path(self, loop: str) -> Path:
+        # Sanitizing alone aliases e.g. "run/one" and "run_one". The digest
+        # preserves exact loop identity even across Windows/Linux filesystems,
+        # and the shortened readable prefix avoids platform filename limits.
+        safe = "".join(
+            c if c.isascii() and (c.isalnum() or c in "-_.") else "_"
+            for c in loop
+        )[:64] or "loop"
+        digest = hashlib.sha256(loop.encode("utf-8")).hexdigest()
+        return self.base_dir / f"{safe}.{digest}.checkpoint.json"
+
     def load(self, loop: str) -> Checkpoint | None:
-        path = self._path(loop)
-        if not path.exists():
-            return None
+        primary = self._path(loop)
         try:
+            # A present but invalid modern record must NOT fall back to old
+            # evidence. Only a missing modern record permits legacy reading.
+            path = primary if primary.exists() else self._legacy_path(loop)
+            if not path.exists():
+                return None
             cp = Checkpoint.from_dict(json.loads(path.read_text(encoding="utf-8")))
-            # Distinct loop names can sanitize to the same filename. Never
-            # consume a different loop's completion record as our own.
             if cp.loop != loop:
                 return None
             # A new revision invalidates prior completed-item evidence. Legacy
@@ -132,10 +146,19 @@ class CheckpointStore:
         return [i for i in all_items if i not in done]
 
     def clear(self, loop: str) -> None:
-        path = self._path(loop)
         try:
-            path.unlink()
+            self._path(loop).unlink()
         except OSError:
+            pass
+        # A legacy filename may be shared by another loop identity; do not
+        # delete another loop's historical completion evidence on clear().
+        legacy = self._legacy_path(loop)
+        try:
+            if legacy.exists():
+                cp = Checkpoint.from_dict(json.loads(legacy.read_text(encoding="utf-8")))
+                if cp.loop == loop:
+                    legacy.unlink()
+        except (OSError, json.JSONDecodeError, TypeError, ValueError):
             pass
 
     def _atomic_write(self, loop: str, payload: dict) -> None:
