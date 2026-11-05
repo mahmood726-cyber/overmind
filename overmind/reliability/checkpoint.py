@@ -129,7 +129,7 @@ class CheckpointStore:
                 # Ensure the byte exists; another opener writing the same zero
                 # during initialization is harmless.
                 if handle.seek(0, os.SEEK_END) == 0:
-                    handle.write(b"\\0")
+                    handle.write(bytes([0]))
                     handle.flush()
 
                 def acquire():
