@@ -476,3 +476,51 @@ def test_failed_bound_write_does_not_adopt_other_revision(tmp_path, monkeypatch)
         "previous-head", "new-head"
     ]
     assert not list(tmp_path.glob(".checkpoint-*.tmp"))
+
+
+def test_invalid_completed_ids_cannot_replace_valid_checkpoint(tmp_path):
+    """A successful replace of unreadable IDs cannot certify completion."""
+    store = CheckpointStore(tmp_path)
+    store.mark_done("run", "recorded", state={"phase": "previous"})
+    original = store._path("run").read_bytes()
+    returned = store.save("run", ["recorded", 42], state={"phase": "unwritten"})
+    assert returned.completed == ["recorded"]
+    assert returned.state == {"phase": "previous"}
+    assert store._path("run").read_bytes() == original
+    assert store.remaining("run", ["recorded", "new"]) == ["new"]
+
+
+def test_nonfinite_clock_cannot_acknowledge_unreadable_checkpoint(tmp_path):
+    """Python json.dumps defaults to NaN; the reader rejects this timestamp."""
+    store = CheckpointStore(tmp_path, clock=lambda: float("nan"))
+    returned = store.mark_done("run", "not-recorded")
+    assert returned.completed == []
+    assert store.load("run") is None
+    assert store.remaining("run", ["not-recorded"]) == ["not-recorded"]
+
+
+def test_unserializable_state_cannot_crash_or_clobber_previous_evidence(tmp_path):
+    """A state object JSON cannot serialize must fail closed."""
+    store = CheckpointStore(tmp_path)
+    store.mark_done("run", "recorded", state={"phase": "previous"})
+    original = store._path("run").read_bytes()
+    returned = store.mark_done("run", "not-recorded", state={"bad": object()})
+    assert returned.completed == ["recorded"]
+    assert returned.state == {"phase": "previous"}
+    assert store._path("run").read_bytes() == original
+    assert not store.is_done("run", "not-recorded")
+    assert not list(tmp_path.glob(".checkpoint-*.tmp"))
+
+
+def test_nonfinite_nested_state_refused_but_finite_state_still_roundtrips(tmp_path):
+    """Strict encoding must reject nested Infinity without rejecting valid JSON."""
+    store = CheckpointStore(tmp_path)
+    recorded = store.save("run", ["good"], state={"nested": {"finite": 0.5}})
+    assert recorded.completed == ["good"]
+    original = store._path("run").read_bytes()
+    refused = store.mark_done("run", "not-recorded", state={"nested": {"bad": float("inf")}})
+    assert refused.completed == ["good"]
+    assert refused.state == {"nested": {"finite": 0.5}}
+    assert store._path("run").read_bytes() == original
+    assert store.is_done("run", "good")
+    assert not store.is_done("run", "not-recorded")
