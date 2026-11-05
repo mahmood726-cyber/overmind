@@ -111,6 +111,10 @@ class CheckpointStore:
         digest = hashlib.sha256(loop.encode("utf-8")).hexdigest()
         return self.base_dir / f"{safe}.{digest}.checkpoint.json"
 
+    def _temp_prefix(self, loop: str) -> str:
+        """Stable per-loop prefix for identifying recoverable temp files."""
+        return f".checkpoint-{hashlib.sha256(loop.encode('utf-8')).hexdigest()}-"
+
     @contextmanager
     def _write_lock(self, loop: str):
         """Serialize same-loop updates across processes, including crash recovery.
@@ -162,6 +166,15 @@ class CheckpointStore:
                         raise TimeoutError("checkpoint write lock unavailable") from exc
                     time.sleep(0.02)
             try:
+                # A hard-killed writer cannot execute _atomic_write's finally
+                # cleanup. Only after acquiring this loop's exclusive lock may
+                # we remove its abandoned temp files. Never touch a different
+                # loop's possibly live temp files, or old unattributed temps.
+                for orphan in self.base_dir.glob(f"{self._temp_prefix(loop)}*.tmp"):
+                    try:
+                        orphan.unlink()
+                    except OSError:
+                        pass  # harmless debris; no completion evidence comes from temps
                 yield
             finally:
                 release()
@@ -280,7 +293,7 @@ class CheckpointStore:
             path = self._path(loop)
             with tempfile.NamedTemporaryFile(
                 mode="w", encoding="utf-8", dir=self.base_dir,
-                prefix=".checkpoint-", suffix=".tmp", delete=False,
+                prefix=self._temp_prefix(loop), suffix=".tmp", delete=False,
             ) as handle:
                 tmp = Path(handle.name)
                 handle.write(encoded)
