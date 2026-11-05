@@ -2,6 +2,8 @@ from __future__ import annotations
 
 import sys
 
+import pytest
+
 from overmind.storage.models import ProjectRecord, TaskRecord
 from overmind.verification.verifier import VerificationEngine
 
@@ -387,3 +389,61 @@ def test_verifier_allows_optional_build_skip_if_real_test_executes(tmp_path):
     assert result.completed_checks == ["relevant_tests"]
     assert "build_or_direct_evidence: no command discovered" in result.skipped_checks
     assert any("relevant_tests: exit=0" in detail for detail in result.details)
+
+
+@pytest.mark.parametrize(
+    ("stdout", "stderr"),
+    [("", ""), ("  \\n", "\\t")],
+)
+def test_verifier_refuses_silent_success_and_cached_reuse(tmp_path, monkeypatch, stdout, stderr):
+    """A zero exit without observed output must not satisfy either reused check."""
+    project = ProjectRecord(
+        project_id="synthetic-silent",
+        name="Synthetic silent check",
+        root_path=str(tmp_path),
+        test_commands=["python -m pytest -q"],
+    )
+    task = _synthetic_verification_task(
+        project, ["relevant_tests", "numeric_regression"]
+    )
+    engine = VerificationEngine(tmp_path / "artifacts")
+    calls = []
+
+    def silent_command(command, cwd):
+        calls.append((command, cwd))
+        return 0, stdout, stderr
+
+    monkeypatch.setattr(engine, "_run_command", silent_command)
+    result = engine.run(task, project)
+
+    assert result.success is False
+    assert result.completed_checks == []
+    assert len(calls) == 1  # same command is cached, not rerun
+    assert any("unverified; command exited 0 with empty stdout/stderr" in detail
+               for detail in result.details)
+    assert any("reused verification evidence" in detail for detail in result.details)
+    assert len(list((tmp_path / "artifacts").glob("*.log"))) == 1
+
+
+@pytest.mark.parametrize(
+    ("stdout", "stderr"),
+    [("synthetic test passed", ""), ("", "synthetic test passed")],
+)
+def test_verifier_accepts_observable_zero_exit_control(tmp_path, monkeypatch, stdout, stderr):
+    """Non-empty stdout OR stderr remains valid command evidence."""
+    project = ProjectRecord(
+        project_id="synthetic-visible",
+        name="Synthetic observable check",
+        root_path=str(tmp_path),
+        test_commands=["python -m pytest -q"],
+    )
+    task = _synthetic_verification_task(project, ["relevant_tests"])
+    engine = VerificationEngine(tmp_path / "artifacts")
+    monkeypatch.setattr(
+        engine, "_run_command", lambda command, cwd: (0, stdout, stderr)
+    )
+    result = engine.run(task, project)
+
+    assert result.success is True
+    assert result.completed_checks == ["relevant_tests"]
+    assert not any("unverified" in detail for detail in result.details)
