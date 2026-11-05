@@ -40,7 +40,18 @@ class VerificationEngine:
         original tuple so distinct normalized names do not alias.
         """
         raw = f"{trace_id}_{task_id}_{check}_{index}.log"
-        if len(raw.encode("utf-8")) <= 180 and re.fullmatch(r"[A-Za-z0-9_][A-Za-z0-9_.-]*", raw):
+        # The legacy underscore-joined name is ambiguous if a trace or task
+        # contains underscores: ("a_b", "c") and ("a", "b_c") alias. Windows
+        # also treats case-only names as identical. Reserve legacy filenames
+        # for tuples whose trace/task boundaries are unambiguous and whose
+        # filename is case-stable; use the identity digest otherwise.
+        if (
+            len(raw.encode("utf-8")) <= 180
+            and re.fullmatch(r"[A-Za-z0-9_][A-Za-z0-9_.-]*", raw)
+            and "_" not in str(trace_id)
+            and "_" not in str(task_id)
+            and raw == raw.lower()
+        ):
             return self.artifacts_dir / raw
 
         parts = [str(trace_id), str(task_id), str(check), index]
