@@ -148,3 +148,43 @@ def test_commit_sha_survives_restart_and_case_normalization(tmp_path):
     resumed = CheckpointStore(tmp_path, commit_sha=uppercase.lower())
     assert resumed.is_done("loop", "complete")
     assert resumed.load("loop").commit_sha == uppercase.lower()
+
+
+def test_legacy_valid_checkpoint_json_still_resumes(tmp_path):
+    import json
+
+    store = CheckpointStore(tmp_path)
+    store._path("run").write_text(
+        json.dumps({"loop": "run", "completed": ["done"], "state": {}, "updated_at": 1.0}),
+        encoding="utf-8",
+    )
+    assert store.is_done("run", "done")
+    assert store.remaining("run", ["done", "other"]) == ["other"]
+
+
+def test_malformed_checkpoint_fails_closed(tmp_path):
+    import json
+    import pytest
+
+    # Valid JSON can still be structurally corrupt or claim completion from
+    # unsupported types. Never promote these values to verified work.
+    invalid = [
+        [],
+        {"loop": "run", "completed": {"done": True}},
+        {"loop": "run", "completed": "done"},
+        {"loop": "run", "completed": ["done", 1]},
+        {"loop": "run", "completed": ["done"], "state": ["broken"]},
+        {"loop": "run", "completed": ["done"], "updated_at": "yesterday"},
+        {"loop": "run", "completed": ["done"], "updated_at": float("nan")},
+        {"loop": "run", "completed": ["done"], "commit_sha": "bad-head"},
+        {"loop": 123, "completed": ["done"]},
+        {"completed": ["done"]},
+    ]
+    for payload in invalid:
+        store = CheckpointStore(tmp_path)
+        store._path("run").write_text(json.dumps(payload), encoding="utf-8")
+        assert store.load("run") is None, payload
+        assert not store.is_done("run", "done"), payload
+        assert store.remaining("run", ["done", "other"]) == ["done", "other"], payload
+        # Reading an invalid checkpoint must not silently mutate it.
+        assert json.loads(store._path("run").read_text(encoding="utf-8")) == payload
