@@ -125,12 +125,15 @@ def test_bound_resume_rejects_legacy_checkpoint_without_head(tmp_path):
 
 def test_sanitized_loop_collision_does_not_reuse_completion(tmp_path):
     store = CheckpointStore(tmp_path)
-    store.mark_done("run/one", "finished")
-    # Previously this path collision returned the first loop's completed set.
-    assert store._path("run/one") == store._path("run_one")
-    assert store.load("run_one") is None
-    assert store.is_done("run_one", "finished") is False
-    assert store.remaining("run_one", ["finished"]) == ["finished"]
+    assert store._legacy_path("run/one") == store._legacy_path("run_one")
+    assert store._path("run/one") != store._path("run_one")
+    store.mark_done("run/one", "first")
+    store.mark_done("run_one", "second")
+    # Two distinct loops now coexist; neither can overwrite the other.
+    assert store.is_done("run/one", "first") is True
+    assert store.is_done("run/one", "second") is False
+    assert store.is_done("run_one", "second") is True
+    assert store.is_done("run_one", "first") is False
 
 
 def test_commit_head_requires_full_sha(tmp_path):
@@ -188,3 +191,64 @@ def test_malformed_checkpoint_fails_closed(tmp_path):
         assert store.remaining("run", ["done", "other"]) == ["done", "other"], payload
         # Reading an invalid checkpoint must not silently mutate it.
         assert store._path("run").read_text(encoding="utf-8") == raw_before
+
+
+def test_legacy_checkpoint_read_then_incremental_migration(tmp_path):
+    import json
+
+    store = CheckpointStore(tmp_path, clock=_Clock())
+    legacy = store._legacy_path("run/one")
+    legacy.write_text(
+        json.dumps({"loop": "run/one", "completed": ["old"], "state": {"phase": "one"}, "updated_at": 1}),
+        encoding="utf-8",
+    )
+    assert store.is_done("run/one", "old")
+    assert not store.is_done("run_one", "old")  # shared old filename, mismatched identity
+    store.mark_done("run/one", "new")
+    assert store._path("run/one").exists()
+    assert store.load("run/one").completed == ["old", "new"]
+    assert store.load("run/one").state == {"phase": "one"}
+    # Migration does not corrupt or overwrite the original source bytes.
+    assert json.loads(legacy.read_text(encoding="utf-8"))["completed"] == ["old"]
+
+
+def test_clear_never_deletes_other_loops_legacy_file(tmp_path):
+    import json
+
+    store = CheckpointStore(tmp_path)
+    legacy = store._legacy_path("run/one")
+    legacy.write_text(
+        json.dumps({"loop": "run/one", "completed": ["old"]}), encoding="utf-8"
+    )
+    store.mark_done("run_one", "new")
+    store.clear("run_one")
+    assert legacy.exists()
+    assert store.is_done("run/one", "old")
+    assert not store.is_done("run_one", "new")
+    store.clear("run/one")
+    assert not legacy.exists()
+
+
+def test_corrupt_modern_checkpoint_does_not_resurrect_legacy_success(tmp_path):
+    import json
+
+    store = CheckpointStore(tmp_path)
+    store._legacy_path("run").write_text(
+        json.dumps({"loop": "run", "completed": ["stale"]}), encoding="utf-8"
+    )
+    store._path("run").write_text(
+        '{"loop":"run","completed":{"stale":true}}', encoding="utf-8"
+    )
+    assert store.load("run") is None
+    assert store.remaining("run", ["stale"]) == ["stale"]
+
+
+def test_hashed_checkpoint_path_is_portable_and_bounded(tmp_path):
+    store = CheckpointStore(tmp_path)
+    loop = "trial/" + ("x" * 300) + "/β"
+    path = store._path(loop)
+    assert len(path.name.encode("utf-8")) < 200
+    assert all(ord(char) < 128 for char in path.name)
+    assert path == CheckpointStore(tmp_path)._path(loop)
+    store.mark_done(loop, "done")
+    assert CheckpointStore(tmp_path).is_done(loop, "done")
