@@ -623,3 +623,69 @@ def test_write_lock_failure_does_not_acknowledge_or_clear_progress(tmp_path, mon
     store.clear("run")
     assert store.load("run").completed == ["durable"]
     assert store.load("run").state == {"phase": "before"}
+
+
+def test_recovery_removes_only_same_loop_orphan_temp_files(tmp_path):
+    """A crashed writer's uncommitted temp must not accumulate after restart."""
+    import hashlib
+
+    store = CheckpointStore(tmp_path)
+    store.mark_done("run", "recorded")
+    digest = hashlib.sha256(b"run").hexdigest()
+    other_digest = hashlib.sha256(b"other").hexdigest()
+    orphan = tmp_path / f".checkpoint-{digest}-orphan.tmp"
+    unrelated = tmp_path / f".checkpoint-{other_digest}-orphan.tmp"
+    orphan.write_text("partial uncommitted data", encoding="utf-8")
+    unrelated.write_text("another loop may still be writing", encoding="utf-8")
+
+    restarted = CheckpointStore(tmp_path)
+    assert restarted.load("run").completed == ["recorded"]
+    restarted.mark_done("run", "recovered")
+    assert restarted.load("run").completed == ["recorded", "recovered"]
+    assert not orphan.exists()
+    assert unrelated.exists()  # never remove another loop's in-flight temp
+
+
+def test_killed_lock_owner_releases_lock_and_recovers_without_temp_evidence(tmp_path):
+    """A killed dummy process must not strand the OS lock or certify its temp."""
+    import hashlib
+    import subprocess
+    import sys
+
+    store = CheckpointStore(tmp_path)
+    store.mark_done("run", "recorded")
+    orphan = tmp_path / (
+        f".checkpoint-{hashlib.sha256(b'run').hexdigest()}-crashed.tmp"
+    )
+    script = (
+        "import time\n"
+        "from overmind.reliability.checkpoint import CheckpointStore\n"
+        f"store = CheckpointStore({str(tmp_path)!r})\n"
+        "with store._write_lock('run'):\n"
+        f"    with open({str(orphan)!r}, 'w', encoding='utf-8') as temp:\n"
+        "        temp.write('incomplete execution, not a checkpoint')\n"
+        "    print('lock-acquired', flush=True)\n"
+        "    time.sleep(30)\n"
+    )
+    proc = subprocess.Popen(
+        [sys.executable, "-u", "-c", script],
+        stdout=subprocess.PIPE, stderr=subprocess.PIPE, text=True,
+    )
+    try:
+        assert proc.stdout.readline().strip() == "lock-acquired"
+        assert orphan.exists()
+        assert store.load("run").completed == ["recorded"]
+        proc.kill()  # simulate abrupt process death with lock held
+        proc.communicate(timeout=10)
+        assert proc.returncode != 0
+
+        restarted = CheckpointStore(tmp_path)
+        assert restarted.is_done("run", "incomplete") is False
+        recovered = restarted.mark_done("run", "after-crash")
+        assert recovered.completed == ["recorded", "after-crash"]
+        assert restarted.load("run").completed == ["recorded", "after-crash"]
+        assert not orphan.exists()
+    finally:
+        if proc.poll() is None:
+            proc.kill()
+            proc.communicate(timeout=10)
