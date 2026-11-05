@@ -368,3 +368,51 @@ def test_legacy_unbound_checkpoint_still_resumes_unbound_reader(tmp_path):
     """Unbound records retain their historical unbound-consumer semantics."""
     CheckpointStore(tmp_path).mark_done("old", "task")
     assert CheckpointStore(tmp_path).is_done("old", "task")
+
+
+def test_interleaved_checkpoint_saves_use_distinct_atomic_temps(tmp_path, monkeypatch):
+    """Two threads in one PID must never share a temp file before os.replace."""
+    import os
+
+    store = CheckpointStore(tmp_path)
+    real_replace = os.replace
+    sources = []
+    interleaved = False
+
+    def overlap(first, target):
+        nonlocal interleaved
+        sources.append(str(first))
+        if not interleaved:
+            interleaved = True
+            # Deterministically simulate a second same-process writer while
+            # the first is waiting to replace its own temporary file.
+            store.save("run", ["inner"])
+        return real_replace(first, target)
+
+    monkeypatch.setattr(os, "replace", overlap)
+    store.save("run", ["outer"])
+    assert len(sources) == 2
+    assert len(set(sources)) == 2  # PID-only temp names used to alias.
+    assert store.load("run").completed == ["outer"]
+    assert not list(tmp_path.glob(".checkpoint-*.tmp"))
+
+
+def test_failed_atomic_rename_removes_temp_and_preserves_last_good_result(
+    tmp_path, monkeypatch
+):
+    """An interrupted save must not leak temp files or certify new progress."""
+    import os
+
+    store = CheckpointStore(tmp_path)
+    store.mark_done("run", "durable")
+    before = store._path("run").read_bytes()
+
+    def fail_replace(_src, _dst):
+        raise OSError("synthetic replace failure")
+
+    monkeypatch.setattr(os, "replace", fail_replace)
+    store.mark_done("run", "not-durable")
+    assert store._path("run").read_bytes() == before
+    assert store.load("run").completed == ["durable"]
+    assert store.is_done("run", "not-durable") is False
+    assert not list(tmp_path.glob(".checkpoint-*.tmp"))
