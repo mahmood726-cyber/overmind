@@ -12,6 +12,7 @@ crashes the loop it protects.
 from __future__ import annotations
 
 import json
+import math
 import os
 import re
 import time
@@ -39,12 +40,27 @@ class Checkpoint:
 
     @classmethod
     def from_dict(cls, d: dict) -> "Checkpoint":
+        # Do not coerce malformed JSON into completion evidence. In particular,
+        # list(dict) treats dict keys as completed items, and list(str) treats
+        # individual characters as completed items. These are not valid records.
+        if not isinstance(d, dict) or not isinstance(d.get("loop"), str):
+            raise ValueError("checkpoint must contain a string loop identity")
+        completed = d.get("completed", [])
+        if not isinstance(completed, list) or any(not isinstance(x, str) for x in completed):
+            raise ValueError("checkpoint completed must be a list of item ids")
+        state = d.get("state", {})
+        if not isinstance(state, dict):
+            raise ValueError("checkpoint state must be a mapping")
+        updated_at = d.get("updated_at", 0.0)
+        if (isinstance(updated_at, bool) or not isinstance(updated_at, (int, float))
+                or not math.isfinite(updated_at)):
+            raise ValueError("checkpoint timestamp must be finite and numeric")
+        commit_sha = d.get("commit_sha", "")
+        if not isinstance(commit_sha, str) or (commit_sha and not re.fullmatch(r"[0-9a-fA-F]{40}", commit_sha)):
+            raise ValueError("checkpoint commit_sha must be empty or a full Git SHA")
         return cls(
-            loop=str(d.get("loop", "")),
-            completed=list(d.get("completed", []) or []),
-            state=dict(d.get("state", {}) or {}),
-            updated_at=float(d.get("updated_at", 0.0) or 0.0),
-            commit_sha=str(d.get("commit_sha", "") or ""),
+            loop=d["loop"], completed=list(completed), state=dict(state),
+            updated_at=float(updated_at), commit_sha=commit_sha.lower(),
         )
 
 
@@ -82,7 +98,7 @@ class CheckpointStore:
             if self.commit_sha is not None and cp.commit_sha != self.commit_sha:
                 return None
             return cp
-        except (OSError, json.JSONDecodeError, ValueError):
+        except (OSError, json.JSONDecodeError, TypeError, ValueError):
             return None
 
     def save(self, loop: str, completed: Iterable[str], state: dict | None = None) -> Checkpoint:
