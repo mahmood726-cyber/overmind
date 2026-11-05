@@ -447,3 +447,58 @@ def test_verifier_accepts_observable_zero_exit_control(tmp_path, monkeypatch, st
     assert result.success is True
     assert result.completed_checks == ["relevant_tests"]
     assert not any("unverified" in detail for detail in result.details)
+
+
+def _synthetic_artifact_fixture(tmp_path):
+    project = ProjectRecord(
+        project_id="synthetic-logs", name="Synthetic logging", root_path=str(tmp_path)
+    )
+    return project, _synthetic_verification_task(project, ["relevant_tests"])
+
+
+def test_verifier_artifact_log_paths_stay_inside_directory_for_unsafe_ids(tmp_path):
+    """A synthetic trace/check containing separators must not escape or crash logging."""
+    project, task = _synthetic_artifact_fixture(tmp_path)
+    task.trace_id = "nested/trace"
+    engine = VerificationEngine(tmp_path / "artifacts")
+    engine.planner.plan = lambda *_: {"check/with/slash": ["dummy synthetic command"]}
+    engine._run_command = lambda *_: (0, "synthetic command passed", "")
+    result = engine.run(task, project)
+    assert result.success is True
+    logs = list(engine.artifacts_dir.glob("*.log"))
+    assert len(logs) == 1
+    assert logs[0].parent == engine.artifacts_dir
+    assert "synthetic command passed" in logs[0].read_text(encoding="utf-8")
+
+
+def test_verifier_artifact_log_names_are_portable_and_bounded(tmp_path):
+    """Long and non-portable trace identifiers need a short ASCII log basename."""
+    project, task = _synthetic_artifact_fixture(tmp_path)
+    task.trace_id = "x" * 280 + ":β"
+    engine = VerificationEngine(tmp_path / "artifacts")
+    engine.planner.plan = lambda *_: {"relevant_tests": ["dummy synthetic command"]}
+    engine._run_command = lambda *_: (0, "synthetic command passed", "")
+    result = engine.run(task, project)
+    assert result.success is True
+    logs = list(engine.artifacts_dir.glob("*.log"))
+    assert len(logs) == 1
+    assert len(logs[0].name.encode("utf-8")) < 200
+    assert logs[0].name.isascii()
+
+
+def test_verifier_unpersisted_command_log_cannot_yield_completion(tmp_path, monkeypatch):
+    """Zero exit with output is unverified when the evidence log cannot be written."""
+    project, task = _synthetic_artifact_fixture(tmp_path)
+    engine = VerificationEngine(tmp_path / "artifacts")
+    engine.planner.plan = lambda *_: {"relevant_tests": ["dummy synthetic command"]}
+    engine._run_command = lambda *_: (0, "synthetic command passed", "")
+    from pathlib import Path
+
+    def failed_write(self, *args, **kwargs):
+        raise OSError("synthetic read-only evidence directory")
+
+    monkeypatch.setattr(Path, "write_text", failed_write)
+    result = engine.run(task, project)
+    assert result.success is False
+    assert result.completed_checks == []
+    assert any("unverified" in detail and "log" in detail for detail in result.details)
