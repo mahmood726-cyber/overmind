@@ -582,9 +582,9 @@ def test_checkpoint_lock_blocks_other_process(tmp_path):
 
     store = CheckpointStore(tmp_path)
     script = (
-        "from overmind.reliability.checkpoint import CheckpointStore\\n"
-        "print('ready', flush=True)\\n"
-        f"CheckpointStore({str(tmp_path)!r}).mark_done('run', 'child')\\n"
+        "from overmind.reliability.checkpoint import CheckpointStore\n"
+        "print('ready', flush=True)\n"
+        f"CheckpointStore({str(tmp_path)!r}).mark_done('run', 'child')\n"
     )
     proc = None
     try:
