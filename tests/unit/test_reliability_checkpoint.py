@@ -386,7 +386,7 @@ def test_interleaved_checkpoint_saves_use_distinct_atomic_temps(tmp_path, monkey
             interleaved = True
             # Deterministically simulate a second same-process writer while
             # the first is waiting to replace its own temporary file.
-            store.save("run", ["inner"])
+            store.save("separate-loop", ["inner"])
         return real_replace(first, target)
 
     monkeypatch.setattr(os, "replace", overlap)
@@ -524,3 +524,102 @@ def test_nonfinite_nested_state_refused_but_finite_state_still_roundtrips(tmp_pa
     assert store._path("run").read_bytes() == original
     assert store.is_done("run", "good")
     assert not store.is_done("run", "not-recorded")
+
+
+def test_incremental_checkpoint_updates_are_serialized(tmp_path, monkeypatch):
+    """A second writer cannot overwrite a first writer's unread completed item."""
+    import threading
+
+    store = CheckpointStore(tmp_path)
+    first_in_write = threading.Event()
+    release_first = threading.Event()
+    second_finished = threading.Event()
+    errors = []
+    original_write = store._atomic_write
+
+    def pause_first(loop, payload):
+        if threading.current_thread().name == "checkpoint-first":
+            first_in_write.set()
+            if not release_first.wait(timeout=4):
+                raise AssertionError("synthetic first writer timed out")
+        return original_write(loop, payload)
+
+    monkeypatch.setattr(store, "_atomic_write", pause_first)
+
+    def write(item):
+        try:
+            store.mark_done("run", item)
+        except BaseException as exc:
+            errors.append(exc)
+        finally:
+            if item == "second":
+                second_finished.set()
+
+    first = threading.Thread(target=write, args=("first",), name="checkpoint-first")
+    second = threading.Thread(target=write, args=("second",), name="checkpoint-second")
+    first.start()
+    try:
+        assert first_in_write.wait(timeout=4)
+        second.start()
+        # Without a lock, second reads the old checkpoint and finishes while
+        # the first writer is paused. That would lose one completion.
+        assert not second_finished.wait(timeout=0.25)
+    finally:
+        release_first.set()
+        first.join(timeout=5)
+        if second.ident is not None:
+            second.join(timeout=5)
+    assert not first.is_alive() and not second.is_alive()
+    assert errors == []
+    assert set(store.load("run").completed) == {"first", "second"}
+
+
+def test_checkpoint_lock_blocks_other_process(tmp_path):
+    """Use a dummy Python process to check OS-level, not just thread, locking."""
+    import subprocess
+    import sys
+    import time
+
+    store = CheckpointStore(tmp_path)
+    script = (
+        "from overmind.reliability.checkpoint import CheckpointStore\\n"
+        "print('ready', flush=True)\\n"
+        f"CheckpointStore({str(tmp_path)!r}).mark_done('run', 'child')\\n"
+    )
+    proc = None
+    try:
+        with store._write_lock("run"):
+            proc = subprocess.Popen(
+                [sys.executable, "-u", "-c", script],
+                stdout=subprocess.PIPE, stderr=subprocess.PIPE, text=True,
+            )
+            assert proc.stdout.readline().strip() == "ready"
+            time.sleep(0.25)
+            assert proc.poll() is None  # must await release of parent lock
+        stdout, stderr = proc.communicate(timeout=10)
+        assert proc.returncode == 0, (stdout, stderr)
+        assert store.is_done("run", "child")
+    finally:
+        if proc is not None and proc.poll() is None:
+            proc.kill()
+            proc.communicate(timeout=5)
+
+
+def test_write_lock_failure_does_not_acknowledge_or_clear_progress(tmp_path, monkeypatch):
+    """Timeouts/unavailable locks must not create or remove completion evidence."""
+    from contextlib import contextmanager
+
+    store = CheckpointStore(tmp_path)
+    store.mark_done("run", "durable", state={"phase": "before"})
+
+    @contextmanager
+    def unavailable(_loop):
+        raise OSError("synthetic lock unavailable")
+        yield
+
+    monkeypatch.setattr(store, "_write_lock", unavailable)
+    assert store.mark_done("run", "unwritten").completed == ["durable"]
+    assert store.save("run", ["unwritten"]).completed == ["durable"]
+    store.clear("run")
+    assert store.load("run").completed == ["durable"]
+    assert store.load("run").state == {"phase": "before"}
