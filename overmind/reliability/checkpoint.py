@@ -7,7 +7,8 @@ graph engine: one atomic JSON file per loop recording the completed item ids +
 arbitrary state, so ``remaining()`` skips what is already done on restart.
 
 Atomic write (temp + ``os.replace``); best-effort — a checkpoint failure never
-crashes the loop it protects.
+crashes the loop it protects. A failed write must not return an unrecorded
+completion as though it had been saved.
 """
 from __future__ import annotations
 
@@ -134,13 +135,20 @@ class CheckpointStore:
         except (OSError, json.JSONDecodeError, TypeError, ValueError):
             return None
 
+    def _last_recorded(self, loop: str) -> Checkpoint:
+        """Return existing readable evidence, never the rejected write payload."""
+        return self.load(loop) or Checkpoint(
+            loop=loop, commit_sha=self.commit_sha or "", plan_sha=self.plan_sha or "",
+        )
+
     def save(self, loop: str, completed: Iterable[str], state: dict | None = None) -> Checkpoint:
         cp = Checkpoint(
             loop=loop, completed=list(dict.fromkeys(completed)),  # dedup, keep order
             state=dict(state or {}), updated_at=self._clock(),
             commit_sha=self.commit_sha or "", plan_sha=self.plan_sha or "",
         )
-        self._atomic_write(loop, cp.to_dict())
+        if not self._atomic_write(loop, cp.to_dict()):
+            return self._last_recorded(loop)
         return cp
 
     def mark_done(self, loop: str, item_id: str, *, state: dict | None = None) -> Checkpoint:
@@ -153,7 +161,8 @@ class CheckpointStore:
         if state is not None:
             cp.state.update(state)
         cp.updated_at = self._clock()
-        self._atomic_write(loop, cp.to_dict())
+        if not self._atomic_write(loop, cp.to_dict()):
+            return self._last_recorded(loop)
         return cp
 
     def is_done(self, loop: str, item_id: str) -> bool:
@@ -182,7 +191,7 @@ class CheckpointStore:
         except (OSError, json.JSONDecodeError, TypeError, ValueError):
             pass
 
-    def _atomic_write(self, loop: str, payload: dict) -> None:
+    def _atomic_write(self, loop: str, payload: dict) -> bool:
         # A PID-only temporary filename is shared by threads in one process.
         # Interleaved saves could replace each other's bytes or leave a missing
         # source for os.replace(), silently discarding one completion update.
@@ -198,8 +207,9 @@ class CheckpointStore:
                 handle.write(json.dumps(payload))
             # NamedTemporaryFile is closed before replace for Windows support.
             os.replace(tmp, path)
+            return True
         except OSError:
-            pass  # best-effort; never crash the protected loop
+            return False  # no completion acknowledgement for failed writes
         finally:
             # Also remove abandoned temps after a failed replace/write. Never
             # remove another writer's file: temp names are independently unique.

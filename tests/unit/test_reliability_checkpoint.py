@@ -416,3 +416,63 @@ def test_failed_atomic_rename_removes_temp_and_preserves_last_good_result(
     assert store.load("run").completed == ["durable"]
     assert store.is_done("run", "not-durable") is False
     assert not list(tmp_path.glob(".checkpoint-*.tmp"))
+
+
+def test_failed_first_save_returns_no_unrecorded_completion(tmp_path, monkeypatch):
+    """A failed replace cannot make save() claim an item was checkpointed."""
+    import os
+
+    store = CheckpointStore(tmp_path)
+    def fail_replace(_src, _dst):
+        raise OSError("synthetic write failure")
+
+    monkeypatch.setattr(os, "replace", fail_replace)
+    returned = store.save("run", ["not-recorded"], state={"phase": "unwritten"})
+    assert returned.completed == []
+    assert returned.state == {}
+    assert store.load("run") is None
+    assert not store.is_done("run", "not-recorded")
+    assert not list(tmp_path.glob(".checkpoint-*.tmp"))
+
+
+def test_failed_mark_done_returns_prior_recorded_evidence(tmp_path, monkeypatch):
+    """Failed incremental save must not attest to the new task or state."""
+    import os
+
+    store = CheckpointStore(tmp_path)
+    store.mark_done("run", "previous", state={"phase": "recorded"})
+    prior_bytes = store._path("run").read_bytes()
+
+    def fail_replace(_src, _dst):
+        raise OSError("synthetic interrupted rename")
+
+    monkeypatch.setattr(os, "replace", fail_replace)
+    returned = store.mark_done("run", "not-recorded", state={"phase": "unwritten"})
+    assert returned.completed == ["previous"]
+    assert returned.state == {"phase": "recorded"}
+    assert store._path("run").read_bytes() == prior_bytes
+    assert store.remaining("run", ["previous", "not-recorded"]) == ["not-recorded"]
+    assert not list(tmp_path.glob(".checkpoint-*.tmp"))
+
+
+def test_failed_bound_write_does_not_adopt_other_revision(tmp_path, monkeypatch):
+    """Even fallback evidence must match the caller's exact commit/plan."""
+    import os
+
+    old = CheckpointStore(tmp_path, commit_sha="a" * 40, plan_sha="b" * 64)
+    old.mark_done("run", "previous-head")
+    current = CheckpointStore(tmp_path, commit_sha="c" * 40, plan_sha="d" * 64)
+
+    def fail_replace(_src, _dst):
+        raise OSError("synthetic unavailable destination")
+
+    monkeypatch.setattr(os, "replace", fail_replace)
+    returned = current.mark_done("run", "new-head")
+    assert returned.completed == []
+    assert returned.commit_sha == "c" * 40
+    assert returned.plan_sha == "d" * 64
+    assert current.load("run") is None
+    assert current.remaining("run", ["previous-head", "new-head"]) == [
+        "previous-head", "new-head"
+    ]
+    assert not list(tmp_path.glob(".checkpoint-*.tmp"))
