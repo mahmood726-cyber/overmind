@@ -502,3 +502,45 @@ def test_verifier_unpersisted_command_log_cannot_yield_completion(tmp_path, monk
     assert result.success is False
     assert result.completed_checks == []
     assert any("unverified" in detail and "log" in detail for detail in result.details)
+
+
+def test_verifier_underscore_components_cannot_alias_evidence_log_names(tmp_path):
+    """Different task/trace tuples must never reuse the same saved evidence path."""
+    engine = VerificationEngine(tmp_path / "artifacts")
+    left = engine._artifact_log_path("nightly_one", "worker", "relevant_tests", 1)
+    right = engine._artifact_log_path("nightly", "one_worker", "relevant_tests", 1)
+
+    assert left != right
+    assert left.parent == right.parent == engine.artifacts_dir
+
+
+def test_verifier_log_names_remain_unique_on_case_insensitive_windows(tmp_path):
+    """Windows cannot distinguish case-only filename differences."""
+    engine = VerificationEngine(tmp_path / "artifacts")
+    left = engine._artifact_log_path("Nightly", "worker", "relevant_tests", 1)
+    right = engine._artifact_log_path("nightly", "worker", "relevant_tests", 1)
+
+    assert left.name.casefold() != right.name.casefold()
+
+
+def test_verifier_different_tasks_preserve_both_command_logs(tmp_path):
+    """A later synthetic task must not overwrite an earlier task's evidence."""
+    project, task = _synthetic_artifact_fixture(tmp_path)
+    task.trace_id = "nightly_one"
+    task.task_id = "worker"
+    engine = VerificationEngine(tmp_path / "artifacts")
+    engine.planner.plan = lambda *_: {"relevant_tests": ["dummy synthetic command"]}
+
+    engine._run_command = lambda *_: (0, "first task passed", "")
+    first = engine.run(task, project)
+    task.trace_id = "nightly"
+    task.task_id = "one_worker"
+    engine._run_command = lambda *_: (0, "second task passed", "")
+    second = engine.run(task, project)
+
+    assert first.success is True and second.success is True
+    logs = list(engine.artifacts_dir.glob("*.log"))
+    assert len(logs) == 2
+    evidence = [p.read_text(encoding="utf-8") for p in logs]
+    assert sum("first task passed" in log for log in evidence) == 1
+    assert sum("second task passed" in log for log in evidence) == 1
