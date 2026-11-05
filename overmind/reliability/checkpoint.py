@@ -267,22 +267,28 @@ class CheckpointStore:
         return [i for i in all_items if i not in done]
 
     def clear(self, loop: str) -> None:
+        """Clear only readable evidence for this exact loop and revision.
+
+        A stale or unbound process must not erase another commit's/plan's
+        checkpoint. Preserve malformed records for investigation rather than
+        treating undecodable bytes as permission to delete them.
+        """
         try:
             with self._write_lock(loop):
-                try:
-                    self._path(loop).unlink()
-                except OSError:
-                    pass
-                # Legacy filenames may alias distinct loops. Never remove an
-                # unrelated loop's historical evidence during a clear.
-                legacy = self._legacy_path(loop)
-                try:
-                    if legacy.exists():
-                        cp = Checkpoint.from_dict(json.loads(legacy.read_text(encoding="utf-8")))
-                        if cp.loop == loop:
-                            legacy.unlink()
-                except (OSError, json.JSONDecodeError, TypeError, ValueError):
-                    pass
+                # The historical sanitized filename can also alias another
+                # loop. Apply the same identity and revision check to BOTH
+                # modern and legacy files before deleting either.
+                for path in (self._path(loop), self._legacy_path(loop)):
+                    try:
+                        cp = Checkpoint.from_dict(
+                            json.loads(path.read_text(encoding="utf-8"))
+                        )
+                        if (cp.loop == loop
+                                and cp.commit_sha == (self.commit_sha or "")
+                                and cp.plan_sha == (self.plan_sha or "")):
+                            path.unlink()
+                    except (OSError, json.JSONDecodeError, TypeError, ValueError):
+                        pass
         except OSError:
             pass
 
