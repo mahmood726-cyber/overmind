@@ -36,6 +36,7 @@ class VerificationEngine:
         success = True
         cached_results: dict[str, tuple[bool, str]] = {}
         trace_id = task.trace_id or task.task_id
+        commands_executed = 0
 
         for check, commands in self.planner.plan(task, project).items():
             if not commands:
@@ -56,6 +57,7 @@ class VerificationEngine:
                     continue
 
                 exit_code, stdout, stderr = self._run_command(command, project.root_path)
+                commands_executed += 1
 
                 artifact_path = self.artifacts_dir / f"{trace_id}_{task.task_id}_{check}_{index}.log"
                 artifact_path.write_text(
@@ -75,6 +77,12 @@ class VerificationEngine:
                     break
             if check_passed:
                 completed_checks.append(check)
+
+        # An empty plan (or optional-only checks with no commands) must not
+        # turn a lack of verification evidence into successful completion.
+        if commands_executed == 0:
+            success = False
+            details.append("verification: no verification command executed; result unverified")
 
         return VerificationResult(
             task_id=task.task_id,
