@@ -297,6 +297,13 @@ class CheckpointStore:
             ) as handle:
                 tmp = Path(handle.name)
                 handle.write(encoded)
+                # Flush Python buffers, then ask the OS to persist the file
+                # contents BEFORE publishing a new checkpoint. If sync fails,
+                # leave the previous checkpoint intact and do not acknowledge
+                # the new completion. The directory rename is not separately
+                # fsynced, so this is not a full power-loss durability claim.
+                handle.flush()
+                os.fsync(handle.fileno())
             # NamedTemporaryFile is closed before replace for Windows support.
             os.replace(tmp, path)
             return True
