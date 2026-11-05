@@ -689,3 +689,59 @@ def test_killed_lock_owner_releases_lock_and_recovers_without_temp_evidence(tmp_
         if proc.poll() is None:
             proc.kill()
             proc.communicate(timeout=10)
+
+
+
+def test_checkpoint_file_sync_precedes_atomic_replace(tmp_path, monkeypatch):
+    """Only publish a completion record after its file data has been fsynced."""
+    import os
+
+    store = CheckpointStore(tmp_path)
+    real_fsync, real_replace = os.fsync, os.replace
+    observed = []
+
+    def observed_fsync(fd):
+        observed.append("fsync")
+        return real_fsync(fd)
+
+    def observed_replace(source, target):
+        assert observed == ["fsync"], "checkpoint was replaced without file sync"
+        return real_replace(source, target)
+
+    monkeypatch.setattr(os, "fsync", observed_fsync)
+    monkeypatch.setattr(os, "replace", observed_replace)
+    result = store.mark_done("run", "durably-recorded")
+    assert result.completed == ["durably-recorded"]
+    assert store.is_done("run", "durably-recorded")
+    assert observed == ["fsync"]
+
+
+def test_failed_file_sync_preserves_previous_checkpoint_without_ack(tmp_path, monkeypatch):
+    """A simulated disk flush error cannot claim unpersisted progress."""
+    import os
+
+    store = CheckpointStore(tmp_path)
+    store.mark_done("run", "previous")
+    before = store._path("run").read_bytes()
+
+    def failed_fsync(_fd):
+        raise OSError("synthetic fsync failure")
+
+    monkeypatch.setattr(os, "fsync", failed_fsync)
+    result = store.mark_done("run", "not-persisted")
+    assert result.completed == ["previous"]
+    assert store._path("run").read_bytes() == before
+    assert store.is_done("run", "not-persisted") is False
+    assert not list(tmp_path.glob(".checkpoint-*.tmp"))
+
+
+def test_failed_first_file_sync_yields_no_completion(tmp_path, monkeypatch):
+    """No previous checkpoint means no positive evidence on sync failure."""
+    import os
+
+    store = CheckpointStore(tmp_path)
+    monkeypatch.setattr(os, "fsync", lambda fd: (_ for _ in ()).throw(OSError("synthetic fsync failure")))
+    result = store.save("run", ["not-persisted"])
+    assert result.completed == []
+    assert store.load("run") is None
+    assert not list(tmp_path.glob(".checkpoint-*.tmp"))
