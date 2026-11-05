@@ -320,3 +320,70 @@ def test_verifier_uses_new_process_group_on_windows(tmp_path, monkeypatch):
     env = captured["kwargs"].get("env")
     assert env is not None
     assert "LD_PRELOAD" not in env
+
+
+def _synthetic_verification_task(project, checks):
+    return TaskRecord(
+        task_id="synthetic-verification",
+        project_id=project.project_id,
+        title="Verify synthetic fixture",
+        task_type="verification",
+        source="test",
+        priority=0.9,
+        risk="medium",
+        expected_runtime_min=1,
+        expected_context_cost="low",
+        required_verification=checks,
+    )
+
+
+def test_verifier_refuses_success_when_no_checks_are_required(tmp_path):
+    project = ProjectRecord(
+        project_id="no-plan",
+        name="No plan",
+        root_path=str(tmp_path),
+    )
+    task = _synthetic_verification_task(project, [])
+
+    result = VerificationEngine(tmp_path / "artifacts").run(task, project)
+
+    assert result.success is False
+    assert result.completed_checks == []
+    assert any("no verification command executed" in detail for detail in result.details)
+
+
+def test_verifier_refuses_success_when_only_optional_build_is_unavailable(tmp_path):
+    project = ProjectRecord(
+        project_id="missing-optional",
+        name="No build command",
+        root_path=str(tmp_path),
+    )
+    task = _synthetic_verification_task(project, ["build_or_direct_evidence"])
+
+    result = VerificationEngine(tmp_path / "artifacts").run(task, project)
+
+    assert result.success is False
+    assert result.completed_checks == []
+    assert "build_or_direct_evidence: no command discovered" in result.skipped_checks
+    assert any("no verification command executed" in detail for detail in result.details)
+
+
+def test_verifier_allows_optional_build_skip_if_real_test_executes(tmp_path):
+    script = tmp_path / "test_synthetic_proof.py"
+    script.write_text("print('synthetic test passed')\\n", encoding="utf-8")
+    project = ProjectRecord(
+        project_id="optional-and-test",
+        name="Test-backed",
+        root_path=str(tmp_path),
+        test_commands=[f'"{sys.executable}" "{script}"'],
+    )
+    task = _synthetic_verification_task(
+        project, ["build_or_direct_evidence", "relevant_tests"]
+    )
+
+    result = VerificationEngine(tmp_path / "artifacts").run(task, project)
+
+    assert result.success is True
+    assert result.completed_checks == ["relevant_tests"]
+    assert "build_or_direct_evidence: no command discovered" in result.skipped_checks
+    assert any("relevant_tests: exit=0" in detail for detail in result.details)
