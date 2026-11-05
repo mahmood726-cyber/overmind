@@ -29,6 +29,7 @@ class Checkpoint:
     state: dict = field(default_factory=dict)
     updated_at: float = 0.0
     commit_sha: str = ""  # exact source head; empty marks legacy/unbound data
+    plan_sha: str = ""  # SHA-256 of exact verification plan; empty is unbound
 
     def to_dict(self) -> dict:
         return {
@@ -37,6 +38,7 @@ class Checkpoint:
             "state": dict(self.state),
             "updated_at": self.updated_at,
             "commit_sha": self.commit_sha,
+            "plan_sha": self.plan_sha,
         }
 
     @classmethod
@@ -59,9 +61,13 @@ class Checkpoint:
         commit_sha = d.get("commit_sha", "")
         if not isinstance(commit_sha, str) or (commit_sha and not re.fullmatch(r"[0-9a-fA-F]{40}", commit_sha)):
             raise ValueError("checkpoint commit_sha must be empty or a full Git SHA")
+        plan_sha = d.get("plan_sha", "")
+        if not isinstance(plan_sha, str) or (plan_sha and not re.fullmatch(r"[0-9a-fA-F]{64}", plan_sha)):
+            raise ValueError("checkpoint plan_sha must be empty or a full SHA-256 digest")
         return cls(
             loop=d["loop"], completed=list(completed), state=dict(state),
             updated_at=float(updated_at), commit_sha=commit_sha.lower(),
+            plan_sha=plan_sha.lower(),
         )
 
 
@@ -70,15 +76,20 @@ class CheckpointStore:
 
     def __init__(
         self, base_dir: Path | str, *, clock: Callable[[], float] = time.time,
-        commit_sha: str | None = None,
+        commit_sha: str | None = None, plan_sha: str | None = None,
     ) -> None:
         # Callers resuming work against a Git checkout should supply the exact
         # commit head. A missing/legacy head then cannot satisfy this resume.
         if commit_sha is not None and not re.fullmatch(r"[0-9a-fA-F]{40}", commit_sha):
             raise ValueError("commit_sha must be a full 40-character Git SHA")
+        # A caller-supplied canonical plan digest prevents reuse when an item
+        # id refers to different checks after a verification-plan change.
+        if plan_sha is not None and not re.fullmatch(r"[0-9a-fA-F]{64}", plan_sha):
+            raise ValueError("plan_sha must be a full 64-character SHA-256 digest")
         self.base_dir = Path(base_dir)
         self._clock = clock
         self.commit_sha = commit_sha.lower() if commit_sha is not None else None
+        self.plan_sha = plan_sha.lower() if plan_sha is not None else None
 
     def _legacy_path(self, loop: str) -> Path:
         # Original sanitized filename, retained only for read-only migration.
@@ -111,6 +122,10 @@ class CheckpointStore:
             # unbound checkpoints are deliberately not trusted by bound callers.
             if self.commit_sha is not None and cp.commit_sha != self.commit_sha:
                 return None
+            # A bound caller cannot trust a different or unbound plan at the
+            # same commit, even if its item ids happen to match.
+            if self.plan_sha is not None and cp.plan_sha != self.plan_sha:
+                return None
             return cp
         except (OSError, json.JSONDecodeError, TypeError, ValueError):
             return None
@@ -119,14 +134,16 @@ class CheckpointStore:
         cp = Checkpoint(
             loop=loop, completed=list(dict.fromkeys(completed)),  # dedup, keep order
             state=dict(state or {}), updated_at=self._clock(),
-            commit_sha=self.commit_sha or "",
+            commit_sha=self.commit_sha or "", plan_sha=self.plan_sha or "",
         )
         self._atomic_write(loop, cp.to_dict())
         return cp
 
     def mark_done(self, loop: str, item_id: str, *, state: dict | None = None) -> Checkpoint:
         """Record one completed item incrementally (idempotent)."""
-        cp = self.load(loop) or Checkpoint(loop=loop, commit_sha=self.commit_sha or "")
+        cp = self.load(loop) or Checkpoint(
+            loop=loop, commit_sha=self.commit_sha or "", plan_sha=self.plan_sha or "",
+        )
         if item_id not in cp.completed:
             cp.completed.append(item_id)
         if state is not None:
