@@ -252,3 +252,74 @@ def test_hashed_checkpoint_path_is_portable_and_bounded(tmp_path):
     assert path == CheckpointStore(tmp_path)._path(loop)
     store.mark_done(loop, "done")
     assert CheckpointStore(tmp_path).is_done(loop, "done")
+
+
+def test_plan_change_at_same_head_invalidates_completed_items(tmp_path):
+    import hashlib
+
+    head = "a" * 40
+    old_plan = hashlib.sha256(b"python -m pytest tests/unit").hexdigest()
+    changed_plan = hashlib.sha256(b"python -m pytest tests/integration").hexdigest()
+    original = CheckpointStore(tmp_path, commit_sha=head, plan_sha=old_plan)
+    original.mark_done("check", "tests")
+    # Exact-head AND exact-plan restarts may reuse already completed checks.
+    assert CheckpointStore(tmp_path, commit_sha=head, plan_sha=old_plan).is_done(
+        "check", "tests"
+    )
+    # Changed commands at the SAME Git head cannot reuse the old completion.
+    changed = CheckpointStore(tmp_path, commit_sha=head, plan_sha=changed_plan)
+    assert changed.load("check") is None
+    assert not changed.is_done("check", "tests")
+    assert changed.remaining("check", ["tests", "build"]) == ["tests", "build"]
+    changed.mark_done("check", "build")
+    restarted = CheckpointStore(
+        tmp_path, commit_sha=head, plan_sha=changed_plan
+    ).load("check")
+    assert restarted is not None
+    assert restarted.plan_sha == changed_plan
+    assert restarted.completed == ["build"]  # stale test result stays excluded
+
+
+def test_plan_bound_resume_refuses_legacy_unbound_completion(tmp_path):
+    import hashlib
+
+    head = "b" * 40
+    CheckpointStore(tmp_path, commit_sha=head).mark_done("check", "stale")
+    bounded = CheckpointStore(
+        tmp_path, commit_sha=head,
+        plan_sha=hashlib.sha256(b"new plan").hexdigest(),
+    )
+    assert bounded.load("check") is None
+    assert bounded.remaining("check", ["stale"]) == ["stale"]
+    # Legacy callers remain able to read their old unbound records.
+    assert CheckpointStore(tmp_path, commit_sha=head).is_done("check", "stale")
+
+
+def test_plan_digest_requires_full_sha256_and_normalizes_case(tmp_path):
+    import hashlib
+    import pytest
+
+    for bad in ("", "g" * 64, "a" * 63, "a" * 65):
+        with pytest.raises(ValueError, match="plan_sha"):
+            CheckpointStore(tmp_path, plan_sha=bad)
+    digest = hashlib.sha256(b"synthetic command plan").hexdigest()
+    CheckpointStore(tmp_path, plan_sha=digest.upper()).mark_done("check", "yes")
+    resumed = CheckpointStore(tmp_path, plan_sha=digest).load("check")
+    assert resumed is not None
+    assert resumed.plan_sha == digest
+    assert resumed.completed == ["yes"]
+
+
+def test_malformed_persisted_plan_digest_never_yields_completion(tmp_path):
+    import json
+
+    store = CheckpointStore(tmp_path)
+    for bad in (42, "not-a-sha", [], "a" * 63):
+        record = {"loop": "check", "completed": ["looks_done"], "plan_sha": bad}
+        raw = json.dumps(record)
+        store._path("check").write_text(raw, encoding="utf-8")
+        assert store.load("check") is None
+        assert not store.is_done("check", "looks_done")
+        assert store.remaining("check", ["looks_done"]) == ["looks_done"]
+        # The invalid source record must not be modified to manufacture PASS.
+        assert store._path("check").read_text(encoding="utf-8") == raw
