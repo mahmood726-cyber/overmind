@@ -959,3 +959,59 @@ def test_verifier_reads_git_head_from_isolated_synthetic_checkout(tmp_path):
 
     assert engine._read_git_head(str(tmp_path)) == expected
     assert engine._read_git_head(str(tmp_path / "missing-directory")) is None
+
+
+def test_verifier_rejects_plan_appended_during_execution_without_running_injected_command(tmp_path):
+    """An appended planner command must not execute or certify a moving plan."""
+    project, task = _synthetic_artifact_fixture(tmp_path)
+    engine = VerificationEngine(tmp_path / "artifacts")
+    plan = {"relevant_tests": ["synthetic approved command"]}
+    engine.planner.plan = lambda *_: plan
+    executed = []
+
+    def change_plan(command, cwd):
+        executed.append(command)
+        if command == "synthetic approved command":
+            plan["relevant_tests"].append("synthetic injected command")
+        return 0, "synthetic pass", ""
+
+    engine._run_command = change_plan
+    result = engine.run(task, project)
+
+    assert result.success is False
+    assert executed == ["synthetic approved command"]
+    assert any("unverified" in d and "plan changed" in d for d in result.details)
+
+
+def test_verifier_rejects_plan_replaced_during_execution(tmp_path):
+    """A planner replacing its already-executed check cannot leave a PASS."""
+    project, task = _synthetic_artifact_fixture(tmp_path)
+    engine = VerificationEngine(tmp_path / "artifacts")
+    plan = {"relevant_tests": ["synthetic approved command"]}
+    engine.planner.plan = lambda *_: plan
+
+    def replace_plan(command, cwd):
+        plan["relevant_tests"][0] = "synthetic replacement command"
+        return 0, "synthetic pass", ""
+
+    engine._run_command = replace_plan
+    result = engine.run(task, project)
+
+    assert result.success is False
+    assert any("unverified" in d and "plan changed" in d for d in result.details)
+
+
+def test_verifier_unchanged_planned_commands_still_pass(tmp_path):
+    """A stable declared command plan is eligible for a verified success."""
+    project, task = _synthetic_artifact_fixture(tmp_path)
+    engine = VerificationEngine(tmp_path / "artifacts")
+    engine.planner.plan = lambda *_: {
+        "relevant_tests": ["synthetic approved command"],
+    }
+    engine._run_command = lambda *_: (0, "synthetic pass", "")
+
+    result = engine.run(task, project)
+
+    assert result.success is True
+    assert result.completed_checks == ["relevant_tests"]
+    assert not any("plan changed" in d for d in result.details)
