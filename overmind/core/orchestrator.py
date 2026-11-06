@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 import os
+import re
 import subprocess
 import time
 from pathlib import Path
@@ -864,6 +865,40 @@ class Orchestrator:
                         )
                     completed_checks = self._append_unique_check(completed_checks, "semantic_requirements")
                     details.append(f"judge: pass (conf={judge_verdict.confidence:.2f})")
+
+        # Objective proof is bound to the requirements and (for a Git project)
+        # the exact HEAD observed by the verifier. Extra completion gates above
+        # can run commands or a judge after that observation, so a previously
+        # passing witness must not certify a changed checkout or proof contract.
+        proof_gap = None
+        if list(task.required_verification) != list(verification_result.required_checks):
+            proof_gap = "verification: unverified; required checks changed after objective verification"
+        elif project.is_git_repo:
+            receipt_prefix = "verification: Git HEAD verified commit="
+            receipts = [
+                detail[len(receipt_prefix):]
+                for detail in verification_result.details
+                if detail.startswith(receipt_prefix)
+            ]
+            if len(receipts) != 1 or not re.fullmatch(r"(?:[0-9a-f]{40}|[0-9a-f]{64})", receipts[0]):
+                proof_gap = "verification: unverified; missing or invalid Git commit witness"
+            else:
+                current_head = self.verifier._read_git_head(project.root_path)
+                if current_head != receipts[0]:
+                    proof_gap = (
+                        "verification: unverified; Git HEAD changed or became unavailable "
+                        "after objective verification"
+                    )
+        if proof_gap is not None:
+            return VerificationResult(
+                task_id=verification_result.task_id,
+                success=False,
+                required_checks=required_checks,
+                completed_checks=completed_checks,
+                skipped_checks=skipped_checks,
+                details=[*details, proof_gap],
+                trace_id=verification_result.trace_id,
+            )
 
         final_result = VerificationResult(
             task_id=verification_result.task_id,
