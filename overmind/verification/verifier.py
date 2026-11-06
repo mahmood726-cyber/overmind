@@ -122,7 +122,7 @@ class VerificationEngine:
                 try:
                     artifact_path = self._write_artifact_log(
                         self._artifact_log_path(trace_id, task.task_id, check, index),
-                        f"$ {command}\\n\\nSTDOUT:\\n{stdout}\\n\\nSTDERR:\\n{stderr}",
+                        f"$ {command}\n\nSTDOUT:\n{stdout}\n\nSTDERR:\n{stderr}",
                     )
                 except (OSError, ValueError) as exc:
                     details.append(
