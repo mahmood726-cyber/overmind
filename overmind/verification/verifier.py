@@ -32,6 +32,34 @@ class VerificationEngine:
         self.policy_guard = PolicyGuard()
         self.verification_timeout = verification_timeout
 
+    @staticmethod
+    def _read_git_head(root_path: str) -> str | None:
+        """Read the exact checkout identity without running project commands.
+
+        Fail closed on missing Git, inaccessible worktrees, invalid revisions,
+        or a timed-out metadata lookup. No shell or network operation is used.
+        """
+        try:
+            completed = subprocess.run(
+                ["git", "--no-optional-locks", "rev-parse", "--verify", "HEAD"],
+                cwd=root_path,
+                capture_output=True,
+                text=True,
+                encoding="utf-8",
+                errors="replace",
+                env=safe_subprocess_env(),
+                timeout=5,
+                check=False,
+            )
+        except (OSError, ValueError, subprocess.TimeoutExpired):
+            return None
+        head = completed.stdout.strip().lower()
+        if completed.returncode != 0 or not re.fullmatch(
+            r"(?:[0-9a-f]{40}|[0-9a-f]{64})", head
+        ):
+            return None
+        return head
+
     def _artifact_log_path(self, trace_id: str, task_id: str, check: str, index: int) -> Path:
         """Keep command evidence within artifacts_dir on Windows and POSIX.
 
@@ -86,7 +114,13 @@ class VerificationEngine:
                 continue
         raise OSError("verification log namespace exhausted")
 
-    def run(self, task: TaskRecord, project: ProjectRecord) -> VerificationResult:
+    def run(
+        self,
+        task: TaskRecord,
+        project: ProjectRecord,
+        *,
+        expected_commit_sha: str | None = None,
+    ) -> VerificationResult:
         completed_checks: list[str] = []
         skipped_checks: list[str] = []
         details: list[str] = []
@@ -97,7 +131,60 @@ class VerificationEngine:
         # Freeze the contract before the planner or any runner may mutate it.
         required_checks = list(task.required_verification)
 
+        # Git-marked projects must not treat passing commands as proof for an
+        # unknown or moving revision. An explicit expected SHA also fences
+        # callers that do not set ProjectRecord.is_git_repo.
+        git_bound = project.is_git_repo or expected_commit_sha is not None
+        expected = None
+        if expected_commit_sha is not None:
+            if not isinstance(expected_commit_sha, str) or not re.fullmatch(
+                r"(?:[0-9a-fA-F]{40}|[0-9a-fA-F]{64})", expected_commit_sha
+            ):
+                return VerificationResult(
+                    task_id=task.task_id, trace_id=trace_id, success=False,
+                    required_checks=required_checks, completed_checks=[],
+                    skipped_checks=[],
+                    details=["verification: unverified; invalid expected Git commit SHA"],
+                )
+            expected = expected_commit_sha.lower()
+
+        initial_head = None
+        if git_bound:
+            initial_head = self._read_git_head(project.root_path)
+            if initial_head is None:
+                return VerificationResult(
+                    task_id=task.task_id, trace_id=trace_id, success=False,
+                    required_checks=required_checks, completed_checks=[],
+                    skipped_checks=[],
+                    details=["verification: unverified; Git HEAD unavailable before planning"],
+                )
+            if expected is not None and initial_head != expected:
+                return VerificationResult(
+                    task_id=task.task_id, trace_id=trace_id, success=False,
+                    required_checks=required_checks, completed_checks=[],
+                    skipped_checks=[],
+                    details=[
+                        f"verification: unverified; Git HEAD {initial_head} "
+                        f"does not match expected {expected}"
+                    ],
+                )
+            details.append(f"verification: Git HEAD start={initial_head}")
+
         planned_checks = self.planner.plan(task, project)
+        # A planning step may itself change the checkout. Refuse to launch
+        # verification commands under a stale planning snapshot.
+        if git_bound:
+            planned_head = self._read_git_head(project.root_path)
+            if planned_head is None or planned_head != initial_head:
+                reason = (
+                    "Git HEAD unavailable after planning" if planned_head is None
+                    else f"Git HEAD changed during planning; start={initial_head} end={planned_head}"
+                )
+                return VerificationResult(
+                    task_id=task.task_id, trace_id=trace_id, success=False,
+                    required_checks=required_checks, completed_checks=[],
+                    skipped_checks=[], details=[*details, f"verification: unverified; {reason}"],
+                )
         if task.required_verification != required_checks:
             return VerificationResult(
                 task_id=task.task_id,
@@ -204,6 +291,20 @@ class VerificationEngine:
         if task.required_verification != required_checks:
             success = False
             details.append("verification: unverified; verification contract changed during execution")
+
+        if git_bound:
+            final_head = self._read_git_head(project.root_path)
+            if final_head is None:
+                success = False
+                details.append("verification: unverified; Git HEAD unavailable after execution")
+            elif final_head != initial_head:
+                success = False
+                details.append(
+                    f"verification: unverified; Git HEAD changed during execution; "
+                    f"start={initial_head} end={final_head}"
+                )
+            else:
+                details.append(f"verification: Git HEAD verified commit={final_head}")
 
         return VerificationResult(
             task_id=task.task_id,
