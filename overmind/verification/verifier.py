@@ -94,15 +94,27 @@ class VerificationEngine:
         cached_results: dict[str, tuple[bool, str]] = {}
         trace_id = task.trace_id or task.task_id
         commands_executed = 0
+        # Freeze the contract before the planner or any runner may mutate it.
+        required_checks = list(task.required_verification)
 
         planned_checks = self.planner.plan(task, project)
+        if task.required_verification != required_checks:
+            return VerificationResult(
+                task_id=task.task_id,
+                trace_id=trace_id,
+                success=False,
+                required_checks=required_checks,
+                completed_checks=[],
+                skipped_checks=[],
+                details=["verification: unverified; verification contract changed during planning"],
+            )
         # The returned command plan must cover the task's declared proof
         # obligations. A missing check is not an authorized skip, even if
         # commands from other checks execute and produce positive output.
-        if not task.required_verification:
+        if not required_checks:
             success = False
             details.append("verification: unverified; no required verification checks declared")
-        for required_check in task.required_verification:
+        for required_check in required_checks:
             if required_check not in planned_checks:
                 success = False
                 details.append(
@@ -113,14 +125,14 @@ class VerificationEngine:
         # commands are not authorized verification evidence; refuse them before
         # execution and make the resulting completion fail closed.
         for check in planned_checks:
-            if check not in task.required_verification:
+            if check not in required_checks:
                 success = False
                 details.append(
                     f"{check}: unverified; planner supplied undeclared verification check"
                 )
 
         for check, commands in planned_checks.items():
-            if check not in task.required_verification:
+            if check not in required_checks:
                 continue
             if not commands:
                 skipped_checks.append(f"{check}: no command discovered")
@@ -187,11 +199,17 @@ class VerificationEngine:
             success = False
             details.append("verification: no verification command executed; result unverified")
 
+        # Do not accept a successful run if its proof obligations changed
+        # while commands were executing.
+        if task.required_verification != required_checks:
+            success = False
+            details.append("verification: unverified; verification contract changed during execution")
+
         return VerificationResult(
             task_id=task.task_id,
             trace_id=trace_id,
             success=success,
-            required_checks=task.required_verification,
+            required_checks=required_checks,
             completed_checks=completed_checks,
             skipped_checks=skipped_checks,
             details=details,
