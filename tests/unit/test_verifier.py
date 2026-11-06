@@ -931,3 +931,31 @@ def test_verifier_accepts_stable_expected_git_commit(tmp_path):
     assert result.success is True
     assert result.completed_checks == ["relevant_tests"]
     assert any(_SYNTHETIC_HEAD_A in d for d in result.details)
+
+
+def test_verifier_reads_git_head_from_isolated_synthetic_checkout(tmp_path):
+    """Exercise the actual metadata reader (not only a mocked HEAD supplier)."""
+    import shutil
+    import subprocess
+
+    git = shutil.which("git")
+    if git is None:
+        pytest.skip("Git executable unavailable")
+
+    subprocess.run([git, "init", "-q"], cwd=tmp_path, check=True, timeout=15)
+    subprocess.run(
+        [
+            git, "-c", "user.name=Synthetic", "-c", "user.email=synthetic@example.invalid",
+            "-c", "commit.gpgsign=false", "commit", "-q", "--allow-empty", "-m", "fixture",
+        ],
+        cwd=tmp_path, check=True, timeout=15,
+    )
+    expected = subprocess.run(
+        [git, "rev-parse", "--verify", "HEAD"], cwd=tmp_path,
+        capture_output=True, text=True, check=True, timeout=15,
+    ).stdout.strip().lower()
+
+    engine = VerificationEngine(tmp_path / "artifacts")
+
+    assert engine._read_git_head(str(tmp_path)) == expected
+    assert engine._read_git_head(str(tmp_path / "missing-directory")) is None
