@@ -829,3 +829,105 @@ def test_verifier_unchanged_contract_remains_valid_during_command(tmp_path):
     assert result.required_checks == ["relevant_tests"]
     assert result.completed_checks == ["relevant_tests"]
     assert not any("contract changed" in detail for detail in result.details)
+
+
+# Synthetic Git-head binding controls. No live repository state is opened.
+_SYNTHETIC_HEAD_A = "a" * 40
+_SYNTHETIC_HEAD_B = "b" * 40
+
+
+def _git_bound_synthetic_verifier(tmp_path):
+    project, task = _synthetic_artifact_fixture(tmp_path)
+    project.is_git_repo = True
+    engine = VerificationEngine(tmp_path / "artifacts")
+    engine.planner.plan = lambda *_: {"relevant_tests": ["synthetic verification command"]}
+    return project, task, engine
+
+
+def test_verifier_rejects_head_change_during_command(tmp_path):
+    """A passing command for commit A cannot certify changed commit B."""
+    project, task, engine = _git_bound_synthetic_verifier(tmp_path)
+    heads = iter([_SYNTHETIC_HEAD_A, _SYNTHETIC_HEAD_A, _SYNTHETIC_HEAD_B])
+    engine._read_git_head = lambda *_: next(heads)
+    engine._run_command = lambda *_: (0, "synthetic pass", "")
+
+    result = engine.run(task, project)
+
+    assert result.success is False
+    assert result.completed_checks == ["relevant_tests"]
+    assert any("unverified" in d and "HEAD changed" in d for d in result.details)
+
+
+def test_verifier_rejects_head_change_during_planning_without_execution(tmp_path):
+    """Planner-time ref drift must abort before executing the command."""
+    project, task, engine = _git_bound_synthetic_verifier(tmp_path)
+    heads = iter([_SYNTHETIC_HEAD_A, _SYNTHETIC_HEAD_B])
+    engine._read_git_head = lambda *_: next(heads)
+    executed = []
+    engine._run_command = lambda command, *_: (
+        executed.append(command) or 0, "synthetic pass", ""
+    )
+
+    result = engine.run(task, project)
+
+    assert result.success is False
+    assert executed == []
+    assert any("unverified" in d and "HEAD changed" in d for d in result.details)
+
+
+def test_verifier_rejects_unavailable_git_head_without_execution(tmp_path):
+    """An unavailable Git checkout cannot certify a Git-marked project."""
+    project, task, engine = _git_bound_synthetic_verifier(tmp_path)
+    engine._read_git_head = lambda *_: None
+    executed = []
+    engine._run_command = lambda command, *_: (
+        executed.append(command) or 0, "synthetic pass", ""
+    )
+
+    result = engine.run(task, project)
+
+    assert result.success is False
+    assert executed == []
+    assert any("unverified" in d and "HEAD unavailable" in d for d in result.details)
+
+
+def test_verifier_rejects_expected_commit_mismatch_before_execution(tmp_path):
+    """The caller's expected head is a binding input, not a hint."""
+    project, task, engine = _git_bound_synthetic_verifier(tmp_path)
+    engine._read_git_head = lambda *_: _SYNTHETIC_HEAD_B
+    executed = []
+    engine._run_command = lambda command, *_: (
+        executed.append(command) or 0, "synthetic pass", ""
+    )
+
+    result = engine.run(task, project, expected_commit_sha=_SYNTHETIC_HEAD_A)
+
+    assert result.success is False
+    assert executed == []
+    assert any("unverified" in d and "expected" in d for d in result.details)
+
+
+def test_verifier_rejects_invalid_expected_commit_sha(tmp_path):
+    """Malformed expected revisions cannot silently disable the Git fence."""
+    project, task, engine = _git_bound_synthetic_verifier(tmp_path)
+    engine._read_git_head = lambda *_: _SYNTHETIC_HEAD_A
+    engine._run_command = lambda *_: (0, "synthetic pass", "")
+
+    result = engine.run(task, project, expected_commit_sha="not-a-sha")
+
+    assert result.success is False
+    assert any("unverified" in d and "invalid expected" in d for d in result.details)
+
+
+def test_verifier_accepts_stable_expected_git_commit(tmp_path):
+    """Stable, explicitly bound Git checks remain eligible for PASS."""
+    project, task, engine = _git_bound_synthetic_verifier(tmp_path)
+    heads = iter([_SYNTHETIC_HEAD_A] * 3)
+    engine._read_git_head = lambda *_: next(heads)
+    engine._run_command = lambda *_: (0, "synthetic pass", "")
+
+    result = engine.run(task, project, expected_commit_sha=_SYNTHETIC_HEAD_A.upper())
+
+    assert result.success is True
+    assert result.completed_checks == ["relevant_tests"]
+    assert any(_SYNTHETIC_HEAD_A in d for d in result.details)
