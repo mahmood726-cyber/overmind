@@ -769,3 +769,63 @@ def test_verifier_exact_declared_plan_still_succeeds_without_extra_execution(tmp
     assert result.success is True
     assert result.completed_checks == ["relevant_tests"]
     assert executed == ["synthetic declared command"]
+
+
+def test_verifier_fails_closed_when_requirements_change_while_command_runs(tmp_path):
+    """A check run under an obsolete proof contract cannot certify the new one."""
+    project, task = _synthetic_artifact_fixture(tmp_path)
+    engine = VerificationEngine(tmp_path / "artifacts")
+    engine.planner.plan = lambda *_: {"relevant_tests": ["synthetic command"]}
+
+    def change_contract(command, cwd):
+        task.required_verification.append("numeric_regression")
+        return 0, "synthetic pass", ""
+
+    engine._run_command = change_contract
+    result = engine.run(task, project)
+
+    assert result.success is False
+    assert result.required_checks == ["relevant_tests"]
+    assert result.completed_checks == ["relevant_tests"]
+    assert task.required_verification == ["relevant_tests", "numeric_regression"]
+    assert any("unverified" in detail and "contract changed" in detail
+               for detail in result.details)
+
+
+def test_verifier_refuses_execution_when_planner_mutates_requirements(tmp_path):
+    """An altered task contract during planning must not authorize commands."""
+    project, task = _synthetic_artifact_fixture(tmp_path)
+    engine = VerificationEngine(tmp_path / "artifacts")
+
+    def mutate_during_plan(task, project):
+        task.required_verification.append("numeric_regression")
+        return {"relevant_tests": ["synthetic command"]}
+
+    engine.planner.plan = mutate_during_plan
+    executed = []
+    engine._run_command = lambda command, cwd: (
+        executed.append(command) or 0, "synthetic pass", ""
+    )
+    result = engine.run(task, project)
+
+    assert result.success is False
+    assert result.required_checks == ["relevant_tests"]
+    assert result.completed_checks == []
+    assert executed == []
+    assert any("unverified" in detail and "contract changed" in detail
+               for detail in result.details)
+
+
+def test_verifier_unchanged_contract_remains_valid_during_command(tmp_path):
+    """The contract fence must not reject an unchanged, fully evidenced plan."""
+    project, task = _synthetic_artifact_fixture(tmp_path)
+    engine = VerificationEngine(tmp_path / "artifacts")
+    engine.planner.plan = lambda *_: {"relevant_tests": ["synthetic command"]}
+    engine._run_command = lambda *_: (0, "synthetic pass", "")
+
+    result = engine.run(task, project)
+
+    assert result.success is True
+    assert result.required_checks == ["relevant_tests"]
+    assert result.completed_checks == ["relevant_tests"]
+    assert not any("contract changed" in detail for detail in result.details)
