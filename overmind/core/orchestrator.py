@@ -507,7 +507,20 @@ class Orchestrator:
         restored_task_payloads: list[dict[str, object]] = []
         for item in payload.get("tasks", []):
             task = TaskRecord(**item)
-            if task.status in {"ASSIGNED", "RUNNING", "VERIFYING", "NEEDS_INTERVENTION"}:
+            # A snapshot contains historical task status and free-text summary,
+            # not a current objective verification receipt bound to this exact
+            # checkout and plan. Never resurrect its COMPLETED bit as a fresh
+            # PASS (including on a non-Git project). Keep the original summary
+            # for investigation and require an explicit new verification run.
+            if task.status == "COMPLETED":
+                task.status = "PAUSED"
+                task.assigned_runner_id = None
+                task.last_error = (
+                    f"Restored from checkpoint {checkpoint_record['id']} "
+                    f"({checkpoint_record['created_at']}): historical completion "
+                    "requires fresh verification of current source revision and plan"
+                )
+            elif task.status in {"ASSIGNED", "RUNNING", "VERIFYING", "NEEDS_INTERVENTION"}:
                 task.status = "PAUSED"
                 task.last_error = (
                     f"Restored from checkpoint {checkpoint_record['id']} ({checkpoint_record['created_at']})"
