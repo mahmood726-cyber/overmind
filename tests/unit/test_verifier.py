@@ -460,6 +460,7 @@ def test_verifier_artifact_log_paths_stay_inside_directory_for_unsafe_ids(tmp_pa
     """A synthetic trace/check containing separators must not escape or crash logging."""
     project, task = _synthetic_artifact_fixture(tmp_path)
     task.trace_id = "nested/trace"
+    task.required_verification = ["check/with/slash"]
     engine = VerificationEngine(tmp_path / "artifacts")
     engine.planner.plan = lambda *_: {"check/with/slash": ["dummy synthetic command"]}
     engine._run_command = lambda *_: (0, "synthetic command passed", "")
