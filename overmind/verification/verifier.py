@@ -170,7 +170,21 @@ class VerificationEngine:
                 )
             details.append(f"verification: Git HEAD start={initial_head}")
 
-        planned_checks = self.planner.plan(task, project)
+        # Freeze the command plan immediately after planning. A shared mutable
+        # planner dict/list must not authorize commands appended during a runner
+        # callback, or certify a command plan different from the one executed.
+        planner_output = self.planner.plan(task, project)
+        try:
+            planned_checks = {
+                check: tuple(commands) for check, commands in planner_output.items()
+            }
+        except (AttributeError, TypeError, ValueError):
+            return VerificationResult(
+                task_id=task.task_id, trace_id=trace_id, success=False,
+                required_checks=required_checks, completed_checks=[],
+                skipped_checks=[],
+                details=["verification: unverified; malformed verification command plan"],
+            )
         # A planning step may itself change the checkout. Refuse to launch
         # verification commands under a stale planning snapshot.
         if git_bound:
@@ -285,6 +299,20 @@ class VerificationEngine:
         if commands_executed == 0:
             success = False
             details.append("verification: no verification command executed; result unverified")
+
+        # Recompare the original planner-owned structure after execution.
+        # This fences late changes even when the planned check names remain
+        # unchanged, while the frozen tuple plan prevents newly appended
+        # commands from being executed in this verification.
+        try:
+            plan_changed = {
+                check: tuple(commands) for check, commands in planner_output.items()
+            } != planned_checks
+        except (AttributeError, TypeError, ValueError):
+            plan_changed = True
+        if plan_changed:
+            success = False
+            details.append("verification: unverified; verification command plan changed during execution")
 
         # Do not accept a successful run if its proof obligations changed
         # while commands were executing.
