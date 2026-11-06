@@ -95,7 +95,21 @@ class VerificationEngine:
         trace_id = task.trace_id or task.task_id
         commands_executed = 0
 
-        for check, commands in self.planner.plan(task, project).items():
+        planned_checks = self.planner.plan(task, project)
+        # The returned command plan must cover the task's declared proof
+        # obligations. A missing check is not an authorized skip, even if
+        # commands from other checks execute and produce positive output.
+        if not task.required_verification:
+            success = False
+            details.append("verification: unverified; no required verification checks declared")
+        for required_check in task.required_verification:
+            if required_check not in planned_checks:
+                success = False
+                details.append(
+                    f"{required_check}: unverified; required verification check omitted from plan"
+                )
+
+        for check, commands in planned_checks.items():
             if not commands:
                 skipped_checks.append(f"{check}: no command discovered")
                 if check != "build_or_direct_evidence":
