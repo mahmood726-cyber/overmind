@@ -3,6 +3,8 @@ from __future__ import annotations
 import sys
 from pathlib import Path
 
+import pytest
+
 from overmind.config import AppConfig
 from overmind.core.orchestrator import Orchestrator
 from overmind.verification.llm_judge import LLMJudge, StubBackend
@@ -400,7 +402,10 @@ def test_orchestrator_completes_task_with_dummy_runner(tmp_path):
         orchestrator.close()
 
 
-def test_orchestrator_skip_verify_cannot_complete_without_objective_verification(tmp_path):
+@pytest.mark.parametrize("missing_objective_witness", [True, False])
+def test_orchestrator_skip_verify_cannot_complete_without_objective_verification(
+    tmp_path, missing_objective_witness
+):
     config_dir = tmp_path / "config"
     data_dir = tmp_path / "data"
     project_root = tmp_path / "project"
@@ -477,9 +482,12 @@ def test_orchestrator_skip_verify_cannot_complete_without_objective_verification
         # Synthetic negative control: a high trajectory probability cannot
         # convert unavailable objective verification into COMPLETED.
         verification_calls = []
+        real_verifier_run = orchestrator.verifier.run
 
         def _unverified_objective_check(task, project):
             verification_calls.append(task.task_id)
+            if not missing_objective_witness:
+                return real_verifier_run(task, project)
             return VerificationResult(
                 task_id=task.task_id,
                 trace_id=task.trace_id or task.task_id,
@@ -501,8 +509,13 @@ def test_orchestrator_skip_verify_cannot_complete_without_objective_verification
 
         assert verification_calls == [task.task_id]
         assert saved_task is not None
-        assert saved_task.status == "FAILED"
-        assert "unverified" in (saved_task.last_error or "")
+        if missing_objective_witness:
+            assert saved_task.status == "FAILED"
+            assert "unverified" in (saved_task.last_error or "")
+        else:
+            assert saved_task.status == "COMPLETED"
+            assert any("trajectory_advisory" in line for line in saved_task.verification_summary)
+            assert any("log=" in line for line in saved_task.verification_summary)
     finally:
         orchestrator.close()
 
