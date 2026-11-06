@@ -109,7 +109,19 @@ class VerificationEngine:
                     f"{required_check}: unverified; required verification check omitted from plan"
                 )
 
+        # A planner may not broaden the task's proof contract. Unexpected
+        # commands are not authorized verification evidence; refuse them before
+        # execution and make the resulting completion fail closed.
+        for check in planned_checks:
+            if check not in task.required_verification:
+                success = False
+                details.append(
+                    f"{check}: unverified; planner supplied undeclared verification check"
+                )
+
         for check, commands in planned_checks.items():
+            if check not in task.required_verification:
+                continue
             if not commands:
                 skipped_checks.append(f"{check}: no command discovered")
                 if check != "build_or_direct_evidence":
