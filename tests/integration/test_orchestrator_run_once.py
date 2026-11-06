@@ -1674,3 +1674,73 @@ def test_restore_checkpoint_does_not_resurrect_unverified_completion(tmp_path, i
         assert restored_done["verification_summary"] == historical
     finally:
         orchestrator.close()
+
+
+@pytest.mark.parametrize("is_git_repo", [False, True])
+def test_restart_does_not_trust_persisted_completed_task_without_current_proof(
+    tmp_path, is_git_repo
+):
+    """Restart cannot reuse a SQLite COMPLETED bit as a current verification PASS.
+
+    Synthetic persisted records only; no runner, network or actual Git repository.
+    Both historical verification text and unrelated task statuses must survive.
+    """
+    config = _write_minimal_config(tmp_path / "config", tmp_path / "data")
+    root = tmp_path / "synthetic-repo"
+    root.mkdir()
+    historical = ["tests: exit=0 command=synthetic", "historical result, not current proof"]
+    writer = Orchestrator(config)
+    try:
+        project = ProjectRecord(
+            project_id="restart-project", name="Restart project",
+            root_path=str(root), is_git_repo=is_git_repo,
+        )
+        writer.db.upsert_project(project)
+        base = dict(
+            project_id=project.project_id, title="Synthetic task",
+            task_type="verification", source="test", priority=0.5,
+            risk="medium", expected_runtime_min=1,
+            expected_context_cost="low", required_verification=["relevant_tests"],
+        )
+        writer.db.upsert_task(TaskRecord(
+            task_id="old-completion", status="COMPLETED",
+            verification_summary=historical, assigned_runner_id="old-runner",
+            **base,
+        ))
+        writer.db.upsert_task(TaskRecord(
+            task_id="queued-task", status="QUEUED", **base,
+        ))
+        writer.db.upsert_task(TaskRecord(
+            task_id="dependent-task", status="QUEUED",
+            blocked_by=["old-completion"], **base,
+        ))
+        writer.db.upsert_task(TaskRecord(
+            task_id="historical-failure", status="FAILED", **base,
+        ))
+    finally:
+        writer.close()
+
+    restarted = Orchestrator(config)
+    try:
+        old = restarted.db.get_task("old-completion")
+        assert old is not None
+        assert old.status == "PAUSED"
+        assert old.assigned_runner_id is None
+        assert "fresh verification" in (old.last_error or "")
+        assert old.verification_summary == historical
+        assert restarted.db.get_task("queued-task").status == "QUEUED"
+        assert restarted.db.get_task("historical-failure").status == "FAILED"
+        assert "dependent-task" not in {
+            task.task_id for task in restarted.task_queue.queued()
+        }
+        assert not restarted.task_queue.list_by_status("COMPLETED")
+    finally:
+        restarted.close()
+
+    again = Orchestrator(config)
+    try:
+        retained = again.db.get_task("old-completion")
+        assert retained.status == "PAUSED"
+        assert retained.verification_summary == historical
+    finally:
+        again.close()
