@@ -497,7 +497,7 @@ def test_verifier_unpersisted_command_log_cannot_yield_completion(tmp_path, monk
     def failed_write(self, *args, **kwargs):
         raise OSError("synthetic read-only evidence directory")
 
-    monkeypatch.setattr(Path, "write_text", failed_write)
+    monkeypatch.setattr(Path, "open", failed_write)
     result = engine.run(task, project)
     assert result.success is False
     assert result.completed_checks == []
@@ -544,3 +544,92 @@ def test_verifier_different_tasks_preserve_both_command_logs(tmp_path):
     evidence = [p.read_text(encoding="utf-8") for p in logs]
     assert sum("first task passed" in log for log in evidence) == 1
     assert sum("second task passed" in log for log in evidence) == 1
+
+
+def test_verifier_repeated_same_task_preserves_previous_run_log(tmp_path):
+    """Reverification cannot replace evidence from an earlier run of the same task."""
+    project, task = _synthetic_artifact_fixture(tmp_path)
+    engine = VerificationEngine(tmp_path / "artifacts")
+    engine.planner.plan = lambda *_: {"relevant_tests": ["dummy synthetic command"]}
+
+    engine._run_command = lambda *_: (0, "first run passed", "")
+    first = engine.run(task, project)
+    engine._run_command = lambda *_: (1, "", "second run failed")
+    second = engine.run(task, project)
+
+    original = engine._artifact_log_path(task.task_id, task.task_id, "relevant_tests", 1)
+    second_path = original.with_name(f"{original.stem}.1{original.suffix}")
+    assert first.success is True
+    assert second.success is False
+    assert original.read_text(encoding="utf-8").count("first run passed") == 1
+    assert "second run failed" not in original.read_text(encoding="utf-8")
+    assert "second run failed" in second_path.read_text(encoding="utf-8")
+    assert any(f"log={original.name}" in d for d in first.details)
+    assert any(f"log={second_path.name}" in d for d in second.details)
+
+
+def test_verifier_concurrent_log_creation_preserves_both_outputs(tmp_path):
+    """O_EXCL assigns unique log paths even when two writers start together."""
+    from concurrent.futures import ThreadPoolExecutor
+
+    engine = VerificationEngine(tmp_path / "artifacts")
+    base = engine._artifact_log_path("synthetic", "task", "relevant_tests", 1)
+
+    with ThreadPoolExecutor(max_workers=2) as pool:
+        paths = list(pool.map(
+            lambda payload: engine._write_artifact_log(base, payload),
+            ("first transcript", "second transcript"),
+        ))
+
+    assert paths[0] != paths[1]
+    assert {p.read_text(encoding="utf-8") for p in paths} == {
+        "first transcript", "second transcript"
+    }
+    assert all(p.parent == engine.artifacts_dir for p in paths)
+
+
+def test_verifier_preexisting_log_symlink_cannot_overwrite_target(tmp_path):
+    """Preexisting symlink paths are occupied, never followed for writing."""
+    project, task = _synthetic_artifact_fixture(tmp_path)
+    engine = VerificationEngine(tmp_path / "artifacts")
+    engine.planner.plan = lambda *_: {"relevant_tests": ["dummy synthetic command"]}
+    engine._run_command = lambda *_: (0, "synthetic pass", "")
+
+    target = tmp_path / "do-not-modify.txt"
+    target.write_text("outside unchanged", encoding="utf-8")
+    original = engine._artifact_log_path(task.task_id, task.task_id, "relevant_tests", 1)
+    try:
+        original.symlink_to(target)
+    except (OSError, NotImplementedError) as exc:
+        pytest.skip(f"Symlink creation unavailable on this platform: {exc}")
+
+    result = engine.run(task, project)
+
+    assert result.success is True
+    assert target.read_text(encoding="utf-8") == "outside unchanged"
+    assert original.is_symlink()
+    new_log = original.with_name(f"{original.stem}.1{original.suffix}")
+    assert "synthetic pass" in new_log.read_text(encoding="utf-8")
+
+
+def test_verifier_exhausted_log_names_never_claim_completion(tmp_path, monkeypatch):
+    """If all candidate names are occupied, verification stays UNVERIFIED."""
+    project, task = _synthetic_artifact_fixture(tmp_path)
+    engine = VerificationEngine(tmp_path / "artifacts")
+    engine.planner.plan = lambda *_: {"relevant_tests": ["dummy synthetic command"]}
+    engine._run_command = lambda *_: (0, "synthetic pass", "")
+    from pathlib import Path
+
+    attempts = []
+    def occupied(self, *args, **kwargs):
+        attempts.append(self.name)
+        raise FileExistsError("synthetic exclusive-create collision")
+
+    monkeypatch.setattr(Path, "open", occupied)
+    result = engine.run(task, project)
+
+    assert result.success is False
+    assert result.completed_checks == []
+    assert len(attempts) == 1000
+    assert len(set(attempts)) == 1000
+    assert any("unverified" in d and "log" in d for d in result.details)
