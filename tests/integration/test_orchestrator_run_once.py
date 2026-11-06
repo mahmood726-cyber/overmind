@@ -400,7 +400,7 @@ def test_orchestrator_completes_task_with_dummy_runner(tmp_path):
         orchestrator.close()
 
 
-def test_orchestrator_consumes_skip_verify_fast_path(tmp_path):
+def test_orchestrator_skip_verify_cannot_complete_without_objective_verification(tmp_path):
     config_dir = tmp_path / "config"
     data_dir = tmp_path / "data"
     project_root = tmp_path / "project"
@@ -474,17 +474,35 @@ def test_orchestrator_consumes_skip_verify_fast_path(tmp_path):
             recommendation="skip_verify",
         )
 
-        def _unexpected_verifier_run(*args, **kwargs):
-            raise AssertionError("verifier.run should not be called on skip_verify")
+        # Synthetic negative control: a high trajectory probability cannot
+        # convert unavailable objective verification into COMPLETED.
+        verification_calls = []
 
-        orchestrator.verifier.run = _unexpected_verifier_run
+        def _unverified_objective_check(task, project):
+            verification_calls.append(task.task_id)
+            return VerificationResult(
+                task_id=task.task_id,
+                trace_id=task.trace_id or task.task_id,
+                success=False,
+                required_checks=list(task.required_verification),
+                completed_checks=[],
+                skipped_checks=list(task.required_verification),
+                details=["verification: unverified; synthetic objective witness unavailable"],
+            )
 
-        assignments, saved_task = _run_until_completed(orchestrator, task.task_id)
+        orchestrator.verifier.run = _unverified_objective_check
 
-        assert assignments
+        saved_task = None
+        for _ in range(6):
+            orchestrator.run_once(settle_seconds=0.5)
+            saved_task = orchestrator.db.get_task(task.task_id)
+            if saved_task is not None and saved_task.status in {"FAILED", "COMPLETED"}:
+                break
+
+        assert verification_calls == [task.task_id]
         assert saved_task is not None
-        assert saved_task.status == "COMPLETED"
-        assert any("trajectory_fast_path" in line for line in saved_task.verification_summary)
+        assert saved_task.status == "FAILED"
+        assert "unverified" in (saved_task.last_error or "")
     finally:
         orchestrator.close()
 
