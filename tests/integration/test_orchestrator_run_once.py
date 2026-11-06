@@ -1521,3 +1521,82 @@ def test_verify_command_uses_scrubbed_env_and_config_timeout(tmp_path, monkeypat
         assert captured["kwargs"].get("encoding") == "utf-8"
     finally:
         orchestrator.close()
+
+
+@pytest.mark.parametrize(
+    "scenario, expected_success",
+    [
+        ("same_head", True),
+        ("head_changed", False),
+        ("head_unavailable", False),
+        ("missing_head_receipt", False),
+        ("requirements_changed", False),
+        ("non_git_control", True),
+    ],
+)
+def test_completion_acceptance_revalidates_revision_and_requirements(
+    tmp_path, monkeypatch, scenario, expected_success
+):
+    """A previously passing result must not be accepted after proof-context drift.
+
+    All checkout identities and command results are synthetic. No live agent,
+    repository checkout, article data, or network operation is involved.
+    """
+    config = _write_minimal_config(tmp_path / "config", tmp_path / "data")
+    orchestrator = Orchestrator(config)
+    head_verified = "a" * 40
+    head_new = "b" * 40
+    try:
+        project_root = tmp_path / "project"
+        project_root.mkdir()
+        project = ProjectRecord(
+            project_id="revision-project",
+            name="Synthetic revision project",
+            root_path=str(project_root),
+            is_git_repo=scenario != "non_git_control",
+            project_type="python_tool",
+            stack=["python"],
+        )
+        task = TaskRecord(
+            task_id="revision-task",
+            project_id=project.project_id,
+            title="Check revision-bound completion",
+            task_type="verification",
+            source="test",
+            priority=0.9,
+            risk="medium",
+            expected_runtime_min=1,
+            expected_context_cost="low",
+            required_verification=["relevant_tests"],
+        )
+        details = ["relevant_tests: exit=0 command=synthetic"]
+        if scenario != "missing_head_receipt":
+            details.append("verification: Git HEAD verified commit=" + head_verified)
+        result = VerificationResult(
+            task_id=task.task_id,
+            success=True,
+            required_checks=["relevant_tests"],
+            completed_checks=["relevant_tests"],
+            skipped_checks=[],
+            details=details,
+        )
+        if scenario == "requirements_changed":
+            task.required_verification.append("new_required_check")
+        current_head = (
+            None if scenario == "head_unavailable" else
+            head_new if scenario == "head_changed" else head_verified
+        )
+        monkeypatch.setattr(
+            orchestrator.verifier, "_read_git_head", lambda _: current_head
+        )
+        final = orchestrator._apply_completion_gates(
+            task=task,
+            project=project,
+            verification_result=result,
+            include_judge=False,
+        )
+        assert final.success is expected_success
+        if not expected_success:
+            assert any("unverified" in line for line in final.details)
+    finally:
+        orchestrator.close()
