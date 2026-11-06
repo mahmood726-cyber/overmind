@@ -1600,3 +1600,77 @@ def test_completion_acceptance_revalidates_revision_and_requirements(
             assert any("unverified" in line for line in final.details)
     finally:
         orchestrator.close()
+
+
+@pytest.mark.parametrize("is_git_repo", [False, True])
+def test_restore_checkpoint_does_not_resurrect_unverified_completion(tmp_path, is_git_repo):
+    """A stored COMPLETED bit alone cannot prove the current head/plan was checked.
+
+    This exercises synthetic persisted task records, not a real checkout,
+    publication, agent, or live task. Historical evidence must remain visible.
+    """
+    config = _write_minimal_config(tmp_path / "config", tmp_path / "data")
+    orchestrator = Orchestrator(config)
+    try:
+        project = ProjectRecord(
+            project_id="synthetic-project",
+            name="Synthetic verification project",
+            root_path=str(tmp_path / "synthetic-project"),
+            is_git_repo=is_git_repo,
+        )
+        historical = ["relevant_tests: PASS", "historical evidence; not current proof"]
+        done = TaskRecord(
+            task_id="historically-complete",
+            project_id=project.project_id,
+            title="Historical completion",
+            task_type="verification",
+            source="test",
+            priority=0.5,
+            risk="medium",
+            expected_runtime_min=1,
+            expected_context_cost="low",
+            required_verification=["relevant_tests"],
+            status="COMPLETED",
+            verification_summary=historical,
+        )
+        queued = TaskRecord(
+            task_id="still-queued",
+            project_id=project.project_id,
+            title="Not yet completed",
+            task_type="verification",
+            source="test",
+            priority=0.5,
+            risk="medium",
+            expected_runtime_min=1,
+            expected_context_cost="low",
+            required_verification=["relevant_tests"],
+            status="QUEUED",
+        )
+        checkpoint_id = orchestrator.db.write_checkpoint(
+            "main",
+            {
+                "projects": [project.to_dict()],
+                "tasks": [done.to_dict(), queued.to_dict()],
+                "runners": [],
+                "insights": [],
+            },
+        )
+
+        restored = orchestrator.restore_checkpoint(checkpoint_id=checkpoint_id)
+
+        saved = orchestrator.db.get_task(done.task_id)
+        assert restored["restored"] is True
+        assert saved is not None
+        assert saved.status == "PAUSED"  # never treat historical PASS as fresh completion
+        assert "fresh verification" in (saved.last_error or "")
+        assert saved.verification_summary == historical  # preserve original evidence
+        assert orchestrator.db.get_task(queued.task_id).status == "QUEUED"
+        assert done.task_id not in {
+            task.task_id for task in orchestrator.task_queue.list_by_status("COMPLETED")
+        }
+        replay = orchestrator.replay_checkpoint(checkpoint_id=restored["restored_checkpoint_id"])
+        restored_done = next(t for t in replay["payload"]["tasks"] if t["task_id"] == done.task_id)
+        assert restored_done["status"] == "PAUSED"
+        assert restored_done["verification_summary"] == historical
+    finally:
+        orchestrator.close()
