@@ -633,3 +633,71 @@ def test_verifier_exhausted_log_names_never_claim_completion(tmp_path, monkeypat
     assert len(attempts) == 1000
     assert len(set(attempts)) == 1000
     assert any("unverified" in d and "log" in d for d in result.details)
+
+
+def test_verifier_rejects_omitted_required_plan_check_after_successful_command(tmp_path):
+    """A partial planner must not certify the full list of required checks."""
+    project, task = _synthetic_artifact_fixture(tmp_path)
+    task.required_verification = ["relevant_tests", "numeric_regression"]
+    engine = VerificationEngine(tmp_path / "artifacts")
+    engine.planner.plan = lambda *_: {"relevant_tests": ["dummy synthetic command"]}
+    engine._run_command = lambda *_: (0, "synthetic check passed", "")
+
+    result = engine.run(task, project)
+
+    assert result.success is False
+    assert result.completed_checks == ["relevant_tests"]
+    assert any(
+        "unverified" in detail and "numeric_regression" in detail
+        for detail in result.details
+    )
+
+
+def test_verifier_rejects_omitted_optional_plan_check(tmp_path):
+    """An optional check can be skipped, but may not silently disappear."""
+    project, task = _synthetic_artifact_fixture(tmp_path)
+    task.required_verification = ["build_or_direct_evidence", "relevant_tests"]
+    engine = VerificationEngine(tmp_path / "artifacts")
+    engine.planner.plan = lambda *_: {"relevant_tests": ["dummy synthetic command"]}
+    engine._run_command = lambda *_: (0, "synthetic check passed", "")
+
+    result = engine.run(task, project)
+
+    assert result.success is False
+    assert "relevant_tests" in result.completed_checks
+    assert any(
+        "unverified" in detail and "build_or_direct_evidence" in detail
+        for detail in result.details
+    )
+
+
+def test_verifier_rejects_spurious_planner_command_with_no_required_checks(tmp_path):
+    """A planner-injected command cannot convert an empty contract to PASS."""
+    project, task = _synthetic_artifact_fixture(tmp_path)
+    task.required_verification = []
+    engine = VerificationEngine(tmp_path / "artifacts")
+    engine.planner.plan = lambda *_: {"relevant_tests": ["dummy synthetic command"]}
+    engine._run_command = lambda *_: (0, "synthetic check passed", "")
+
+    result = engine.run(task, project)
+
+    assert result.success is False
+    assert result.required_checks == []
+    assert any("unverified" in detail and "required" in detail for detail in result.details)
+
+
+def test_verifier_accepts_complete_synthetic_plan_control(tmp_path):
+    """The gap detector must not reject a complete, evidenced check plan."""
+    project, task = _synthetic_artifact_fixture(tmp_path)
+    task.required_verification = ["relevant_tests", "numeric_regression"]
+    engine = VerificationEngine(tmp_path / "artifacts")
+    engine.planner.plan = lambda *_: {
+        "relevant_tests": ["dummy synthetic command"],
+        "numeric_regression": ["dummy synthetic command"],
+    }
+    engine._run_command = lambda *_: (0, "synthetic check passed", "")
+
+    result = engine.run(task, project)
+
+    assert result.success is True
+    assert result.completed_checks == ["relevant_tests", "numeric_regression"]
