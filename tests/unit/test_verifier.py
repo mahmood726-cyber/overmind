@@ -702,3 +702,70 @@ def test_verifier_accepts_complete_synthetic_plan_control(tmp_path):
 
     assert result.success is True
     assert result.completed_checks == ["relevant_tests", "numeric_regression"]
+
+
+def test_verifier_rejects_unrequired_planner_check_even_if_required_passes(tmp_path):
+    """An extra planner check is not a declared proof obligation or authorized command."""
+    project, task = _synthetic_artifact_fixture(tmp_path)
+    engine = VerificationEngine(tmp_path / "artifacts")
+    engine.planner.plan = lambda *_: {
+        "relevant_tests": ["synthetic required command"],
+        "numeric_regression": ["synthetic undeclared command"],
+    }
+    executed = []
+
+    def execute(command, cwd):
+        executed.append(command)
+        return 0, "synthetic pass", ""
+
+    engine._run_command = execute
+    result = engine.run(task, project)
+
+    assert result.success is False
+    assert result.completed_checks == ["relevant_tests"]
+    assert executed == ["synthetic required command"]
+    assert any(
+        "numeric_regression" in detail and "unverified" in detail
+        for detail in result.details
+    )
+
+
+def test_verifier_optional_only_plan_cannot_pass_from_unrequired_check(tmp_path):
+    """An injected command must not make an omitted optional build appear verified."""
+    project, task = _synthetic_artifact_fixture(tmp_path)
+    task.required_verification = ["build_or_direct_evidence"]
+    engine = VerificationEngine(tmp_path / "artifacts")
+    engine.planner.plan = lambda *_: {
+        "build_or_direct_evidence": [],
+        "relevant_tests": ["synthetic undeclared command"],
+    }
+    executed = []
+    engine._run_command = lambda command, cwd: (
+        executed.append(command) or 0, "synthetic pass", ""
+    )
+
+    result = engine.run(task, project)
+
+    assert result.success is False
+    assert result.completed_checks == []
+    assert executed == []
+    assert any("unverified" in detail for detail in result.details)
+
+
+def test_verifier_exact_declared_plan_still_succeeds_without_extra_execution(tmp_path):
+    """A complete declared synthetic proof remains valid, with no extra commands."""
+    project, task = _synthetic_artifact_fixture(tmp_path)
+    engine = VerificationEngine(tmp_path / "artifacts")
+    engine.planner.plan = lambda *_: {
+        "relevant_tests": ["synthetic declared command"],
+    }
+    executed = []
+    engine._run_command = lambda command, cwd: (
+        executed.append(command) or 0, "synthetic passed", ""
+    )
+
+    result = engine.run(task, project)
+
+    assert result.success is True
+    assert result.completed_checks == ["relevant_tests"]
+    assert executed == ["synthetic declared command"]
