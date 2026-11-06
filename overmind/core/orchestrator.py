@@ -298,10 +298,12 @@ class Orchestrator:
                         last_error="project missing from index",
                     )
                     continue
+                # A trajectory score is an advisory scheduling hint, not a
+                # verification witness. Always run the declared objective checks
+                # before a task is eligible for COMPLETED.
+                result = self.verifier.run(task, project)
                 if trajectory.recommendation == "skip_verify":
-                    result = self._trajectory_fast_path_result(task, trajectory)
-                else:
-                    result = self.verifier.run(task, project)
+                    result.details.append(self._trajectory_fast_path_note(trajectory))
                 final_result = self._apply_completion_gates(
                     task=task,
                     project=project,
@@ -1006,12 +1008,14 @@ class Orchestrator:
         passed, _detail = self._run_verify_command_with_detail(task, project)
         return passed
 
-    def _trajectory_fast_path_result(self, task: TaskRecord, trajectory) -> VerificationResult:
+    @staticmethod
+    def _trajectory_fast_path_note(trajectory) -> str:
+        """Record a heuristic skip hint without treating it as proof of work."""
         detail = (
-            "trajectory_fast_path: "
+            "trajectory_advisory: "
             f"completion_probability={trajectory.completion_probability:.3f} "
             f"recommendation={trajectory.recommendation} "
-            "skipped explicit verifier.run"
+            "objective verification still required"
         )
         if trajectory.signals:
             positive_signals = [
@@ -1019,15 +1023,7 @@ class Orchestrator:
             ]
             if positive_signals:
                 detail += f" signals={', '.join(positive_signals)}"
-        return VerificationResult(
-            task_id=task.task_id,
-            trace_id=task.trace_id or task.task_id,
-            success=True,
-            required_checks=["trajectory_fast_path"],
-            completed_checks=["trajectory_fast_path"],
-            skipped_checks=[],
-            details=[detail],
-        )
+        return detail
 
     def _run_verify_command_with_detail(self, task: TaskRecord, project: ProjectRecord) -> tuple[bool, str]:
         if not task.verify_command:
