@@ -65,6 +65,27 @@ class VerificationEngine:
         name = f"verify_{slug(trace_id)}_{slug(task_id)}_{slug(check)}_{index}_{digest}.log"
         return self.artifacts_dir / name
 
+    def _write_artifact_log(self, base_path: Path, payload: str) -> Path:
+        """Create per-execution evidence without replacing existing run logs.
+
+        Exclusive creation avoids a check-then-write race across simultaneous
+        verifications and refuses to follow a pre-existing log-path symlink.
+        Keep the first run's legacy basename; later runs receive a suffix.
+        Exhaustion is an evidence failure, not permission to overwrite.
+        """
+        for attempt in range(1000):
+            candidate = (
+                base_path if attempt == 0 else
+                base_path.with_name(f"{base_path.stem}.{attempt}{base_path.suffix}")
+            )
+            try:
+                with candidate.open("x", encoding="utf-8") as handle:
+                    handle.write(payload)
+                return candidate
+            except FileExistsError:
+                continue
+        raise OSError("verification log namespace exhausted")
+
     def run(self, task: TaskRecord, project: ProjectRecord) -> VerificationResult:
         completed_checks: list[str] = []
         skipped_checks: list[str] = []
@@ -99,10 +120,9 @@ class VerificationEngine:
                 # missing verification evidence, not a completed check. Unsafe
                 # trace/task/check identifiers must not escape artifacts_dir.
                 try:
-                    artifact_path = self._artifact_log_path(trace_id, task.task_id, check, index)
-                    artifact_path.write_text(
-                        f"$ {command}\n\nSTDOUT:\n{stdout}\n\nSTDERR:\n{stderr}",
-                        encoding="utf-8",
+                    artifact_path = self._write_artifact_log(
+                        self._artifact_log_path(trace_id, task.task_id, check, index),
+                        f"$ {command}\\n\\nSTDOUT:\\n{stdout}\\n\\nSTDERR:\\n{stderr}",
                     )
                 except (OSError, ValueError) as exc:
                     details.append(
@@ -112,7 +132,7 @@ class VerificationEngine:
                     check_passed = False
                     success = False
                     break
-                details.append(f"{check}: exit={exit_code} command={command}")
+                details.append(f"{check}: exit={exit_code} command={command} log={artifact_path.name}")
                 if exit_code == -1:
                     if "timed out" in stderr.lower():
                         details.append(f"{check}: timed out after {self.verification_timeout}s")
