@@ -101,7 +101,12 @@ class CompoundJudge:
             confidence_sum += verdict.confidence * step.weight
 
         if total_weight == 0:
-            return True, 0.0, "No judge steps produced verdicts"
+            # Fail-CLOSED (fail-open remediation 2026-07-12, audit C1 "Ralph
+            # Wiggum"): zero evidence is not a pass. When no judge step produced a
+            # usable verdict (every backend errored / abstained), the compound
+            # judge cannot corroborate completion, so it must NOT return passed=True
+            # — that shipped work on no evidence. confidence 0.0 signals abstain.
+            return False, 0.0, "No judge steps produced verdicts — fail-closed (no evidence)"
 
         pass_ratio = pass_weight / total_weight
         avg_confidence = confidence_sum / total_weight

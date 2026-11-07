@@ -340,13 +340,16 @@ class Orchestrator:
                         last_error="; ".join(final_result.details + final_result.skipped_checks),
                         verification_summary=final_result.details,
                     )
-                self.runner_registry.update_outcome(
-                    evidence.runner_id,
-                    success=final_result.success,
-                    latency_sec=runtime,
-                    output_lines=output_lines,
-                )
-                runner_record = self.db.get_runner(evidence.runner_id)
+                # A judge-side outage is not a runner failure: skip both penalties.
+                _judge_outage = bool(getattr(final_result, "judge_outage", False))
+                if not _judge_outage:
+                    self.runner_registry.update_outcome(
+                        evidence.runner_id,
+                        success=final_result.success,
+                        latency_sec=runtime,
+                        output_lines=output_lines,
+                    )
+                runner_record = None if _judge_outage else self.db.get_runner(evidence.runner_id)
                 if runner_record:
                     self.q_router.record(runner_record.runner_type, task.task_type, final_result.success)
                 self.audit_loop.evaluate(
@@ -841,47 +844,91 @@ class Orchestrator:
                 transcript_lines=transcript_lines,
             )
             judge_available = "judge_error" not in judge_verdict.concerns
-            if judge_available:
-                # W-A/W-B fail-closed enforcement (hardening 2026-07-10): a
-                # QuorumVerdict can carry a deterministic consensus-or-flag outcome
-                # (consensus_gate.resolve_consensus). When it FLAGS — correlated
-                # panel below the Kish n_eff floor, too few independent witnesses,
-                # partial availability, or vendor disagreement — the panel's
-                # threshold-PASS must NOT be recorded as an independent-judge gate.
-                # We flag it (record skipped + reason) rather than silently counting
-                # it. Gated by OVERMIND_QUORUM_FAILCLOSED (default ON); a no-op when
-                # the verdict has no consensus outcome (single LLMJudge / legacy).
-                outcome = getattr(judge_verdict, "consensus_outcome", None)
-                consensus_flagged = (
-                    _quorum_failclosed_enabled()
-                    and outcome is not None
-                    and getattr(outcome, "flagged", False)
-                )
-                if consensus_flagged:
+            # Fail-closed consensus enforcement (hardening 2026-07-10; fail-OPEN
+            # remediation 2026-07-12, cross-vendor P0-1/P0-2). A QuorumVerdict may
+            # carry a deterministic consensus-or-flag outcome
+            # (consensus_gate.resolve_consensus). It is evaluated FIRST — *before*
+            # the judge_available shortcut — because an all-vendors-down panel
+            # returns concerns=[judge_error, quorum_unreachable] (judge_available
+            # False) yet STILL carries a flagged outcome (NO_USABLE_RESPONSES).
+            # Three fail-opens close here:
+            #   P0-1  a FLAGGED consensus previously only relabelled the check and
+            #         fell through to success=True; it now returns success=False,
+            #         honouring the module's own contract ("flagged, not shipped").
+            #   P0-2  an all-vendors-down outage previously skipped the whole block
+            #         (judge_available False) and shipped success=True; the flagged
+            #         outcome is now consulted regardless of judge_available.
+            #   P1-4  (consensus path) a CONSENSUS_FAIL — a corroborated cross-vendor
+            #         negative — blocks irrespective of the scalar avg-confidence, so
+            #         the low-confidence-FAIL leak cannot ship a corroborated failure.
+            # Gated by OVERMIND_QUORUM_FAILCLOSED (default ON). NO-OP when the verdict
+            # carries no consensus outcome (single LLMJudge / legacy / engineless
+            # QuorumJudge) and when llm_judge is None — the advisory-judge happy path
+            # is byte-for-byte unchanged. `not outcome.passed` blocks FLAGGED and
+            # CONSENSUS_FAIL, never CONSENSUS_PASS.
+            outcome = getattr(judge_verdict, "consensus_outcome", None)
+            _failclosed = _quorum_failclosed_enabled()
+            consensus_blocks = (
+                _failclosed
+                and outcome is not None
+                and not getattr(outcome, "passed", False)
+            )
+            # Codex cross-vendor review 2026-07-12 (routed on this diff): even with
+            # NO consensus_outcome attached (an engineless QuorumJudge, or a resolver
+            # that returned None), a QuorumJudge OUTAGE must still fail closed under
+            # failclosed — otherwise a quorum outage ships on the judge_available
+            # shortcut. The `quorum_unreachable` concern is emitted ONLY by
+            # QuorumJudge's outage path, never by a single LLMJudge, so this closes
+            # the gap without touching the advisory-single-judge happy path.
+            quorum_outage_blocks = (
+                _failclosed and "quorum_unreachable" in judge_verdict.concerns
+            )
+            if consensus_blocks or quorum_outage_blocks:
+                if outcome is not None:
+                    verdict_name = getattr(getattr(outcome, "verdict", None), "value", "flagged")
                     reasons = ",".join(
                         getattr(r, "value", str(r)) for r in getattr(outcome, "reasons", [])
-                    )
-                    skipped_checks = self._append_unique_check(skipped_checks, "semantic_requirements")
-                    details.append(
-                        f"judge: consensus FLAGGED ({reasons}) — fail-closed, not "
-                        "counted as an independent-judge gate"
-                    )
+                    ) or verdict_name
                 else:
-                    required_checks = self._append_unique_check(required_checks, "semantic_requirements")
-                    if not judge_verdict.passed and judge_verdict.confidence >= 0.7:
-                        skipped_checks = self._append_unique_check(skipped_checks, "semantic_requirements")
-                        details.append(f"judge: {judge_verdict.reasoning[:200]}")
-                        return VerificationResult(
-                            task_id=verification_result.task_id,
-                            success=False,
-                            required_checks=required_checks,
-                            completed_checks=completed_checks,
-                            skipped_checks=skipped_checks,
-                            details=details,
-                            trace_id=verification_result.trace_id,
-                        )
-                    completed_checks = self._append_unique_check(completed_checks, "semantic_requirements")
-                    details.append(f"judge: pass (conf={judge_verdict.confidence:.2f})")
+                    # quorum outage with no attached outcome (engineless QuorumJudge)
+                    verdict_name = "flagged"
+                    reasons = "quorum_unreachable"
+                required_checks = self._append_unique_check(required_checks, "semantic_requirements")
+                skipped_checks = self._append_unique_check(skipped_checks, "semantic_requirements")
+                details.append(
+                    f"judge: consensus {verdict_name.upper()} ({reasons}) — "
+                    "fail-closed, NOT shipped"
+                )
+                return VerificationResult(
+                    task_id=verification_result.task_id,
+                    success=False,
+                    required_checks=required_checks,
+                    completed_checks=completed_checks,
+                    skipped_checks=skipped_checks,
+                    details=details,
+                    trace_id=verification_result.trace_id,
+                    judge_outage=(
+                        "quorum_unreachable" in judge_verdict.concerns
+                        or "judge_error" in judge_verdict.concerns
+                        or "consensus_resolver_error" in getattr(outcome, "note", "")
+                    ),
+                )
+            if judge_available:
+                required_checks = self._append_unique_check(required_checks, "semantic_requirements")
+                if not judge_verdict.passed and judge_verdict.confidence >= 0.7:
+                    skipped_checks = self._append_unique_check(skipped_checks, "semantic_requirements")
+                    details.append(f"judge: {judge_verdict.reasoning[:200]}")
+                    return VerificationResult(
+                        task_id=verification_result.task_id,
+                        success=False,
+                        required_checks=required_checks,
+                        completed_checks=completed_checks,
+                        skipped_checks=skipped_checks,
+                        details=details,
+                        trace_id=verification_result.trace_id,
+                    )
+                completed_checks = self._append_unique_check(completed_checks, "semantic_requirements")
+                details.append(f"judge: pass (conf={judge_verdict.confidence:.2f})")
 
         # Objective proof is bound to the requirements and (for a Git project)
         # the exact HEAD observed by the verifier. Extra completion gates above

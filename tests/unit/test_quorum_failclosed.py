@@ -135,3 +135,21 @@ def test_engine_length_mismatch_is_ignored_safely():
     q = QuorumJudge(judges=[_judge(_PASS), _judge(_PASS)], engines=["claude"])
     v = q.judge(_task(), _project(), _result())
     assert v.consensus_outcome is None
+
+
+def test_raising_resolver_returns_flagged_outcome_not_none(monkeypatch):
+    # A3: a resolver exception used to be logged then swallowed as None, which
+    # DISABLES the orchestrator's fail-closed gate (it keys on outcome is not None).
+    # It must yield a FLAGGED (never passing) outcome instead.
+    import overmind.verification.consensus_gate as cg
+
+    def _boom(responses):
+        raise RuntimeError("resolver regression")
+
+    monkeypatch.setattr(cg, "resolve_consensus", _boom)
+    q = _quorum(["claude", "codex"], [_PASS, _PASS])
+    v = q.judge(_task(), _project(), _result())
+    assert v.consensus_outcome is not None
+    assert v.consensus_outcome.passed is False
+    assert v.consensus_outcome.verdict == ConsensusVerdict.FLAGGED
+    assert "resolver" in v.consensus_outcome.note

@@ -22,6 +22,12 @@
 
 ## Symptom → diagnosis
 
+### 0: No report and no alert at all
+
+If `Get-ScheduledTask -TaskName 'Overmind*'` returns nothing, the watchdog is gone too, so silence proves nothing.
+This happened from 2026-05-17: the tasks were lost and the launchers pointed at another account's Python.
+Check `data/nightly_reports/latest.json` `timestamp`, then run `scripts/install_overmind_task.ps1` from the checkout that should be live.
+
 ### A: Watchdog alert says `nightly_<yesterday>.json missing`
 
 The scheduled run didn't complete (or didn't start). Check:

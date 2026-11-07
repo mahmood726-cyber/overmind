@@ -23,6 +23,9 @@ dev = [
   "pytest>=8.0",
   "pytest-timeout>=2.0",
 ]
+measure = [
+  "duckdb>=1.0",
+]
 embeddings = [
   "sentence-transformers>=2.2",
 ]
@@ -51,7 +54,7 @@ where = ["."]
 include = ["overmind*"]
 
 [tool.setuptools.package-data]
-overmind = ["prompts/*.txt", "evidence/data/*.jsonl", "evidence/data/*.json"]
+overmind = ["prompts/*.txt", "evidence/data/*.jsonl", "evidence/data/*.json", "gates/data/*.json"]
 
 [tool.pytest.ini_options]
 testpaths = ["tests"]
