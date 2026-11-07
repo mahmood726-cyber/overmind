@@ -24,6 +24,18 @@ _safe_env = safe_subprocess_env
 _kill_process_tree = kill_process_tree
 
 
+_QUIET_SYNTAX_CHECK_RE = re.compile(r"^node\s+(?:-c|--check)\s+[\w./\-]+$", re.IGNORECASE)
+
+
+def _is_quiet_syntax_check(command: str) -> bool:
+    """True only for a bare `node -c <file>` / `node --check <file>`.
+
+    No chaining, redirection or extra arguments: anything else that is silent
+    on success stays UNVERIFIED.
+    """
+    return bool(_QUIET_SYNTAX_CHECK_RE.match(command.strip()))
+
+
 class VerificationEngine:
     def __init__(self, artifacts_dir: Path, verification_timeout: int = 900) -> None:
         self.artifacts_dir = artifacts_dir
@@ -281,7 +293,13 @@ class VerificationEngine:
                 # sufficient completion evidence. A genuinely quiet command
                 # may still have succeeded, but its status remains unverified
                 # rather than becoming a false PASS.
-                empty_output = exit_code == 0 and not (stdout.strip() or stderr.strip())
+                # Exception: `node -c <file>` / `node --check <file>` are
+                # silent on success by design (exit 0 is the whole signal).
+                empty_output = (
+                    exit_code == 0
+                    and not (stdout.strip() or stderr.strip())
+                    and not _is_quiet_syntax_check(command)
+                )
                 if empty_output:
                     details.append(
                         f"{check}: unverified; command exited 0 with empty stdout/stderr"

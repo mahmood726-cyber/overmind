@@ -449,6 +449,54 @@ def test_verifier_accepts_observable_zero_exit_control(tmp_path, monkeypatch, st
     assert not any("unverified" in detail for detail in result.details)
 
 
+@pytest.mark.parametrize(
+    "command", ["node -c app.js", "node --check app.js", "node -c src/app.js"]
+)
+def test_verifier_accepts_quiet_node_syntax_check(tmp_path, monkeypatch, command):
+    """`node -c`/`--check` legitimately exits 0 with no output (verified with a
+    real node run); project_scanner emits it as the html+app.js build command."""
+    project = ProjectRecord(
+        project_id="synthetic-node", name="Synthetic node syntax check",
+        root_path=str(tmp_path), build_commands=[command],
+    )
+    task = _synthetic_verification_task(project, ["build_or_direct_evidence"])
+    engine = VerificationEngine(tmp_path / "artifacts")
+    monkeypatch.setattr(engine, "_run_command", lambda c, cwd: (0, "", ""))
+    result = engine.run(task, project)
+
+    assert result.success is True
+    assert result.completed_checks == ["build_or_direct_evidence"]
+    assert not any("unverified" in detail for detail in result.details)
+
+
+@pytest.mark.parametrize(
+    "command",
+    [
+        "node app.js",
+        "node -c app.js && echo done",
+        "node -c app.js; rm -rf x",
+        "node -c",
+        "node -e 1",
+        "python -c pass",
+        "mybuild --check app.js",
+    ],
+)
+def test_verifier_still_refuses_other_silent_commands(tmp_path, monkeypatch, command):
+    """The exemption is narrow: any other silent zero-exit stays UNVERIFIED."""
+    project = ProjectRecord(
+        project_id="synthetic-quiet", name="Synthetic quiet command",
+        root_path=str(tmp_path), build_commands=[command],
+    )
+    task = _synthetic_verification_task(project, ["build_or_direct_evidence"])
+    engine = VerificationEngine(tmp_path / "artifacts")
+    monkeypatch.setattr(engine, "_run_command", lambda c, cwd: (0, "", ""))
+    result = engine.run(task, project)
+
+    assert result.success is False
+    assert any("unverified; command exited 0 with empty stdout/stderr" in d
+               for d in result.details)
+
+
 def _synthetic_artifact_fixture(tmp_path):
     project = ProjectRecord(
         project_id="synthetic-logs", name="Synthetic logging", root_path=str(tmp_path)
