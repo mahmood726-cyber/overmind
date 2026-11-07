@@ -2,6 +2,8 @@ from __future__ import annotations
 
 import sys
 
+import subprocess
+
 import pytest
 
 from overmind.storage.models import ProjectRecord, TaskRecord
@@ -1063,3 +1065,56 @@ def test_verifier_unchanged_planned_commands_still_pass(tmp_path):
     assert result.success is True
     assert result.completed_checks == ["relevant_tests"]
     assert not any("plan changed" in d for d in result.details)
+
+
+_SYNTHETIC_HEAD_C = "c" * 40
+
+
+class _FakeCompleted:
+    def __init__(self, returncode, stdout):
+        self.returncode, self.stdout = returncode, stdout
+
+
+def test_read_git_head_uses_30s_timeout_and_retries_once_on_timeout(monkeypatch):
+    """A saturated box must not flip a passing run to FAILED on one slow git."""
+    import overmind.verification.verifier as verifier_module
+
+    calls = []
+
+    def flaky_run(cmd, **kwargs):
+        calls.append(kwargs["timeout"])
+        if len(calls) == 1:
+            raise subprocess.TimeoutExpired(cmd, kwargs["timeout"])
+        return _FakeCompleted(0, _SYNTHETIC_HEAD_C + "\n")
+
+    monkeypatch.setattr(verifier_module.subprocess, "run", flaky_run)
+    assert VerificationEngine._read_git_head("synthetic") == _SYNTHETIC_HEAD_C
+    assert calls == [30, 30]
+
+
+def test_read_git_head_still_fails_closed_after_repeated_timeout(monkeypatch):
+    import overmind.verification.verifier as verifier_module
+
+    calls = []
+
+    def always_timeout(cmd, **kwargs):
+        calls.append(kwargs["timeout"])
+        raise subprocess.TimeoutExpired(cmd, kwargs["timeout"])
+
+    monkeypatch.setattr(verifier_module.subprocess, "run", always_timeout)
+    assert VerificationEngine._read_git_head("synthetic") is None
+    assert len(calls) == 2  # exactly one retry
+
+
+def test_read_git_head_does_not_retry_a_real_git_failure(monkeypatch):
+    import overmind.verification.verifier as verifier_module
+
+    calls = []
+
+    def not_a_repo(cmd, **kwargs):
+        calls.append(1)
+        return _FakeCompleted(128, "")
+
+    monkeypatch.setattr(verifier_module.subprocess, "run", not_a_repo)
+    assert VerificationEngine._read_git_head("synthetic") is None
+    assert len(calls) == 1

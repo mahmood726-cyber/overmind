@@ -51,19 +51,29 @@ class VerificationEngine:
         Fail closed on missing Git, inaccessible worktrees, invalid revisions,
         or a timed-out metadata lookup. No shell or network operation is used.
         """
-        try:
-            completed = subprocess.run(
-                ["git", "--no-optional-locks", "rev-parse", "--verify", "HEAD"],
-                cwd=root_path,
-                capture_output=True,
-                text=True,
-                encoding="utf-8",
-                errors="replace",
-                env=safe_subprocess_env(),
-                timeout=5,
-                check=False,
-            )
-        except (OSError, ValueError, subprocess.TimeoutExpired):
+        # A saturated machine can exceed a short timeout on a healthy repo, so
+        # allow 30s and retry a *timeout* once. Any other failure (not a repo,
+        # bad revision, OSError) is deterministic: no retry, fail closed.
+        completed = None
+        for _attempt in range(2):
+            try:
+                completed = subprocess.run(
+                    ["git", "--no-optional-locks", "rev-parse", "--verify", "HEAD"],
+                    cwd=root_path,
+                    capture_output=True,
+                    text=True,
+                    encoding="utf-8",
+                    errors="replace",
+                    env=safe_subprocess_env(),
+                    timeout=30,
+                    check=False,
+                )
+                break
+            except subprocess.TimeoutExpired:
+                continue
+            except (OSError, ValueError):
+                return None
+        if completed is None:
             return None
         head = completed.stdout.strip().lower()
         if completed.returncode != 0 or not re.fullmatch(
