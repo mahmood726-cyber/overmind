@@ -55,14 +55,24 @@ def kill_process_tree(proc: subprocess.Popen) -> None:
     """
     try:
         if sys.platform == "win32":
+            # check=True so a taskkill FAILURE (nonzero exit: PID already gone,
+            # access denied, or /T could not reach a grandchild) RAISES and triggers
+            # the proc.kill() fallback below. Without check=True a failed taskkill
+            # was swallowed and local grandchildren leaked (P1-7, cross-vendor
+            # 2026-07-11). A benign "process not found" (128) after the child already
+            # exited also routes to the fallback, where proc.kill() on a dead process
+            # is a harmless no-op. NOTE (documented limitation): a lane that runs
+            # `ssh <host> codex …` leaves the REMOTE vendor process running — it is
+            # not a local descendant, so no local kill can reap it.
             subprocess.run(
                 ["taskkill", "/F", "/T", "/PID", str(proc.pid)],
                 capture_output=True,
                 timeout=5,
+                check=True,
             )
         else:
             proc.kill()
-    except (OSError, subprocess.TimeoutExpired):
+    except (OSError, subprocess.TimeoutExpired, subprocess.CalledProcessError):
         try:
             proc.kill()
         except OSError:
@@ -129,7 +139,15 @@ def _strip_matching_quotes(token: str) -> str:
 
 
 def _should_use_windows_split(command: str) -> bool:
-    return bool(re.match(WINDOWS_ABSOLUTE_EXECUTABLE_RE, command))
+    # An absolute drive path (C:\...) always uses the non-posix splitter. On
+    # Windows, so does ANY command carrying a backslash path separator (e.g.
+    # `pytest tests\integration.py`): posix shlex.split treats `\` as an escape and
+    # eats it, corrupting `tests\integration.py` -> `testsintegration.py` (P1-10,
+    # cross-vendor 2026-07-11). Scoped to win32 so posix command splitting — where
+    # `\` is a legitimate escape — is byte-for-byte unchanged.
+    if re.match(WINDOWS_ABSOLUTE_EXECUTABLE_RE, command):
+        return True
+    return sys.platform == "win32" and "\\" in command
 
 
 def _split_for_validation(command: str) -> list[str]:
@@ -251,9 +269,30 @@ def validate_command_prefix_with_detail(
         return True, None
 
     if executable in POWERSHELL_WRAPPERS:
-        lowered_parts = [part.lower() for part in parts[1:]]
-        if any(part in {"-command", "-encodedcommand", "-c"} for part in lowered_parts):
-            return False, "Blocked: PowerShell verification must use -File with a repo-local .ps1 script"
+        # An EXACT-match deny-list ({"-command","-encodedcommand","-c"}) is
+        # bypassable: PowerShell binds any leading PREFIX of a parameter name, so
+        # `-enc`/`-en`/`-e` -> -EncodedCommand and `-co`/`-com` -> -Command all
+        # execute arbitrary code yet slipped past the exact set — `powershell -enc
+        # <b64> -File x.ps1` validated clean (P1-11, cross-vendor 2026-07-11). Block
+        # any dash-flag whose de-dashed form is a prefix of "command" or
+        # "encodedcommand" (plus the `-ec` short). Only dash-prefixed tokens are
+        # PowerShell parameters, so a positional script argument literally named
+        # "command" is not falsely blocked; benign switches (-File, -ExecutionPolicy,
+        # -NoProfile, …) are not prefixes of those two names and pass.
+        for part in parts[1:]:
+            if not part.startswith("-"):
+                continue
+            dashless = part.lstrip("-").lower()
+            if dashless and (
+                "command".startswith(dashless)
+                or "encodedcommand".startswith(dashless)
+                or dashless == "ec"
+            ):
+                return False, (
+                    "Blocked: PowerShell verification must use -File with a "
+                    "repo-local .ps1 script (no -Command/-EncodedCommand, incl. "
+                    "prefix abbreviations)"
+                )
         for index, part in enumerate(parts[1:-1], start=1):
             if part.lower() == "-file":
                 control = next((token for token in parts[index + 2 :] if token in SHELL_CONTROL_TOKENS), None)

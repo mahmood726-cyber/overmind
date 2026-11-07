@@ -203,6 +203,10 @@ class VerificationResult(SerializableModel):
     details: list[str]
     trace_id: str = ""
     created_at: str = field(default_factory=utc_now)
+    # True when success=False was caused by a JUDGE-side outage (quorum
+    # unreachable / judge error), not by the runner's work. Callers must not
+    # penalise the runner or Q-router for it.
+    judge_outage: bool = False
 
 
 MEMORY_TYPES = {

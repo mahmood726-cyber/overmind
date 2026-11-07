@@ -190,3 +190,72 @@ def test_kill_process_tree_uses_taskkill_on_windows(monkeypatch):
     assert "/T" in captured["args"]
     assert "/F" in captured["args"]
     assert str(9999) in captured["args"]
+
+
+def test_kill_process_tree_falls_back_when_taskkill_fails(monkeypatch):
+    """TRIP TEST (P1-7): a taskkill that exits non-zero (CalledProcessError, via
+    check=True) MUST trigger the proc.kill() fallback — without check=True a failed
+    taskkill was swallowed and local grandchildren leaked."""
+    import subprocess as _subprocess
+    import sys as _sys
+
+    if _sys.platform != "win32":
+        import pytest
+        pytest.skip("Windows-specific taskkill behavior")
+
+    from overmind.subprocess_utils import kill_process_tree
+
+    captured: dict[str, object] = {}
+
+    def fake_run(args, **kwargs):
+        # check=True must be requested by the caller, and a nonzero return must raise
+        assert kwargs.get("check") is True
+        raise _subprocess.CalledProcessError(128, args)
+
+    monkeypatch.setattr(_subprocess, "run", fake_run)
+
+    class StubProc:
+        pid = 4242
+
+        def kill(self):
+            captured["fallback_kill_called"] = True
+
+    kill_process_tree(StubProc())
+    assert captured.get("fallback_kill_called") is True
+
+
+def test_split_command_preserves_windows_relative_backslash_path(monkeypatch):
+    """TRIP TEST (P1-10): a RELATIVE Windows path (no drive letter) must keep its
+    backslash — posix shlex.split ate it, turning `tests\\integration.py` into
+    `testsintegration.py`."""
+    monkeypatch.setattr(subprocess_utils.sys, "platform", "win32")
+    monkeypatch.setattr(
+        subprocess_utils.shutil, "which",
+        lambda command: None,  # leave 'pytest' unresolved so parts[0] is unchanged
+    )
+    parts = split_command(r"pytest tests\integration.py")
+    assert parts == ["pytest", r"tests\integration.py"]
+
+
+def test_powershell_encodedcommand_abbreviations_are_blocked(tmp_path):
+    """TRIP TEST (P1-11): PowerShell prefix abbreviations of -EncodedCommand /
+    -Command execute arbitrary code and must be blocked, even alongside a benign
+    -File. The exact-match deny-list let `-enc`, `-en`, `-e`, `-co` through."""
+    scripts_dir = tmp_path / "scripts"
+    scripts_dir.mkdir()
+    (scripts_dir / "verify.ps1").write_text("Write-Output 'ok'\n", encoding="utf-8")
+
+    for flag in ("-enc", "-en", "-e", "-EncodedCommand", "-co", "-command", "-ec"):
+        valid, detail = validate_command_prefix_with_detail(
+            rf"powershell {flag} SQBFAFgA -File .\scripts\verify.ps1",
+            cwd=tmp_path,
+        )
+        assert valid is False, f"{flag} should be blocked"
+        assert detail is not None and "EncodedCommand" in detail
+
+    # -ExecutionPolicy is NOT a prefix of command/encodedcommand -> still allowed.
+    valid, _ = validate_command_prefix_with_detail(
+        r"powershell -ExecutionPolicy Bypass -File .\scripts\verify.ps1",
+        cwd=tmp_path,
+    )
+    assert valid is True
