@@ -1595,3 +1595,33 @@ def test_verify_command_uses_scrubbed_env_and_config_timeout(tmp_path, monkeypat
         assert captured["kwargs"].get("encoding") == "utf-8"
     finally:
         orchestrator.close()
+
+
+def test_judge_outage_block_is_marked_judge_side_not_runner_failure(tmp_path, monkeypatch):
+    # A2: an all-vendors-down quorum blocks (success=False) but that is a JUDGE
+    # outage, not a runner failure; the result must say so, so the runner
+    # registry / Q-router are not penalised. A genuine consensus FAIL must not.
+    monkeypatch.setenv("OVERMIND_QUORUM_FAILCLOSED", "1")
+    config = _write_minimal_config(tmp_path / "config", tmp_path / "data")
+    project_root = tmp_path / "project"
+    project_root.mkdir()
+    orchestrator = Orchestrator(config)
+    try:
+        project, task, vr = _judge_project_task(project_root)
+        orchestrator.llm_judge = _erroring_quorum_judge()
+        outage = orchestrator._apply_completion_gates(
+            task=task, project=project, verification_result=vr,
+            transcript_lines=["tests passed"], include_judge=True,
+        )
+        assert outage.success is False
+        assert outage.judge_outage is True
+
+        orchestrator.llm_judge = _consensus_fail_quorum_judge()
+        real_fail = orchestrator._apply_completion_gates(
+            task=task, project=project, verification_result=vr,
+            transcript_lines=["tests passed"], include_judge=True,
+        )
+        assert real_fail.success is False
+        assert real_fail.judge_outage is False
+    finally:
+        orchestrator.close()

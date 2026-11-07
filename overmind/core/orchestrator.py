@@ -337,13 +337,16 @@ class Orchestrator:
                         last_error="; ".join(final_result.details + final_result.skipped_checks),
                         verification_summary=final_result.details,
                     )
-                self.runner_registry.update_outcome(
-                    evidence.runner_id,
-                    success=final_result.success,
-                    latency_sec=runtime,
-                    output_lines=output_lines,
-                )
-                runner_record = self.db.get_runner(evidence.runner_id)
+                # A judge-side outage is not a runner failure: skip both penalties.
+                _judge_outage = bool(getattr(final_result, "judge_outage", False))
+                if not _judge_outage:
+                    self.runner_registry.update_outcome(
+                        evidence.runner_id,
+                        success=final_result.success,
+                        latency_sec=runtime,
+                        output_lines=output_lines,
+                    )
+                runner_record = None if _judge_outage else self.db.get_runner(evidence.runner_id)
                 if runner_record:
                     self.q_router.record(runner_record.runner_type, task.task_type, final_result.success)
                 self.audit_loop.evaluate(
@@ -884,6 +887,10 @@ class Orchestrator:
                     skipped_checks=skipped_checks,
                     details=details,
                     trace_id=verification_result.trace_id,
+                    judge_outage=(
+                        "quorum_unreachable" in judge_verdict.concerns
+                        or "judge_error" in judge_verdict.concerns
+                    ),
                 )
             if judge_available:
                 required_checks = self._append_unique_check(required_checks, "semantic_requirements")
