@@ -890,6 +890,7 @@ class Orchestrator:
                     judge_outage=(
                         "quorum_unreachable" in judge_verdict.concerns
                         or "judge_error" in judge_verdict.concerns
+                        or "consensus_resolver_error" in getattr(outcome, "note", "")
                     ),
                 )
             if judge_available:

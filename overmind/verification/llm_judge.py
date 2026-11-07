@@ -717,7 +717,19 @@ class QuorumJudge:
                 "this verdict (engines=%s); treating as no consensus outcome",
                 list(self.engines), exc_info=True,
             )
-            return None
+            # Fail CLOSED (A3): returning None here disabled the orchestrator's
+            # fail-closed gate (it keys on `outcome is not None`) — a resolver
+            # regression would ship. Return a flagged, never-passing outcome.
+            from overmind.verification.consensus_gate import (
+                ConsensusOutcome,
+                ConsensusVerdict,
+                FlagReason,
+            )
+            return ConsensusOutcome(
+                verdict=ConsensusVerdict.FLAGGED,
+                reasons=[FlagReason.NO_USABLE_RESPONSES],
+                note="consensus_resolver_error: resolver raised; flagged fail-closed",
+            )
 
 
 # ── Cost-aware routed judge ─────────────────────────────────────────
