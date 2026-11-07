@@ -24,7 +24,7 @@ _safe_env = safe_subprocess_env
 _kill_process_tree = kill_process_tree
 
 
-_QUIET_SYNTAX_CHECK_RE = re.compile(r"^node\s+(?:-c|--check)\s+[\w./\-]+$", re.IGNORECASE)
+_QUIET_SYNTAX_CHECK_RE = re.compile(r"^node\s+(?:-c|--check)\s+(?!-)[\w./\-]+\.[cm]?js$")
 
 
 def _is_quiet_syntax_check(command: str) -> bool:
