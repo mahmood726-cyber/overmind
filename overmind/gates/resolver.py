@@ -62,16 +62,12 @@ class ResolverError(RuntimeError):
 
 
 def _default_aact_path() -> Optional[str]:
-    """The local AACT snapshot. Env override wins; otherwise the known mirror."""
+    """The local AACT snapshot, from ``OVERMIND_AACT_DUCKDB`` only. No baked-in
+    location: unset (or a missing file) returns None, which the resolver treats as
+    "no ground truth available" (fail closed), never a silent fallback path."""
     env = os.environ.get("OVERMIND_AACT_DUCKDB")
     if env and os.path.exists(env):
         return env
-    for cand in (
-        r"C:\Projects\cochrane-vs-registry\aact.duckdb",
-        "/c/Projects/cochrane-vs-registry/aact.duckdb",
-    ):
-        if os.path.exists(cand):
-            return cand
     return None
 
 

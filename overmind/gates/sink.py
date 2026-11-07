@@ -253,8 +253,13 @@ SINK = SinkGuard()
 # A caller seals these once at startup; the sweep/retrofit uses the same list so the
 # thing we PROTECT and the thing we AUDIT are the same set (no drift).
 def default_deliverable_roots() -> list[str]:
-    cands = [
-        r"C:\Projects",            # deliverable .md + slides live here
-        r"F:\rapidmeta-finerenone",  # a RapidMeta app-page tree (example)
-    ]
-    return [c for c in cands if os.path.isdir(c)]
+    """Deliverable roots from ``OVERMIND_DELIVERABLE_ROOTS`` (os.pathsep-separated).
+    Deliberately no default: sealing nothing would silently fail open, so an unset
+    variable raises."""
+    raw = os.environ.get("OVERMIND_DELIVERABLE_ROOTS", "").strip()
+    if not raw:
+        raise RuntimeError(
+            "OVERMIND_DELIVERABLE_ROOTS is not set; list the deliverable roots "
+            f"separated by '{os.pathsep}'"
+        )
+    return [c for c in raw.split(os.pathsep) if c and os.path.isdir(c)]
