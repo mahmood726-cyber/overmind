@@ -170,6 +170,57 @@ def test_agy_backend_recovers_answer_before_trailing_tool_step(tmp_path: Path):
     assert "FLAG: yes" in out
 
 
+def test_agy_zero_step_fails_loud_never_empty_success(tmp_path: Path):
+    """TRIP TEST (Mahmood, agy 0-step fail-open): a 0-step conversation from a
+    wedged daemon (`n_steps: 0`, empty text) must return a JUDGE_ERROR — it must
+    NEVER be recorded as a clean/empty answer. An empty result from a dead vendor
+    is the exact fail-open we close: it can't reach the consensus gate as a vote."""
+    driver = tmp_path / "agy_driver.py"
+    driver.write_text("# stub", encoding="utf-8")
+    zero_step = json.dumps({"text": "", "all_model_text": "", "n_steps": 0, "complete": False})
+
+    out = AgyBackend(driver_path=str(driver),
+                     runner=_capturing_runner({}, zero_step), max_polls=2).query("p")
+    assert out.startswith(JUDGE_ERROR)
+    assert "0-step" in out and "wedged daemon" in out
+
+
+def test_agy_zero_step_is_an_abstention_never_a_consensus_vote():
+    """The 0-step JUDGE_ERROR maps to a non-usable ERROR vendor in the consensus
+    gate, so an all-agy-0-step panel flags NO_USABLE_RESPONSES (fail-closed) — a
+    dead vendor's silence is never a corroborating vote."""
+    from overmind.verification.consensus_gate import (
+        VendorResponse, VendorStatus, ConsensusVerdict, FlagReason, resolve_consensus,
+    )
+    # agy 0-step -> JUDGE_ERROR -> ERROR status, passed=None (not usable)
+    responses = [VendorResponse(vendor="agy", status=VendorStatus.ERROR, passed=None)]
+    outcome = resolve_consensus(responses)
+    assert outcome.verdict == ConsensusVerdict.FLAGGED
+    assert FlagReason.NO_USABLE_RESPONSES in outcome.reasons
+    assert outcome.passed is False   # a dead vendor never yields a passing consensus
+
+
+def test_agy_preflight_reap_opt_in_only(tmp_path: Path, monkeypatch):
+    """The pre-flight daemon reaper fires only when opted in (reap_stale=True /
+    env), never on the default path — so it can't catch the desktop app's daemon
+    by surprise."""
+    import overmind.reliability.agy_daemon as ad
+    driver = tmp_path / "agy_driver.py"
+    driver.write_text("# stub", encoding="utf-8")
+    resp = json.dumps({"text": "VERDICT: PASS", "complete": True})
+    calls = {"n": 0}
+    monkeypatch.setattr(ad, "reap_stale_daemons",
+                        lambda *a, **k: calls.__setitem__("n", calls["n"] + 1) or [])
+
+    # default: no reap
+    AgyBackend(driver_path=str(driver), runner=_capturing_runner({}, resp)).query("p")
+    assert calls["n"] == 0
+    # opted in: reap runs once before the call
+    AgyBackend(driver_path=str(driver), runner=_capturing_runner({}, resp),
+               reap_stale=True).query("p")
+    assert calls["n"] == 1
+
+
 def test_local_model_off_by_default():
     backend = LocalModelBackend(enabled=False)
     assert backend.available() is False

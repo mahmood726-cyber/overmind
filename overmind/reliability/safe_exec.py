@@ -98,6 +98,19 @@ def run_guarded(
         try:
             stdout, stderr = proc.communicate(timeout=5)
         except subprocess.TimeoutExpired:
+            # Tree-kill did not reap it within 5s. Force-kill the direct child and
+            # release the pipe FDs so no reader thread / file handle leaks and no
+            # possibly-live process is left dangling (P1-8, cross-vendor 2026-07-11).
+            try:
+                proc.kill()
+            except OSError:
+                pass
+            for stream in (proc.stdin, proc.stdout, proc.stderr):
+                try:
+                    if stream is not None:
+                        stream.close()
+                except OSError:
+                    pass
             stdout, stderr = "", ""
         return ExecResult(
             -1, stdout or "", (stderr or "") + f"\n[timed out after {timeout}s; process tree killed]",

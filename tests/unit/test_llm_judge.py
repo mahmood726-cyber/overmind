@@ -335,6 +335,19 @@ def test_compound_requires_at_least_one_step():
         pass
 
 
+def test_compound_empty_verdicts_fails_closed():
+    """TRIP TEST (audit C1 'Ralph Wiggum'): when NO step produced a verdict
+    (total_weight == 0), the aggregate must fail CLOSED — passed is False, not a
+    silent True on zero evidence."""
+    judge = CompoundJudge(steps=[
+        JudgeStep("a", LLMJudge(backend=StubBackend())),
+    ])
+    passed, confidence, reasoning = judge._aggregate({})  # no verdicts at all
+    assert passed is False
+    assert confidence == 0.0
+    assert "no evidence" in reasoning.lower()
+
+
 def test_compound_reasoning_includes_step_summary():
     judge = CompoundJudge(steps=[
         JudgeStep("check_a", LLMJudge(backend=StubBackend())),
