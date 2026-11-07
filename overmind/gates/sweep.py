@@ -118,15 +118,17 @@ import json as _json
 _SECOND_FAMILY: dict | None = None
 
 
+_SECOND_FAMILY_PATH = os.path.join(os.path.dirname(__file__), "data", "second_family_verdicts.json")
+
+
 def _second_family_verdicts() -> dict:
+    """Load the cached second-family verdicts. A missing or corrupt file RAISES:
+    silently degrading to {} would drop the decorrelated classifier unnoticed
+    (e.g. a wheel built without the data file)."""
     global _SECOND_FAMILY
     if _SECOND_FAMILY is None:
-        path = os.path.join(os.path.dirname(__file__), "data", "second_family_verdicts.json")
-        try:
-            with open(path, "r", encoding="utf-8") as fh:
-                _SECOND_FAMILY = _json.load(fh).get("verdicts", {})
-        except (OSError, ValueError):
-            _SECOND_FAMILY = {}
+        with open(_SECOND_FAMILY_PATH, "r", encoding="utf-8") as fh:
+            _SECOND_FAMILY = _json.load(fh).get("verdicts", {})
     return _SECOND_FAMILY
 
 

@@ -13,6 +13,7 @@ from __future__ import annotations
 
 import json
 import os
+import pytest
 
 from overmind.gates import sweep
 from overmind.gates.sweep import classify_number, classify_with_second_family
@@ -59,3 +60,28 @@ def test_shipped_verdict_file_shrinks_the_band():
     assert resolved / n >= 0.70                     # the band shrinks by >=70%
     assert resolved + still == n                    # every verdict is one of the three
     assert "GPT-5" in data.get("classifier", "") or "gemini" in data.get("classifier", "").lower()
+
+
+def test_second_family_file_is_declared_package_data():
+    # B4: a wheel built without the verdict file silently classifies everything
+    # as "no second-family verdict". It must be shipped.
+    import fnmatch
+    import os
+    try:
+        import tomllib
+    except ModuleNotFoundError:  # py<3.11
+        import tomli as tomllib
+    root = os.path.dirname(os.path.dirname(os.path.dirname(__file__)))
+    with open(os.path.join(root, "pyproject.toml"), "rb") as fh:
+        pats = tomllib.load(fh)["tool"]["setuptools"]["package-data"]["overmind"]
+    rel = "gates/data/second_family_verdicts.json"
+    assert os.path.isfile(os.path.join(root, "overmind", *rel.split("/")))
+    assert any(fnmatch.fnmatch(rel, p) for p in pats), pats
+
+
+def test_missing_second_family_file_raises_not_empty(monkeypatch, tmp_path):
+    from overmind.gates import sweep
+    monkeypatch.setattr(sweep, "_SECOND_FAMILY", None)
+    monkeypatch.setattr(sweep, "_SECOND_FAMILY_PATH", str(tmp_path / "absent.json"))
+    with pytest.raises((OSError, ValueError)):
+        sweep._second_family_verdicts()
