@@ -1255,19 +1255,7 @@ class Orchestrator:
 
     def _recover_abandoned_tasks(self) -> None:
         for task in self.db.list_tasks():
-            if task.status == "COMPLETED":
-                # SQLite holds historical completion text, not a durable
-                # witness bound to today's revision and verification plan.
-                # Preserve that text but do not expose it as a fresh PASS after
-                # restart (or allow it to satisfy dependent tasks).
-                task.status = "PAUSED"
-                task.assigned_runner_id = None
-                task.last_error = (
-                    "Recovered historical completion after supervisor restart: "
-                    "fresh verification required for current source revision and plan"
-                )
-                self.task_queue.upsert([task])
-            elif task.status in {"ASSIGNED", "RUNNING", "VERIFYING"}:
+            if task.status in {"ASSIGNED", "RUNNING", "VERIFYING"}:
                 self.task_queue.transition(
                     task.task_id,
                     "BLOCKED",

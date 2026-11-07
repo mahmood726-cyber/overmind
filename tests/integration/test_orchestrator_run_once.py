@@ -1675,25 +1675,14 @@ def test_restore_checkpoint_does_not_resurrect_unverified_completion(tmp_path, i
     finally:
         orchestrator.close()
 
-
-@pytest.mark.parametrize("is_git_repo", [False, True])
-def test_restart_does_not_trust_persisted_completed_task_without_current_proof(
-    tmp_path, is_git_repo
-):
-    """Restart cannot reuse a SQLite COMPLETED bit as a current verification PASS.
-
-    Synthetic persisted records only; no runner, network or actual Git repository.
-    Both historical verification text and unrelated task statuses must survive.
-    """
-    config = _write_minimal_config(tmp_path / "config", tmp_path / "data")
-    root = tmp_path / "synthetic-repo"
-    root.mkdir()
-    historical = ["tests: exit=0 command=synthetic", "historical result, not current proof"]
+def _seed_completed_restart_fixture(config, root, is_git_repo):
+    historical = ["tests: exit=0 command=synthetic", "historical result"]
     writer = Orchestrator(config)
     try:
         project = ProjectRecord(
             project_id="restart-project", name="Restart project",
             root_path=str(root), is_git_repo=is_git_repo,
+            project_type="python_tool",
         )
         writer.db.upsert_project(project)
         base = dict(
@@ -1704,11 +1693,7 @@ def test_restart_does_not_trust_persisted_completed_task_without_current_proof(
         )
         writer.db.upsert_task(TaskRecord(
             task_id="old-completion", status="COMPLETED",
-            verification_summary=historical, assigned_runner_id="old-runner",
-            **base,
-        ))
-        writer.db.upsert_task(TaskRecord(
-            task_id="queued-task", status="QUEUED", **base,
+            verification_summary=historical, **base,
         ))
         writer.db.upsert_task(TaskRecord(
             task_id="dependent-task", status="QUEUED",
@@ -1717,30 +1702,120 @@ def test_restart_does_not_trust_persisted_completed_task_without_current_proof(
         writer.db.upsert_task(TaskRecord(
             task_id="historical-failure", status="FAILED", **base,
         ))
+        writer.db.upsert_task(TaskRecord(
+            task_id="was-running", status="RUNNING",
+            assigned_runner_id="r1", **base,
+        ))
+    finally:
+        writer.close()
+    return historical
+
+
+@pytest.mark.parametrize("is_git_repo", [False, True])
+def test_restart_leaves_completed_tasks_completed(tmp_path, is_git_repo):
+    """REQUIREMENT: restart must not demote COMPLETED tasks.
+
+    The previous version of this test asserted COMPLETED -> PAUSED on restart.
+    That defended a defect: nothing ever moves PAUSED back to QUEUED, the task
+    generator counts PAUSED as open (so the project never receives new tasks)
+    and impl_ tasks stay blocked forever. In-flight work must still be BLOCKED.
+    """
+    config = _write_minimal_config(tmp_path / "config", tmp_path / "data")
+    root = tmp_path / "synthetic-repo"
+    root.mkdir()
+    historical = _seed_completed_restart_fixture(config, root, is_git_repo)
+
+    for _ in range(2):  # a second restart must be a no-op too
+        restarted = Orchestrator(config)
+        try:
+            old = restarted.db.get_task("old-completion")
+            assert old.status == "COMPLETED"
+            assert old.verification_summary == historical
+            assert restarted.db.get_task("historical-failure").status == "FAILED"
+            running = restarted.db.get_task("was-running")
+            assert running.status == "BLOCKED"
+            assert "Recovered after supervisor restart" in (running.last_error or "")
+            assert "dependent-task" in {
+                t.task_id for t in restarted.task_queue.queued()
+            }
+        finally:
+            restarted.close()
+
+
+def test_restart_does_not_starve_task_generator(tmp_path):
+    config = _write_minimal_config(tmp_path / "config", tmp_path / "data")
+    root = tmp_path / "synthetic-repo"
+    root.mkdir()
+    writer = Orchestrator(config)
+    try:
+        project = ProjectRecord(
+            project_id="gen-project", name="Gen project",
+            root_path=str(root), is_git_repo=False, project_type="python_tool",
+        )
+        writer.db.upsert_project(project)
+        writer.db.upsert_task(TaskRecord(
+            task_id="only-done", project_id=project.project_id, title="done",
+            task_type="verification", source="test", priority=0.5, risk="medium",
+            expected_runtime_min=1, expected_context_cost="low",
+            required_verification=["relevant_tests"], status="COMPLETED",
+        ))
     finally:
         writer.close()
 
-    restarted = Orchestrator(config)
-    try:
-        old = restarted.db.get_task("old-completion")
-        assert old is not None
-        assert old.status == "PAUSED"
-        assert old.assigned_runner_id is None
-        assert "fresh verification" in (old.last_error or "")
-        assert old.verification_summary == historical
-        assert restarted.db.get_task("queued-task").status == "QUEUED"
-        assert restarted.db.get_task("historical-failure").status == "FAILED"
-        assert "dependent-task" not in {
-            task.task_id for task in restarted.task_queue.queued()
-        }
-        assert not restarted.task_queue.list_by_status("COMPLETED")
-    finally:
-        restarted.close()
+    for _ in range(2):
+        restarted = Orchestrator(config)
+        try:
+            generated = restarted.task_generator.generate(
+                restarted.db.list_projects(), restarted.db.list_tasks()
+            )
+            assert generated, "project with only COMPLETED tasks must get new tasks"
+        finally:
+            restarted.close()
 
-    again = Orchestrator(config)
-    try:
-        retained = again.db.get_task("old-completion")
-        assert retained.status == "PAUSED"
-        assert retained.verification_summary == historical
-    finally:
-        again.close()
+
+def test_read_only_cli_paths_do_not_change_task_state(tmp_path):
+    import io
+    from contextlib import redirect_stderr, redirect_stdout
+
+    from overmind.cli import main as cli_main
+
+    def _invoke(argv):
+        out, err, saved = io.StringIO(), io.StringIO(), sys.argv
+        sys.argv = ["overmind", *argv]
+        code = 0
+        try:
+            with redirect_stdout(out), redirect_stderr(err):
+                try:
+                    rc = cli_main()
+                    code = 0 if rc is None else int(rc)
+                except SystemExit as exc:
+                    code = int(exc.code) if exc.code is not None else 0
+        finally:
+            sys.argv = saved
+        return code, out.getvalue(), err.getvalue()
+
+    config = _write_minimal_config(tmp_path / "config", tmp_path / "data")
+    root = tmp_path / "synthetic-repo"
+    root.mkdir()
+    _seed_completed_restart_fixture(config, root, False)
+
+    def snapshot():
+        o = Orchestrator(config)
+        try:
+            return {
+                t.task_id: (t.status, t.last_error, t.assigned_runner_id)
+                for t in o.db.list_tasks()
+            }
+        finally:
+            o.close()
+
+    snapshot()  # first construction performs the one-time ASSIGNED/RUNNING recovery
+    before = snapshot()
+    assert before["old-completion"][0] == "COMPLETED"
+    for cmd in (["show-state"], ["show-state"]):
+        code, out, err = _invoke([
+            "--config-dir", str(tmp_path / "config"),
+            "--data-dir", str(tmp_path / "data"), *cmd,
+        ])
+        assert code == 0, (out, err)
+    assert snapshot() == before
