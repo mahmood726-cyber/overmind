@@ -1409,6 +1409,43 @@ def test_blame_task_returns_not_found_for_missing_task(tmp_path):
         orchestrator.close()
 
 
+def test_blame_task_finds_verify_prefixed_logs_via_summary(tmp_path):
+    """Real log names for unsafe/underscored ids are verify_<...>.log; blame must
+    follow the log= value recorded in verification_summary, not a stale glob."""
+    config = _write_minimal_config(tmp_path / "config", tmp_path / "data")
+    orchestrator = Orchestrator(config)
+    try:
+        task = TaskRecord(
+            task_id="t_blame", project_id="p-blame", title="Blame this",
+            task_type="verification", source="test", priority=0.5, risk="medium",
+            expected_runtime_min=1, expected_context_cost="low",
+            required_verification=["relevant_tests"], trace_id="trace_blame",
+            verification_summary=[
+                "relevant_tests: exit=1 command=pytest -q log=verify_trace_blame_t_blame_relevant_tests_1_abc123.log",
+                "relevant_tests: exit=1 command=x log=../escape.log",
+            ],
+            status="FAILED",
+        )
+        orchestrator.db.upsert_project(ProjectRecord(
+            project_id="p-blame", name="Blame P", root_path=str(tmp_path / "r"),
+            project_type="python_tool", stack=["python"],
+        ))
+        orchestrator.db.upsert_task(task)
+        artifacts = config.data_dir / "artifacts"
+        artifacts.mkdir(parents=True, exist_ok=True)
+        (artifacts / "verify_trace_blame_t_blame_relevant_tests_1_abc123.log").write_text(
+            "$ pytest -q\n\nSTDOUT:\nboom\n", encoding="utf-8")
+        (tmp_path / "data" / "escape.log").write_text("secret", encoding="utf-8")
+
+        result = orchestrator.blame_task("t_blame", tail_lines=5)
+
+        paths = [Path(entry["path"]).name for entry in result["artifact_logs"]]
+        assert paths == ["verify_trace_blame_t_blame_relevant_tests_1_abc123.log"]
+        assert "boom" in result["artifact_logs"][0]["tail"]
+    finally:
+        orchestrator.close()
+
+
 def test_blame_task_surfaces_artifact_log_tails(tmp_path):
     config = _write_minimal_config(tmp_path / "config", tmp_path / "data")
     orchestrator = Orchestrator(config)

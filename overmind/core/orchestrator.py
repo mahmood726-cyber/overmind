@@ -1226,7 +1226,25 @@ class Orchestrator:
         trace_id = task.trace_id or task.task_id
         artifact_logs: list[dict[str, object]] = []
         if artifacts_dir.exists():
-            for log_path in sorted(artifacts_dir.glob(f"{trace_id}_{task.task_id}_*.log")):
+            # Follow the log= names the verifier recorded in the summary (real
+            # names are verify_<...>.log for unsafe/underscored ids). Only bare
+            # file names are honoured so a summary cannot point outside
+            # artifacts_dir. The legacy {trace}_{task}_*.log glob is kept as a
+            # fallback because the verifier still writes that name for simple
+            # lowercase ids without underscores.
+            candidates: list[Path] = []
+            for line in task.verification_summary or []:
+                for name in re.findall(r"log=(\S+\.log)", str(line)):
+                    if Path(name).name != name or name in {".", ".."}:
+                        continue
+                    path = artifacts_dir / name
+                    if path.is_file() and path not in candidates:
+                        candidates.append(path)
+            if not candidates:
+                candidates = sorted(
+                    artifacts_dir.glob(f"{trace_id}_{task.task_id}_*.log")
+                )
+            for log_path in candidates:
                 try:
                     text = log_path.read_text(encoding="utf-8", errors="replace")
                 except OSError as exc:
