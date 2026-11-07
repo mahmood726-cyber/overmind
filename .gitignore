@@ -64,3 +64,5 @@ keys/
 # benchmark volatile run state (keep tasks/keys/scorecard; drop checkpoints + live arm logs)
 benchmark_data/checkpoints/
 benchmark_data/runs/arm_*.jsonl
+
+.overmind-lane.lock
