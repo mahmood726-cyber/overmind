@@ -105,12 +105,8 @@ def run_guarded(
                 proc.kill()
             except OSError:
                 pass
-            for stream in (proc.stdin, proc.stdout, proc.stderr):
-                try:
-                    if stream is not None:
-                        stream.close()
-                except OSError:
-                    pass
+            # Do NOT close proc.stdout/stderr here: communicate()'s reader threads
+            # still hold them, and close() blocks until a surviving descendant exits.
             stdout, stderr = "", ""
         return ExecResult(
             -1, stdout or "", (stderr or "") + f"\n[timed out after {timeout}s; process tree killed]",

@@ -77,3 +77,23 @@ def test_compile_guarded_refuses_catastrophic():
 def test_compile_guarded_compiles_safe():
     rx = compile_guarded(r"\d{1,80}")
     assert rx.match("12345") is not None
+
+
+def test_run_guarded_surviving_grandchild_does_not_hang_harness(monkeypatch):
+    # A grandchild that survives tree-kill keeps the inherited stdout pipe open.
+    # Closing the pipes while communicate() reader threads hold them blocks until
+    # that grandchild exits (A1). The timed run must return promptly instead.
+    import time
+    import overmind.reliability.safe_exec as se
+
+    monkeypatch.setattr(se, "kill_process_tree", lambda proc: proc.kill())
+    parent = (
+        "import subprocess, sys, time\n"
+        "subprocess.Popen([sys.executable, '-c', 'import time; time.sleep(25)'])\n"
+        "time.sleep(60)\n"
+    )
+    t0 = time.perf_counter()
+    res = run_guarded([sys.executable, "-c", parent], timeout=1)
+    elapsed = time.perf_counter() - t0
+    assert res.timed_out is True
+    assert elapsed < 15, f"harness hung {elapsed:.1f}s on surviving grandchild"
