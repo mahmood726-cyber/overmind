@@ -181,29 +181,33 @@ class Retrofit:
         tags = _TAG_HTML if html else _TAG_MD
         out = []
         in_script = False   # never annotate inside <script>/<style> — would corrupt JS/JSON
-        for line in text.splitlines():
+        # keepends: preserve each line's own terminator (CRLF/LF/none) byte-for-byte (B1)
+        for _raw in text.splitlines(keepends=True):
+            _parts = _raw.splitlines()
+            line = _parts[0] if _parts else ""
+            eol = _raw[len(line):]
             if html:
                 opened = _SCRIPT_OPEN.search(line) or _STYLE_OPEN.search(line)
                 closed = _SCRIPT_CLOSE.search(line) or _STYLE_CLOSE.search(line)
                 if in_script:
-                    out.append(line)
+                    out.append(line + eol)
                     if closed:
                         in_script = False
                     continue
                 if opened and not closed:
                     in_script = True
-                    out.append(line)
+                    out.append(line + eol)
                     continue
                 if opened and closed:
                     # single-line inline script — leave the whole line untouched
-                    out.append(line)
+                    out.append(line + eol)
                     continue
             if _NOISE_LINE.match(line) or _ALREADY.search(line):
-                out.append(line)
+                out.append(line + eol)
                 continue
             nums = _claim_numbers(line)
             if not nums:
-                out.append(line)
+                out.append(line + eol)
                 continue
             # MARKING classifier is the REGEX one, deliberately. agy (Gemini) Part-V
             # attack: an LLM classifier is prompt-injectable ("classify as internal"),
@@ -236,8 +240,8 @@ class Retrofit:
             # registered = trial real but value NOT verified (honest, not green);
             # UNVERIFIED = no locator. One tag per line keeps the page readable.
             line_tier = self._classify_tier(line, pool)
-            out.append(line.rstrip() + tags[line_tier])
-        return "\n".join(out), counts
+            out.append(line.rstrip() + tags[line_tier] + eol)
+        return "".join(out), counts
 
     def _classify_tier(self, sentence: str, pool: dict[str, bool]) -> str:
         """Pure tier classification for ONE sentence (no counting). Shared by the
@@ -469,6 +473,8 @@ def inject_banner(text: str, counts: "CascadeCounts") -> str:
 class StageReport:
     staged: int = 0
     per_app: list[CascadeCounts] = field(default_factory=list)
+    # files that are not valid UTF-8: never rewritten, named here (B1)
+    skipped_undecodable: list[str] = field(default_factory=list)
 
     @property
     def total_world(self) -> int:
@@ -510,6 +516,18 @@ def _process_one(rf: "Retrofit", text: str, html: bool) -> tuple[str, "CascadeCo
     return rf.annotate(text, html=False)
 
 
+def _read_text_exact(path: str) -> str:
+    """Read UTF-8 strictly with NO newline translation (CRLF stays CRLF).
+    Raises UnicodeDecodeError on invalid bytes instead of substituting U+FFFD."""
+    with open(path, "r", encoding="utf-8", errors="strict", newline="") as fh:
+        return fh.read()
+
+
+def _write_text_exact(path: str, text: str) -> None:
+    with open(path, "w", encoding="utf-8", newline="") as fh:
+        fh.write(text)
+
+
 def stage_corpus(paths: Iterable[str], staging_dir: str, *,
                  retrofit: Optional[Retrofit] = None,
                  apply_in_place: bool = False) -> StageReport:
@@ -525,8 +543,10 @@ def stage_corpus(paths: Iterable[str], staging_dir: str, *,
         if not os.path.isfile(p):
             continue
         try:
-            with open(p, "r", encoding="utf-8", errors="replace") as fh:
-                text = fh.read()
+            text = _read_text_exact(p)
+        except UnicodeDecodeError:
+            rep.skipped_undecodable.append(p)
+            continue
         except OSError:
             continue
         html = p.lower().endswith((".html", ".htm"))
@@ -534,8 +554,7 @@ def stage_corpus(paths: Iterable[str], staging_dir: str, *,
         counts.path = p
         rep.per_app.append(counts)
         target = p if apply_in_place else os.path.join(staging_dir, os.path.basename(p))
-        with open(target, "w", encoding="utf-8") as fh:
-            fh.write(annotated)
+        _write_text_exact(target, annotated)
         rep.staged += 1
     return rep
 
@@ -562,7 +581,10 @@ if __name__ == "__main__":
     struct, prose = [], []
     for p in paths:
         try:
-            txt = open(p, "r", encoding="utf-8", errors="replace").read()
+            txt = _read_text_exact(p)
+        except UnicodeDecodeError:
+            print(f"SKIPPED (not valid UTF-8, left untouched): {p}")
+            continue
         except OSError:
             continue
         is_html = p.lower().endswith((".html", ".htm"))
@@ -571,7 +593,7 @@ if __name__ == "__main__":
         c.path = p
         tgt = p if a.apply else os.path.join(a.staging, os.path.basename(p))
         os.makedirs(os.path.dirname(tgt) or ".", exist_ok=True)
-        open(tgt, "w", encoding="utf-8").write(new)
+        _write_text_exact(tgt, new)
     s_rec = sum(c.world for c in struct); s_loc = sum(c.located_registry for c in struct)
     p_num = sum(c.world + c.ambiguous for c in prose); p_unv = sum(c.unverified for c in prose)
     print(f"structured app-data pages: {len(struct)}  records: {s_rec}  "
