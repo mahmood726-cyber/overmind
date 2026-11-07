@@ -837,11 +837,17 @@ def test_orchestrator_restore_checkpoint_rehydrates_state_and_pauses_live_tasks(
         assert restored["restored"] is True
         assert restored["restored_counts"]["tasks"] == 1
         assert restored_task is not None
-        assert restored_task.status == "PAUSED"
+        # PAUSED is a dead end (nothing re-queues it and the generator counts it
+        # as open), so an interrupted task is restored as QUEUED, and must be
+        # schedulable again.
+        assert restored_task.status == "QUEUED"
+        assert restored_task.task_id in {
+            t.task_id for t in orchestrator.task_queue.queued()
+        }
         assert "Restored from checkpoint" in (restored_task.last_error or "")
         assert restored_runner is not None
         assert restored_runner.current_task_id is None
-        assert replay["payload"]["tasks"][0]["status"] == "PAUSED"
+        assert replay["payload"]["tasks"][0]["status"] == "QUEUED"
     finally:
         orchestrator.close()
 
@@ -1698,7 +1704,10 @@ def test_restore_checkpoint_does_not_resurrect_unverified_completion(tmp_path, i
         saved = orchestrator.db.get_task(done.task_id)
         assert restored["restored"] is True
         assert saved is not None
-        assert saved.status == "PAUSED"  # never treat historical PASS as fresh completion
+        # Never treat the historical PASS as a fresh completion, but do not
+        # strand it in PAUSED: QUEUED means it is re-verified/scheduled again.
+        assert saved.status == "QUEUED"
+        assert saved.task_id in {t.task_id for t in orchestrator.task_queue.queued()}
         assert "fresh verification" in (saved.last_error or "")
         assert saved.verification_summary == historical  # preserve original evidence
         assert orchestrator.db.get_task(queued.task_id).status == "QUEUED"
@@ -1707,7 +1716,7 @@ def test_restore_checkpoint_does_not_resurrect_unverified_completion(tmp_path, i
         }
         replay = orchestrator.replay_checkpoint(checkpoint_id=restored["restored_checkpoint_id"])
         restored_done = next(t for t in replay["payload"]["tasks"] if t["task_id"] == done.task_id)
-        assert restored_done["status"] == "PAUSED"
+        assert restored_done["status"] == "QUEUED"
         assert restored_done["verification_summary"] == historical
     finally:
         orchestrator.close()

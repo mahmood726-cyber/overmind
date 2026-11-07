@@ -512,8 +512,11 @@ class Orchestrator:
             # checkout and plan. Never resurrect its COMPLETED bit as a fresh
             # PASS (including on a non-Git project). Keep the original summary
             # for investigation and require an explicit new verification run.
+            # Restored as QUEUED, not PAUSED: nothing ever moves PAUSED back to
+            # QUEUED and the task generator counts PAUSED as open, so PAUSED
+            # would strand the task (and its project) forever.
             if task.status == "COMPLETED":
-                task.status = "PAUSED"
+                task.status = "QUEUED"
                 task.assigned_runner_id = None
                 task.last_error = (
                     f"Restored from checkpoint {checkpoint_record['id']} "
@@ -521,7 +524,8 @@ class Orchestrator:
                     "requires fresh verification of current source revision and plan"
                 )
             elif task.status in {"ASSIGNED", "RUNNING", "VERIFYING", "NEEDS_INTERVENTION"}:
-                task.status = "PAUSED"
+                task.status = "QUEUED"
+                task.assigned_runner_id = None
                 task.last_error = (
                     f"Restored from checkpoint {checkpoint_record['id']} ({checkpoint_record['created_at']})"
                 )
