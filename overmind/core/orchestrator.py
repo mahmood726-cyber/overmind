@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 import os
+import re
 import subprocess
 import time
 from pathlib import Path
@@ -298,10 +299,12 @@ class Orchestrator:
                         last_error="project missing from index",
                     )
                     continue
+                # A trajectory score is an advisory scheduling hint, not a
+                # verification witness. Always run the declared objective checks
+                # before a task is eligible for COMPLETED.
+                result = self.verifier.run(task, project)
                 if trajectory.recommendation == "skip_verify":
-                    result = self._trajectory_fast_path_result(task, trajectory)
-                else:
-                    result = self.verifier.run(task, project)
+                    result.details.append(self._trajectory_fast_path_note(trajectory))
                 final_result = self._apply_completion_gates(
                     task=task,
                     project=project,
@@ -507,8 +510,25 @@ class Orchestrator:
         restored_task_payloads: list[dict[str, object]] = []
         for item in payload.get("tasks", []):
             task = TaskRecord(**item)
-            if task.status in {"ASSIGNED", "RUNNING", "VERIFYING", "NEEDS_INTERVENTION"}:
-                task.status = "PAUSED"
+            # A snapshot contains historical task status and free-text summary,
+            # not a current objective verification receipt bound to this exact
+            # checkout and plan. Never resurrect its COMPLETED bit as a fresh
+            # PASS (including on a non-Git project). Keep the original summary
+            # for investigation and require an explicit new verification run.
+            # Restored as QUEUED, not PAUSED: nothing ever moves PAUSED back to
+            # QUEUED and the task generator counts PAUSED as open, so PAUSED
+            # would strand the task (and its project) forever.
+            if task.status == "COMPLETED":
+                task.status = "QUEUED"
+                task.assigned_runner_id = None
+                task.last_error = (
+                    f"Restored from checkpoint {checkpoint_record['id']} "
+                    f"({checkpoint_record['created_at']}): historical completion "
+                    "requires fresh verification of current source revision and plan"
+                )
+            elif task.status in {"ASSIGNED", "RUNNING", "VERIFYING", "NEEDS_INTERVENTION"}:
+                task.status = "QUEUED"
+                task.assigned_runner_id = None
                 task.last_error = (
                     f"Restored from checkpoint {checkpoint_record['id']} ({checkpoint_record['created_at']})"
                 )
@@ -910,6 +930,40 @@ class Orchestrator:
                 completed_checks = self._append_unique_check(completed_checks, "semantic_requirements")
                 details.append(f"judge: pass (conf={judge_verdict.confidence:.2f})")
 
+        # Objective proof is bound to the requirements and (for a Git project)
+        # the exact HEAD observed by the verifier. Extra completion gates above
+        # can run commands or a judge after that observation, so a previously
+        # passing witness must not certify a changed checkout or proof contract.
+        proof_gap = None
+        if list(task.required_verification) != list(verification_result.required_checks):
+            proof_gap = "verification: unverified; required checks changed after objective verification"
+        elif project.is_git_repo:
+            receipt_prefix = "verification: Git HEAD verified commit="
+            receipts = [
+                detail[len(receipt_prefix):]
+                for detail in verification_result.details
+                if detail.startswith(receipt_prefix)
+            ]
+            if len(receipts) != 1 or not re.fullmatch(r"(?:[0-9a-f]{40}|[0-9a-f]{64})", receipts[0]):
+                proof_gap = "verification: unverified; missing or invalid Git commit witness"
+            else:
+                current_head = self.verifier._read_git_head(project.root_path)
+                if current_head != receipts[0]:
+                    proof_gap = (
+                        "verification: unverified; Git HEAD changed or became unavailable "
+                        "after objective verification"
+                    )
+        if proof_gap is not None:
+            return VerificationResult(
+                task_id=verification_result.task_id,
+                success=False,
+                required_checks=required_checks,
+                completed_checks=completed_checks,
+                skipped_checks=skipped_checks,
+                details=[*details, proof_gap],
+                trace_id=verification_result.trace_id,
+            )
+
         final_result = VerificationResult(
             task_id=verification_result.task_id,
             success=True,
@@ -1053,12 +1107,14 @@ class Orchestrator:
         passed, _detail = self._run_verify_command_with_detail(task, project)
         return passed
 
-    def _trajectory_fast_path_result(self, task: TaskRecord, trajectory) -> VerificationResult:
+    @staticmethod
+    def _trajectory_fast_path_note(trajectory) -> str:
+        """Record a heuristic skip hint without treating it as proof of work."""
         detail = (
-            "trajectory_fast_path: "
+            "trajectory_advisory: "
             f"completion_probability={trajectory.completion_probability:.3f} "
             f"recommendation={trajectory.recommendation} "
-            "skipped explicit verifier.run"
+            "objective verification still required"
         )
         if trajectory.signals:
             positive_signals = [
@@ -1066,15 +1122,7 @@ class Orchestrator:
             ]
             if positive_signals:
                 detail += f" signals={', '.join(positive_signals)}"
-        return VerificationResult(
-            task_id=task.task_id,
-            trace_id=task.trace_id or task.task_id,
-            success=True,
-            required_checks=["trajectory_fast_path"],
-            completed_checks=["trajectory_fast_path"],
-            skipped_checks=[],
-            details=[detail],
-        )
+        return detail
 
     def _run_verify_command_with_detail(self, task: TaskRecord, project: ProjectRecord) -> tuple[bool, str]:
         if not task.verify_command:
@@ -1229,7 +1277,25 @@ class Orchestrator:
         trace_id = task.trace_id or task.task_id
         artifact_logs: list[dict[str, object]] = []
         if artifacts_dir.exists():
-            for log_path in sorted(artifacts_dir.glob(f"{trace_id}_{task.task_id}_*.log")):
+            # Follow the log= names the verifier recorded in the summary (real
+            # names are verify_<...>.log for unsafe/underscored ids). Only bare
+            # file names are honoured so a summary cannot point outside
+            # artifacts_dir. The legacy {trace}_{task}_*.log glob is kept as a
+            # fallback because the verifier still writes that name for simple
+            # lowercase ids without underscores.
+            candidates: list[Path] = []
+            for line in task.verification_summary or []:
+                for name in re.findall(r"log=(\S+\.log)", str(line)):
+                    if Path(name).name != name or name in {".", ".."}:
+                        continue
+                    path = artifacts_dir / name
+                    if path.is_file() and path not in candidates:
+                        candidates.append(path)
+            if not candidates:
+                candidates = sorted(
+                    artifacts_dir.glob(f"{trace_id}_{task.task_id}_*.log")
+                )
+            for log_path in candidates:
                 try:
                     text = log_path.read_text(encoding="utf-8", errors="replace")
                 except OSError as exc:

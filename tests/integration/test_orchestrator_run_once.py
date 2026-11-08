@@ -3,6 +3,8 @@ from __future__ import annotations
 import sys
 from pathlib import Path
 
+import pytest
+
 from overmind.config import AppConfig
 from overmind.core.orchestrator import Orchestrator
 from overmind.verification.llm_judge import LLMJudge, StubBackend
@@ -505,7 +507,10 @@ def test_orchestrator_completes_task_with_dummy_runner(tmp_path):
         orchestrator.close()
 
 
-def test_orchestrator_consumes_skip_verify_fast_path(tmp_path):
+@pytest.mark.parametrize("missing_objective_witness", [True, False])
+def test_orchestrator_skip_verify_cannot_complete_without_objective_verification(
+    tmp_path, missing_objective_witness
+):
     config_dir = tmp_path / "config"
     data_dir = tmp_path / "data"
     project_root = tmp_path / "project"
@@ -579,17 +584,43 @@ def test_orchestrator_consumes_skip_verify_fast_path(tmp_path):
             recommendation="skip_verify",
         )
 
-        def _unexpected_verifier_run(*args, **kwargs):
-            raise AssertionError("verifier.run should not be called on skip_verify")
+        # Synthetic negative control: a high trajectory probability cannot
+        # convert unavailable objective verification into COMPLETED.
+        verification_calls = []
+        real_verifier_run = orchestrator.verifier.run
 
-        orchestrator.verifier.run = _unexpected_verifier_run
+        def _unverified_objective_check(task, project):
+            verification_calls.append(task.task_id)
+            if not missing_objective_witness:
+                return real_verifier_run(task, project)
+            return VerificationResult(
+                task_id=task.task_id,
+                trace_id=task.trace_id or task.task_id,
+                success=False,
+                required_checks=list(task.required_verification),
+                completed_checks=[],
+                skipped_checks=list(task.required_verification),
+                details=["verification: unverified; synthetic objective witness unavailable"],
+            )
 
-        assignments, saved_task = _run_until_completed(orchestrator, task.task_id)
+        orchestrator.verifier.run = _unverified_objective_check
 
-        assert assignments
+        saved_task = None
+        for _ in range(6):
+            orchestrator.run_once(settle_seconds=0.5)
+            saved_task = orchestrator.db.get_task(task.task_id)
+            if saved_task is not None and saved_task.status in {"FAILED", "COMPLETED"}:
+                break
+
+        assert verification_calls == [task.task_id]
         assert saved_task is not None
-        assert saved_task.status == "COMPLETED"
-        assert any("trajectory_fast_path" in line for line in saved_task.verification_summary)
+        if missing_objective_witness:
+            assert saved_task.status == "FAILED"
+            assert "unverified" in (saved_task.last_error or "")
+        else:
+            assert saved_task.status == "COMPLETED"
+            assert any("trajectory_advisory" in line for line in saved_task.verification_summary)
+            assert any("log=" in line for line in saved_task.verification_summary)
     finally:
         orchestrator.close()
 
@@ -911,11 +942,17 @@ def test_orchestrator_restore_checkpoint_rehydrates_state_and_pauses_live_tasks(
         assert restored["restored"] is True
         assert restored["restored_counts"]["tasks"] == 1
         assert restored_task is not None
-        assert restored_task.status == "PAUSED"
+        # PAUSED is a dead end (nothing re-queues it and the generator counts it
+        # as open), so an interrupted task is restored as QUEUED, and must be
+        # schedulable again.
+        assert restored_task.status == "QUEUED"
+        assert restored_task.task_id in {
+            t.task_id for t in orchestrator.task_queue.queued()
+        }
         assert "Restored from checkpoint" in (restored_task.last_error or "")
         assert restored_runner is not None
         assert restored_runner.current_task_id is None
-        assert replay["payload"]["tasks"][0]["status"] == "PAUSED"
+        assert replay["payload"]["tasks"][0]["status"] == "QUEUED"
     finally:
         orchestrator.close()
 
@@ -1483,6 +1520,43 @@ def test_blame_task_returns_not_found_for_missing_task(tmp_path):
         orchestrator.close()
 
 
+def test_blame_task_finds_verify_prefixed_logs_via_summary(tmp_path):
+    """Real log names for unsafe/underscored ids are verify_<...>.log; blame must
+    follow the log= value recorded in verification_summary, not a stale glob."""
+    config = _write_minimal_config(tmp_path / "config", tmp_path / "data")
+    orchestrator = Orchestrator(config)
+    try:
+        task = TaskRecord(
+            task_id="t_blame", project_id="p-blame", title="Blame this",
+            task_type="verification", source="test", priority=0.5, risk="medium",
+            expected_runtime_min=1, expected_context_cost="low",
+            required_verification=["relevant_tests"], trace_id="trace_blame",
+            verification_summary=[
+                "relevant_tests: exit=1 command=pytest -q log=verify_trace_blame_t_blame_relevant_tests_1_abc123.log",
+                "relevant_tests: exit=1 command=x log=../escape.log",
+            ],
+            status="FAILED",
+        )
+        orchestrator.db.upsert_project(ProjectRecord(
+            project_id="p-blame", name="Blame P", root_path=str(tmp_path / "r"),
+            project_type="python_tool", stack=["python"],
+        ))
+        orchestrator.db.upsert_task(task)
+        artifacts = config.data_dir / "artifacts"
+        artifacts.mkdir(parents=True, exist_ok=True)
+        (artifacts / "verify_trace_blame_t_blame_relevant_tests_1_abc123.log").write_text(
+            "$ pytest -q\n\nSTDOUT:\nboom\n", encoding="utf-8")
+        (tmp_path / "data" / "escape.log").write_text("secret", encoding="utf-8")
+
+        result = orchestrator.blame_task("t_blame", tail_lines=5)
+
+        paths = [Path(entry["path"]).name for entry in result["artifact_logs"]]
+        assert paths == ["verify_trace_blame_t_blame_relevant_tests_1_abc123.log"]
+        assert "boom" in result["artifact_logs"][0]["tail"]
+    finally:
+        orchestrator.close()
+
+
 def test_blame_task_surfaces_artifact_log_tails(tmp_path):
     config = _write_minimal_config(tmp_path / "config", tmp_path / "data")
     orchestrator = Orchestrator(config)
@@ -1595,6 +1669,307 @@ def test_verify_command_uses_scrubbed_env_and_config_timeout(tmp_path, monkeypat
         assert captured["kwargs"].get("encoding") == "utf-8"
     finally:
         orchestrator.close()
+
+
+@pytest.mark.parametrize(
+    "scenario, expected_success",
+    [
+        ("same_head", True),
+        ("head_changed", False),
+        ("head_unavailable", False),
+        ("missing_head_receipt", False),
+        ("requirements_changed", False),
+        ("non_git_control", True),
+    ],
+)
+def test_completion_acceptance_revalidates_revision_and_requirements(
+    tmp_path, monkeypatch, scenario, expected_success
+):
+    """A previously passing result must not be accepted after proof-context drift.
+
+    All checkout identities and command results are synthetic. No live agent,
+    repository checkout, article data, or network operation is involved.
+    """
+    config = _write_minimal_config(tmp_path / "config", tmp_path / "data")
+    orchestrator = Orchestrator(config)
+    head_verified = "a" * 40
+    head_new = "b" * 40
+    try:
+        project_root = tmp_path / "project"
+        project_root.mkdir()
+        project = ProjectRecord(
+            project_id="revision-project",
+            name="Synthetic revision project",
+            root_path=str(project_root),
+            is_git_repo=scenario != "non_git_control",
+            project_type="python_tool",
+            stack=["python"],
+        )
+        task = TaskRecord(
+            task_id="revision-task",
+            project_id=project.project_id,
+            title="Check revision-bound completion",
+            task_type="verification",
+            source="test",
+            priority=0.9,
+            risk="medium",
+            expected_runtime_min=1,
+            expected_context_cost="low",
+            required_verification=["relevant_tests"],
+        )
+        details = ["relevant_tests: exit=0 command=synthetic"]
+        if scenario != "missing_head_receipt":
+            details.append("verification: Git HEAD verified commit=" + head_verified)
+        result = VerificationResult(
+            task_id=task.task_id,
+            success=True,
+            required_checks=["relevant_tests"],
+            completed_checks=["relevant_tests"],
+            skipped_checks=[],
+            details=details,
+        )
+        if scenario == "requirements_changed":
+            task.required_verification.append("new_required_check")
+        current_head = (
+            None if scenario == "head_unavailable" else
+            head_new if scenario == "head_changed" else head_verified
+        )
+        monkeypatch.setattr(
+            orchestrator.verifier, "_read_git_head", lambda _: current_head
+        )
+        final = orchestrator._apply_completion_gates(
+            task=task,
+            project=project,
+            verification_result=result,
+            include_judge=False,
+        )
+        assert final.success is expected_success
+        if not expected_success:
+            assert any("unverified" in line for line in final.details)
+    finally:
+        orchestrator.close()
+
+
+@pytest.mark.parametrize("is_git_repo", [False, True])
+def test_restore_checkpoint_does_not_resurrect_unverified_completion(tmp_path, is_git_repo):
+    """A stored COMPLETED bit alone cannot prove the current head/plan was checked.
+
+    This exercises synthetic persisted task records, not a real checkout,
+    publication, agent, or live task. Historical evidence must remain visible.
+    """
+    config = _write_minimal_config(tmp_path / "config", tmp_path / "data")
+    orchestrator = Orchestrator(config)
+    try:
+        project = ProjectRecord(
+            project_id="synthetic-project",
+            name="Synthetic verification project",
+            root_path=str(tmp_path / "synthetic-project"),
+            is_git_repo=is_git_repo,
+        )
+        historical = ["relevant_tests: PASS", "historical evidence; not current proof"]
+        done = TaskRecord(
+            task_id="historically-complete",
+            project_id=project.project_id,
+            title="Historical completion",
+            task_type="verification",
+            source="test",
+            priority=0.5,
+            risk="medium",
+            expected_runtime_min=1,
+            expected_context_cost="low",
+            required_verification=["relevant_tests"],
+            status="COMPLETED",
+            verification_summary=historical,
+        )
+        queued = TaskRecord(
+            task_id="still-queued",
+            project_id=project.project_id,
+            title="Not yet completed",
+            task_type="verification",
+            source="test",
+            priority=0.5,
+            risk="medium",
+            expected_runtime_min=1,
+            expected_context_cost="low",
+            required_verification=["relevant_tests"],
+            status="QUEUED",
+        )
+        checkpoint_id = orchestrator.db.write_checkpoint(
+            "main",
+            {
+                "projects": [project.to_dict()],
+                "tasks": [done.to_dict(), queued.to_dict()],
+                "runners": [],
+                "insights": [],
+            },
+        )
+
+        restored = orchestrator.restore_checkpoint(checkpoint_id=checkpoint_id)
+
+        saved = orchestrator.db.get_task(done.task_id)
+        assert restored["restored"] is True
+        assert saved is not None
+        # Never treat the historical PASS as a fresh completion, but do not
+        # strand it in PAUSED: QUEUED means it is re-verified/scheduled again.
+        assert saved.status == "QUEUED"
+        assert saved.task_id in {t.task_id for t in orchestrator.task_queue.queued()}
+        assert "fresh verification" in (saved.last_error or "")
+        assert saved.verification_summary == historical  # preserve original evidence
+        assert orchestrator.db.get_task(queued.task_id).status == "QUEUED"
+        assert done.task_id not in {
+            task.task_id for task in orchestrator.task_queue.list_by_status("COMPLETED")
+        }
+        replay = orchestrator.replay_checkpoint(checkpoint_id=restored["restored_checkpoint_id"])
+        restored_done = next(t for t in replay["payload"]["tasks"] if t["task_id"] == done.task_id)
+        assert restored_done["status"] == "QUEUED"
+        assert restored_done["verification_summary"] == historical
+    finally:
+        orchestrator.close()
+
+def _seed_completed_restart_fixture(config, root, is_git_repo):
+    historical = ["tests: exit=0 command=synthetic", "historical result"]
+    writer = Orchestrator(config)
+    try:
+        project = ProjectRecord(
+            project_id="restart-project", name="Restart project",
+            root_path=str(root), is_git_repo=is_git_repo,
+            project_type="python_tool",
+        )
+        writer.db.upsert_project(project)
+        base = dict(
+            project_id=project.project_id, title="Synthetic task",
+            task_type="verification", source="test", priority=0.5,
+            risk="medium", expected_runtime_min=1,
+            expected_context_cost="low", required_verification=["relevant_tests"],
+        )
+        writer.db.upsert_task(TaskRecord(
+            task_id="old-completion", status="COMPLETED",
+            verification_summary=historical, **base,
+        ))
+        writer.db.upsert_task(TaskRecord(
+            task_id="dependent-task", status="QUEUED",
+            blocked_by=["old-completion"], **base,
+        ))
+        writer.db.upsert_task(TaskRecord(
+            task_id="historical-failure", status="FAILED", **base,
+        ))
+        writer.db.upsert_task(TaskRecord(
+            task_id="was-running", status="RUNNING",
+            assigned_runner_id="r1", **base,
+        ))
+    finally:
+        writer.close()
+    return historical
+
+
+@pytest.mark.parametrize("is_git_repo", [False, True])
+def test_restart_leaves_completed_tasks_completed(tmp_path, is_git_repo):
+    """REQUIREMENT: restart must not demote COMPLETED tasks.
+
+    The previous version of this test asserted COMPLETED -> PAUSED on restart.
+    That defended a defect: nothing ever moves PAUSED back to QUEUED, the task
+    generator counts PAUSED as open (so the project never receives new tasks)
+    and impl_ tasks stay blocked forever. In-flight work must still be BLOCKED.
+    """
+    config = _write_minimal_config(tmp_path / "config", tmp_path / "data")
+    root = tmp_path / "synthetic-repo"
+    root.mkdir()
+    historical = _seed_completed_restart_fixture(config, root, is_git_repo)
+
+    for _ in range(2):  # a second restart must be a no-op too
+        restarted = Orchestrator(config)
+        try:
+            old = restarted.db.get_task("old-completion")
+            assert old.status == "COMPLETED"
+            assert old.verification_summary == historical
+            assert restarted.db.get_task("historical-failure").status == "FAILED"
+            running = restarted.db.get_task("was-running")
+            assert running.status == "BLOCKED"
+            assert "Recovered after supervisor restart" in (running.last_error or "")
+            assert "dependent-task" in {
+                t.task_id for t in restarted.task_queue.queued()
+            }
+        finally:
+            restarted.close()
+
+
+def test_restart_does_not_starve_task_generator(tmp_path):
+    config = _write_minimal_config(tmp_path / "config", tmp_path / "data")
+    root = tmp_path / "synthetic-repo"
+    root.mkdir()
+    writer = Orchestrator(config)
+    try:
+        project = ProjectRecord(
+            project_id="gen-project", name="Gen project",
+            root_path=str(root), is_git_repo=False, project_type="python_tool",
+        )
+        writer.db.upsert_project(project)
+        writer.db.upsert_task(TaskRecord(
+            task_id="only-done", project_id=project.project_id, title="done",
+            task_type="verification", source="test", priority=0.5, risk="medium",
+            expected_runtime_min=1, expected_context_cost="low",
+            required_verification=["relevant_tests"], status="COMPLETED",
+        ))
+    finally:
+        writer.close()
+
+    for _ in range(2):
+        restarted = Orchestrator(config)
+        try:
+            generated = restarted.task_generator.generate(
+                restarted.db.list_projects(), restarted.db.list_tasks()
+            )
+            assert generated, "project with only COMPLETED tasks must get new tasks"
+        finally:
+            restarted.close()
+
+
+def test_read_only_cli_paths_do_not_change_task_state(tmp_path):
+    import io
+    from contextlib import redirect_stderr, redirect_stdout
+
+    from overmind.cli import main as cli_main
+
+    def _invoke(argv):
+        out, err, saved = io.StringIO(), io.StringIO(), sys.argv
+        sys.argv = ["overmind", *argv]
+        code = 0
+        try:
+            with redirect_stdout(out), redirect_stderr(err):
+                try:
+                    rc = cli_main()
+                    code = 0 if rc is None else int(rc)
+                except SystemExit as exc:
+                    code = int(exc.code) if exc.code is not None else 0
+        finally:
+            sys.argv = saved
+        return code, out.getvalue(), err.getvalue()
+
+    config = _write_minimal_config(tmp_path / "config", tmp_path / "data")
+    root = tmp_path / "synthetic-repo"
+    root.mkdir()
+    _seed_completed_restart_fixture(config, root, False)
+
+    def snapshot():
+        o = Orchestrator(config)
+        try:
+            return {
+                t.task_id: (t.status, t.last_error, t.assigned_runner_id)
+                for t in o.db.list_tasks()
+            }
+        finally:
+            o.close()
+
+    snapshot()  # first construction performs the one-time ASSIGNED/RUNNING recovery
+    before = snapshot()
+    assert before["old-completion"][0] == "COMPLETED"
+    for cmd in (["show-state"], ["show-state"]):
+        code, out, err = _invoke([
+            "--config-dir", str(tmp_path / "config"),
+            "--data-dir", str(tmp_path / "data"), *cmd,
+        ])
+        assert code == 0, (out, err)
+    assert snapshot() == before
 
 
 def test_judge_outage_block_is_marked_judge_side_not_runner_failure(tmp_path, monkeypatch):

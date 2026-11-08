@@ -95,3 +95,764 @@ def test_atomic_no_tmp_leftover(tmp_path):
     store = CheckpointStore(tmp_path)
     store.save("l", ["a"])
     assert not list(tmp_path.glob("*.tmp*"))
+
+
+def test_resume_is_tied_to_exact_commit_head(tmp_path):
+    head_a = "a" * 40
+    head_b = "b" * 40
+    original = CheckpointStore(tmp_path, commit_sha=head_a)
+    original.mark_done("run", "a", state={"phase": "done"})
+    assert CheckpointStore(tmp_path, commit_sha=head_a).remaining("run", ["a", "b"]) == ["b"]
+    changed = CheckpointStore(tmp_path, commit_sha=head_b)
+    assert changed.load("run") is None
+    assert changed.is_done("run", "a") is False
+    assert changed.remaining("run", ["a", "b"]) == ["a", "b"]
+    changed.mark_done("run", "b")
+    restarted = CheckpointStore(tmp_path, commit_sha=head_b).load("run")
+    assert restarted is not None
+    assert restarted.commit_sha == head_b
+    assert restarted.completed == ["b"]  # old 'a' must not leak into new head
+
+
+def test_bound_resume_rejects_legacy_checkpoint_without_head(tmp_path):
+    CheckpointStore(tmp_path).mark_done("run", "finished-on-unknown-revision")
+    bound = CheckpointStore(tmp_path, commit_sha="a" * 40)
+    assert bound.load("run") is None
+    assert bound.remaining("run", ["finished-on-unknown-revision"]) == [
+        "finished-on-unknown-revision"
+    ]
+
+
+def test_sanitized_loop_collision_does_not_reuse_completion(tmp_path):
+    store = CheckpointStore(tmp_path)
+    assert store._legacy_path("run/one") == store._legacy_path("run_one")
+    assert store._path("run/one") != store._path("run_one")
+    store.mark_done("run/one", "first")
+    store.mark_done("run_one", "second")
+    # Two distinct loops now coexist; neither can overwrite the other.
+    assert store.is_done("run/one", "first") is True
+    assert store.is_done("run/one", "second") is False
+    assert store.is_done("run_one", "second") is True
+    assert store.is_done("run_one", "first") is False
+
+
+def test_commit_head_requires_full_sha(tmp_path):
+    import pytest
+
+    for bad in ("", "abc", "z" * 40, "a" * 39):
+        with pytest.raises(ValueError, match="full 40-character"):
+            CheckpointStore(tmp_path, commit_sha=bad)
+
+
+def test_commit_sha_survives_restart_and_case_normalization(tmp_path):
+    uppercase = "AB" * 20
+    store = CheckpointStore(tmp_path, commit_sha=uppercase)
+    store.save("loop", ["complete"])
+    resumed = CheckpointStore(tmp_path, commit_sha=uppercase.lower())
+    assert resumed.is_done("loop", "complete")
+    assert resumed.load("loop").commit_sha == uppercase.lower()
+
+
+def test_legacy_valid_checkpoint_json_still_resumes(tmp_path):
+    import json
+
+    store = CheckpointStore(tmp_path)
+    store._path("run").write_text(
+        json.dumps({"loop": "run", "completed": ["done"], "state": {}, "updated_at": 1.0}),
+        encoding="utf-8",
+    )
+    assert store.is_done("run", "done")
+    assert store.remaining("run", ["done", "other"]) == ["other"]
+
+
+def test_malformed_checkpoint_fails_closed(tmp_path):
+    import json
+
+    # Valid JSON can still be structurally corrupt or claim completion from
+    # unsupported types. Never promote these values to verified work.
+    invalid = [
+        [],
+        {"loop": "run", "completed": {"done": True}},
+        {"loop": "run", "completed": "done"},
+        {"loop": "run", "completed": ["done", 1]},
+        {"loop": "run", "completed": ["done"], "state": ["broken"]},
+        {"loop": "run", "completed": ["done"], "updated_at": "yesterday"},
+        {"loop": "run", "completed": ["done"], "updated_at": float("nan")},
+        {"loop": "run", "completed": ["done"], "commit_sha": "bad-head"},
+        {"loop": 123, "completed": ["done"]},
+        {"completed": ["done"]},
+    ]
+    for payload in invalid:
+        store = CheckpointStore(tmp_path)
+        store._path("run").write_text(json.dumps(payload), encoding="utf-8")
+        raw_before = store._path("run").read_text(encoding="utf-8")
+        assert store.load("run") is None, payload
+        assert not store.is_done("run", "done"), payload
+        assert store.remaining("run", ["done", "other"]) == ["done", "other"], payload
+        # Reading an invalid checkpoint must not silently mutate it.
+        assert store._path("run").read_text(encoding="utf-8") == raw_before
+
+
+def test_legacy_checkpoint_read_then_incremental_migration(tmp_path):
+    import json
+
+    store = CheckpointStore(tmp_path, clock=_Clock())
+    legacy = store._legacy_path("run/one")
+    legacy.write_text(
+        json.dumps({"loop": "run/one", "completed": ["old"], "state": {"phase": "one"}, "updated_at": 1}),
+        encoding="utf-8",
+    )
+    assert store.is_done("run/one", "old")
+    assert not store.is_done("run_one", "old")  # shared old filename, mismatched identity
+    store.mark_done("run/one", "new")
+    assert store._path("run/one").exists()
+    assert store.load("run/one").completed == ["old", "new"]
+    assert store.load("run/one").state == {"phase": "one"}
+    # Migration does not corrupt or overwrite the original source bytes.
+    assert json.loads(legacy.read_text(encoding="utf-8"))["completed"] == ["old"]
+
+
+def test_clear_never_deletes_other_loops_legacy_file(tmp_path):
+    import json
+
+    store = CheckpointStore(tmp_path)
+    legacy = store._legacy_path("run/one")
+    legacy.write_text(
+        json.dumps({"loop": "run/one", "completed": ["old"]}), encoding="utf-8"
+    )
+    store.mark_done("run_one", "new")
+    store.clear("run_one")
+    assert legacy.exists()
+    assert store.is_done("run/one", "old")
+    assert not store.is_done("run_one", "new")
+    store.clear("run/one")
+    assert not legacy.exists()
+
+
+def test_corrupt_modern_checkpoint_does_not_resurrect_legacy_success(tmp_path):
+    import json
+
+    store = CheckpointStore(tmp_path)
+    store._legacy_path("run").write_text(
+        json.dumps({"loop": "run", "completed": ["stale"]}), encoding="utf-8"
+    )
+    store._path("run").write_text(
+        '{"loop":"run","completed":{"stale":true}}', encoding="utf-8"
+    )
+    assert store.load("run") is None
+    assert store.remaining("run", ["stale"]) == ["stale"]
+
+
+def test_hashed_checkpoint_path_is_portable_and_bounded(tmp_path):
+    store = CheckpointStore(tmp_path)
+    loop = "trial/" + ("x" * 300) + "/β"
+    path = store._path(loop)
+    assert len(path.name.encode("utf-8")) < 200
+    assert all(ord(char) < 128 for char in path.name)
+    assert path == CheckpointStore(tmp_path)._path(loop)
+    store.mark_done(loop, "done")
+    assert CheckpointStore(tmp_path).is_done(loop, "done")
+
+
+def test_plan_change_at_same_head_invalidates_completed_items(tmp_path):
+    import hashlib
+
+    head = "a" * 40
+    old_plan = hashlib.sha256(b"python -m pytest tests/unit").hexdigest()
+    changed_plan = hashlib.sha256(b"python -m pytest tests/integration").hexdigest()
+    original = CheckpointStore(tmp_path, commit_sha=head, plan_sha=old_plan)
+    original.mark_done("check", "tests")
+    # Exact-head AND exact-plan restarts may reuse already completed checks.
+    assert CheckpointStore(tmp_path, commit_sha=head, plan_sha=old_plan).is_done(
+        "check", "tests"
+    )
+    # Changed commands at the SAME Git head cannot reuse the old completion.
+    changed = CheckpointStore(tmp_path, commit_sha=head, plan_sha=changed_plan)
+    assert changed.load("check") is None
+    assert not changed.is_done("check", "tests")
+    assert changed.remaining("check", ["tests", "build"]) == ["tests", "build"]
+    changed.mark_done("check", "build")
+    restarted = CheckpointStore(
+        tmp_path, commit_sha=head, plan_sha=changed_plan
+    ).load("check")
+    assert restarted is not None
+    assert restarted.plan_sha == changed_plan
+    assert restarted.completed == ["build"]  # stale test result stays excluded
+
+
+def test_plan_bound_resume_refuses_legacy_unbound_completion(tmp_path):
+    import hashlib
+
+    head = "b" * 40
+    CheckpointStore(tmp_path, commit_sha=head).mark_done("check", "stale")
+    bounded = CheckpointStore(
+        tmp_path, commit_sha=head,
+        plan_sha=hashlib.sha256(b"new plan").hexdigest(),
+    )
+    assert bounded.load("check") is None
+    assert bounded.remaining("check", ["stale"]) == ["stale"]
+    # Legacy callers remain able to read their old unbound records.
+    assert CheckpointStore(tmp_path, commit_sha=head).is_done("check", "stale")
+
+
+def test_plan_digest_requires_full_sha256_and_normalizes_case(tmp_path):
+    import hashlib
+    import pytest
+
+    for bad in ("", "g" * 64, "a" * 63, "a" * 65):
+        with pytest.raises(ValueError, match="plan_sha"):
+            CheckpointStore(tmp_path, plan_sha=bad)
+    digest = hashlib.sha256(b"synthetic command plan").hexdigest()
+    CheckpointStore(tmp_path, plan_sha=digest.upper()).mark_done("check", "yes")
+    resumed = CheckpointStore(tmp_path, plan_sha=digest).load("check")
+    assert resumed is not None
+    assert resumed.plan_sha == digest
+    assert resumed.completed == ["yes"]
+
+
+def test_malformed_persisted_plan_digest_never_yields_completion(tmp_path):
+    import json
+
+    store = CheckpointStore(tmp_path)
+    for bad in (42, "not-a-sha", [], "a" * 63):
+        record = {"loop": "check", "completed": ["looks_done"], "plan_sha": bad}
+        raw = json.dumps(record)
+        store._path("check").write_text(raw, encoding="utf-8")
+        assert store.load("check") is None
+        assert not store.is_done("check", "looks_done")
+        assert store.remaining("check", ["looks_done"]) == ["looks_done"]
+        # The invalid source record must not be modified to manufacture PASS.
+        assert store._path("check").read_text(encoding="utf-8") == raw
+
+
+def test_unbound_reader_refuses_head_bound_checkpoint(tmp_path):
+    """Missing local head identity must not trust completion from another checkout."""
+    head = "a" * 40
+    CheckpointStore(tmp_path, commit_sha=head).mark_done("run", "task")
+    unbound = CheckpointStore(tmp_path)
+    assert unbound.load("run") is None
+    assert not unbound.is_done("run", "task")
+    assert unbound.remaining("run", ["task"]) == ["task"]
+    assert CheckpointStore(tmp_path, commit_sha=head).is_done("run", "task")
+
+
+def test_unbound_reader_refuses_plan_bound_checkpoint(tmp_path):
+    """Omitting a plan digest must not mean 'accept any saved plan'."""
+    import hashlib
+
+    plan = hashlib.sha256(b"synthetic checks v1").hexdigest()
+    CheckpointStore(tmp_path, plan_sha=plan).mark_done("run", "task")
+    unbound = CheckpointStore(tmp_path)
+    assert unbound.load("run") is None
+    assert not unbound.is_done("run", "task")
+    assert CheckpointStore(tmp_path, plan_sha=plan).is_done("run", "task")
+
+
+def test_partially_bound_reader_refuses_missing_context(tmp_path):
+    import hashlib
+
+    head = "b" * 40
+    plan = hashlib.sha256(b"synthetic checks v2").hexdigest()
+    CheckpointStore(tmp_path, commit_sha=head, plan_sha=plan).mark_done("run", "task")
+    for reader in (
+        CheckpointStore(tmp_path, commit_sha=head),
+        CheckpointStore(tmp_path, plan_sha=plan),
+        CheckpointStore(tmp_path),
+    ):
+        assert reader.load("run") is None
+        assert reader.remaining("run", ["task"]) == ["task"]
+    assert CheckpointStore(tmp_path, commit_sha=head, plan_sha=plan).is_done("run", "task")
+
+
+def test_legacy_unbound_checkpoint_still_resumes_unbound_reader(tmp_path):
+    """Unbound records retain their historical unbound-consumer semantics."""
+    CheckpointStore(tmp_path).mark_done("old", "task")
+    assert CheckpointStore(tmp_path).is_done("old", "task")
+
+
+def test_interleaved_checkpoint_saves_use_distinct_atomic_temps(tmp_path, monkeypatch):
+    """Two threads in one PID must never share a temp file before os.replace."""
+    import os
+
+    store = CheckpointStore(tmp_path)
+    real_replace = os.replace
+    sources = []
+    interleaved = False
+
+    def overlap(first, target):
+        nonlocal interleaved
+        sources.append(str(first))
+        if not interleaved:
+            interleaved = True
+            # Deterministically simulate a second same-process writer while
+            # the first is waiting to replace its own temporary file.
+            store.save("separate-loop", ["inner"])
+        return real_replace(first, target)
+
+    monkeypatch.setattr(os, "replace", overlap)
+    store.save("run", ["outer"])
+    assert len(sources) == 2
+    assert len(set(sources)) == 2  # PID-only temp names used to alias.
+    assert store.load("run").completed == ["outer"]
+    assert not list(tmp_path.glob(".checkpoint-*.tmp"))
+
+
+def test_failed_atomic_rename_removes_temp_and_preserves_last_good_result(
+    tmp_path, monkeypatch
+):
+    """An interrupted save must not leak temp files or certify new progress."""
+    import os
+
+    store = CheckpointStore(tmp_path)
+    store.mark_done("run", "durable")
+    before = store._path("run").read_bytes()
+
+    def fail_replace(_src, _dst):
+        raise OSError("synthetic replace failure")
+
+    monkeypatch.setattr(os, "replace", fail_replace)
+    store.mark_done("run", "not-durable")
+    assert store._path("run").read_bytes() == before
+    assert store.load("run").completed == ["durable"]
+    assert store.is_done("run", "not-durable") is False
+    assert not list(tmp_path.glob(".checkpoint-*.tmp"))
+
+
+def test_failed_first_save_returns_no_unrecorded_completion(tmp_path, monkeypatch):
+    """A failed replace cannot make save() claim an item was checkpointed."""
+    import os
+
+    store = CheckpointStore(tmp_path)
+    def fail_replace(_src, _dst):
+        raise OSError("synthetic write failure")
+
+    monkeypatch.setattr(os, "replace", fail_replace)
+    returned = store.save("run", ["not-recorded"], state={"phase": "unwritten"})
+    assert returned.completed == []
+    assert returned.state == {}
+    assert store.load("run") is None
+    assert not store.is_done("run", "not-recorded")
+    assert not list(tmp_path.glob(".checkpoint-*.tmp"))
+
+
+def test_failed_mark_done_returns_prior_recorded_evidence(tmp_path, monkeypatch):
+    """Failed incremental save must not attest to the new task or state."""
+    import os
+
+    store = CheckpointStore(tmp_path)
+    store.mark_done("run", "previous", state={"phase": "recorded"})
+    prior_bytes = store._path("run").read_bytes()
+
+    def fail_replace(_src, _dst):
+        raise OSError("synthetic interrupted rename")
+
+    monkeypatch.setattr(os, "replace", fail_replace)
+    returned = store.mark_done("run", "not-recorded", state={"phase": "unwritten"})
+    assert returned.completed == ["previous"]
+    assert returned.state == {"phase": "recorded"}
+    assert store._path("run").read_bytes() == prior_bytes
+    assert store.remaining("run", ["previous", "not-recorded"]) == ["not-recorded"]
+    assert not list(tmp_path.glob(".checkpoint-*.tmp"))
+
+
+def test_failed_bound_write_does_not_adopt_other_revision(tmp_path, monkeypatch):
+    """Even fallback evidence must match the caller's exact commit/plan."""
+    import os
+
+    old = CheckpointStore(tmp_path, commit_sha="a" * 40, plan_sha="b" * 64)
+    old.mark_done("run", "previous-head")
+    current = CheckpointStore(tmp_path, commit_sha="c" * 40, plan_sha="d" * 64)
+
+    def fail_replace(_src, _dst):
+        raise OSError("synthetic unavailable destination")
+
+    monkeypatch.setattr(os, "replace", fail_replace)
+    returned = current.mark_done("run", "new-head")
+    assert returned.completed == []
+    assert returned.commit_sha == "c" * 40
+    assert returned.plan_sha == "d" * 64
+    assert current.load("run") is None
+    assert current.remaining("run", ["previous-head", "new-head"]) == [
+        "previous-head", "new-head"
+    ]
+    assert not list(tmp_path.glob(".checkpoint-*.tmp"))
+
+
+def test_invalid_completed_ids_cannot_replace_valid_checkpoint(tmp_path):
+    """A successful replace of unreadable IDs cannot certify completion."""
+    store = CheckpointStore(tmp_path)
+    store.mark_done("run", "recorded", state={"phase": "previous"})
+    original = store._path("run").read_bytes()
+    returned = store.save("run", ["recorded", 42], state={"phase": "unwritten"})
+    assert returned.completed == ["recorded"]
+    assert returned.state == {"phase": "previous"}
+    assert store._path("run").read_bytes() == original
+    assert store.remaining("run", ["recorded", "new"]) == ["new"]
+
+
+def test_nonfinite_clock_cannot_acknowledge_unreadable_checkpoint(tmp_path):
+    """Python json.dumps defaults to NaN; the reader rejects this timestamp."""
+    store = CheckpointStore(tmp_path, clock=lambda: float("nan"))
+    returned = store.mark_done("run", "not-recorded")
+    assert returned.completed == []
+    assert store.load("run") is None
+    assert store.remaining("run", ["not-recorded"]) == ["not-recorded"]
+
+
+def test_unserializable_state_cannot_crash_or_clobber_previous_evidence(tmp_path):
+    """A state object JSON cannot serialize must fail closed."""
+    store = CheckpointStore(tmp_path)
+    store.mark_done("run", "recorded", state={"phase": "previous"})
+    original = store._path("run").read_bytes()
+    returned = store.mark_done("run", "not-recorded", state={"bad": object()})
+    assert returned.completed == ["recorded"]
+    assert returned.state == {"phase": "previous"}
+    assert store._path("run").read_bytes() == original
+    assert not store.is_done("run", "not-recorded")
+    assert not list(tmp_path.glob(".checkpoint-*.tmp"))
+
+
+def test_nonfinite_nested_state_refused_but_finite_state_still_roundtrips(tmp_path):
+    """Strict encoding must reject nested Infinity without rejecting valid JSON."""
+    store = CheckpointStore(tmp_path)
+    recorded = store.save("run", ["good"], state={"nested": {"finite": 0.5}})
+    assert recorded.completed == ["good"]
+    original = store._path("run").read_bytes()
+    refused = store.mark_done("run", "not-recorded", state={"nested": {"bad": float("inf")}})
+    assert refused.completed == ["good"]
+    assert refused.state == {"nested": {"finite": 0.5}}
+    assert store._path("run").read_bytes() == original
+    assert store.is_done("run", "good")
+    assert not store.is_done("run", "not-recorded")
+
+
+def test_incremental_checkpoint_updates_are_serialized(tmp_path, monkeypatch):
+    """A second writer cannot overwrite a first writer's unread completed item."""
+    import threading
+
+    store = CheckpointStore(tmp_path)
+    first_in_write = threading.Event()
+    release_first = threading.Event()
+    second_finished = threading.Event()
+    errors = []
+    original_write = store._atomic_write
+
+    def pause_first(loop, payload):
+        if threading.current_thread().name == "checkpoint-first":
+            first_in_write.set()
+            if not release_first.wait(timeout=4):
+                raise AssertionError("synthetic first writer timed out")
+        return original_write(loop, payload)
+
+    monkeypatch.setattr(store, "_atomic_write", pause_first)
+
+    def write(item):
+        try:
+            store.mark_done("run", item)
+        except BaseException as exc:
+            errors.append(exc)
+        finally:
+            if item == "second":
+                second_finished.set()
+
+    first = threading.Thread(target=write, args=("first",), name="checkpoint-first")
+    second = threading.Thread(target=write, args=("second",), name="checkpoint-second")
+    first.start()
+    try:
+        assert first_in_write.wait(timeout=4)
+        second.start()
+        # Without a lock, second reads the old checkpoint and finishes while
+        # the first writer is paused. That would lose one completion.
+        assert not second_finished.wait(timeout=0.25)
+    finally:
+        release_first.set()
+        first.join(timeout=5)
+        if second.ident is not None:
+            second.join(timeout=5)
+    assert not first.is_alive() and not second.is_alive()
+    assert errors == []
+    assert set(store.load("run").completed) == {"first", "second"}
+
+
+def test_checkpoint_lock_blocks_other_process(tmp_path):
+    """Use a dummy Python process to check OS-level, not just thread, locking."""
+    import subprocess
+    import sys
+    import time
+
+    store = CheckpointStore(tmp_path)
+    script = (
+        "from overmind.reliability.checkpoint import CheckpointStore\n"
+        "print('ready', flush=True)\n"
+        f"CheckpointStore({str(tmp_path)!r}).mark_done('run', 'child')\n"
+    )
+    proc = None
+    try:
+        with store._write_lock("run"):
+            proc = subprocess.Popen(
+                [sys.executable, "-u", "-c", script],
+                stdout=subprocess.PIPE, stderr=subprocess.PIPE, text=True,
+            )
+            assert proc.stdout.readline().strip() == "ready"
+            time.sleep(0.25)
+            assert proc.poll() is None  # must await release of parent lock
+        stdout, stderr = proc.communicate(timeout=10)
+        assert proc.returncode == 0, (stdout, stderr)
+        assert store.is_done("run", "child")
+    finally:
+        if proc is not None and proc.poll() is None:
+            proc.kill()
+            proc.communicate(timeout=5)
+
+
+def test_write_lock_failure_does_not_acknowledge_or_clear_progress(tmp_path, monkeypatch):
+    """Timeouts/unavailable locks must not create or remove completion evidence."""
+    from contextlib import contextmanager
+
+    store = CheckpointStore(tmp_path)
+    store.mark_done("run", "durable", state={"phase": "before"})
+
+    @contextmanager
+    def unavailable(_loop):
+        raise OSError("synthetic lock unavailable")
+        yield
+
+    monkeypatch.setattr(store, "_write_lock", unavailable)
+    assert store.mark_done("run", "unwritten").completed == ["durable"]
+    assert store.save("run", ["unwritten"]).completed == ["durable"]
+    store.clear("run")
+    assert store.load("run").completed == ["durable"]
+    assert store.load("run").state == {"phase": "before"}
+
+
+def test_recovery_removes_only_same_loop_orphan_temp_files(tmp_path):
+    """A crashed writer's uncommitted temp must not accumulate after restart."""
+    import hashlib
+
+    store = CheckpointStore(tmp_path)
+    store.mark_done("run", "recorded")
+    digest = hashlib.sha256(b"run").hexdigest()
+    other_digest = hashlib.sha256(b"other").hexdigest()
+    orphan = tmp_path / f".checkpoint-{digest}-orphan.tmp"
+    unrelated = tmp_path / f".checkpoint-{other_digest}-orphan.tmp"
+    orphan.write_text("partial uncommitted data", encoding="utf-8")
+    unrelated.write_text("another loop may still be writing", encoding="utf-8")
+
+    restarted = CheckpointStore(tmp_path)
+    assert restarted.load("run").completed == ["recorded"]
+    restarted.mark_done("run", "recovered")
+    assert restarted.load("run").completed == ["recorded", "recovered"]
+    assert not orphan.exists()
+    assert unrelated.exists()  # never remove another loop's in-flight temp
+
+
+def test_killed_lock_owner_releases_lock_and_recovers_without_temp_evidence(tmp_path):
+    """A killed dummy process must not strand the OS lock or certify its temp."""
+    import hashlib
+    import subprocess
+    import sys
+
+    store = CheckpointStore(tmp_path)
+    store.mark_done("run", "recorded")
+    orphan = tmp_path / (
+        f".checkpoint-{hashlib.sha256(b'run').hexdigest()}-crashed.tmp"
+    )
+    script = (
+        "import time\n"
+        "from overmind.reliability.checkpoint import CheckpointStore\n"
+        f"store = CheckpointStore({str(tmp_path)!r})\n"
+        "with store._write_lock('run'):\n"
+        f"    with open({str(orphan)!r}, 'w', encoding='utf-8') as temp:\n"
+        "        temp.write('incomplete execution, not a checkpoint')\n"
+        "    print('lock-acquired', flush=True)\n"
+        "    time.sleep(30)\n"
+    )
+    proc = subprocess.Popen(
+        [sys.executable, "-u", "-c", script],
+        stdout=subprocess.PIPE, stderr=subprocess.PIPE, text=True,
+    )
+    try:
+        assert proc.stdout.readline().strip() == "lock-acquired"
+        assert orphan.exists()
+        assert store.load("run").completed == ["recorded"]
+        proc.kill()  # simulate abrupt process death with lock held
+        proc.communicate(timeout=10)
+        assert proc.returncode != 0
+
+        restarted = CheckpointStore(tmp_path)
+        assert restarted.is_done("run", "incomplete") is False
+        recovered = restarted.mark_done("run", "after-crash")
+        assert recovered.completed == ["recorded", "after-crash"]
+        assert restarted.load("run").completed == ["recorded", "after-crash"]
+        assert not orphan.exists()
+    finally:
+        if proc.poll() is None:
+            proc.kill()
+            proc.communicate(timeout=10)
+
+
+
+def test_checkpoint_file_sync_precedes_atomic_replace(tmp_path, monkeypatch):
+    """Only publish a completion record after its file data has been fsynced."""
+    import os
+
+    store = CheckpointStore(tmp_path)
+    real_fsync, real_replace = os.fsync, os.replace
+    observed = []
+
+    def observed_fsync(fd):
+        observed.append("fsync")
+        return real_fsync(fd)
+
+    def observed_replace(source, target):
+        assert observed == ["fsync"], "checkpoint was replaced without file sync"
+        return real_replace(source, target)
+
+    monkeypatch.setattr(os, "fsync", observed_fsync)
+    monkeypatch.setattr(os, "replace", observed_replace)
+    result = store.mark_done("run", "durably-recorded")
+    assert result.completed == ["durably-recorded"]
+    assert store.is_done("run", "durably-recorded")
+    assert observed == ["fsync"]
+
+
+def test_failed_file_sync_preserves_previous_checkpoint_without_ack(tmp_path, monkeypatch):
+    """A simulated disk flush error cannot claim unpersisted progress."""
+    import os
+
+    store = CheckpointStore(tmp_path)
+    store.mark_done("run", "previous")
+    before = store._path("run").read_bytes()
+
+    def failed_fsync(_fd):
+        raise OSError("synthetic fsync failure")
+
+    monkeypatch.setattr(os, "fsync", failed_fsync)
+    result = store.mark_done("run", "not-persisted")
+    assert result.completed == ["previous"]
+    assert store._path("run").read_bytes() == before
+    assert store.is_done("run", "not-persisted") is False
+    assert not list(tmp_path.glob(".checkpoint-*.tmp"))
+
+
+def test_failed_first_file_sync_yields_no_completion(tmp_path, monkeypatch):
+    """No previous checkpoint means no positive evidence on sync failure."""
+    import os
+
+    store = CheckpointStore(tmp_path)
+    monkeypatch.setattr(os, "fsync", lambda fd: (_ for _ in ()).throw(OSError("synthetic fsync failure")))
+    result = store.save("run", ["not-persisted"])
+    assert result.completed == []
+    assert store.load("run") is None
+    assert not list(tmp_path.glob(".checkpoint-*.tmp"))
+
+
+def test_completed_string_or_mapping_cannot_become_evidence(tmp_path):
+    """Characters and mapping keys are not a caller-provided task-id sequence."""
+    store = CheckpointStore(tmp_path)
+    store.mark_done("run", "previous")
+    before = store._path("run").read_bytes()
+
+    for malformed in ("job", {"phantom": False}, b"job"):
+        result = store.save("run", malformed)
+        assert result.completed == ["previous"]
+        assert store._path("run").read_bytes() == before
+        assert not store.is_done("run", "j")
+        assert not store.is_done("run", "phantom")
+
+
+def test_invalid_completed_iterable_fails_closed_without_exception(tmp_path):
+    """Unhashable and non-iterable input must not kill the supervisor."""
+    store = CheckpointStore(tmp_path)
+    for malformed in ([["unhashable"]], 123, ["valid", None]):
+        result = store.save("run", malformed)
+        assert result.completed == []
+        assert store.load("run") is None
+        assert not store.is_done("run", "valid")
+
+
+def test_blank_item_ids_are_never_completion_evidence(tmp_path):
+    """Reject both caller-supplied and already serialized empty item IDs."""
+    import json
+
+    store = CheckpointStore(tmp_path)
+    assert store.mark_done("run", "").completed == []
+    assert store.save("run", [""]).completed == []
+    assert store.load("run") is None
+
+    store.mark_done("run", "valid")
+    record = json.loads(store._path("run").read_text(encoding="utf-8"))
+    record["completed"] = ["valid", ""]
+    store._path("run").write_text(json.dumps(record), encoding="utf-8")
+    assert store.load("run") is None
+    assert store.is_done("run", "valid") is False
+    assert store.remaining("run", ["valid"]) == ["valid"]
+
+
+def test_valid_completed_generator_retains_dedup_and_revision_binding(tmp_path):
+    """Valid iterable, exact commit and plan still survive a fresh restart."""
+    head, plan = "a" * 40, "b" * 64
+    store = CheckpointStore(tmp_path, commit_sha=head, plan_sha=plan)
+    result = store.save("run", (item for item in ["first", "first", "second"]))
+    assert result.completed == ["first", "second"]
+    resumed = CheckpointStore(tmp_path, commit_sha=head, plan_sha=plan)
+    assert resumed.remaining("run", ["first", "second", "third"]) == ["third"]
+    assert CheckpointStore(tmp_path, commit_sha="c" * 40, plan_sha=plan).load("run") is None
+
+
+def test_clear_from_wrong_revision_preserves_bound_checkpoint(tmp_path):
+    """A caller without matching head/plan must not erase another run's evidence."""
+    bound = CheckpointStore(tmp_path, commit_sha="a" * 40, plan_sha="b" * 64)
+    bound.mark_done("run", "finished")
+    before = bound._path("run").read_bytes()
+
+    for other in (
+        CheckpointStore(tmp_path),
+        CheckpointStore(tmp_path, commit_sha="c" * 40, plan_sha="b" * 64),
+        CheckpointStore(tmp_path, commit_sha="a" * 40, plan_sha="d" * 64),
+        CheckpointStore(tmp_path, commit_sha="a" * 40),
+    ):
+        assert other.load("run") is None
+        other.clear("run")
+        assert bound._path("run").read_bytes() == before
+        assert bound.is_done("run", "finished")
+
+
+def test_clear_does_not_destroy_corrupt_checkpoint_or_foreign_legacy(tmp_path):
+    """Unknown/corrupt checkpoint data and a colliding legacy loop are preserved."""
+    import json
+
+    store = CheckpointStore(tmp_path)
+    store._path("run").write_text('{"loop":"run","completed":"invalid"}', encoding="utf-8")
+    corrupt = store._path("run").read_bytes()
+    store.clear("run")
+    assert store._path("run").read_bytes() == corrupt
+
+    legacy = store._legacy_path("run/one")
+    assert legacy == store._legacy_path("run_one")
+    legacy.write_text(json.dumps({"loop": "run/one", "completed": ["saved"]}), encoding="utf-8")
+    store.clear("run_one")
+    assert legacy.exists()
+    assert store.load("run/one").completed == ["saved"]
+
+
+def test_matching_bound_clear_still_removes_modern_and_legacy(tmp_path):
+    """Correctly bound caller can clear its own checkpoint, including migration."""
+    import json
+
+    store = CheckpointStore(tmp_path, commit_sha="a" * 40, plan_sha="b" * 64)
+    store.mark_done("run", "modern")
+    store.clear("run")
+    assert not store._path("run").exists()
+    assert store.load("run") is None
+
+    legacy = store._legacy_path("old")
+    legacy.write_text(json.dumps({
+        "loop": "old", "completed": ["saved"],
+        "commit_sha": "a" * 40, "plan_sha": "b" * 64,
+    }), encoding="utf-8")
+    assert store.load("old").completed == ["saved"]
+    CheckpointStore(tmp_path).clear("old")
+    assert legacy.exists()  # unbound cannot clear someone else's proof
+    store.clear("old")
+    assert not legacy.exists()
