@@ -49,6 +49,46 @@ def _atomic_write_text(path: Path, content: str, encoding: str = "utf-8") -> Non
     _os.replace(tmp, path)
 
 
+def stale_index_fields(stale_index: list[dict]) -> dict:
+    return {"stale_index": len(stale_index), "stale_index_projects": stale_index}
+
+
+def stale_index_markdown(stale_index: list[dict]) -> list[str]:
+    lines = [f"**{len(stale_index)} stale_index** (excluded from verification totals)", ""]
+    if stale_index:
+        lines.extend(["| Project id | Missing root path |", "| --- | --- |"])
+        for row in stale_index:
+            project_id = row["project_id"].replace("|", "&#124;").replace("\n", " ")
+            path = row["path"].replace("|", "&#124;").replace("\n", " ")
+            lines.append(f"| {project_id} | {path} |")
+        lines.append("")
+    return lines
+
+
+def write_selection_report(report_dir, run_start, is_rerun, stale_index, error=None):
+    """Persist selection evidence before initializing any verification services."""
+    report = {
+        "timestamp": run_start.isoformat(), "total_projects": 0,
+        "certified": 0, "rejected": 0, "failed": 0, "single_pass": 0,
+        "unverified": 0, "projects": [], **stale_index_fields(stale_index),
+    }
+    if error:
+        report["error"] = error
+    else:
+        report["partial"] = True
+        report["partial_reason"] = "Selection complete; verification pending."
+    date_str = run_start.strftime("%Y-%m-%d")
+    json_path, md_path, latest_path = _report_paths(report_dir, date_str, run_start, is_rerun)
+    report_dir.mkdir(parents=True, exist_ok=True)
+    _atomic_write_text(json_path, json.dumps(report, indent=2))
+    lines = [f"# Nightly Verification Report - {date_str}", "", "0 verified | 0 FAIL", ""]
+    lines.extend(stale_index_markdown(stale_index))
+    lines.append(error or report["partial_reason"])
+    _atomic_write_text(md_path, "\n".join(lines) + "\n")
+    if error and latest_path is not None:
+        _atomic_write_text(latest_path, json.dumps(report, indent=2))
+
+
 def _promote_progress_to_partial_report(
     date_str: str,
     report_dir: Path | None = None,
@@ -72,6 +112,7 @@ def _promote_progress_to_partial_report(
     rd = report_dir if report_dir is not None else REPORT_DIR
     aw = atomic_write if atomic_write is not None else _atomic_write_text
     try:
+        existing = {}
         json_path = rd / f"nightly_{date_str}.json"
         if json_path.exists():
             try:
@@ -87,6 +128,8 @@ def _promote_progress_to_partial_report(
             progress = json.loads(progress_path.read_text(encoding="utf-8"))
         except Exception:
             return
+        stale_ids = {row["project_id"] for row in existing.get("stale_index_projects", [])}
+        progress = {pid: verdict for pid, verdict in progress.items() if pid not in stale_ids}
         tally = Counter(progress.values())
         bundles_dir = rd / "bundles" / date_str
         proj_records = []
@@ -95,6 +138,8 @@ def _promote_progress_to_partial_report(
             for bundle_file in bundles_dir.glob("*.json"):
                 try:
                     b = json.loads(bundle_file.read_text(encoding="utf-8"))
+                    if b.get("project_id", bundle_file.stem) in stale_ids:
+                        continue
                     proj_records.append({
                         "name": b.get("project_id", bundle_file.stem),
                         "verdict": b.get("verdict", "?"),
@@ -122,6 +167,7 @@ def _promote_progress_to_partial_report(
             "unverified": tally.get("UNVERIFIED", 0),
             "vacuous_pass": sum(1 for r in proj_records if r.get("vacuous_pass")),
             "projects": proj_records,
+            **stale_index_fields(existing.get("stale_index_projects", [])),
         }
         rd.mkdir(parents=True, exist_ok=True)
         aw(json_path, json.dumps(report, indent=2))

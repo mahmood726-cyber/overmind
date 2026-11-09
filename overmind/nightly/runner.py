@@ -45,6 +45,7 @@ from overmind.nightly.selection import (
     _normalize_path,
     load_paths_filter,
     select_projects,
+    StaleProjectIndex,
 )
 from overmind.nightly.reporting import (
     _atomic_write_text,
@@ -52,6 +53,9 @@ from overmind.nightly.reporting import (
     _scrub_user_paths,
     _existing_path_arg,
     _report_paths,
+    stale_index_fields,
+    stale_index_markdown,
+    write_selection_report,
 )
 from overmind.nightly.integrations import (
     collect_sentinel_findings,
@@ -366,6 +370,30 @@ def _run_verification(db: StateDatabase, args: argparse.Namespace, run_start: da
     except Exception:
         pass  # Flag file is observability, not critical path.
 
+    paths_filter = None
+    if args.projects_from_file is not None:
+        paths_filter = load_paths_filter(args.projects_from_file)
+        print(f"Loaded {len(paths_filter)} target paths from {args.projects_from_file}")
+    try:
+        projects = select_projects(db, args.min_risk, args.limit, paths_filter=paths_filter)
+    except StaleProjectIndex as exc:
+        write_selection_report(REPORT_DIR, run_start, paths_filter is not None,
+                               exc.stale_index, error=str(exc))
+        raise
+    stale_index = projects.stale_index
+    print(f"Selected {len(projects)} projects for verification")
+    print(f"Excluded {len(stale_index)} stale_index rows")
+    for row in stale_index:
+        print(f"  {row['project_id']}: {row['path']}")
+    print()
+
+    if args.dry_run:
+        print("DRY RUN - would verify:")
+        for p in projects:
+            print(f"  {p.name} ({p.risk_profile}, math={p.advanced_math_score}) - {p.test_commands[0][:70]}")
+        return
+
+    write_selection_report(REPORT_DIR, run_start, paths_filter is not None, stale_index)
     engine = TruthCertEngine(
         baselines_dir=DATA_DIR / "baselines",
         test_timeout=args.timeout,
@@ -374,20 +402,6 @@ def _run_verification(db: StateDatabase, args: argparse.Namespace, run_start: da
     memory_store = MemoryStore(db, DATA_DIR / "checkpoints", DATA_DIR / "logs")
     dream_engine = DreamEngine(db)
     audit_loop = AuditLoop(db)
-
-    paths_filter = None
-    if args.projects_from_file is not None:
-        paths_filter = load_paths_filter(args.projects_from_file)
-        print(f"Loaded {len(paths_filter)} target paths from {args.projects_from_file}")
-    projects = select_projects(db, args.min_risk, args.limit, paths_filter=paths_filter)
-    print(f"Selected {len(projects)} projects for verification")
-    print()
-
-    if args.dry_run:
-        print("DRY RUN - would verify:")
-        for p in projects:
-            print(f"  {p.name} ({p.risk_profile}, math={p.advanced_math_score}) - {p.test_commands[0][:70]}")
-        return
 
     # Run verification
     tick = int(time.time())
@@ -995,6 +1009,7 @@ def _run_verification(db: StateDatabase, args: argparse.Namespace, run_start: da
     report = {
         "timestamp": run_start.isoformat(),
         "total_projects": n,
+        **stale_index_fields(stale_index),
         "certified": certified,
         "rejected": rejected,
         "failed": failed,
@@ -1084,6 +1099,7 @@ def _run_verification(db: StateDatabase, args: argparse.Namespace, run_start: da
         "",
         f"**{certified}/{n + skipped_cached} CERTIFIED** ({skipped_cached} cached) | {failed} FAIL | {rejected} REJECT | {single_pass} single-witness (PASS) | {unverified} UNVERIFIED",
         "",
+        *stale_index_markdown(stale_index),
         "```mermaid",
         "pie title Nightly Verdicts",
     ]

@@ -19,6 +19,11 @@ class ProjectIndexer:
         self.cache_path = self.config.data_dir / "cache" / "indexer_state.json"
 
     def incremental_refresh(self, focus_project_id: str | None = None) -> list[ProjectRecord]:
+        for project in self.db.list_projects():
+            missing = not Path(project.root_path).exists()
+            if project.root_path_missing != missing:
+                project.root_path_missing = missing
+                self.db.upsert_project(project)
         cache = self._load_cache()
         if focus_project_id:
             focused_records = self._focused_refresh(focus_project_id, cache)
@@ -37,6 +42,7 @@ class ProjectIndexer:
             else:
                 record = self.scanner.scan_project(root)
 
+            self._resolve_identity(record)
             next_cache["projects"][root_key] = {
                 "signature": signature,
                 "record": record.to_dict(),
@@ -48,6 +54,22 @@ class ProjectIndexer:
 
         self._save_cache(next_cache)
         return records
+
+    def _resolve_identity(self, record: ProjectRecord) -> None:
+        """Retain identity on rescans and unambiguous same-name relocations.
+
+        Discovery has no remote identity: its IDs hash the local path. Only
+        missing roots qualify for name matching; live copies stay distinct.
+        """
+        projects = self.db.list_projects()
+        same_path = [p for p in projects if Path(p.root_path) == Path(record.root_path)]
+        matches = same_path or [
+            p for p in projects
+            if p.root_path_missing and p.name.casefold() == record.name.casefold()
+        ]
+        if len(matches) == 1:
+            record.project_id = matches[0].project_id
+        record.root_path_missing = False
 
     def _focused_refresh(
         self,
@@ -85,6 +107,7 @@ class ProjectIndexer:
         else:
             record = self.scanner.scan_project(root)
 
+        self._resolve_identity(record)
         if record.project_id != focus_project_id:
             return None
 

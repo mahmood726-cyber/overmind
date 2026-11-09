@@ -210,6 +210,7 @@ def main() -> None:
             ),
             encoding="utf-8",
         )
+        raise SystemExit(1) from exc
     finally:
         db.close()
 
