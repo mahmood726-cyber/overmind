@@ -11,7 +11,6 @@ Usage:
 from __future__ import annotations
 
 import argparse
-import io
 import json
 import os
 import platform
@@ -59,11 +58,11 @@ if sys.platform == "win32" and "pytest" not in sys.modules:
         pass
 
 # Fix Windows cp1252 stdout — but ONLY when invoked as a script.
-# Re-wrapping sys.stdout at import time corrupts pytest's capture tmpfile
-# (lessons.md: "Module-level sys.stdout reassignment kills pytest capture").
+# Reconfigure in place: another wrapper would share ownership of the buffer
+# and could close it when a later import replaces stdout or stderr.
 if sys.platform == "win32" and "pytest" not in sys.modules:
-    sys.stdout = io.TextIOWrapper(sys.stdout.buffer, encoding="utf-8", errors="replace")
-    sys.stderr = io.TextIOWrapper(sys.stderr.buffer, encoding="utf-8", errors="replace")
+    sys.stdout.reconfigure(encoding="utf-8", errors="replace")
+    sys.stderr.reconfigure(encoding="utf-8", errors="replace")
 
 sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
 
