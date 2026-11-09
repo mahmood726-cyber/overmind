@@ -25,6 +25,7 @@ from __future__ import annotations
 
 import json
 import re
+import subprocess
 import sys
 from pathlib import Path
 from typing import Callable, Iterable
@@ -69,19 +70,35 @@ def _first_existing(root: Path, names: Iterable[str]) -> Path | None:
 
 
 def _default_discover_repos() -> list[str]:
-    """Import push_all_repos.discover_repos from the first candidate root that
-    actually contains push_all_repos.py. Raises ModuleNotFoundError (caller
-    wraps + records in the nightly) if no candidate has it — fail-loud, never a
-    silent 0-scan."""
+    """Discover repositories in a child using the first available helper root.
+
+    Import, execution, timeout and protocol errors propagate to the caller,
+    which records them in the nightly rather than reporting a silent 0-scan.
+    """
+    import_paths = list(sys.path)
     for root in _DISCOVER_IMPORT_CANDIDATES:
         if not root:
             continue
         if (Path(root) / "push_all_repos.py").exists():
-            if root not in sys.path:
-                sys.path.append(root)
+            if root not in import_paths:
+                import_paths.append(root)
             break
-    from push_all_repos import discover_repos
-    return list(discover_repos())
+    # The external CLI helper can rewrap/close stdout at import time. Keep its
+    # stream ownership in a child process so report generation remains usable
+    # even when discovery fails (including a missing discover_repos export).
+    result = subprocess.run(
+        [sys.executable, "-c",
+         "import json, sys; sys.path[:] = json.loads(sys.argv[1]); "
+         "from push_all_repos import discover_repos; "
+         "print(json.dumps(list(discover_repos())))",
+         json.dumps(import_paths)],
+        capture_output=True, text=True, encoding="utf-8", errors="replace",
+        timeout=60, check=True,
+    )
+    repos = json.loads(result.stdout)
+    if not isinstance(repos, list) or not all(isinstance(repo, str) for repo in repos):
+        raise ValueError("discover_repos must return a list of repository paths")
+    return repos
 
 
 def _read_jsonl(path: Path) -> list[str] | None:
