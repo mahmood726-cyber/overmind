@@ -74,6 +74,7 @@ class ProjectRecord(SerializableModel):
     package_manager: str = "npm"
     last_active_at: str | None = None
     last_indexed_at: str = field(default_factory=utc_now)
+    root_path_missing: bool = False
 
 
 @dataclass(slots=True)

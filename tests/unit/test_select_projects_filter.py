@@ -40,55 +40,62 @@ class _FakeDB:
         return list(self._projects)
 
 
-def _make_db():
+def _make_db(base):
+    # Real directories: selection now refuses to verify a project whose root
+    # is missing (a stale index row), so fictional paths would be excluded.
+    roots = {}
+    for key, rel in (("Alpha", "Models/Alpha"), ("Beta", "Models/Beta"),
+                     ("Gamma", "Projects/gamma"), ("Delta", "Projects/Delta")):
+        roots[key] = base / rel
+        roots[key].mkdir(parents=True)
     return _FakeDB([
-        _FakeProject("a", "Alpha", r"C:\Models\Alpha", risk_profile="high"),
-        _FakeProject("b", "Beta", r"C:\Models\Beta", risk_profile="medium"),
-        _FakeProject("c", "Gamma", r"C:\Projects\gamma", risk_profile="medium_high"),
-        _FakeProject("d", "Delta", r"C:\Projects\Delta", risk_profile="medium"),
-    ])
+        _FakeProject("a", "Alpha", str(roots["Alpha"]), risk_profile="high"),
+        _FakeProject("b", "Beta", str(roots["Beta"]), risk_profile="medium"),
+        _FakeProject("c", "Gamma", str(roots["Gamma"]), risk_profile="medium_high"),
+        _FakeProject("d", "Delta", str(roots["Delta"]), risk_profile="medium"),
+    ]), roots
 
 
-def test_select_projects_no_filter_returns_all_within_risk_and_limit():
-    db = _make_db()
+def test_select_projects_no_filter_returns_all_within_risk_and_limit(tmp_path):
+    db, _ = _make_db(tmp_path)
     out = nightly_verify.select_projects(db, "medium", 10)
     assert {p.name for p in out} == {"Alpha", "Beta", "Gamma", "Delta"}
 
 
-def test_select_projects_with_paths_filter_restricts_to_listed_paths():
-    db = _make_db()
-    paths_filter = {nightly_verify._normalize_path(r"C:\Models\Alpha"),
-                    nightly_verify._normalize_path(r"C:\Projects\Delta")}
+def test_select_projects_with_paths_filter_restricts_to_listed_paths(tmp_path):
+    db, roots = _make_db(tmp_path)
+    paths_filter = {nightly_verify._normalize_path(str(roots["Alpha"])),
+                    nightly_verify._normalize_path(str(roots["Delta"]))}
     out = nightly_verify.select_projects(db, "medium", 10, paths_filter=paths_filter)
     assert {p.name for p in out} == {"Alpha", "Delta"}
 
 
-def test_paths_filter_is_case_insensitive_and_slash_agnostic():
-    db = _make_db()
+def test_paths_filter_is_case_insensitive_and_slash_agnostic(tmp_path):
+    db, roots = _make_db(tmp_path)
     # Mixed case + forward slashes — should still match Alpha
-    paths_filter = {nightly_verify._normalize_path("c:/models/alpha"),
-                    nightly_verify._normalize_path(r"c:\projects\DELTA\\")}
+    paths_filter = {nightly_verify._normalize_path(str(roots["Alpha"]).lower().replace("\\", "/")),
+                    nightly_verify._normalize_path(str(roots["Delta"]).upper() + "\\")}
     out = nightly_verify.select_projects(db, "medium", 10, paths_filter=paths_filter)
     assert {p.name for p in out} == {"Alpha", "Delta"}
 
 
-def test_paths_filter_overrides_min_risk_floor():
+def test_paths_filter_overrides_min_risk_floor(tmp_path):
     """If the operator explicitly listed a path, run it even if min_risk would have excluded it."""
-    db = _make_db()
+    db, roots = _make_db(tmp_path)
     # min_risk=high would normally exclude Beta (medium), but if it's in the filter, run it
-    paths_filter = {nightly_verify._normalize_path(r"C:\Models\Beta")}
+    paths_filter = {nightly_verify._normalize_path(str(roots["Beta"]))}
     out = nightly_verify.select_projects(db, "high", 10, paths_filter=paths_filter)
     assert {p.name for p in out} == {"Beta"}
 
 
-def test_paths_filter_empty_set_means_no_projects():
-    db = _make_db()
+def test_paths_filter_empty_set_means_no_projects(tmp_path):
+    db, _ = _make_db(tmp_path)
     out = nightly_verify.select_projects(db, "medium", 10, paths_filter=set())
     assert out == []
 
 
 def test_paths_filter_with_unmatched_path_yields_empty(tmp_path):
-    db = _make_db()
+    db, _ = _make_db(tmp_path)
     paths_filter = {nightly_verify._normalize_path(r"C:\does\not\exist")}
     out = nightly_verify.select_projects(db, "medium", 10, paths_filter=paths_filter)
     assert out == []

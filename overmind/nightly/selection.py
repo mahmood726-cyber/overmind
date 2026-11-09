@@ -192,6 +192,23 @@ def load_paths_filter(path) -> set[str]:
     return out
 
 
+class ProjectSelection(list):
+    """Verification candidates with a separate audit of missing index roots."""
+
+    def __init__(self, projects, stale_index):
+        super().__init__(projects)
+        self.stale_index = stale_index
+
+
+class StaleProjectIndex(RuntimeError):
+    def __init__(self, stale_index):
+        self.stale_index = stale_index
+        count = len(stale_index)
+        super().__init__(
+            f"project index is stale: {count} of {count} root paths missing; run a scan"
+        )
+
+
 def select_projects(db: StateDatabase, min_risk: str, limit: int,
                     paths_filter: set[str] | None = None) -> list:
     """Select projects with test commands, sorted by risk and math score.
@@ -206,6 +223,7 @@ def select_projects(db: StateDatabase, min_risk: str, limit: int,
 
     projects = db.list_projects()
     candidates = []
+    stale_index = []
     seen_names = set()
     for p in projects:
         if p.project_id in SKIP_PROJECTS:
@@ -220,10 +238,16 @@ def select_projects(db: StateDatabase, min_risk: str, limit: int,
             rank = risk_order.get(p.risk_profile, 3)
             if rank > min_rank:
                 continue
+        if not Path(p.root_path).exists():
+            stale_index.append({"project_id": p.project_id, "path": p.root_path})
+            continue
         if p.name.lower() in seen_names:
             continue
         seen_names.add(p.name.lower())
         candidates.append((rank, -p.advanced_math_score, p.project_id, p))
 
     candidates.sort()
-    return [p for _, _, _, p in candidates[:limit]]
+    stale_index.sort(key=lambda row: row["project_id"])
+    if stale_index and not candidates:
+        raise StaleProjectIndex(stale_index)
+    return ProjectSelection([p for _, _, _, p in candidates[:limit]], stale_index)
